@@ -16,7 +16,7 @@ public class HealingItem implements ConsumableInterface {
 
     public String consume(PCEncounterData owner, EncounterDataInterface consumer) {
         StringBuilder output = new StringBuilder();
-        if (consumer.isDead()) {
+        if (consumer.isSlain()) {
             if (!this.revives) {
                 throw new ConsumerIsDeadException();
             } else {

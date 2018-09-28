@@ -2,6 +2,7 @@ package bot;
 
 import java.awt.*;
 
+import bot.Exception.ContextChannelNotSetException;
 import bot.Exception.OutOfBoundsStatExecption;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -87,6 +88,8 @@ public class CommandListener extends ListenerAdapter {
                         break;
                 }
             }
+        } catch (ContextChannelNotSetException e) {
+            channel.sendMessage("I'm not sure which channel to talk in...").queue();
         } catch (ArrayIndexOutOfBoundsException e) {
             channel.sendMessage("Could you say that again? I think I'm missing something... Check `$help`").queue();
         } catch (NumberFormatException e) {
@@ -113,9 +116,9 @@ public class CommandListener extends ListenerAdapter {
             case "attackturn":
                 this.commandManager.startAttackPhase(event);
                 break;
-            case "createEnc":
+            case "createenc":
                 this.commandManager.createEncounter(event);
-                    break;
+                break;
             case "dodgeturn":
                 this.commandManager.startDodgePhase(event);
                 break;

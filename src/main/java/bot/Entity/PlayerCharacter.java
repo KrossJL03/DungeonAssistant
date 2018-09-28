@@ -18,23 +18,23 @@ public class PlayerCharacter {
     public PlayerCharacter(User owner, String name, int strength, int defense, int agility, int wisdom, int hitpoints) {
         if (strength > 20) {
             throw new OutOfBoundsStatExecption(
-                    String.format("%s, %s is too strong! %d/20", owner.getAsMention(), name, strength)
+                String.format("%s, %s is too strong! %d/20", owner.getAsMention(), name, strength)
             );
         } else if (defense > 20) {
             throw new OutOfBoundsStatExecption(
-                    String.format("%s, %s is too durable! %d/20", owner.getAsMention(), name, defense)
+                String.format("%s, %s is too durable! %d/20", owner.getAsMention(), name, defense)
             );
         } else if (agility > 20) {
             throw new OutOfBoundsStatExecption(
-                    String.format("%s, %s is too fast! %d/20", owner.getAsMention(), name, agility)
+                String.format("%s, %s is too fast! %d/20", owner.getAsMention(), name, agility)
             );
         } else if (wisdom > 20) {
             throw new OutOfBoundsStatExecption(
-                    String.format("%s, %s is too wise! %d/20", owner.getAsMention(), name, wisdom)
+                String.format("%s, %s is too wise! %d/20", owner.getAsMention(), name, wisdom)
             );
         } else if (hitpoints > 240) {
             throw new OutOfBoundsStatExecption(
-                    String.format("%s, %s is too healthy! %d/240", owner.getAsMention(), name, hitpoints)
+                String.format("%s, %s is too healthy! %d/240", owner.getAsMention(), name, hitpoints)
             );
         }
 
@@ -74,24 +74,6 @@ public class PlayerCharacter {
 
     public User getOwner() {
         return this.owner;
-    }
-
-    /**
-     * @return String
-     */
-    public String print() {
-        String newLine    = System.getProperty("line.separator");
-        int    nameBuffer = (int) Math.floor(15 + this.name.length() / 2);
-        String output     = newLine;
-        output += "```md";
-        output += newLine;
-        output += (nameBuffer < 29 ? String.format("%" + nameBuffer + "s", this.name) : this.name) + newLine;
-        output += "=============================" + newLine;
-        output += "  HP | STR | DEF | AGI | WIS " + newLine;
-        output += String.format("%4s | %2s  | %2s  | %2s  | %2s", this.hitpoints, this.strength, this.defense, this.agility, this.wisdom) + newLine;
-        output += "=============================" + newLine;
-        output += "```";
-        return output;
     }
 
     /**

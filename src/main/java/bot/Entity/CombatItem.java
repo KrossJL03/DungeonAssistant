@@ -13,7 +13,7 @@ public class CombatItem implements ConsumableInterface {
     }
 
     public String consume(PCEncounterData owner, EncounterDataInterface consumer) {
-        if (consumer.isDead()) {
+        if (consumer.isSlain()) {
             throw new ConsumerIsDeadException();
         }
         consumer.takeDamage(owner, this.damage);

@@ -57,6 +57,7 @@ public class EncounterManager {
                 }
             }
             this.context.addHostile(newHostile);
+            this.logger.logAddedHostile(newHostile);
         } catch (NoHostileFoundException e) {
             this.logger.logExceptionNoHostileFound(e.getSpeciesName());
         } catch (HostileNicknameInUseException e) {
@@ -101,8 +102,10 @@ public class EncounterManager {
     }
 
     void createEncounter(MessageChannel channel, Role dungeonMaster) {
+        this.context = new EncounterContext();
         this.loggerContext.setChannel(channel);
         this.loggerContext.setDungeonMaster(dungeonMaster);
+        this.logger.logCreateEncounter();
     }
 
     void dodgeAction(User author) {
@@ -182,7 +185,7 @@ public class EncounterManager {
                 hostile.getCurrentHP(),
                 hostile.getMaxHP()
             );
-            if (hostile.isDead()) {
+            if (hostile.isSlain()) {
                 this.logger.logDungeonMasterSlay(hostile.getName());
             }
         } catch (NoHostileInEncounterException e) {
@@ -202,7 +205,7 @@ public class EncounterManager {
                 playerCharacter.getCurrentHP(),
                 playerCharacter.getMaxHP()
             );
-            if (playerCharacter.isDead()) {
+            if (playerCharacter.isSlain()) {
                 this.logger.logDungeonMasterSlay(playerCharacter.getName());
             }
         } catch (NoCharacterInEncounterException e) {
@@ -219,7 +222,7 @@ public class EncounterManager {
             }
             PCEncounterData encounterData = new PCEncounterData(playerCharacter);
             this.context.addCharacter(encounterData);
-            this.logger.logCharacterAdded(playerCharacter);
+            this.logger.logAddedPlayerCharacter(encounterData);
             if (this.context.isFullDungeon()) {
                 this.logger.logDungeonIsFull();
             }
@@ -227,6 +230,8 @@ public class EncounterManager {
             this.logger.logExceptionEncounterNotStarted();
         } catch (FullDungeonException e) {
             this.logger.logExceptionFullDungeon(playerCharacter.getOwner());
+        } catch (MultiplePlayerCharactersException e) {
+            this.logger.logExceptionMultiplePlayerCharacters(e.getPlayer(), e.getName());
         }
     }
 
@@ -241,6 +246,14 @@ public class EncounterManager {
                 throw new CharacterUnableToProtectException();
             }
             PCEncounterData                 protectedCharacter = this.context.getCharacter(name);
+            if (protectedCharacter.equals(protectorCharacter)) {
+                throw new ProtectYourselfException();
+            } else if (protectedCharacter.isSlain()) {
+                throw new ProtectedCharacterIsSlain(protectedCharacter.getName());
+            } else if (this.context.hasPlayerCharacterGone(protectedCharacter)) {
+                throw new ProtectedCharactersTurnHasPassedException(protectedCharacter.getName());
+            }
+
             ArrayList<HostileEncounterData> hostiles           = this.context.getActiveHostiles();
             int                             totalDamage        = 0;
             int                             totalDefended      = 0;
@@ -264,6 +277,12 @@ public class EncounterManager {
             this.logger.logExceptionNoCharacterInEncounter(e.getName());
         } catch (CharacterUnableToProtectException e) {
             this.logger.logExceptionCharacterUnableToProtect();
+        } catch (ProtectYourselfException e) {
+            this.logger.logExceptionProtectYourself();
+        } catch (ProtectedCharacterIsSlain e) {
+            this.logger.logExceptionProtectedCharacterIsSlain(e.getName());
+        } catch (ProtectedCharactersTurnHasPassedException e) {
+            this.logger.logExceptionProtectedCharactersTurnHasPassed(e.getName());
         }
     }
 
@@ -314,7 +333,7 @@ public class EncounterManager {
             } else {
                 this.context.startAttackPhase();
                 this.logger.logStartAttackPhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
-                this.logger.pingPlayerTurn(this.context.getCurrentPlayerCharacter());
+                this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
             }
         } catch (EncounterNotStartedException e) {
             this.logger.logExceptionEncounterNotStarted();
@@ -337,7 +356,7 @@ public class EncounterManager {
                     hostile.attack();
                 }
                 this.logger.logStartDodgePhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
-                this.logger.pingPlayerTurn(this.context.getCurrentPlayerCharacter());
+                this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
             }
         } catch (EncounterNotStartedException e) {
             this.logger.logExceptionEncounterNotStarted();
@@ -405,13 +424,25 @@ public class EncounterManager {
         } else if (this.context.getActivePlayerCharacters().isEmpty()) {
             this.logger.logEndEncounter(this.context.getAllPlayerCharacters(), this.context.getAllHostiles(), false);
         } else {
-            if (!this.context.getCurrentPlayerCharacter().hasActions()) {
+            PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+            if (currentPlayerCharacter.hasActions()) {
+                this.logger.logActionsRemaining(
+                    currentPlayerCharacter.getName(),
+                    currentPlayerCharacter.getRemainingActions()
+                );
+            } else {
                 PCEncounterData nextPlayerCharacter = this.context.getNextPlayerCharacter();
                 if (nextPlayerCharacter == null) {
                     if (this.context.isAttackPhase()) {
-                        this.logger.logEndAttackPhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
+                        this.logger.logEndAttackPhase(
+                            this.context.getAllPlayerCharacters(),
+                            this.context.getAllHostiles()
+                        );
                     } else if (this.context.isDodgePhase()) {
-                        this.logger.logEndDodgePhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
+                        this.logger.logEndDodgePhase(
+                            this.context.getAllPlayerCharacters(),
+                            this.context.getAllHostiles()
+                        );
                     }
                     this.context.endCurrentPhase();
                 } else {

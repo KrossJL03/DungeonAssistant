@@ -22,13 +22,17 @@ class InitiativeQueue {
         this.initiative.add(playerCharacter);
     }
 
+    boolean contains(PCEncounterData playerCharacter) {
+        return this.initiative.contains(playerCharacter);
+    }
+
     PCEncounterData getCurrentPlayerCharacter() {
         return this.initiative.peek();
     }
 
     PCEncounterData getNextPlayerCharacter() {
         PCEncounterData nextPlayer = this.initiative.peek();
-        while (nextPlayer != null && (nextPlayer.isDead() || !nextPlayer.hasActions())) {
+        while (nextPlayer != null && (nextPlayer.isSlain() || !nextPlayer.hasActions())) {
             this.initiative.pop();
             nextPlayer = this.initiative.peek();
         }

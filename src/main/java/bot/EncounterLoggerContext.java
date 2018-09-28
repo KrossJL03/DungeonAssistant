@@ -1,5 +1,6 @@
 package bot;
 
+import bot.Exception.ContextChannelNotSetException;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
 
@@ -12,6 +13,9 @@ public class EncounterLoggerContext {
     }
 
     MessageChannel getChannel() {
+        if (channel == null) {
+            throw new ContextChannelNotSetException();
+        }
         return channel;
     }
 

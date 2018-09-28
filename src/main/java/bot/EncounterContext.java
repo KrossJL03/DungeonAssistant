@@ -3,11 +3,12 @@ package bot;
 import bot.Entity.HostileEncounterData;
 import bot.Entity.PCEncounterData;
 import bot.Exception.*;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.*;
 
 public class EncounterContext {
-//Jenny is so pretty
+
     private static String ATTACK_PHASE = "ATTACK";
     private static String DODGE_PHASE  = "DODGE";
     private static String JOIN_PHASE   = "JOIN";
@@ -31,9 +32,10 @@ public class EncounterContext {
     }
 
     void addCharacter(PCEncounterData newPlayerCharacter) {
+        User player = newPlayerCharacter.getOwner();
         for (PCEncounterData character : this.playerCharacters) {
-            if (character.getOwner().equals(newPlayerCharacter.getOwner())) {
-                throw new SinglePlayerCharacterException();
+            if (character.getOwner().equals(player)) {
+                throw new MultiplePlayerCharactersException(player, character.getName());
             }
         }
         if (this.playerCharacters.size() == this.maxPlayerCount) {
@@ -63,7 +65,7 @@ public class EncounterContext {
     ArrayList<HostileEncounterData> getActiveHostiles() {
         ArrayList<HostileEncounterData> activeHostiles = new ArrayList<>();
         for (HostileEncounterData hostile : this.hostiles) {
-            if (!hostile.isDead()) {
+            if (!hostile.isSlain()) {
                 activeHostiles.add(hostile);
             }
         }
@@ -73,7 +75,7 @@ public class EncounterContext {
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
         ArrayList<PCEncounterData> activePlayers = new ArrayList<>();
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (!playerCharacter.isDead()) {
+            if (!playerCharacter.isSlain()) {
                 activePlayers.add(playerCharacter);
             }
         }
@@ -109,7 +111,7 @@ public class EncounterContext {
         String nameLower = name.toLowerCase();
         for (HostileEncounterData hostile : this.hostiles) {
             if (hostile.getName().toLowerCase().equals(nameLower)) {
-                if (hostile.isDead()) {
+                if (hostile.isSlain()) {
                     throw new HostileSlainException(hostile.getName(), hostile.getSlayer().getName());
                 }
                 return hostile;
@@ -127,6 +129,10 @@ public class EncounterContext {
             throw new NotInInitiativeException();
         }
         return this.initiative.getNextPlayerCharacter();
+    }
+
+    boolean hasPlayerCharacterGone(PCEncounterData playerCharacter) {
+        return !this.initiative.contains(playerCharacter);
     }
 
     boolean isAttackPhase() {

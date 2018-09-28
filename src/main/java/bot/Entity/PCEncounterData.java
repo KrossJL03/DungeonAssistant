@@ -33,6 +33,8 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentHp;
     }
 
+    public int getDefense() { return this.playerCharacter.getDefense(); }
+
     public int getDodgeDice() {
         return ((int) Math.floor(this.playerCharacter.getAgility() / 2)) + 10;
     }
@@ -41,8 +43,16 @@ public class PCEncounterData implements EncounterDataInterface {
         return (int) Math.floor(this.playerCharacter.getDefense() / 2);
     }
 
+    public int getMaxActions() {
+        return (int) Math.floor(this.playerCharacter.getAgility() / 10) + 1;
+    }
+
     public int getMaxHP() {
         return this.playerCharacter.getHitpoints();
+    }
+
+    public int getMinCrit() {
+        return 20 - ((int) Math.floor(this.playerCharacter.getWisdom() / 4));
     }
 
     public String getName() {
@@ -53,9 +63,21 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.playerCharacter.getOwner();
     }
 
+    public int getRemainingActions() {
+        return this.currentActions;
+    }
+
     public EncounterDataInterface getSlayer() {
         // todo throw an exception if no slayer
         return this.slayer;
+    }
+
+    public int getStrength() {
+        return this.playerCharacter.getStrength();
+    }
+
+    public int getWisdom() {
+        return this.playerCharacter.getWisdom();
     }
 
     public boolean hasActions() {
@@ -78,12 +100,12 @@ public class PCEncounterData implements EncounterDataInterface {
         return rollToHit >= this.getMinCrit();
     }
 
-    public boolean isDead() {
+    public boolean isSlain() {
         return currentHp < 1;
     }
 
     public void resetActions(boolean isAttackPhase) {
-        this.currentActions = isAttackPhase ? this.getNumberOfActions() : 1;
+        this.currentActions = isAttackPhase ? this.getMaxActions() : 1;
     }
 
     public int rollDamage() {
@@ -113,13 +135,5 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void useProtect() {
         this.hasProtect = false;
-    }
-
-    private int getMinCrit() {
-        return 20 - ((int) Math.floor(this.playerCharacter.getWisdom() / 4));
-    }
-
-    private int getNumberOfActions() {
-        return (int) Math.floor(this.playerCharacter.getAgility() / 10) + 1;
     }
 }

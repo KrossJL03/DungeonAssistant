@@ -46,7 +46,7 @@ public class CommandManager {
         this.encounterManager.attackAction(event.getAuthor(), hostileName);
     }
 
-    // todo create RepositoryManager
+    // todo move to RepositoryManager
     void createCharacterCommand(MessageReceivedEvent event) {
         MessageChannel channel    = event.getChannel();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
@@ -60,9 +60,8 @@ public class CommandManager {
         PlayerCharacter playerCharacter = new PlayerCharacter(event.getAuthor(), name, STR, DEF, AGI, WIS, HP);
 
         this.pcRepository.addPC(playerCharacter);
-        channel.sendMessage(
-            String.format("%s record has been saved! %s", playerCharacter.getName(), playerCharacter.print())
-        ).queue();
+        // todo move to RepositoryLogger
+        channel.sendMessage(String.format("%s record has been saved!", playerCharacter.getName())).queue();
     }
 
     void createEncounter(MessageReceivedEvent event) {
@@ -71,7 +70,7 @@ public class CommandManager {
         }
     }
 
-    // todo create RepositoryManager
+    // todo move to RepositoryManager
     void createHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             MessageChannel channel    = event.getChannel();
@@ -82,9 +81,8 @@ public class CommandManager {
             Hostile        hostile    = new Hostile(species, hitpoints, attackDice);
 
             this.hostileRepository.addHostile(hostile);
-            channel.sendMessage(
-                String.format("%s record has been saved! %s", hostile.getSpecies(), hostile.print())
-            ).queue();
+            // todo move to RepositoryLogger
+            channel.sendMessage(String.format("%s record has been saved!", hostile.getSpecies())).queue();
         }
     }
 
