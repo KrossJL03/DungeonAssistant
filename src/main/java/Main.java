@@ -5,6 +5,7 @@ import bot.Repository.PCRepository;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
+import java.io.FileInputStream;
 import java.util.Properties;
 
 public class Main {
@@ -33,7 +34,7 @@ public class Main {
         CommandListener commandListener = new CommandListener(commandManager);
 
         Properties properties = new Properties();
-        properties.load(Main.class.getClassLoader().getResourceAsStream("config.properties"));
+        properties.load(new FileInputStream("config.properties"));
         JDA api = new JDABuilder(properties.getProperty("token")).build();
         api.addEventListener(commandListener);
     }
