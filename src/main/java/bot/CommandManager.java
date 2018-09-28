@@ -156,6 +156,10 @@ public class CommandManager {
         }
     }
 
+    void leaveCommand(MessageReceivedEvent event) {
+        this.encounterManager.leaveEncounter(event.getAuthor());
+    }
+
     void protectCommand(MessageReceivedEvent event) {
         String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
         String   name       = splitInput[1];

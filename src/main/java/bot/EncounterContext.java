@@ -75,7 +75,7 @@ public class EncounterContext {
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
         ArrayList<PCEncounterData> activePlayers = new ArrayList<>();
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (!playerCharacter.isSlain()) {
+            if (!playerCharacter.isSlain() && !playerCharacter.hasLeft()) {
                 activePlayers.add(playerCharacter);
             }
         }
@@ -88,16 +88,6 @@ public class EncounterContext {
 
     ArrayList<PCEncounterData> getAllPlayerCharacters() {
         return this.playerCharacters;
-    }
-
-    PCEncounterData getCharacter(String name) {
-        String nameLower = name.toLowerCase();
-        for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (playerCharacter.getName().toLowerCase().equals(nameLower)) {
-                return playerCharacter;
-            }
-        }
-        throw new NoCharacterInEncounterException(name);
     }
 
     PCEncounterData getCurrentPlayerCharacter() {
@@ -129,6 +119,25 @@ public class EncounterContext {
             throw new NotInInitiativeException();
         }
         return this.initiative.getNextPlayerCharacter();
+    }
+
+    PCEncounterData getPlayerCharacter(String name) {
+        String nameLower = name.toLowerCase();
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.getName().toLowerCase().equals(nameLower)) {
+                return playerCharacter;
+            }
+        }
+        throw new NoCharacterInEncounterException(name);
+    }
+
+    PCEncounterData getPlayerCharacter(User player) {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.getOwner().equals(player)) {
+                return playerCharacter;
+            }
+        }
+        throw new NoCharacterInEncounterException(player);
     }
 
     boolean hasPlayerCharacterGone(PCEncounterData playerCharacter) {

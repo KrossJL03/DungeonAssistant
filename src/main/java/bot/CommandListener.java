@@ -77,6 +77,9 @@ public class CommandListener extends ListenerAdapter {
                     case "$join":
                         this.commandManager.joinEncounter(event);
                         break;
+                    case "$leave":
+                        this.commandManager.leaveCommand(event);
+                        break;
                     case "$protect":
                         this.commandManager.protectCommand(event);
                         break;

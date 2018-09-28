@@ -398,8 +398,8 @@ public class EncounterLogger {
         this.logMessage("Wait! I don't know how many players to have! Tell me using `$setMaxPlayers`.");
     }
 
-    void logExceptionNoCharacterInEncounter(String name) {
-        this.logMessage(String.format("I can't find %s, are you sure they are part of this encounter?", name));
+    void logExceptionNoCharacterInEncounter(Throwable e) {
+        this.logMessage(e.getMessage());
     }
 
     void logExceptionNoHostileFound(String species) {
@@ -425,6 +425,10 @@ public class EncounterLogger {
 
     void logExceptionNotYourTurn() {
         this.logMessage("Hey! Wait your turn!");
+    }
+
+    void logExceptionPlayerCharacterAlreadyLeft() {
+        this.logMessage("You have already left");
     }
 
     void logExceptionProtectedCharacterIsSlain(String name) {
@@ -548,6 +552,10 @@ public class EncounterLogger {
 
     void logSetMaxPlayers(int maxPlayerCount) {
         this.logMessage(String.format("Max player count has been set to %d", maxPlayerCount));
+    }
+
+    void logLeftEncounter(PCEncounterData playerCharacter) {
+        this.logMessage(String.format("%s has left the encounter", playerCharacter.getName()));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

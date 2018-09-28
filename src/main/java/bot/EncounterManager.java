@@ -162,7 +162,7 @@ public class EncounterManager {
 
     void healPlayer(String name, int hitpoints) {
         try {
-            PCEncounterData playerCharacter = this.context.getCharacter(name);
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
             playerCharacter.heal(hitpoints);
             this.logger.logDungeonMasterHeal(
                 playerCharacter.getName(),
@@ -171,7 +171,7 @@ public class EncounterManager {
                 playerCharacter.getMaxHP()
             );
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e.getName());
+            this.logger.logExceptionNoCharacterInEncounter(e);
         }
     }
 
@@ -197,7 +197,7 @@ public class EncounterManager {
 
     void hurtPlayer(String name, int hitpoints) {
         try {
-            PCEncounterData playerCharacter = this.context.getCharacter(name);
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
             playerCharacter.hurt(hitpoints);
             this.logger.logDungeonMasterHurt(
                 playerCharacter.getName(),
@@ -209,7 +209,7 @@ public class EncounterManager {
                 this.logger.logDungeonMasterSlay(playerCharacter.getName());
             }
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e.getName());
+            this.logger.logExceptionNoCharacterInEncounter(e);
         } catch (CharacterSlainException e) {
             this.logger.logExceptionHostileSlain(e.getCharacterName(), e.getSlayerName());
         }
@@ -235,6 +235,18 @@ public class EncounterManager {
         }
     }
 
+    void leaveEncounter(User player) {
+        try {
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
+            playerCharacter.leave();
+            this.logger.logLeftEncounter(playerCharacter);
+        } catch (NoCharacterInEncounterException e) {
+            this.logger.logExceptionNoCharacterInEncounter(e);
+        } catch (PlayerCharacterAlreadyLeftException e) {
+            this.logger.logExceptionPlayerCharacterAlreadyLeft();
+        }
+    }
+
     void protectAction(User player, String name) {
         try {
             if (!this.context.isDodgePhase()) {
@@ -245,7 +257,7 @@ public class EncounterManager {
             if (!protectorCharacter.isAbleToProtect()) {
                 throw new CharacterUnableToProtectException();
             }
-            PCEncounterData                 protectedCharacter = this.context.getCharacter(name);
+            PCEncounterData                 protectedCharacter = this.context.getPlayerCharacter(name);
             if (protectedCharacter.equals(protectorCharacter)) {
                 throw new ProtectYourselfException();
             } else if (protectedCharacter.isSlain()) {
@@ -274,7 +286,7 @@ public class EncounterManager {
         } catch (NotYourTurnException e) {
             this.logger.logExceptionNotYourTurn();
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e.getName());
+            this.logger.logExceptionNoCharacterInEncounter(e);
         } catch (CharacterUnableToProtectException e) {
             this.logger.logExceptionCharacterUnableToProtect();
         } catch (ProtectYourselfException e) {
@@ -300,7 +312,7 @@ public class EncounterManager {
             this.context.removePlayerCharacter(name);
             this.logger.logRemovedPlayerCharacter(name);
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e.getName());
+            this.logger.logExceptionNoCharacterInEncounter(e);
         }
     }
 

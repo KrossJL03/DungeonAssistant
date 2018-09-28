@@ -1,14 +1,16 @@
 package bot.Entity;
 
+import bot.Exception.PlayerCharacterAlreadyLeftException;
 import net.dv8tion.jda.core.entities.User;
 
 public class PCEncounterData implements EncounterDataInterface {
 
-    private PlayerCharacter        playerCharacter;
-    private int                    currentHp;
-    private int                    currentActions;
-    private boolean                hasProtect;
-    private EncounterDataInterface slayer;
+    private PlayerCharacter                 playerCharacter;
+    private int                             currentHp;
+    private int                             currentActions;
+    private boolean                         hasProtect;
+    private EncounterDataInterface          slayer;
+    private boolean                         hasLeft;
 
     public PCEncounterData(PlayerCharacter playerCharacter) {
         this.playerCharacter = playerCharacter;
@@ -33,7 +35,9 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentHp;
     }
 
-    public int getDefense() { return this.playerCharacter.getDefense(); }
+    public int getDefense() {
+        return this.playerCharacter.getDefense();
+    }
 
     public int getDodgeDice() {
         return ((int) Math.floor(this.playerCharacter.getAgility() / 2)) + 10;
@@ -84,6 +88,10 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentActions > 0;
     }
 
+    public boolean hasLeft() {
+        return hasLeft;
+    }
+
     public void heal(int hitpoints) {
         this.currentHp += hitpoints;
     }
@@ -102,6 +110,13 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public boolean isSlain() {
         return currentHp < 1;
+    }
+
+    public void leave() {
+        if (this.hasLeft) {
+            throw new PlayerCharacterAlreadyLeftException();
+        }
+        this.hasLeft = true;
     }
 
     public void resetActions(boolean isAttackPhase) {
@@ -129,9 +144,13 @@ public class PCEncounterData implements EncounterDataInterface {
         return damage;
     }
 
-    public void useAction() { this.currentActions--; }
+    public void useAction() {
+        this.currentActions--;
+    }
 
-    public void useAllActions() { this.currentActions = 0; }
+    public void useAllActions() {
+        this.currentActions = 0;
+    }
 
     public void useProtect() {
         this.hasProtect = false;
