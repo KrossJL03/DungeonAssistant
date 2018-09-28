@@ -1,14 +1,7 @@
 package bot.Exception;
 
-public class NoHostileInEncounterException extends RuntimeException {
-
-    private String name;
-
+public class NoHostileInEncounterException extends RuntimeException implements EncounterException {
     public NoHostileInEncounterException(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
+        super(String.format("I don't see any hostiles named %s in this encounter", name));
     }
 }

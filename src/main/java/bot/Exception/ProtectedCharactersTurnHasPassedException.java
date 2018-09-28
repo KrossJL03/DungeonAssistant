@@ -1,14 +1,7 @@
 package bot.Exception;
 
-public class ProtectedCharactersTurnHasPassedException extends RuntimeException {
-
-    private String name;
-
+public class ProtectedCharactersTurnHasPassedException extends RuntimeException implements EncounterException {
     public ProtectedCharactersTurnHasPassedException(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
+        super(String.format("%s's turn has already passed. They can not be protected.", name));
     }
 }

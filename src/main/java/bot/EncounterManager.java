@@ -58,10 +58,8 @@ public class EncounterManager {
             }
             this.context.addHostile(newHostile);
             this.logger.logAddedHostile(newHostile);
-        } catch (NoHostileFoundException e) {
-            this.logger.logExceptionNoHostileFound(e.getSpeciesName());
-        } catch (HostileNicknameInUseException e) {
-            this.logger.logExceptionHostileNicknameInUse(e.getNickname());
+        } catch (NoHostileFoundException | HostileNicknameInUseException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -90,14 +88,8 @@ public class EncounterManager {
 
             playerCharacter.useAction();
             this.endPlayerAction();
-        } catch (WrongPhaseException e) {
-            this.logger.logExceptionWrongPhase(e.getPhase(), e.getCommandName());
-        } catch (NotYourTurnException e) {
-            this.logger.logExceptionNotYourTurn();
-        } catch (HostileSlainException e) {
-            this.logger.logExceptionHostileSlain(e.getHostileName(), e.getSlayerName());
-        } catch (NoHostileInEncounterException e) {
-            this.logger.logExceptionNoHostileInEncounter(e.getName());
+        } catch (WrongPhaseException | NotYourTurnException | NoHostileInEncounterException | HostileSlainException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -136,10 +128,8 @@ public class EncounterManager {
             );
             playerCharacter.useAction();
             this.endPlayerAction();
-        } catch (WrongPhaseException e) {
-            this.logger.logExceptionWrongPhase(e.getPhase(), e.getCommandName());
-        } catch (NotYourTurnException e) {
-            this.logger.logExceptionNotYourTurn();
+        } catch (WrongPhaseException | NotYourTurnException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -153,10 +143,8 @@ public class EncounterManager {
                 hostile.getCurrentHP(),
                 hostile.getMaxHP()
             );
-        } catch (NoHostileInEncounterException e) {
-            this.logger.logExceptionNoHostileInEncounter(e.getName());
-        } catch (HostileSlainException e) {
-            this.logger.logExceptionHostileSlain(e.getHostileName(), e.getSlayerName());
+        } catch (NoHostileInEncounterException | HostileSlainException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -171,7 +159,7 @@ public class EncounterManager {
                 playerCharacter.getMaxHP()
             );
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e);
+            this.logger.logException(e);
         }
     }
 
@@ -188,10 +176,8 @@ public class EncounterManager {
             if (hostile.isSlain()) {
                 this.logger.logDungeonMasterSlay(hostile.getName());
             }
-        } catch (NoHostileInEncounterException e) {
-            this.logger.logExceptionNoHostileInEncounter(e.getName());
-        } catch (HostileSlainException e) {
-            this.logger.logExceptionHostileSlain(e.getHostileName(), e.getSlayerName());
+        } catch (NoHostileInEncounterException | HostileSlainException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -208,10 +194,8 @@ public class EncounterManager {
             if (playerCharacter.isSlain()) {
                 this.logger.logDungeonMasterSlay(playerCharacter.getName());
             }
-        } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e);
-        } catch (CharacterSlainException e) {
-            this.logger.logExceptionHostileSlain(e.getCharacterName(), e.getSlayerName());
+        } catch (NoCharacterInEncounterException | CharacterSlainException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -226,12 +210,8 @@ public class EncounterManager {
             if (this.context.isFullDungeon()) {
                 this.logger.logDungeonIsFull();
             }
-        } catch (EncounterNotStartedException $e) {
-            this.logger.logExceptionEncounterNotStarted();
-        } catch (FullDungeonException e) {
-            this.logger.logExceptionFullDungeon(playerCharacter.getOwner());
-        } catch (MultiplePlayerCharactersException e) {
-            this.logger.logExceptionMultiplePlayerCharacters(e.getPlayer(), e.getName());
+        } catch (EncounterNotStartedException | FullDungeonException | MultiplePlayerCharactersException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -240,10 +220,8 @@ public class EncounterManager {
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
             playerCharacter.leave();
             this.logger.logLeftEncounter(playerCharacter);
-        } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e);
-        } catch (PlayerCharacterAlreadyLeftException e) {
-            this.logger.logExceptionPlayerCharacterAlreadyLeft();
+        } catch (NoCharacterInEncounterException | PlayerCharacterAlreadyLeftException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -257,7 +235,7 @@ public class EncounterManager {
             if (!protectorCharacter.isAbleToProtect()) {
                 throw new CharacterUnableToProtectException();
             }
-            PCEncounterData                 protectedCharacter = this.context.getPlayerCharacter(name);
+            PCEncounterData protectedCharacter = this.context.getPlayerCharacter(name);
             if (protectedCharacter.equals(protectorCharacter)) {
                 throw new ProtectYourselfException();
             } else if (protectedCharacter.isSlain()) {
@@ -266,9 +244,9 @@ public class EncounterManager {
                 throw new ProtectedCharactersTurnHasPassedException(protectedCharacter.getName());
             }
 
-            ArrayList<HostileEncounterData> hostiles           = this.context.getActiveHostiles();
-            int                             totalDamage        = 0;
-            int                             totalDefended      = 0;
+            ArrayList<HostileEncounterData> hostiles      = this.context.getActiveHostiles();
+            int                             totalDamage   = 0;
+            int                             totalDefended = 0;
 
             for (HostileEncounterData hostile : hostiles) {
                 int damage = protectorCharacter.takeDamage(hostile, hostile.getAttackRoll());
@@ -281,20 +259,16 @@ public class EncounterManager {
             protectorCharacter.useProtect();
             protectedCharacter.useAllActions();
             this.endPlayerAction();
-        } catch (WrongPhaseException e) {
-            this.logger.logExceptionWrongPhase(e.getPhase(), e.getCommandName());
-        } catch (NotYourTurnException e) {
-            this.logger.logExceptionNotYourTurn();
-        } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e);
-        } catch (CharacterUnableToProtectException e) {
-            this.logger.logExceptionCharacterUnableToProtect();
-        } catch (ProtectYourselfException e) {
-            this.logger.logExceptionProtectYourself();
-        } catch (ProtectedCharacterIsSlain e) {
-            this.logger.logExceptionProtectedCharacterIsSlain(e.getName());
-        } catch (ProtectedCharactersTurnHasPassedException e) {
-            this.logger.logExceptionProtectedCharactersTurnHasPassed(e.getName());
+        } catch (
+            WrongPhaseException |
+                NotYourTurnException |
+                NoCharacterInEncounterException |
+                CharacterUnableToProtectException |
+                ProtectYourselfException |
+                ProtectedCharacterIsSlain |
+                ProtectedCharactersTurnHasPassedException e
+            ) {
+            this.logger.logException(e);
         }
     }
 
@@ -303,7 +277,7 @@ public class EncounterManager {
             this.context.removeHostile(name);
             this.logger.logRemovedHostile(name);
         } catch (NoHostileInEncounterException e) {
-            this.logger.logExceptionNoHostileInEncounter(e.getName());
+            this.logger.logException(e);
         }
     }
 
@@ -312,7 +286,7 @@ public class EncounterManager {
             this.context.removePlayerCharacter(name);
             this.logger.logRemovedPlayerCharacter(name);
         } catch (NoCharacterInEncounterException e) {
-            this.logger.logExceptionNoCharacterInEncounter(e);
+            this.logger.logException(e);
         }
     }
 
@@ -332,7 +306,7 @@ public class EncounterManager {
                 this.dodgeActionSkipped(playerCharacter.getOwner());
             }
         } catch (NotInInitiativeException e) {
-            this.logger.logExceptionNotInInitiative();
+            this.logger.logException(e);
         }
     }
 
@@ -347,12 +321,8 @@ public class EncounterManager {
                 this.logger.logStartAttackPhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
                 this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
             }
-        } catch (EncounterNotStartedException e) {
-            this.logger.logExceptionEncounterNotStarted();
-        } catch (EncounterIsOverException e) {
-            this.logger.logExceptionEncounterIsOver();
-        } catch (StartCurrentPhaseException e) {
-            this.logger.logExceptionStartCurrentPhase(e.getPhase());
+        } catch (EncounterNotStartedException | EncounterIsOverException | StartCurrentPhaseException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -370,16 +340,12 @@ public class EncounterManager {
                 this.logger.logStartDodgePhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
                 this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
             }
-        } catch (EncounterNotStartedException e) {
-            this.logger.logExceptionEncounterNotStarted();
-        } catch (EncounterIsOverException e) {
-            this.logger.logExceptionEncounterIsOver();
-        } catch (StartCurrentPhaseException e) {
-            this.logger.logExceptionStartCurrentPhase(e.getPhase());
+        } catch (EncounterNotStartedException | EncounterIsOverException | StartCurrentPhaseException e) {
+            this.logger.logException(e);
         }
     }
 
-    void startEncounter(MessageChannel channel, Role mentionRole) {
+    void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
         try {
             if (this.context.isStarted()) {
                 throw new EncounterInProgessException();
@@ -391,14 +357,8 @@ public class EncounterManager {
             this.loggerContext.setChannel(channel);
             this.context.startEncounter();
             this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
-        } catch (EncounterInProgessException e) {
-            this.logger.logExceptionEncounterInProgress();
-        } catch (MaxZeroPlayersException ee) {
-            this.logger.logExceptionMaxZeroPlayers();
-        } catch (NoHostilesException e) {
-            this.logger.logExceptionNoHostiles();
-        } catch (DungeonMasterNotFoundException e) {
-            this.logger.logExceptionDungeonMasterNotFound();
+        } catch (EncounterInProgessException | MaxZeroPlayersException | DungeonMasterNotFoundException e) {
+            this.logger.logException(e);
         }
     }
 
@@ -423,10 +383,8 @@ public class EncounterManager {
             this.logger.logActionDodgeSkipped(playerCharacter, totalDamage, totalDefended);
             playerCharacter.useAllActions();
             this.endPlayerAction();
-        } catch (WrongPhaseException e) {
-            this.logger.logExceptionWrongPhase(e.getPhase(), e.getCommandName());
-        } catch (NotYourTurnException e) {
-            this.logger.logExceptionNotYourTurn();
+        } catch (WrongPhaseException | NotYourTurnException e) {
+            this.logger.logException(e);
         }
     }
 

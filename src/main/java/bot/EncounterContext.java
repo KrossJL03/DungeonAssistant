@@ -39,7 +39,7 @@ public class EncounterContext {
             }
         }
         if (this.playerCharacters.size() == this.maxPlayerCount) {
-            throw new FullDungeonException();
+            throw new FullDungeonException(newPlayerCharacter.getOwner());
         }
 
         if (this.isInitiativePhase()) {

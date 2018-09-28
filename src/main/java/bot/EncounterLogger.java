@@ -1,6 +1,7 @@
 package bot;
 
 import bot.Entity.*;
+import bot.Exception.EncounterException;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 
@@ -343,112 +344,8 @@ public class EncounterLogger {
         );
     }
 
-    void logExceptionCharacterUnableToProtect() {
-        this.logMessage("You've already used your `$protect` for this encounter");
-    }
-
-    void logExceptionDungeonMasterNotFound() {
-        this.logMessage("How can we play without a DungeonMaster? I don't see that role anywhere...");
-    }
-
-    void logExceptionEmptyDungeon() {
-        this.logMessage("Well uh... this is awkward. Is seems we don't have any players...");
-    }
-
-    void logExceptionEncounterInProgress() {
-        this.logMessage("Hold your Capra! This encounter is already in progress.");
-    }
-
-    void logExceptionEncounterIsOver() {
-        this.logMessage("This encounter is over. If you'd like to start a new one use the `$createEnc` command");
-    }
-
-    void logExceptionEncounterNotStarted() {
-        this.logMessage("Hold your Rudi! This encounter hasn't even started yet.");
-    }
-
-    void logExceptionFullDungeon(User player) {
-        this.logMessage(
-            String.format(
-                "Uh oh, looks like the dungeon is full. Sorry %s.", player.getAsMention()
-            )
-        );
-    }
-
-    void logExceptionHostileNicknameInUse(String name) {
-        this.logMessage(String.format("There's already a hostile named %s in this battle", name));
-    }
-
-    void logExceptionHostileSlain(String hostileName, String slayerName) {
-        this.logMessage(String.format("%s was slain by %s", hostileName, slayerName));
-    }
-
-    void logExceptionMultiplePlayerCharacters(User player, String name) {
-        this.logMessage(
-            String.format(
-                "%s, you have already joined this encounter with %s. " +
-                    "If you'd like to switch please talk to the DungeonMaster",
-                player.getAsMention(),
-                name
-            )
-        );
-    }
-
-    void logExceptionMaxZeroPlayers() {
-        this.logMessage("Wait! I don't know how many players to have! Tell me using `$setMaxPlayers`.");
-    }
-
-    void logExceptionNoCharacterInEncounter(Throwable e) {
+    void logException(EncounterException e) {
         this.logMessage(e.getMessage());
-    }
-
-    void logExceptionNoHostileFound(String species) {
-        this.logMessage(
-            String.format(
-                "I'm not familiar with %s, could you describe them for me using the `$createHostile` command?",
-                species
-            )
-        );
-    }
-
-    void logExceptionNoHostileInEncounter(String hostileName) {
-        this.logMessage(String.format("I don't see any hostiles named %s", hostileName));
-    }
-
-    void logExceptionNoHostiles() {
-        this.logMessage("Uh, wait. Who are we fighting again? Tell me using `$addHostile NAME HP ATK`.");
-    }
-
-    void logExceptionNotInInitiative() {
-        this.logMessage("There is no turn order currently, so there is no current player to be skipped.");
-    }
-
-    void logExceptionNotYourTurn() {
-        this.logMessage("Hey! Wait your turn!");
-    }
-
-    void logExceptionPlayerCharacterAlreadyLeft() {
-        this.logMessage("You have already left");
-    }
-
-    void logExceptionProtectedCharacterIsSlain(String name) {
-        this.logMessage(String.format("%s has already been slain. They can not be protected.", name));
-    }
-
-    void logExceptionProtectedCharactersTurnHasPassed(String name) {
-        this.logMessage(String.format("%s's turn has already passed. They can not be protected.", name));
-    }
-
-    void logExceptionProtectYourself() {
-        this.logMessage("You can't protect yourself.");
-    }
-
-    void logExceptionStartCurrentPhase(String phase) {
-        this.logMessage(String.format("The %s turn is already in progress", phase));
-    }
-
-    void logExceptionWrongPhase(String phase, String commandName) {
-        this.logMessage(String.format("You can only `$%s` during the %s turn", commandName, phase.toUpperCase()));
     }
 
     void pingPlayerTurn(PCEncounterData playerCharacter) {

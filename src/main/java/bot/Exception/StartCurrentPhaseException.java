@@ -1,14 +1,7 @@
 package bot.Exception;
 
-public class StartCurrentPhaseException extends RuntimeException {
-
-    private String phase;
-
+public class StartCurrentPhaseException extends RuntimeException implements EncounterException {
     public StartCurrentPhaseException(String phase) {
-        this.phase = phase;
-    }
-
-    public String getPhase() {
-        return phase;
+        super(String.format("The %s turn is already in progress", phase));
     }
 }

@@ -2,7 +2,7 @@ package bot.Exception;
 
 import net.dv8tion.jda.core.entities.User;
 
-public class NoCharacterInEncounterException extends RuntimeException {
+public class NoCharacterInEncounterException extends RuntimeException implements EncounterException{
 
     public NoCharacterInEncounterException(User player) {
         super(String.format("I could not find your character in this encounter %s", player.getName()));

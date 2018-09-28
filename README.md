@@ -4,7 +4,7 @@ Discord bot for the SkyExplorers group
 TODO:
 -- check if dodge/attack is in progress before starting a dodge/attack
 
-
+-- add $return command
 -- track which hostile deaths a player was present for
 -- add $leave command to voluntarily leave the encounter
 ---- save PCE in case player returns to prevent cheating by resetting encounter data

@@ -1,5 +1,7 @@
 package bot.Exception;
 
-public class NoHostilesException extends RuntimeException {
-    public NoHostilesException() {}
+public class NoHostilesException extends RuntimeException implements EncounterException {
+    public NoHostilesException() {
+        super("Uh, wait. Who are we fighting again? Tell me using `$addHostile NAME HP ATK`.");
+    }
 }

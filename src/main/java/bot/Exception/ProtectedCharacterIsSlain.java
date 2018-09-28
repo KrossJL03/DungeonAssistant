@@ -1,14 +1,7 @@
 package bot.Exception;
 
-public class ProtectedCharacterIsSlain extends RuntimeException {
-
-    private String name;
-
+public class ProtectedCharacterIsSlain extends RuntimeException implements EncounterException {
     public ProtectedCharacterIsSlain(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
+        super(String.format("%s has already been slain. They can not be protected.", name));
     }
 }

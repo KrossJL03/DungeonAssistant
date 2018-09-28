@@ -1,14 +1,12 @@
 package bot.Exception;
 
-public class NoHostileFoundException extends RuntimeException {
-
-    private String speciesName;
-
+public class NoHostileFoundException extends RuntimeException implements EncounterException {
     public NoHostileFoundException(String speciesName) {
-        this.speciesName = speciesName;
-    }
-
-    public String getSpeciesName() {
-        return speciesName;
+        super(
+            String.format(
+                "I'm not familiar with %s, could you describe them for me using the `$createHostile` command?",
+                speciesName
+            )
+        );
     }
 }
