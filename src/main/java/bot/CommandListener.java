@@ -174,6 +174,9 @@ public class CommandListener extends ListenerAdapter {
             case "hostiles":
                 this.commandManager.viewHostiles(event);
                 break;
+            case "loot":
+                this.commandManager.viewHostileLoot(event);
+                break;
             case "summary":
                 this.commandManager.viewEncounterSummary();
                 break;

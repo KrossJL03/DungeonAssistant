@@ -1,18 +1,12 @@
 package bot;
 
-import bot.Entity.Hostile;
-import bot.Entity.PlayerCharacter;
 import net.dv8tion.jda.core.entities.User;
-
-import java.util.ArrayList;
 
 public class PrivateLogger {
 
     private static String NEWLINE = System.getProperty("line.separator");
 
-    public PrivateLogger() {
-    }
-
+    public PrivateLogger() {}
 
     void showHelpPage(User user, boolean isAdmin) {
 //        EmbedBuilder   embed   = new EmbedBuilder();
@@ -154,58 +148,6 @@ public class PrivateLogger {
         output.append("```");
 
         this.sendPrivateMessage(user, output.toString());
-    }
-
-
-    void viewCharacters(User author, ArrayList<PlayerCharacter> playerCharacters) {
-        StringBuilder output = new StringBuilder();
-        output.append("```cs");
-        output.append(PrivateLogger.NEWLINE);
-        output.append("# Character Database");
-        output.append(PrivateLogger.NEWLINE);
-        output.append("------------------------------------");
-        output.append(PrivateLogger.NEWLINE);
-        for (PlayerCharacter character : playerCharacters) {
-            output.append(String.format("%s (%s)", character.getName(), character.getOwner().getName()));
-            output.append(PrivateLogger.NEWLINE);
-            output.append("------------------------------------------------");
-            output.append(PrivateLogger.NEWLINE);
-            output.append(
-                String.format(
-                    " HP %3d | STR %2d | DEF %2d | AGI %2d | WIS %2d ",
-                    character.getHitpoints(),
-                    character.getStrength(),
-                    character.getDefense(),
-                    character.getAgility(),
-                    character.getWisdom()
-                )
-            );
-            output.append(PrivateLogger.NEWLINE);
-        }
-        output.append("```");
-        this.sendPrivateMessage(author, output.toString());
-    }
-
-    void viewHostiles(User author, ArrayList<Hostile> hostiles) {
-        StringBuilder output = new StringBuilder();
-        output.append("```cs");
-        output.append(PrivateLogger.NEWLINE);
-        output.append("# Hostile Database");
-        output.append(PrivateLogger.NEWLINE);
-        output.append("------------------------------------");
-        output.append(PrivateLogger.NEWLINE);
-        for (Hostile hostile : hostiles) {
-            output.append(String.format(
-                "%-25s %3d HP  %s%d",
-                hostile.getSpecies(),
-                hostile.getHitpoints(),
-                "d ",
-                hostile.getAttackDice()
-            ));
-            output.append(PrivateLogger.NEWLINE);
-        }
-        output.append("```");
-        this.sendPrivateMessage(author, output.toString());
     }
 
     private void sendPrivateMessage(User user, String content) {

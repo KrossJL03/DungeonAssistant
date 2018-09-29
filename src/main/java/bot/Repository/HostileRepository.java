@@ -23,7 +23,7 @@ public class HostileRepository {
 
     public Hostile getHostile(String speciesName) {
         String speciesLower = speciesName.toLowerCase();
-        for (Hostile hostile : collection) {
+        for (Hostile hostile : this.collection) {
             if (hostile.getSpecies().toLowerCase().equals(speciesLower)) {
                 return hostile;
             }

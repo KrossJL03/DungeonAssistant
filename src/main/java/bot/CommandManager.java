@@ -14,18 +14,21 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandManager {
 
-    private EncounterManager  encounterManager;
-    private HostileRepository hostileRepository;
-    private PCRepository      pcRepository;
-    private PrivateLogger     privateLogger;
+    private EncounterManager   encounterManager;
+    private EncyclopediaLogger encyclopediaLogger;
+    private HostileRepository  hostileRepository;
+    private PCRepository       pcRepository;
+    private PrivateLogger      privateLogger;
 
     public CommandManager(
-        PrivateLogger privateLogger,
         EncounterManager encounterManager,
+        EncyclopediaLogger encyclopediaLogger,
+        PrivateLogger privateLogger,
         PCRepository pcRepository,
         HostileRepository hostileRepository
     ) {
         this.encounterManager = encounterManager;
+        this.encyclopediaLogger = encyclopediaLogger;
         this.hostileRepository = hostileRepository;
         this.pcRepository = pcRepository;
         this.privateLogger = privateLogger;
@@ -219,28 +222,34 @@ public class CommandManager {
     }
 
     void viewCharacters(MessageReceivedEvent event) {
-        this.privateLogger.viewCharacters(event.getAuthor(), this.pcRepository.getAllPC());
+        this.encyclopediaLogger.viewCharacters(event.getChannel(), this.pcRepository.getAllPC());
     }
 
     void viewEncounterSummary() {
         this.encounterManager.viewEncounterSummary();
     }
 
+    void viewHostileLoot(MessageReceivedEvent event) {
+        try {
+            String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
+            String   speciesName = splitInput[2];
+            Hostile  hostile     = this.hostileRepository.getHostile(speciesName);
+            this.encyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+        } catch (NoHostileFoundException e) {
+            this.encyclopediaLogger.logException(event.getChannel(), e);
+        }
+    }
+
     void viewHostiles(MessageReceivedEvent event) {
-        this.privateLogger.viewHostiles(event.getAuthor(), this.hostileRepository.getAllHostiles());
+        this.encyclopediaLogger.viewHostiles(event.getChannel(), this.hostileRepository.getAllHostiles());
     }
 
     void populate(User owner) {
-        PlayerCharacter froyo  = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
+        PlayerCharacter froyo       = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
         PlayerCharacter babaGanoush = new PlayerCharacter(owner, "BabaGanoush", 20, 20, 20, 20, 240);
-        PlayerCharacter rose   = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
-        PlayerCharacter toffee = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
-        PlayerCharacter cl     = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
-
-        Hostile culebratu = new Hostile("Culebratu", 100, 30);
-        Hostile shaman    = new Hostile("CulebratuShaman", 250, 30);
-        Hostile volpup    = new Hostile("Volpup", 100, 15);
-        Hostile volpire   = new Hostile("Volpire", 200, 30);
+        PlayerCharacter rose        = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
+        PlayerCharacter toffee      = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
+        PlayerCharacter cl          = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
 
         this.pcRepository.addPC(froyo);
         this.pcRepository.addPC(babaGanoush);
@@ -248,16 +257,11 @@ public class CommandManager {
 //        this.pcRepository.addPC(toffee);
 //        this.pcRepository.addPC(cl);
 
-        this.hostileRepository.addHostile(culebratu);
-        this.hostileRepository.addHostile(shaman);
-        this.hostileRepository.addHostile(volpup);
-        this.hostileRepository.addHostile(volpire);
-
-        this.encounterManager.addHostile(culebratu.getSpecies(), culebratu.getSpecies());
-        this.encounterManager.addHostile(shaman.getSpecies(), shaman.getSpecies());
-        this.encounterManager.addHostile(volpup.getSpecies(), volpup.getSpecies());
-        this.encounterManager.addHostile(volpup.getSpecies(), volpup.getSpecies());
-        this.encounterManager.addHostile(volpire.getSpecies(), volpire.getSpecies());
+        this.encounterManager.addHostile("culebratu", "culebratu");
+        this.encounterManager.addHostile("culebratushaman", "culebratushaman");
+        this.encounterManager.addHostile("volpup", "volpup");
+        this.encounterManager.addHostile("volpup", "volpup");
+        this.encounterManager.addHostile("volpire", "volpire");
 
         this.encounterManager.setMaxPlayerCount(5);
     }
