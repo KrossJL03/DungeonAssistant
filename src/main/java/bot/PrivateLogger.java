@@ -8,9 +8,10 @@ import java.util.ArrayList;
 
 public class PrivateLogger {
 
-    private static String NEWLINE        = System.getProperty("line.separator");
+    private static String NEWLINE = System.getProperty("line.separator");
 
-    public PrivateLogger() {}
+    public PrivateLogger() {
+    }
 
 
     void showHelpPage(User user, boolean isAdmin) {
@@ -37,12 +38,12 @@ public class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         if (isAdmin) {
-            output.append(String.format("   %-16s %-16s", "$createCharacter" ,"[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
+            output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s", "$createHostile", "[Name] [HP] [AttackDice]"));
             output.append(PrivateLogger.NEWLINE);
         } else {
-            output.append(String.format("   %-16s %-16s", "$createCharacter" ,"[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
+            output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
             output.append(PrivateLogger.NEWLINE);
         }
         output.append("```");
@@ -51,13 +52,28 @@ public class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format("   %-16s %-16s %s", "$attack", "[HostileName]", "Attack a hostile during the attack turn"));
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "$attack",
+            "[HostileName]",
+            "Attack a hostile during the attack turn"
+        ));
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format("   %-16s %-16s %s", "$dodge", "", "Attempt to dodge enemy attacks during the dodge turn"));
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "$dodge",
+            "",
+            "Attempt to dodge enemy attacks during the dodge turn"
+        ));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format("   %-16s %-16s %s", "$join", "[Name]", "Add a character to an encounter"));
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format("   %-16s %-16s %s", "$protect", "[Name]", "Protect a teammate during the dodge turn"));
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "$protect",
+            "[Name]",
+            "Protect a teammate during the dodge turn"
+        ));
         output.append("```");
 
         if (isAdmin) {
@@ -66,21 +82,51 @@ public class PrivateLogger {
             output.append(PrivateLogger.NEWLINE);
             output.append("```ini");
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "addHostile", "[Species] (Name)", "Add a hostile, Name is optional"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "addHostile",
+                "[Species] (Name)",
+                "Add a hostile, Name is optional"
+            ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "attackTurn", "", "Start attack turn"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "dodgeTurn", "", "Start dodge turn"));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "healHostile", "[Name] [HP]", "Heal a hostile by X hitpoints"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "healHostile",
+                "[Name] [HP]",
+                "Heal a hostile by X hitpoints"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "healPlayer", "[Name] [HP]", "Heal a player character by X hitpoints"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "healPlayer",
+                "[Name] [HP]",
+                "Heal a player character by X hitpoints"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "hurtHostile", "[Name] [HP]", "Deal X damage to a hostile"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "hurtHostile",
+                "[Name] [HP]",
+                "Deal X damage to a hostile"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "hurtPlayer", "[Name] [HP]", "Deal X damage to a player character"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "hurtPlayer",
+                "[Name] [HP]",
+                "Deal X damage to a player character"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "maxPlayers", "[PlayerCount]", "Set number of players permitted"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "maxPlayers",
+                "[PlayerCount]",
+                "Set number of players permitted"
+            ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "removeHostile", "[Name]", "Remove a hostile"));
             output.append(PrivateLogger.NEWLINE);
@@ -112,23 +158,21 @@ public class PrivateLogger {
 
 
     void viewCharacters(User author, ArrayList<PlayerCharacter> playerCharacters) {
-        StringBuilder output  = new StringBuilder();
-        String        newLine = System.getProperty("line.separator");
+        StringBuilder output = new StringBuilder();
         output.append("```cs");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         output.append("# Character Database");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         output.append("------------------------------------");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         for (PlayerCharacter character : playerCharacters) {
+            output.append(String.format("%s (%s)", character.getName(), character.getOwner().getName()));
+            output.append(PrivateLogger.NEWLINE);
+            output.append("------------------------------------------------");
+            output.append(PrivateLogger.NEWLINE);
             output.append(
                 String.format(
-                    "%-25s %-20s " +
-                        "------------------------------------------------" +
-                        PrivateLogger.NEWLINE +
-                        " HP %3d | STR %2d | DEF %2d | AGI %2d | WIS %2d ",
-                    character.getOwner().getName(),
-                    character.getName(),
+                    " HP %3d | STR %2d | DEF %2d | AGI %2d | WIS %2d ",
                     character.getHitpoints(),
                     character.getStrength(),
                     character.getDefense(),
@@ -136,21 +180,20 @@ public class PrivateLogger {
                     character.getWisdom()
                 )
             );
-            output.append(newLine);
+            output.append(PrivateLogger.NEWLINE);
         }
         output.append("```");
         this.sendPrivateMessage(author, output.toString());
     }
 
     void viewHostiles(User author, ArrayList<Hostile> hostiles) {
-        StringBuilder output  = new StringBuilder();
-        String        newLine = System.getProperty("line.separator");
+        StringBuilder output = new StringBuilder();
         output.append("```cs");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         output.append("# Hostile Database");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         output.append("------------------------------------");
-        output.append(newLine);
+        output.append(PrivateLogger.NEWLINE);
         for (Hostile hostile : hostiles) {
             output.append(String.format(
                 "%-25s %3d HP  %s%d",
@@ -159,13 +202,13 @@ public class PrivateLogger {
                 "d ",
                 hostile.getAttackDice()
             ));
-            output.append(newLine);
+            output.append(PrivateLogger.NEWLINE);
         }
         output.append("```");
         this.sendPrivateMessage(author, output.toString());
     }
 
     private void sendPrivateMessage(User user, String content) {
-        user.openPrivateChannel().queue( (channel) -> channel.sendMessage(content).queue() );
+        user.openPrivateChannel().queue((channel) -> channel.sendMessage(content).queue());
     }
 }

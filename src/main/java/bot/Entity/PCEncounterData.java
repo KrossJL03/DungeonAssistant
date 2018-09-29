@@ -112,13 +112,6 @@ public class PCEncounterData implements EncounterDataInterface {
         return currentHp < 1;
     }
 
-    public void leave() {
-        if (this.hasLeft) {
-            throw new PlayerCharacterAlreadyLeftException();
-        }
-        this.hasLeft = true;
-    }
-
     public void resetActions(boolean isAttackPhase) {
         this.currentActions = isAttackPhase ? this.getMaxActions() : 1;
     }

@@ -182,6 +182,10 @@ public class CommandManager {
         }
     }
 
+    void returnCommand(MessageReceivedEvent event) {
+        this.encounterManager.returnToEncounter(event.getAuthor());
+    }
+
     void setMaxPlayers(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput     = event.getMessage().getContentRaw().split("\\s+");
@@ -228,6 +232,7 @@ public class CommandManager {
 
     void populate(User owner) {
         PlayerCharacter froyo  = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
+        PlayerCharacter babaGanoush = new PlayerCharacter(owner, "BabaGanoush", 20, 20, 20, 20, 240);
         PlayerCharacter rose   = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
         PlayerCharacter toffee = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
         PlayerCharacter cl     = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
@@ -238,6 +243,7 @@ public class CommandManager {
         Hostile volpire   = new Hostile("Volpire", 200, 30);
 
         this.pcRepository.addPC(froyo);
+        this.pcRepository.addPC(babaGanoush);
 //        this.pcRepository.addPC(rose);
 //        this.pcRepository.addPC(toffee);
 //        this.pcRepository.addPC(cl);

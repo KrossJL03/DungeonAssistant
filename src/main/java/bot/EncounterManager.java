@@ -218,8 +218,10 @@ public class EncounterManager {
     void leaveEncounter(User player) {
         try {
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
-            playerCharacter.leave();
-            this.logger.logLeftEncounter(playerCharacter);
+            playerCharacter.useAllActions();
+            this.context.playerHasLeft(playerCharacter);
+            this.logger.logLeftEncounter(playerCharacter.getName());
+            this.endPlayerAction();
         } catch (NoCharacterInEncounterException | PlayerCharacterAlreadyLeftException e) {
             this.logger.logException(e);
         }
@@ -274,7 +276,8 @@ public class EncounterManager {
 
     void removeHostile(String name) {
         try {
-            this.context.removeHostile(name);
+            HostileEncounterData hostile = this.context.getHostile(name);
+            this.context.removeHostile(hostile);
             this.logger.logRemovedHostile(name);
         } catch (NoHostileInEncounterException e) {
             this.logger.logException(e);
@@ -283,9 +286,20 @@ public class EncounterManager {
 
     void removePlayerCharacter(String name) {
         try {
-            this.context.removePlayerCharacter(name);
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
+            this.context.removePlayerCharacter(playerCharacter);
             this.logger.logRemovedPlayerCharacter(name);
         } catch (NoCharacterInEncounterException e) {
+            this.logger.logException(e);
+        }
+    }
+
+    void returnToEncounter(User player) {
+        try {
+            this.context.playerHasReturned(player);
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
+            this.logger.logReturnToEncounter(playerCharacter.getName());
+        } catch (NoCharacterInEncounterException | FullDungeonException e) {
             this.logger.logException(e);
         }
     }

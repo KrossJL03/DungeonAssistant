@@ -250,7 +250,7 @@ public class EncounterLogger {
 
     void logEndDodgePhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
         this.logMessage(
-            "**DODGE TURN IS OVER!** %s " +
+            "**DODGE TURN IS OVER!**" +
                 EncounterLogger.NEWLINE +
                 "You may take this time to RP amoungst yourselves. The ATTACK turn will begin shortly."
         );
@@ -451,8 +451,12 @@ public class EncounterLogger {
         this.logMessage(String.format("Max player count has been set to %d", maxPlayerCount));
     }
 
-    void logLeftEncounter(PCEncounterData playerCharacter) {
-        this.logMessage(String.format("%s has left the encounter", playerCharacter.getName()));
+    void logLeftEncounter(String name) {
+        this.logMessage(String.format("%s has left the encounter", name));
+    }
+
+    void logReturnToEncounter(String name) {
+        this.logMessage(String.format("%s has returns to the encounter!", name));
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -471,8 +475,9 @@ public class EncounterLogger {
             output.append(EncounterLogger.NEWLINE);
             output.append(String.format("%-2s", currentHP > maxHP / 4 ? "+" : "-"));
             output.append(String.format("[%3d/%3d] ", currentHP, maxHP));
-            int fullHealthBlocks  = (int) Math.ceil((double) currentHP / 10);
-            int emptyHealthBlocks = maxHP / 10 - fullHealthBlocks;
+            int healthBlocks = (maxHP/10) + 1;
+            int fullHealthBlocks  = (int) Math.floor((double) currentHP / 10) + 1;
+            int emptyHealthBlocks = healthBlocks - fullHealthBlocks;
             output.append(this.repeatString(EncounterLogger.FULL_HEALTH_ICON, fullHealthBlocks));
             if (emptyHealthBlocks > 0) {
                 output.append(this.repeatString(EncounterLogger.EMPTY_HEALTH_ICON, emptyHealthBlocks));

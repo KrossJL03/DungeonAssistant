@@ -83,6 +83,9 @@ public class CommandListener extends ListenerAdapter {
                     case "$protect":
                         this.commandManager.protectCommand(event);
                         break;
+                    case "$return":
+                        this.commandManager.returnCommand(event);
+                        break;
                     case "$view":
                         this.processViewCommand(event);
                         break;
@@ -119,7 +122,7 @@ public class CommandListener extends ListenerAdapter {
             case "attackturn":
                 this.commandManager.startAttackPhase(event);
                 break;
-            case "createenc":
+            case "create":
                 this.commandManager.createEncounter(event);
                 break;
             case "dodgeturn":

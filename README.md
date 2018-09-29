@@ -4,14 +4,14 @@ Discord bot for the SkyExplorers group
 TODO:
 -- check if dodge/attack is in progress before starting a dodge/attack
 
--- add $return command
 -- track which hostile deaths a player was present for
--- add $leave command to voluntarily leave the encounter
----- save PCE in case player returns to prevent cheating by resetting encounter data
----- also save PCE to roll rewards
 -- creating new encounters without killing bot
 -- delete $help command from main channel after command has been executed
 -- show command parameters when a command is not filled out properly
+
+TODO: cleanup
+-- rename commands in EncounterManager
+-- reorganize EncounterLogger
 
 TODO: calculate rewards
 -- Culebratu dice reward:

@@ -17,12 +17,14 @@ public class EncounterContext {
 
     private ArrayList<HostileEncounterData> hostiles;
     private ArrayList<PCEncounterData>      playerCharacters;
+    private ArrayList<PCEncounterData>      absentPlayerCharacters;
     private InitiativeQueue                 initiative;
     private String                          currentPhase;
     private int                             maxPlayerCount;
     private boolean                         isStarted;
 
     public EncounterContext() {
+        this.absentPlayerCharacters = new ArrayList<>();
         this.currentPhase = "";
         this.initiative = new InitiativeQueue();
         this.hostiles = new ArrayList<>();
@@ -37,6 +39,10 @@ public class EncounterContext {
             if (character.getOwner().equals(player)) {
                 throw new MultiplePlayerCharactersException(player, character.getName());
             }
+        }
+        PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
+        if (absentPlayerCharacter != null) {
+            throw new MultiplePlayerCharactersException(player, absentPlayerCharacter.getName());
         }
         if (this.playerCharacters.size() == this.maxPlayerCount) {
             throw new FullDungeonException(newPlayerCharacter.getOwner());
@@ -164,6 +170,22 @@ public class EncounterContext {
         return this.isStarted;
     }
 
+    void playerHasLeft(PCEncounterData playerCharacter) {
+        this.removePlayerCharacter(playerCharacter);
+        this.absentPlayerCharacters.add(playerCharacter);
+    }
+
+    void playerHasReturned(User player) {
+        PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
+        if (absentPlayerCharacter == null) {
+            throw new NoCharacterInEncounterException(player);
+        } else if (this.isFullDungeon()) {
+            throw new FullDungeonException(player);
+        }
+        this.absentPlayerCharacters.remove(absentPlayerCharacter);
+        this.addCharacter(absentPlayerCharacter);
+    }
+
     void setMaxPlayerCount(int maxPlayerCount) {
         this.maxPlayerCount = maxPlayerCount;
     }
@@ -195,29 +217,30 @@ public class EncounterContext {
         this.isStarted = true;
     }
 
-    void removeHostile(String name) {
-        String nameLower = name.toLowerCase();
-        for (HostileEncounterData hostile : this.hostiles) {
-            if (hostile.getName().toLowerCase().equals(nameLower)) {
-                this.hostiles.remove(hostile);
-                return;
-            }
+    void removeHostile(HostileEncounterData hostile) {
+        if (!this.hostiles.contains(hostile)) {
+            throw new NoHostileInEncounterException(hostile.getName());
         }
-        throw new NoHostileInEncounterException(name);
+        this.hostiles.remove(hostile);
     }
 
-    void removePlayerCharacter(String name) {
-        String nameLower = name.toLowerCase();
-        for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (playerCharacter.getName().toLowerCase().equals(nameLower)) {
-                if (this.isInitiativePhase()) {
-                    this.initiative.remove(playerCharacter);
-                }
-                this.playerCharacters.remove(playerCharacter);
-                return;
+    void removePlayerCharacter(PCEncounterData playerCharacter) {
+        if (!this.playerCharacters.contains(playerCharacter)) {
+            throw new NoCharacterInEncounterException(playerCharacter.getName());
+        }
+        if (this.initiative.contains(playerCharacter)) {
+            this.initiative.remove(playerCharacter);
+        }
+        this.playerCharacters.remove(playerCharacter);
+    }
+
+    private PCEncounterData getAbsentPlayerCharacter(User player) {
+        for (PCEncounterData playerCharacter : this.absentPlayerCharacters) {
+            if (playerCharacter.getOwner().equals(player)) {
+                return playerCharacter;
             }
         }
-        throw new NoCharacterInEncounterException(name);
+        return null;
     }
 
     private boolean isInitiativePhase() {
