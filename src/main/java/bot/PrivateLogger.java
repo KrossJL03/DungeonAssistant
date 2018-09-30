@@ -60,6 +60,13 @@ public class PrivateLogger {
             "Attempt to dodge enemy attacks during the dodge turn"
         ));
         output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "$loot",
+            "",
+            "Collect materials and rewards at the end of an encounter"
+        ));
+        output.append(PrivateLogger.NEWLINE);
         output.append(String.format("   %-16s %-16s %s", "$join", "[Name]", "Add a character to an encounter"));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
@@ -84,6 +91,8 @@ public class PrivateLogger {
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "attackTurn", "", "Start attack turn"));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format("   %-16s %-16s %s", "create", "", "Begin creating a new encounter"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "dodgeTurn", "", "Start dodge turn"));
             output.append(PrivateLogger.NEWLINE);
@@ -126,6 +135,8 @@ public class PrivateLogger {
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "removePlayer", "[Name]", "Remove a player"));
             output.append(PrivateLogger.NEWLINE);
+            output.append(String.format("   %-16s %-16s %s", "skip", "", "Skip the current player's turn"));
+            output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "start", "", "Start the encounter"));
             output.append("```");
         }
@@ -135,9 +146,11 @@ public class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         if (isAdmin) {
-            output.append(String.format("   %-16s %-16s %s", "players", "", "View all characters registered"));
+            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all characters registered"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format("   %-16s %-16s %s", "loot", "", "View all hostiles registered"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         } else {

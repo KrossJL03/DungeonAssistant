@@ -196,11 +196,11 @@ public class EncounterLogger {
     void logActionLoot(PCEncounterData playerCharacter) {
         ArrayList<HostileEncounterData> hostiles   = playerCharacter.getKills();
         StringBuilder                   output     = new StringBuilder();
-        String[]                        slain      = new String[hostiles.size()];
-        int                             slainCount = 0;
+        ArrayList<String>               slain      = new ArrayList<>();
         for (HostileEncounterData hostile : hostiles) {
-            if (hostile.getSlayer().equals(playerCharacter)) {
-                slain[slainCount++] = (hostile.getName());
+            EncounterDataInterface slayer = hostile.getSlayer();
+            if (slayer instanceof PCEncounterData && slayer.equals(playerCharacter)) {
+                slain.add(hostile.getName());
             }
         }
         output.append(playerCharacter.getOwner().getAsMention());
@@ -229,12 +229,12 @@ public class EncounterLogger {
             output.append(EncounterLogger.NEWLINE);
         }
         output.append(EncounterLogger.NEWLINE);
-        if (slainCount > 0) {
+        if (slain.size() > 0) {
             output.append(
                 String.format(
                     "ALSO they earned %dc for landing the final blow%s on '%s'!",
-                    slainCount * 300,
-                    slainCount > 1 ? "s" : "",
+                    slain.size() * 300,
+                    slain.size() > 1 ? "s" : "",
                     String.join("', '", slain)
                 )
             );

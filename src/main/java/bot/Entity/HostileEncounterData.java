@@ -73,7 +73,7 @@ public class HostileEncounterData implements EncounterDataInterface {
     }
 
     public int takeDamage(EncounterDataInterface attacker, int damage) {
-        if (this.currentHp > 0 && this.currentHp - damage < 0) {
+        if (this.currentHp > 0 && this.currentHp - damage < 1) {
             this.slayer = attacker;
         }
         this.currentHp -= damage;

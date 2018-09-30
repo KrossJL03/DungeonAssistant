@@ -234,13 +234,15 @@ public class CommandManager {
     }
 
     void viewHostileLoot(MessageReceivedEvent event) {
-        try {
-            String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
-            String   speciesName = splitInput[2];
-            Hostile  hostile     = this.hostileRepository.getHostile(speciesName);
-            this.encyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
-        } catch (NoHostileFoundException e) {
-            this.encyclopediaLogger.logException(event.getChannel(), e);
+        if (this.isAdmin(event)) {
+            try {
+                String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
+                String   speciesName = splitInput[2];
+                Hostile  hostile     = this.hostileRepository.getHostile(speciesName);
+                this.encyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+            } catch (NoHostileFoundException e) {
+                this.encyclopediaLogger.logException(event.getChannel(), e);
+            }
         }
     }
 

@@ -36,6 +36,10 @@ public class PlayerCharacter {
             throw new OutOfBoundsStatExecption(
                 String.format("%s, %s is too healthy! %d/240", owner.getAsMention(), name, hitpoints)
             );
+        } else if (hitpoints < 40) {
+            throw new OutOfBoundsStatExecption(
+                String.format("%s, %s is too weak! They should have at last 40 HP!", owner.getAsMention(), name)
+            );
         }
 
         this.owner = owner;

@@ -28,8 +28,6 @@ public class EncyclopediaLogger {
         for (PlayerCharacter character : playerCharacters) {
             output.append(String.format("'%s' /*%s*/", character.getName(), character.getOwner().getName()));
             output.append(bot.EncyclopediaLogger.NEWLINE);
-            output.append("------------------------------------------------");
-            output.append(bot.EncyclopediaLogger.NEWLINE);
             output.append(
                 String.format(
                     " HP %3d | STR %2d | DEF %2d | AGI %2d | WIS %2d ",
@@ -40,6 +38,8 @@ public class EncyclopediaLogger {
                     character.getWisdom()
                 )
             );
+            output.append(bot.EncyclopediaLogger.NEWLINE);
+            output.append("------------------------------------------------");
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }
         output.append("```");
