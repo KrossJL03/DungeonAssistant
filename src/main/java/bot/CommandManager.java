@@ -2,9 +2,11 @@ package bot;
 
 import bot.Entity.Hostile;
 import bot.Exception.*;
-import bot.Entity.PlayerCharacter;
+import bot.Player.Player;
+import bot.Player.PlayerRepository;
+import bot.PlayerCharacter.PlayerCharacter;
 import bot.Repository.HostileRepository;
-import bot.Repository.PCRepository;
+import bot.PlayerCharacter.PlayerCharacterRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,20 +19,17 @@ public class CommandManager {
     private EncounterManager   encounterManager;
     private EncyclopediaLogger encyclopediaLogger;
     private HostileRepository  hostileRepository;
-    private PCRepository       pcRepository;
     private PrivateLogger      privateLogger;
 
     public CommandManager(
         EncounterManager encounterManager,
         EncyclopediaLogger encyclopediaLogger,
         PrivateLogger privateLogger,
-        PCRepository pcRepository,
         HostileRepository hostileRepository
     ) {
         this.encounterManager = encounterManager;
         this.encyclopediaLogger = encyclopediaLogger;
         this.hostileRepository = hostileRepository;
-        this.pcRepository = pcRepository;
         this.privateLogger = privateLogger;
     }
 
@@ -44,27 +43,28 @@ public class CommandManager {
     }
 
     void attackCommand(MessageReceivedEvent event) {
+        Player   player      = PlayerRepository.getPlayer(event.getAuthor().getId());
         String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
         String   hostileName = splitInput[1];
-        this.encounterManager.attackAction(event.getAuthor(), hostileName);
+        this.encounterManager.attackAction(player, hostileName);
     }
 
     // todo move to RepositoryManager
     void createCharacterCommand(MessageReceivedEvent event) {
         MessageChannel channel    = event.getChannel();
+        User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
 
-        String          name            = splitInput[1];
-        int             STR             = Integer.parseInt(splitInput[2]);
-        int             DEF             = Integer.parseInt(splitInput[3]);
-        int             AGI             = Integer.parseInt(splitInput[4]);
-        int             WIS             = Integer.parseInt(splitInput[5]);
-        int             HP              = Integer.parseInt(splitInput[6]);
-        PlayerCharacter playerCharacter = new PlayerCharacter(event.getAuthor(), name, STR, DEF, AGI, WIS, HP);
-
-        this.pcRepository.addPC(playerCharacter);
+        String name = splitInput[1];
+        int    STR  = Integer.parseInt(splitInput[2]);
+        int    DEF  = Integer.parseInt(splitInput[3]);
+        int    AGI  = Integer.parseInt(splitInput[4]);
+        int    WIS  = Integer.parseInt(splitInput[5]);
+        int    HP   = Integer.parseInt(splitInput[6]);
+        PlayerRepository.addPlayerIfNotExists(author.getId(), author.getName());
+        PlayerCharacterRepository.createPlayerCharacter(author.getId(), name, STR, DEF, AGI, WIS, HP);
         // todo move to RepositoryLogger
-        channel.sendMessage(String.format("%s record has been saved!", playerCharacter.getName())).queue();
+        channel.sendMessage(String.format("%s record has been saved!", name)).queue();
     }
 
     void createEncounter(MessageReceivedEvent event) {
@@ -89,8 +89,20 @@ public class CommandManager {
         }
     }
 
+    void deleteCharacterCommand(MessageReceivedEvent event) {
+        MessageChannel channel    = event.getChannel();
+        User           author     = event.getAuthor();
+        String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
+        String         name       = splitInput[1];
+
+        PlayerCharacterRepository.removePlayerCharacterIfExists(author.getId(), name);
+        // todo move to RepositoryLogger
+        channel.sendMessage(String.format("%s record has been deleted!", name)).queue();
+    }
+
     void dodgeCommand(MessageReceivedEvent event) {
-        this.encounterManager.dodgeAction(event.getAuthor());
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        this.encounterManager.dodgeAction(player);
     }
 
     void healHostile(MessageReceivedEvent event) {
@@ -140,11 +152,11 @@ public class CommandManager {
         String         name       = splitInput[1];
 
         try {
-            PlayerCharacter playerCharacter = this.pcRepository.getMyPC(owner, name);
+            PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPC(owner.getId(), name);
             this.encounterManager.joinEncounter(playerCharacter);
         } catch (NoCharacterFoundException e) {
             // todo create new logger
-            ArrayList<PlayerCharacter> ownersPCs = this.pcRepository.getAllMyPCs(owner);
+            ArrayList<PlayerCharacter> ownersPCs = PlayerCharacterRepository.getAllMyPCs(owner.getId());
             if (!ownersPCs.isEmpty()) {
                 StringBuilder output = new StringBuilder();
                 output.append(String.format(
@@ -160,17 +172,20 @@ public class CommandManager {
     }
 
     void leaveCommand(MessageReceivedEvent event) {
-        this.encounterManager.leaveEncounter(event.getAuthor());
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        this.encounterManager.leaveEncounter(player);
     }
 
     void lootCommand(MessageReceivedEvent event) {
-        this.encounterManager.lootAction(event.getAuthor());
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        this.encounterManager.lootAction(player);
     }
 
     void protectCommand(MessageReceivedEvent event) {
+        Player   player     = PlayerRepository.getPlayer(event.getAuthor().getId());
         String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
         String   name       = splitInput[1];
-        this.encounterManager.protectAction(event.getAuthor(), name);
+        this.encounterManager.protectAction(player, name);
     }
 
     void removePlayerCharacter(MessageReceivedEvent event) {
@@ -190,7 +205,8 @@ public class CommandManager {
     }
 
     void returnCommand(MessageReceivedEvent event) {
-        this.encounterManager.returnToEncounter(event.getAuthor());
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        this.encounterManager.returnToEncounter(player);
     }
 
     void setMaxPlayers(MessageReceivedEvent event) {
@@ -226,7 +242,7 @@ public class CommandManager {
     }
 
     void viewCharacters(MessageReceivedEvent event) {
-        this.encyclopediaLogger.viewCharacters(event.getChannel(), this.pcRepository.getAllPC());
+        this.encyclopediaLogger.viewCharacters(event.getChannel(), PlayerCharacterRepository.getAllPC());
     }
 
     void viewEncounterSummary() {
@@ -251,25 +267,25 @@ public class CommandManager {
     }
 
     void populate(User owner) {
-        PlayerCharacter froyo       = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
-        PlayerCharacter babaGanoush = new PlayerCharacter(owner, "BabaGanoush", 20, 20, 20, 20, 240);
-        PlayerCharacter rose        = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
-        PlayerCharacter toffee      = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
-        PlayerCharacter cl          = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
+//        PlayerCharacter froyo       = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
+//        PlayerCharacter babaGanoush = new PlayerCharacter(owner, "BabaGanoush", 20, 20, 20, 20, 240);
+//        PlayerCharacter rose        = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
+//        PlayerCharacter toffee      = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
+//        PlayerCharacter cl          = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
 
-        this.pcRepository.addPC(froyo);
-        this.pcRepository.addPC(babaGanoush);
+//        this.pcRepository.addPC(froyo);
+//        this.pcRepository.addPC(babaGanoush);
 //        this.pcRepository.addPC(rose);
 //        this.pcRepository.addPC(toffee);
 //        this.pcRepository.addPC(cl);
 
-        this.encounterManager.addHostile("culebratu", "culebratu");
+//        this.encounterManager.addHostile("culebratu", "culebratu");
 //        this.encounterManager.addHostile("culebratushaman", "culebratushaman");
 //        this.encounterManager.addHostile("volpup", "volpup");
 //        this.encounterManager.addHostile("volpup", "volpup");
 //        this.encounterManager.addHostile("volpire", "volpire");
 
-        this.encounterManager.setMaxPlayerCount(5);
+//        this.encounterManager.setMaxPlayerCount(5);
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {

@@ -1,7 +1,6 @@
 import bot.*;
 import bot.Entity.Hostile;
 import bot.Repository.HostileRepository;
-import bot.Repository.PCRepository;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -14,7 +13,6 @@ public class Main {
         EncounterContext       encounterContext       = new EncounterContext();
         EncounterLoggerContext encounterLoggerContext = new EncounterLoggerContext();
         HostileRepository      hostileRepository      = new HostileRepository();
-        PCRepository           pcRepository           = new PCRepository();
 
         EncounterLogger encounterLogger = new EncounterLogger(encounterLoggerContext);
 
@@ -29,7 +27,6 @@ public class Main {
             encountermanager,
             new EncyclopediaLogger(),
             new PrivateLogger(),
-            pcRepository,
             hostileRepository
         );
 

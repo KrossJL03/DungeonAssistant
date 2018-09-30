@@ -1,8 +1,8 @@
 package bot.Entity;
 
 import bot.Exception.CharacterSlainException;
-import bot.Exception.PlayerCharacterAlreadyLeftException;
-import net.dv8tion.jda.core.entities.User;
+import bot.Player.Player;
+import bot.PlayerCharacter.PlayerCharacter;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -85,7 +85,7 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.playerCharacter.getName();
     }
 
-    public User getOwner() {
+    public Player getOwner() {
         return this.playerCharacter.getOwner();
     }
 
@@ -94,7 +94,6 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public EncounterDataInterface getSlayer() {
-        // todo throw an exception if no slayer
         return this.slayer;
     }
 

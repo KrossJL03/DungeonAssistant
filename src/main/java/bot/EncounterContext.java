@@ -2,8 +2,8 @@ package bot;
 
 import bot.Entity.HostileEncounterData;
 import bot.Entity.PCEncounterData;
+import bot.Player.Player;
 import bot.Exception.*;
-import net.dv8tion.jda.core.entities.User;
 
 import java.util.*;
 
@@ -34,7 +34,7 @@ public class EncounterContext {
     }
 
     void addCharacter(PCEncounterData newPlayerCharacter) {
-        User player = newPlayerCharacter.getOwner();
+        Player player = newPlayerCharacter.getOwner();
         for (PCEncounterData character : this.playerCharacters) {
             if (character.getOwner().equals(player)) {
                 throw new MultiplePlayerCharactersException(player, character.getName());
@@ -144,7 +144,7 @@ public class EncounterContext {
         throw new NoCharacterInEncounterException(name);
     }
 
-    PCEncounterData getPlayerCharacter(User player) {
+    PCEncounterData getPlayerCharacter(Player player) {
         for (PCEncounterData playerCharacter : this.playerCharacters) {
             if (playerCharacter.getOwner().equals(player)) {
                 return playerCharacter;
@@ -186,7 +186,7 @@ public class EncounterContext {
         this.absentPlayerCharacters.add(playerCharacter);
     }
 
-    void playerHasReturned(User player) {
+    void playerHasReturned(Player player) {
         PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
         if (absentPlayerCharacter == null) {
             throw new NoCharacterInEncounterException(player);
@@ -255,7 +255,7 @@ public class EncounterContext {
         this.playerCharacters.remove(playerCharacter);
     }
 
-    private PCEncounterData getAbsentPlayerCharacter(User player) {
+    private PCEncounterData getAbsentPlayerCharacter(Player player) {
         for (PCEncounterData playerCharacter : this.absentPlayerCharacters) {
             if (playerCharacter.getOwner().equals(player)) {
                 return playerCharacter;

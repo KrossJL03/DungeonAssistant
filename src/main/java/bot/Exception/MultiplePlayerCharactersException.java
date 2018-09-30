@@ -1,9 +1,9 @@
 package bot.Exception;
 
-import net.dv8tion.jda.core.entities.User;
+import bot.Player.Player;
 
 public class MultiplePlayerCharactersException extends RuntimeException implements EncounterException {
-    public MultiplePlayerCharactersException(User player, String name) {
+    public MultiplePlayerCharactersException(Player player, String name) {
         super(
             String.format(
                 "%s, you have already joined this encounter with %s. " +

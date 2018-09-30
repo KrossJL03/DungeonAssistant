@@ -3,7 +3,6 @@ package bot;
 import bot.Entity.*;
 import bot.Exception.EncounterException;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 
 import java.util.ArrayList;
 

@@ -2,7 +2,7 @@ package bot;
 
 import bot.Entity.Hostile;
 import bot.Entity.Loot;
-import bot.Entity.PlayerCharacter;
+import bot.PlayerCharacter.PlayerCharacter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.ArrayList;

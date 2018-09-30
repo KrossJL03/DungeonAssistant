@@ -59,11 +59,14 @@ public class CommandListener extends ListenerAdapter {
                     case "$attack":
                         this.commandManager.attackCommand(event);
                         break;
-                    case "$createcharacter":
+                    case "$createpc":
                         this.commandManager.createCharacterCommand(event);
                         break;
                     case "$createhostile":
                         this.commandManager.createHostile(event);
+                        break;
+                    case "$deletepc":
+                        this.commandManager.deleteCharacterCommand(event);
                         break;
                     case "$dm":
                         this.processDungeonMasterCommand(event);
@@ -171,7 +174,7 @@ public class CommandListener extends ListenerAdapter {
         String[]       splitArray = input.split("\\s+");
 
         switch (splitArray[1].toLowerCase()) {
-            case "characters":
+            case "pcs":
                 this.commandManager.viewCharacters(event);
                 break;
             case "hostiles":

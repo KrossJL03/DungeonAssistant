@@ -2,10 +2,11 @@ package bot;
 
 import bot.Entity.*;
 import bot.Exception.*;
+import bot.Player.Player;
+import bot.PlayerCharacter.PlayerCharacter;
 import bot.Repository.HostileRepository;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 
 import java.util.ArrayList;
 
@@ -61,12 +62,12 @@ public class EncounterManager {
         }
     }
 
-    void attackAction(User author, String hostileName) {
+    void attackAction(Player player, String hostileName) {
         try {
             if (!this.context.isAttackPhase()) {
                 throw new WrongPhaseException(EncounterContext.ATTACK_PHASE, "attack");
             }
-            PCEncounterData      playerCharacter = this.getPlayerCharacter(author);
+            PCEncounterData      playerCharacter = this.getPlayerCharacter(player);
             HostileEncounterData hostile         = this.context.getHostile(hostileName);
             int                  hitRoll         = playerCharacter.rollToHit();
 
@@ -101,12 +102,12 @@ public class EncounterManager {
         this.logger.logCreateEncounter();
     }
 
-    void dodgeAction(User author) {
+    void dodgeAction(Player player) {
         try {
             if (!this.context.isDodgePhase()) {
                 throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
             }
-            PCEncounterData    playerCharacter = this.getPlayerCharacter(author);
+            PCEncounterData    playerCharacter = this.getPlayerCharacter(player);
             ArrayList<Integer> dodgeRolls      = new ArrayList<>();
             int                totalDamage     = 0;
             int                totalDefended   = 0;
@@ -217,7 +218,7 @@ public class EncounterManager {
         }
     }
 
-    void leaveEncounter(User player) {
+    void leaveEncounter(Player player) {
         try {
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
             playerCharacter.useAllActions();
@@ -229,7 +230,7 @@ public class EncounterManager {
         }
     }
 
-    void lootAction(User player) {
+    void lootAction(Player player) {
         try {
             if (!this.context.isLootPhase()) {
                 throw new WrongPhaseException(EncounterContext.LOOT_PHASE, "loot");
@@ -246,7 +247,7 @@ public class EncounterManager {
         }
     }
 
-    void protectAction(User player, String name) {
+    void protectAction(Player player, String name) {
         try {
             if (!this.context.isDodgePhase()) {
                 throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "protect");
@@ -313,7 +314,7 @@ public class EncounterManager {
         }
     }
 
-    void returnToEncounter(User player) {
+    void returnToEncounter(Player player) {
         try {
             this.context.playerHasReturned(player);
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
@@ -405,7 +406,7 @@ public class EncounterManager {
         }
     }
 
-    private void dodgeActionSkipped(User player) {
+    private void dodgeActionSkipped(Player player) {
         try {
             if (!this.context.isDodgePhase()) {
                 throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
@@ -467,7 +468,7 @@ public class EncounterManager {
         }
     }
 
-    private PCEncounterData getPlayerCharacter(User owner) {
+    private PCEncounterData getPlayerCharacter(Player owner) {
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
         if (!playerCharacter.getOwner().equals(owner)) {
             throw new NotYourTurnException();
