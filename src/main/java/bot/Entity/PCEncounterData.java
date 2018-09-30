@@ -1,22 +1,36 @@
 package bot.Entity;
 
+import bot.Exception.CharacterSlainException;
 import bot.Exception.PlayerCharacterAlreadyLeftException;
 import net.dv8tion.jda.core.entities.User;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class PCEncounterData implements EncounterDataInterface {
 
     private PlayerCharacter                 playerCharacter;
+    private EncounterDataInterface          slayer;
+    private ArrayList<HostileEncounterData> kills;
+    private Hashtable<String, Integer>      lootRolls;
     private int                             currentHp;
     private int                             currentActions;
     private boolean                         hasProtect;
-    private EncounterDataInterface          slayer;
-    private boolean                         hasLeft;
 
     public PCEncounterData(PlayerCharacter playerCharacter) {
-        this.playerCharacter = playerCharacter;
+        this.currentActions = 0;
         this.currentHp = playerCharacter.getHitpoints();
         this.hasProtect = true;
-        this.currentActions = 0;
+        this.kills = new ArrayList<>();
+        this.lootRolls = new Hashtable<>();
+        this.playerCharacter = playerCharacter;
+    }
+
+    public void addKill(HostileEncounterData hostile) {
+        if (this.isSlain()) {
+            throw new CharacterSlainException(this.playerCharacter.getName(), this.slayer.getName());
+        }
+        this.kills.add(hostile);
     }
 
     public int getAgility() {
@@ -45,6 +59,14 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public int getEndurance() {
         return (int) Math.floor(this.playerCharacter.getDefense() / 2);
+    }
+
+    public ArrayList<HostileEncounterData> getKills() {
+        return this.kills;
+    }
+
+    public int getLootRoll(String hostileName) {
+        return this.lootRolls.get(hostileName);
     }
 
     public int getMaxActions() {
@@ -88,8 +110,8 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentActions > 0;
     }
 
-    public boolean hasLeft() {
-        return hasLeft;
+    public boolean hasLoot() {
+        return this.lootRolls.size() > 0;
     }
 
     public void heal(int hitpoints) {
@@ -122,6 +144,12 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public int rollDodge() {
         return (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
+    }
+
+    public void rollLoot() {
+        for (HostileEncounterData hostile : this.kills) {
+            this.lootRolls.put(hostile.getName(), (int) Math.floor(Math.random() * 10) + 1);
+        }
     }
 
     public int rollToHit() {

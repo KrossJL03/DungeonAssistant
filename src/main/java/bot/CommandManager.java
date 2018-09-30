@@ -163,6 +163,10 @@ public class CommandManager {
         this.encounterManager.leaveEncounter(event.getAuthor());
     }
 
+    void lootCommand(MessageReceivedEvent event) {
+        this.encounterManager.lootAction(event.getAuthor());
+    }
+
     void protectCommand(MessageReceivedEvent event) {
         String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
         String   name       = splitInput[1];
@@ -258,10 +262,10 @@ public class CommandManager {
 //        this.pcRepository.addPC(cl);
 
         this.encounterManager.addHostile("culebratu", "culebratu");
-        this.encounterManager.addHostile("culebratushaman", "culebratushaman");
-        this.encounterManager.addHostile("volpup", "volpup");
-        this.encounterManager.addHostile("volpup", "volpup");
-        this.encounterManager.addHostile("volpire", "volpire");
+//        this.encounterManager.addHostile("culebratushaman", "culebratushaman");
+//        this.encounterManager.addHostile("volpup", "volpup");
+//        this.encounterManager.addHostile("volpup", "volpup");
+//        this.encounterManager.addHostile("volpire", "volpire");
 
         this.encounterManager.setMaxPlayerCount(5);
     }

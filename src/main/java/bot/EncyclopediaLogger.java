@@ -21,12 +21,12 @@ public class EncyclopediaLogger {
         StringBuilder output = new StringBuilder();
         output.append("```cs");
         output.append(bot.EncyclopediaLogger.NEWLINE);
-        output.append("# Character Database");
+        output.append("# Character Database #");
         output.append(bot.EncyclopediaLogger.NEWLINE);
         output.append("------------------------------------");
         output.append(bot.EncyclopediaLogger.NEWLINE);
         for (PlayerCharacter character : playerCharacters) {
-            output.append(String.format("%s (%s)", character.getName(), character.getOwner().getName()));
+            output.append(String.format("'%s' /*%s*/", character.getName(), character.getOwner().getName()));
             output.append(bot.EncyclopediaLogger.NEWLINE);
             output.append("------------------------------------------------");
             output.append(bot.EncyclopediaLogger.NEWLINE);

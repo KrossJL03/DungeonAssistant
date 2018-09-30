@@ -3,9 +3,7 @@ Discord bot for the SkyExplorers group
 
 TODO:
 -- check if dodge/attack is in progress before starting a dodge/attack
-
--- track which hostile deaths a player was present for
--- creating new encounters without killing bot
+---- verify that dm wishes to end phase before it has been completed
 -- delete $help command from main channel after command has been executed
 -- show command parameters when a command is not filled out properly
 

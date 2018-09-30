@@ -1,9 +1,6 @@
 package bot;
 
-import bot.Entity.Hostile;
-import bot.Entity.HostileEncounterData;
-import bot.Entity.PCEncounterData;
-import bot.Entity.PlayerCharacter;
+import bot.Entity.*;
 import bot.Exception.*;
 import bot.Repository.HostileRepository;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -33,8 +30,9 @@ public class EncounterManager {
 
     void addHostile(String speciesName, String nickname) {
         try {
-            Hostile              hostileSpecies = this.hostileRepository.getHostile(speciesName);
-            HostileEncounterData newHostile     = new HostileEncounterData(hostileSpecies, nickname);
+            Hostile              hostileSpecies  = this.hostileRepository.getHostile(speciesName);
+            String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
+            HostileEncounterData newHostile      = new HostileEncounterData(hostileSpecies, capitalNickname);
             if (speciesName.toLowerCase().equals(nickname.toLowerCase())) {
                 int speciesCount = 0;
                 for (HostileEncounterData hostile : this.context.getAllHostiles()) {
@@ -66,7 +64,7 @@ public class EncounterManager {
     void attackAction(User author, String hostileName) {
         try {
             if (!this.context.isAttackPhase()) {
-                throw new WrongPhaseException("attack", "attack");
+                throw new WrongPhaseException(EncounterContext.ATTACK_PHASE, "attack");
             }
             PCEncounterData      playerCharacter = this.getPlayerCharacter(author);
             HostileEncounterData hostile         = this.context.getHostile(hostileName);
@@ -87,6 +85,9 @@ public class EncounterManager {
             }
 
             playerCharacter.useAction();
+            if (hostile.isSlain()) {
+                this.addKillToPlayerCharacters(hostile);
+            }
             this.endPlayerAction();
         } catch (WrongPhaseException | NotYourTurnException | NoHostileInEncounterException | HostileSlainException e) {
             this.logger.logException(e);
@@ -103,7 +104,7 @@ public class EncounterManager {
     void dodgeAction(User author) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException("dodge", "dodge");
+                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
             }
             PCEncounterData    playerCharacter = this.getPlayerCharacter(author);
             ArrayList<Integer> dodgeRolls      = new ArrayList<>();
@@ -174,6 +175,7 @@ public class EncounterManager {
                 hostile.getMaxHP()
             );
             if (hostile.isSlain()) {
+                this.addKillToPlayerCharacters(hostile);
                 this.logger.logDungeonMasterSlay(hostile.getName());
             }
         } catch (NoHostileInEncounterException | HostileSlainException e) {
@@ -227,10 +229,27 @@ public class EncounterManager {
         }
     }
 
+    void lootAction(User player) {
+        try {
+            if (!this.context.isLootPhase()) {
+                throw new WrongPhaseException(EncounterContext.LOOT_PHASE, "loot");
+            }
+            PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
+            if (playerCharacter.hasLoot()) {
+                throw new LootRerollException();
+            }
+            playerCharacter.rollLoot();
+            playerCharacter.useAllActions();
+            this.logger.logActionLoot(playerCharacter);
+        } catch (NoCharacterInEncounterException | LootRerollException e) {
+            this.logger.logException(e);
+        }
+    }
+
     void protectAction(User player, String name) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException("dodge", "protect");
+                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "protect");
             }
 
             PCEncounterData protectorCharacter = this.getPlayerCharacter(player);
@@ -380,10 +399,16 @@ public class EncounterManager {
         this.logger.logEncounterSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
     }
 
+    private void addKillToPlayerCharacters(HostileEncounterData hostile) {
+        for (PCEncounterData playerCharcter : this.context.getActivePlayerCharacters()) {
+            playerCharcter.addKill(hostile);
+        }
+    }
+
     private void dodgeActionSkipped(User player) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException("dodge", "dodge");
+                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
             }
             PCEncounterData playerCharacter = this.getPlayerCharacter(player);
             int             totalDamage     = 0;
@@ -404,9 +429,14 @@ public class EncounterManager {
 
     private void endPlayerAction() {
         if (this.context.getActiveHostiles().isEmpty()) {
+            this.context.startLootPhase();
             this.logger.logEndEncounter(this.context.getAllPlayerCharacters(), this.context.getAllHostiles(), true);
         } else if (this.context.getActivePlayerCharacters().isEmpty()) {
-            this.logger.logEndEncounter(this.context.getAllPlayerCharacters(), this.context.getAllHostiles(), false);
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                false
+            );
         } else {
             PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
             if (currentPlayerCharacter.hasActions()) {
@@ -418,17 +448,18 @@ public class EncounterManager {
                 PCEncounterData nextPlayerCharacter = this.context.getNextPlayerCharacter();
                 if (nextPlayerCharacter == null) {
                     if (this.context.isAttackPhase()) {
+                        this.context.endCurrentPhase();
                         this.logger.logEndAttackPhase(
                             this.context.getAllPlayerCharacters(),
                             this.context.getAllHostiles()
                         );
                     } else if (this.context.isDodgePhase()) {
+                        this.context.endCurrentPhase();
                         this.logger.logEndDodgePhase(
                             this.context.getAllPlayerCharacters(),
                             this.context.getAllHostiles()
                         );
                     }
-                    this.context.endCurrentPhase();
                 } else {
                     this.logger.pingPlayerTurn(nextPlayerCharacter);
                 }

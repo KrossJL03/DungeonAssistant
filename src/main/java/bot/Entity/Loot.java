@@ -1,6 +1,6 @@
 package bot.Entity;
 
-public class Loot {
+public class Loot{
 
     private String item;
     private int quantity;
@@ -10,11 +10,23 @@ public class Loot {
         this.quantity = quantity;
     }
 
+    public void addQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     public String getItem() {
         return item;
     }
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public boolean isSameItem(Loot loot) {
+        return loot.getItem().equals(this.item);
+    }
+
+    public String toString() {
+        return String.format("x%d %s", this.quantity, this.item);
     }
 }

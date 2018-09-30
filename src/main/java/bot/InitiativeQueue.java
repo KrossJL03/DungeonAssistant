@@ -32,7 +32,7 @@ class InitiativeQueue {
 
     PCEncounterData getNextPlayerCharacter() {
         PCEncounterData nextPlayer = this.initiative.peek();
-        while (nextPlayer != null && (nextPlayer.isSlain() || !nextPlayer.hasActions() || nextPlayer.hasLeft())) {
+        while (nextPlayer != null && (nextPlayer.isSlain() || !nextPlayer.hasActions())) {
             this.initiative.pop();
             nextPlayer = this.initiative.peek();
         }

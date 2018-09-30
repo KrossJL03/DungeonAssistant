@@ -21,7 +21,7 @@ public class HostileEncounterData implements EncounterDataInterface {
     }
 
     public int getAttackDice() {
-        return this.hostile.getAttackDice() + 10;
+        return this.hostile.getAttackDice();
     }
 
     public int getAttackRoll() {
@@ -30,6 +30,10 @@ public class HostileEncounterData implements EncounterDataInterface {
 
     public int getCurrentHP() {
         return this.currentHp;
+    }
+
+    public Hostile getHostile() {
+        return this.hostile;
     }
 
     public int getMaxHP() {

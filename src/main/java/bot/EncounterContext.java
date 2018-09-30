@@ -9,11 +9,11 @@ import java.util.*;
 
 public class EncounterContext {
 
-    private static String ATTACK_PHASE = "ATTACK";
-    private static String DODGE_PHASE  = "DODGE";
-    private static String JOIN_PHASE   = "JOIN";
-    private static String LOOT_PHASE   = "LOOT";
-    private static String RP_PHASE     = "RP";
+    static         String ATTACK_PHASE = "ATTACK";
+    static         String DODGE_PHASE  = "DODGE";
+    static private String JOIN_PHASE   = "JOIN";
+    static         String LOOT_PHASE   = "LOOT";
+    static private String RP_PHASE     = "RP";
 
     private ArrayList<HostileEncounterData> hostiles;
     private ArrayList<PCEncounterData>      playerCharacters;
@@ -81,11 +81,18 @@ public class EncounterContext {
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
         ArrayList<PCEncounterData> activePlayers = new ArrayList<>();
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (!playerCharacter.isSlain() && !playerCharacter.hasLeft()) {
+            if (!playerCharacter.isSlain()) {
                 activePlayers.add(playerCharacter);
             }
         }
         return activePlayers;
+    }
+
+    ArrayList<PCEncounterData> getAlivePlayerCharacters() {
+        ArrayList<PCEncounterData> alivePlayerCharacters = new ArrayList<>();
+        alivePlayerCharacters.addAll(this.getActivePlayerCharacters());
+        alivePlayerCharacters.addAll(this.absentPlayerCharacters);
+        return alivePlayerCharacters;
     }
 
     ArrayList<HostileEncounterData> getAllHostiles() {
@@ -162,6 +169,10 @@ public class EncounterContext {
         return !(this.playerCharacters.size() < this.maxPlayerCount);
     }
 
+    boolean isLootPhase() {
+        return this.currentPhase.equals(EncounterContext.LOOT_PHASE);
+    }
+
     boolean isOver() {
         return this.isStarted && (this.getActiveHostiles().size() == 0 || this.getActivePlayerCharacters().size() == 0);
     }
@@ -215,6 +226,16 @@ public class EncounterContext {
     void startEncounter() {
         this.currentPhase = EncounterContext.JOIN_PHASE;
         this.isStarted = true;
+    }
+
+    void startLootPhase() {
+        if (this.isLootPhase()) {
+            throw new StartCurrentPhaseException(EncounterContext.LOOT_PHASE);
+        }
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            playerCharacter.resetActions(false);
+        }
+        this.currentPhase = EncounterContext.LOOT_PHASE;
     }
 
     void removeHostile(HostileEncounterData hostile) {

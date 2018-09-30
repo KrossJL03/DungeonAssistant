@@ -80,6 +80,9 @@ public class CommandListener extends ListenerAdapter {
                     case "$leave":
                         this.commandManager.leaveCommand(event);
                         break;
+                    case "$loot":
+                        this.commandManager.lootCommand(event);
+                        break;
                     case "$protect":
                         this.commandManager.protectCommand(event);
                         break;
