@@ -2,6 +2,7 @@ package bot;
 
 import bot.Entity.*;
 import bot.Exception.EncounterException;
+import bot.Hostile.Loot;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.ArrayList;

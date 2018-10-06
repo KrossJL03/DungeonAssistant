@@ -31,42 +31,28 @@ public class CommandListener extends ListenerAdapter {
         String         input   = message.getContentRaw();
 
         try {
-            // todo remove testing cases
-            if (input.startsWith("(")) {
-                String[] splitArray = input.split("\\s+");
-                if (splitArray[0].startsWith("(roll")) {
-                    int    die    = Integer.parseInt(splitArray[1].trim());
-                    int    roll   = (int) Math.ceil(Math.random() * die);
-                    String output = event.getAuthor().getAsMention() + " rolled a " + roll;
-                    channel.sendMessage(output).queue();
-                }
-            } else if (input.startsWith("$testing")) {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setTitle("Froyo");
-                embed.setAuthor(event.getAuthor().getName(), null, event.getAuthor().getAvatarUrl());
-                embed.setColor(new Color(0x62c4f9));
-                embed.setImage(
-                    "https://orig00.deviantart.net/b126/f/2018/252/3/2/se__froyo_equipment_and_stats_by_jksketchy-dchajyr.png");
-                embed.addField("STATS", "4 | 3 | 4 | 13 | 170", true);
-                channel.sendMessage(embed.build()).queue();
-            } else if (input.startsWith("$populate")) {
-                this.commandManager.populate(event.getAuthor());
-                channel.sendMessage("Test data has been populated").queue();
-            } else if (input.startsWith("$")) {
+            if (input.startsWith("$")) {
                 String[] splitArray = input.split("\\s+");
 
                 switch (splitArray[0].toLowerCase()) {
                     case "$attack":
                         this.commandManager.attackCommand(event);
                         break;
+                    case "$createhostile":
+                        channel.sendMessage("Temporarily disabled").queue();
+//                        this.commandManager.createHostile(event);
+                        break;
                     case "$createpc":
                         this.commandManager.createCharacterCommand(event);
                         break;
-                    case "$createhostile":
-                        this.commandManager.createHostile(event);
+                    case "$deletehostile":
+                        channel.sendMessage("Temporarily disabled").queue();
+//                        this.commandManager.deleteHostile(event);
                         break;
                     case "$deletepc":
-                        this.commandManager.deleteCharacterCommand(event);
+                        // todo make admin only
+                        channel.sendMessage("Temporarily disabled").queue();
+//                        this.commandManager.deleteCharacterCommand(event);
                         break;
                     case "$dm":
                         this.processDungeonMasterCommand(event);

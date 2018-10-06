@@ -40,6 +40,7 @@ public class PlayerRepository {
     }
 
     public static void main(String[] args) {
+        // todo remove after testing
 //        PlayerRepository.createTableIfNotExists();
         PlayerRepository.addPlayerIfNotExists("281640303499149314", "JKSketchy");
 //        Player player = PlayerRepository.getPlayer("281640303499149314");

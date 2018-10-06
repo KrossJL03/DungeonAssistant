@@ -9,19 +9,6 @@ public class PrivateLogger {
     public PrivateLogger() {}
 
     void showHelpPage(User user, boolean isAdmin) {
-//        EmbedBuilder   embed   = new EmbedBuilder();
-
-//        embed.setTitle("Dungeon Assistant");
-//        embed.setDescription("Help page for DungeonAssistant. Lists all existing commands.");
-//        embed.setColor(new Color(0x62c4f9));
-//        embed.setThumbnail("https://orig00.deviantart.net/5042/f/2018/092/5/3/53fe81050e0c6de55bb521f5b191749c-dc7pyqr.png");
-//        embed.addField("$addCharacter [Name]", "Add a character to an encounter", true);
-//        embed.addField("$attack [HostileName]", "Attack a hostile during the attack turn", true);
-//        embed.addField("$createCharacter [Name] [STR] [DEF] [AGI] [WIS] [HP]", "Create record for a character", true);
-//        embed.addField("$createHostile [Name] [HP] [AttackDice]", "Create record for a hostile", true);
-//        embed.addField("$dodge", "Attempt to dodge enemy attacks during the dodge turn", true);
-//        embed.addField("$help", "View a list of all commands", true);
-
         StringBuilder output = new StringBuilder();
 
         output.append("**DUNGEON ASSISTANT COMMANDS:**");
@@ -85,7 +72,7 @@ public class PrivateLogger {
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
                 "   %-16s %-16s %s",
-                "addHostile",
+                "createHostile",
                 "[Species] (Name)",
                 "Add a hostile, Name is optional"
             ));

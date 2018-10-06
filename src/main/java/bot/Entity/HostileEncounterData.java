@@ -1,5 +1,7 @@
 package bot.Entity;
 
+import bot.Hostile.Hostile;
+
 public class HostileEncounterData implements EncounterDataInterface {
 
     private Hostile                hostile;

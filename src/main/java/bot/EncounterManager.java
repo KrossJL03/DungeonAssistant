@@ -2,9 +2,11 @@ package bot;
 
 import bot.Entity.*;
 import bot.Exception.*;
+import bot.Hostile.Exception.NoHostileFoundException;
+import bot.Hostile.Hostile;
+import bot.Hostile.HostileManager;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
-import bot.Repository.HostileRepository;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
 
@@ -15,23 +17,20 @@ public class EncounterManager {
     private EncounterContext       context;
     private EncounterLogger        logger;
     private EncounterLoggerContext loggerContext;
-    private HostileRepository      hostileRepository;
 
     public EncounterManager(
         EncounterContext context,
         EncounterLogger logger,
-        EncounterLoggerContext loggerContext,
-        HostileRepository hostileRepository
+        EncounterLoggerContext loggerContext
     ) {
         this.context = context;
-        this.hostileRepository = hostileRepository;
         this.logger = logger;
         this.loggerContext = loggerContext;
     }
 
     void addHostile(String speciesName, String nickname) {
         try {
-            Hostile              hostileSpecies  = this.hostileRepository.getHostile(speciesName);
+            Hostile              hostileSpecies  = HostileManager.getHostile(speciesName);
             String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
             HostileEncounterData newHostile      = new HostileEncounterData(hostileSpecies, capitalNickname);
             if (speciesName.toLowerCase().equals(nickname.toLowerCase())) {

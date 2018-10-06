@@ -1,11 +1,13 @@
 package bot;
 
-import bot.Entity.Hostile;
+import bot.Hostile.Exception.NoHostileFoundException;
+import bot.Hostile.Hostile;
 import bot.Exception.*;
+import bot.Hostile.HostileManager;
 import bot.Player.Player;
 import bot.Player.PlayerRepository;
 import bot.PlayerCharacter.PlayerCharacter;
-import bot.Repository.HostileRepository;
+import bot.Hostile.HostileRepository;
 import bot.PlayerCharacter.PlayerCharacterRepository;
 
 import java.util.ArrayList;
@@ -18,18 +20,15 @@ public class CommandManager {
 
     private EncounterManager   encounterManager;
     private EncyclopediaLogger encyclopediaLogger;
-    private HostileRepository  hostileRepository;
     private PrivateLogger      privateLogger;
 
     public CommandManager(
         EncounterManager encounterManager,
         EncyclopediaLogger encyclopediaLogger,
-        PrivateLogger privateLogger,
-        HostileRepository hostileRepository
+        PrivateLogger privateLogger
     ) {
         this.encounterManager = encounterManager;
         this.encyclopediaLogger = encyclopediaLogger;
-        this.hostileRepository = hostileRepository;
         this.privateLogger = privateLogger;
     }
 
@@ -73,19 +72,18 @@ public class CommandManager {
         }
     }
 
-    // todo move to RepositoryManager
     void createHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
-            MessageChannel channel    = event.getChannel();
-            String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String         species    = splitInput[1];
-            int            hitpoints  = Integer.parseInt(splitInput[2]);
-            int            attackDice = Integer.parseInt(splitInput[3]);
-            Hostile        hostile    = new Hostile(species, hitpoints, attackDice);
+            MessageChannel channel     = event.getChannel();
+            String[]       splitInput  = event.getMessage().getContentRaw().split("\\s+");
+            String         species     = splitInput[1];
+            int            dangerLevel = Integer.parseInt(splitInput[2]);
+            int            hitpoints   = Integer.parseInt(splitInput[3]);
+            int            attackDice  = Integer.parseInt(splitInput[4]);
 
-            this.hostileRepository.addHostile(hostile);
+            HostileManager.createHostile(species, dangerLevel, hitpoints, attackDice);
             // todo move to RepositoryLogger
-            channel.sendMessage(String.format("%s record has been saved!", hostile.getSpecies())).queue();
+            channel.sendMessage(String.format("%s record has been saved!", species)).queue();
         }
     }
 
@@ -98,6 +96,16 @@ public class CommandManager {
         PlayerCharacterRepository.removePlayerCharacterIfExists(author.getId(), name);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been deleted!", name)).queue();
+    }
+
+    void deleteHostile(MessageReceivedEvent event) {
+        MessageChannel channel    = event.getChannel();
+        String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
+        String         species    = splitInput[1];
+
+        HostileRepository.deleteHostileIfExists(species);
+        // todo move to RepositoryLogger
+        channel.sendMessage(String.format("%s record has been deleted!", species)).queue();
     }
 
     void dodgeCommand(MessageReceivedEvent event) {
@@ -254,7 +262,7 @@ public class CommandManager {
             try {
                 String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
                 String   speciesName = splitInput[2];
-                Hostile  hostile     = this.hostileRepository.getHostile(speciesName);
+                Hostile  hostile     = HostileRepository.getHostile(speciesName);
                 this.encyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
             } catch (NoHostileFoundException e) {
                 this.encyclopediaLogger.logException(event.getChannel(), e);
@@ -263,7 +271,7 @@ public class CommandManager {
     }
 
     void viewHostiles(MessageReceivedEvent event) {
-        this.encyclopediaLogger.viewHostiles(event.getChannel(), this.hostileRepository.getAllHostiles());
+        this.encyclopediaLogger.viewHostiles(event.getChannel(), HostileRepository.getAllHostiles());
     }
 
     void populate(User owner) {
@@ -279,11 +287,11 @@ public class CommandManager {
 //        this.pcRepository.addPC(toffee);
 //        this.pcRepository.addPC(cl);
 
-//        this.encounterManager.addHostile("culebratu", "culebratu");
-//        this.encounterManager.addHostile("culebratushaman", "culebratushaman");
-//        this.encounterManager.addHostile("volpup", "volpup");
-//        this.encounterManager.addHostile("volpup", "volpup");
-//        this.encounterManager.addHostile("volpire", "volpire");
+//        this.encounterManager.insertHostile("culebratu", "culebratu");
+//        this.encounterManager.insertHostile("culebratushaman", "culebratushaman");
+//        this.encounterManager.insertHostile("volpup", "volpup");
+//        this.encounterManager.insertHostile("volpup", "volpup");
+//        this.encounterManager.insertHostile("volpire", "volpire");
 
 //        this.encounterManager.setMaxPlayerCount(5);
     }

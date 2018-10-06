@@ -1,11 +1,12 @@
 package bot;
 
-import bot.Entity.Hostile;
-import bot.Entity.Loot;
+import bot.Hostile.Hostile;
+import bot.Hostile.Loot;
 import bot.PlayerCharacter.PlayerCharacter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class EncyclopediaLogger {
 
@@ -66,7 +67,7 @@ public class EncyclopediaLogger {
         this.logMessage(channel, output.toString());
     }
 
-    void viewHostiles(MessageChannel channel, ArrayList<Hostile> hostiles) {
+    void viewHostiles(MessageChannel channel, ArrayList<Hashtable<String, String>> hostileInfos) {
         StringBuilder output = new StringBuilder();
         output.append("```cs");
         output.append(bot.EncyclopediaLogger.NEWLINE);
@@ -74,13 +75,14 @@ public class EncyclopediaLogger {
         output.append(bot.EncyclopediaLogger.NEWLINE);
         output.append("------------------------------------");
         output.append(bot.EncyclopediaLogger.NEWLINE);
-        for (Hostile hostile : hostiles) {
+        for (Hashtable<String, String> hostileInfo : hostileInfos) {
             output.append(String.format(
-                "%-25s %3d HP  %s%d",
-                hostile.getSpecies(),
-                hostile.getHitpoints(),
-                "d ",
-                hostile.getAttackDice()
+                "%-20s %3s★  %3s HP  %s%s",
+                hostileInfo.get("species"),
+                hostileInfo.get("danger_level"),
+                hostileInfo.get("hitpoints"),
+                "d",
+                hostileInfo.get("attack_dice")
             ));
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }

@@ -1,18 +1,19 @@
-package bot.Entity;
+package bot.Hostile;
 
 public class Loot{
 
+    // todo ItemInterface instead of string
     private String item;
+    private int diceRoll;
     private int quantity;
 
-    Loot(String item, int quantity) {
+    Loot(int diceRoll, String item, int quantity) {
+        this.diceRoll = diceRoll;
         this.item = item;
         this.quantity = quantity;
     }
 
-    public void addQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+    int getDiceRoll() { return this.diceRoll; }
 
     public String getItem() {
         return item;

@@ -21,7 +21,6 @@ public class PlayerCharacterRepository {
         int hitpoints
     ) {
         PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
-        PlayerCharacterRepository.removePlayerCharacterIfExists(ownerId, name);
         String sql =
             "INSERT INTO player_character(owner_id, name, strength, defense, agility, wisdom, hitpoints)" +
             String.format(
