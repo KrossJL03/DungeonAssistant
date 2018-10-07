@@ -87,7 +87,8 @@ class LootRepository {
             if (resultSet != null) {
                 while (resultSet.next()) {
                     Loot loot = new Loot(
-                        resultSet.getInt("dice_roll"), resultSet.getString("item"),
+                        resultSet.getInt("dice_roll"),
+                        resultSet.getString("item"),
                         resultSet.getInt("quantity")
                     );
                     lootList.add(loot);

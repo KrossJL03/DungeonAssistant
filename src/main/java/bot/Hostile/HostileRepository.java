@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 public class HostileRepository {
@@ -31,8 +32,8 @@ public class HostileRepository {
     }
 
     public static ArrayList<Hashtable<String, String>> getAllHostiles() {
-        Connection                           connection  = null;
-        Statement                            statement   = null;
+        Connection                           connection   = null;
+        Statement                            statement    = null;
         ArrayList<Hashtable<String, String>> hostileInfos = new ArrayList<>();
         String sql = String.format(
             "SELECT species, danger_level, hitpoints, attack_dice FROM %s ORDER BY danger_level;",
@@ -71,7 +72,7 @@ public class HostileRepository {
 
     public static Hostile getHostile(String species) {
         String sql = String.format(
-            "SELECT COUNT(*), h.rowid, h.*, l.* " +
+            "SELECT h.rowid, h.*, l.* " +
             "FROM %s h " +
             "INNER JOIN %s l ON l.hostile_id = h.rowid " +
             "WHERE lower(h.species) = '%s';",
@@ -80,15 +81,15 @@ public class HostileRepository {
             species.toLowerCase()
         );
 
-        Connection               connection = null;
-        Statement                statement  = null;
-        Hashtable<Integer, Loot> lootList   = new Hashtable<>();
+        Connection             connection = null;
+        Statement              statement  = null;
+        HashMap<Integer, Loot> lootList   = HostileRepository.getBlankLootList();
 
         try {
             connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
-            if (resultSet.getInt("COUNT(*)") == 10) {
+            if (resultSet != null) {
                 int    id          = resultSet.getInt("rowid");
                 String species2    = resultSet.getString("species");
                 int    dangerLevel = resultSet.getInt("danger_level");
@@ -222,5 +223,13 @@ public class HostileRepository {
                 System.out.println("Failed to close");
             }
         }
+    }
+
+    private static HashMap<Integer, Loot> getBlankLootList() {
+        HashMap<Integer, Loot> lootList = new HashMap<>();
+        for (int i = 1; i < 11; i++) {
+            lootList.put(i, new Loot(i, null, 0));
+        }
+        return lootList;
     }
 }
