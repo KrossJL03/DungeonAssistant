@@ -9,11 +9,11 @@ import java.util.*;
 
 public class EncounterContext {
 
-    static         String ATTACK_PHASE = "ATTACK";
-    static         String DODGE_PHASE  = "DODGE";
-    static private String JOIN_PHASE   = "JOIN";
+    public static  String ATTACK_PHASE = "ATTACK";
+    public static  String DODGE_PHASE  = "DODGE";
+    public static  String JOIN_PHASE   = "JOIN";
     static         String LOOT_PHASE   = "LOOT";
-    static private String RP_PHASE     = "RP";
+    private static String RP_PHASE     = "RP";
 
     private ArrayList<HostileEncounterData> hostiles;
     private ArrayList<PCEncounterData>      playerCharacters;

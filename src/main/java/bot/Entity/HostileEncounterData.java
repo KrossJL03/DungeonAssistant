@@ -55,7 +55,17 @@ public class HostileEncounterData implements EncounterDataInterface {
     }
 
     public void heal(int hitpoints) {
+        if (this.isSlain()) {
+            this.slayer = null;
+        }
         this.currentHp += hitpoints;
+    }
+
+    public void heal(float percent) {
+        if (this.isSlain()) {
+            this.slayer = null;
+        }
+        this.currentHp += this.getMaxHP() * percent;
     }
 
     public void hurt(int hitpoints) {

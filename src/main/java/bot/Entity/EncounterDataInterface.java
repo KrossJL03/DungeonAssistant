@@ -9,6 +9,7 @@ public interface EncounterDataInterface {
     EncounterDataInterface getSlayer();
     boolean isSlain();
     void heal(int hitpoints);
+    void heal(float percent);
     void hurt(int hitpoints);
     int rollDamage();
     int takeDamage(EncounterDataInterface attacker, int damage);

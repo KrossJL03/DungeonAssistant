@@ -28,7 +28,11 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void addKill(HostileEncounterData hostile) {
         if (this.isSlain()) {
-            throw new CharacterSlainException(this.playerCharacter.getName(), this.slayer.getName());
+            throw CharacterSlainException.createFailedToAddKill(
+                this.playerCharacter.getName(),
+                this.slayer.getName(),
+                hostile.getName()
+            );
         }
         this.kills.add(hostile);
     }
@@ -114,7 +118,17 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public void heal(int hitpoints) {
+        if (this.isSlain()) {
+            this.slayer = null;
+        }
         this.currentHp += hitpoints;
+    }
+
+    public void heal(float percent) {
+        if (this.isSlain()) {
+            this.slayer = null;
+        }
+        this.currentHp += this.getMaxHP() * percent;
     }
 
     public void hurt(int hitpoints) {
