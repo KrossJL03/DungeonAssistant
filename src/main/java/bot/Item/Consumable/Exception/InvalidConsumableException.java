@@ -1,6 +1,8 @@
 package bot.Item.Consumable.Exception;
 
-public class InvalidConsumableException extends RuntimeException{
+import bot.CustomExceptionInterface;
+
+public class InvalidConsumableException extends RuntimeException implements CustomExceptionInterface {
 
     private InvalidConsumableException(String message) {
         super(message);

@@ -8,17 +8,15 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class EncyclopediaLogger {
+class EncyclopediaLogger {
 
     private static String NEWLINE = System.getProperty("line.separator");
 
-    public EncyclopediaLogger() {}
-
-    void logException(MessageChannel channel, Throwable e) {
+    static void logException(MessageChannel channel, Throwable e) {
         channel.sendMessage(e.getMessage()).queue();
     }
 
-    void viewCharacters(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
+    static void viewCharacters(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
         StringBuilder output = new StringBuilder();
         output.append("```cs");
         output.append(bot.EncyclopediaLogger.NEWLINE);
@@ -44,10 +42,10 @@ public class EncyclopediaLogger {
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }
         output.append("```");
-        this.logMessage(channel, output.toString());
+        EncyclopediaLogger.logMessage(channel, output.toString());
     }
 
-    void viewHostileLoot(MessageChannel channel, Hostile hostile) {
+    static void viewHostileLoot(MessageChannel channel, Hostile hostile) {
         StringBuilder output = new StringBuilder();
         output.append("```ml");
         output.append(bot.EncyclopediaLogger.NEWLINE);
@@ -64,10 +62,10 @@ public class EncyclopediaLogger {
         }
         output.append(bot.EncyclopediaLogger.NEWLINE);
         output.append("```");
-        this.logMessage(channel, output.toString());
+        EncyclopediaLogger.logMessage(channel, output.toString());
     }
 
-    void viewHostiles(MessageChannel channel, ArrayList<Hashtable<String, String>> hostileInfos) {
+    static void viewHostiles(MessageChannel channel, ArrayList<Hashtable<String, String>> hostileInfos) {
         StringBuilder output = new StringBuilder();
         output.append("```cs");
         output.append(bot.EncyclopediaLogger.NEWLINE);
@@ -87,10 +85,10 @@ public class EncyclopediaLogger {
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }
         output.append("```");
-        this.logMessage(channel, output.toString());
+        EncyclopediaLogger.logMessage(channel, output.toString());
     }
 
-    private void logMessage(MessageChannel channel, String content) {
+    private static void logMessage(MessageChannel channel, String content) {
         channel.sendMessage(content).queue();
     }
 

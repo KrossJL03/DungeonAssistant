@@ -1,10 +1,6 @@
 package bot;
 
-import java.awt.*;
-
 import bot.Exception.ContextChannelNotSetException;
-import bot.Exception.OutOfBoundsStatExecption;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -42,23 +38,24 @@ public class CommandListener extends ListenerAdapter {
                         channel.sendMessage("Temporarily disabled").queue();
 //                        this.commandManager.createHostile(event);
                         break;
-                    case "$createpc":
+                    case "$createcharacter":
                         this.commandManager.createCharacterCommand(event);
                         break;
                     case "$deletehostile":
                         channel.sendMessage("Temporarily disabled").queue();
 //                        this.commandManager.deleteHostile(event);
                         break;
-                    case "$deletepc":
-                        // todo make admin only
-                        channel.sendMessage("Temporarily disabled").queue();
-//                        this.commandManager.deleteCharacterCommand(event);
+                    case "$deletecharacter":
+                        this.commandManager.deleteCharacterCommand(event);
                         break;
                     case "$dm":
                         this.processDungeonMasterCommand(event);
                         break;
                     case "$dodge":
                         this.commandManager.dodgeCommand(event);
+                        break;
+                    case "$hello":
+                        this.commandManager.helloCommand(event);
                         break;
                     case "$help":
                         this.commandManager.helpCommand(event);
@@ -92,11 +89,13 @@ public class CommandListener extends ListenerAdapter {
             channel.sendMessage("Could you say that again? I think I'm missing something... Check `$help`").queue();
         } catch (NumberFormatException e) {
             channel.sendMessage("Hey could you say that again? Sorry, I'm bad with numbers.").queue();
-        } catch (OutOfBoundsStatExecption e) {
-            channel.sendMessage(e.getMessage()).queue();
         } catch (Throwable e) {
-            channel.sendMessage("Something went wrong, but I'm not sure what...").queue();
-            System.out.println(e.toString());
+            if (e instanceof CustomExceptionInterface) {
+                channel.sendMessage(e.getMessage()).queue();
+            } else {
+                channel.sendMessage("Something went wrong, but I'm not sure what...").queue();
+                System.out.println(e.toString());
+            }
         }
 
     }
@@ -160,7 +159,7 @@ public class CommandListener extends ListenerAdapter {
         String[]       splitArray = input.split("\\s+");
 
         switch (splitArray[1].toLowerCase()) {
-            case "pcs":
+            case "characters":
                 this.commandManager.viewCharacters(event);
                 break;
             case "hostiles":

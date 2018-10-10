@@ -5,10 +5,11 @@ import bot.Hostile.Hostile;
 import bot.Exception.*;
 import bot.Hostile.HostileManager;
 import bot.Player.Player;
+import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
 import bot.PlayerCharacter.PlayerCharacter;
 import bot.Hostile.HostileRepository;
-import bot.PlayerCharacter.PlayerCharacterRepository;
+import bot.PlayerCharacter.PlayerCharacterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +20,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class CommandManager {
 
     private EncounterManager   encounterManager;
-    private EncyclopediaLogger encyclopediaLogger;
     private PrivateLogger      privateLogger;
 
-    public CommandManager(
-        EncounterManager encounterManager,
-        EncyclopediaLogger encyclopediaLogger,
-        PrivateLogger privateLogger
-    ) {
+    public CommandManager(EncounterManager encounterManager, PrivateLogger privateLogger) {
         this.encounterManager = encounterManager;
-        this.encyclopediaLogger = encyclopediaLogger;
         this.privateLogger = privateLogger;
     }
 
@@ -60,8 +55,8 @@ public class CommandManager {
         int    AGI  = Integer.parseInt(splitInput[4]);
         int    WIS  = Integer.parseInt(splitInput[5]);
         int    HP   = Integer.parseInt(splitInput[6]);
-        PlayerRepository.addPlayerIfNotExists(author.getId(), author.getName());
-        PlayerCharacterRepository.createPlayerCharacter(author.getId(), name, STR, DEF, AGI, WIS, HP);
+
+        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, STR, DEF, AGI, WIS, HP);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
     }
@@ -93,7 +88,7 @@ public class CommandManager {
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
         String         name       = splitInput[1];
 
-        PlayerCharacterRepository.removePlayerCharacterIfExists(author.getId(), name);
+        PlayerCharacterManager.deletePlayerCharacter(author.getId(), name);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been deleted!", name)).queue();
     }
@@ -131,6 +126,14 @@ public class CommandManager {
         }
     }
 
+    void helloCommand(MessageReceivedEvent event) {
+        MessageChannel channel = event.getChannel();
+        User           author  = event.getAuthor();
+        PlayerManager.savePlayer(author.getId(), author.getName());
+        // todo move to RepositoryLogger
+        channel.sendMessage(String.format("Hi %s! I've got all your information down now.", author.getName())).queue();
+    }
+
     void helpCommand(MessageReceivedEvent event) {
         this.privateLogger.showHelpPage(event.getAuthor(), this.isAdmin(event));
     }
@@ -160,11 +163,11 @@ public class CommandManager {
         String         name       = splitInput[1];
 
         try {
-            PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPC(owner.getId(), name);
+            PlayerCharacter playerCharacter = PlayerCharacterManager.getMyPC(owner.getId(), name);
             this.encounterManager.joinEncounter(playerCharacter);
-        } catch (NoCharacterFoundException e) {
+        } catch (NoPlayerCharacterFoundException e) {
             // todo create new logger
-            ArrayList<PlayerCharacter> ownersPCs = PlayerCharacterRepository.getAllMyPCs(owner.getId());
+            ArrayList<PlayerCharacter> ownersPCs = PlayerCharacterManager.getAllMyPCs(owner.getId());
             if (!ownersPCs.isEmpty()) {
                 StringBuilder output = new StringBuilder();
                 output.append(String.format(
@@ -250,7 +253,10 @@ public class CommandManager {
     }
 
     void viewCharacters(MessageReceivedEvent event) {
-        this.encyclopediaLogger.viewCharacters(event.getChannel(), PlayerCharacterRepository.getAllPC());
+        EncyclopediaLogger.viewCharacters(
+            event.getChannel(),
+            PlayerCharacterManager.getAllMyPCs(event.getAuthor().getId())
+        );
     }
 
     void viewEncounterSummary() {
@@ -260,40 +266,22 @@ public class CommandManager {
     void viewHostileLoot(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             try {
-                String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
-                String   speciesName = splitInput[2];
-                Hostile  hostile     = HostileRepository.getHostile(speciesName);
-                this.encyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+                String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+                String   species    = splitInput[2];
+                Hostile  hostile    = HostileRepository.getHostile(species);
+                if (hostile != null) {
+                    EncyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+                } else {
+                    throw new NoHostileFoundException(species);
+                }
             } catch (NoHostileFoundException e) {
-                this.encyclopediaLogger.logException(event.getChannel(), e);
+                EncyclopediaLogger.logException(event.getChannel(), e);
             }
         }
     }
 
     void viewHostiles(MessageReceivedEvent event) {
-        this.encyclopediaLogger.viewHostiles(event.getChannel(), HostileRepository.getAllHostiles());
-    }
-
-    void populate(User owner) {
-//        PlayerCharacter froyo       = new PlayerCharacter(owner, "Froyo", 4, 3, 4, 13, 170);
-//        PlayerCharacter babaGanoush = new PlayerCharacter(owner, "BabaGanoush", 20, 20, 20, 20, 240);
-//        PlayerCharacter rose        = new PlayerCharacter(owner, "Rose", 20, 5, 20, 20, 195);
-//        PlayerCharacter toffee      = new PlayerCharacter(owner, "ButterToffee", 12, 6, 12, 14, 135);
-//        PlayerCharacter cl          = new PlayerCharacter(owner, "CocoaLiquor", 19, 13, 20, 20, 165);
-
-//        this.pcRepository.addPC(froyo);
-//        this.pcRepository.addPC(babaGanoush);
-//        this.pcRepository.addPC(rose);
-//        this.pcRepository.addPC(toffee);
-//        this.pcRepository.addPC(cl);
-
-//        this.encounterManager.insertHostile("culebratu", "culebratu");
-//        this.encounterManager.insertHostile("culebratushaman", "culebratushaman");
-//        this.encounterManager.insertHostile("volpup", "volpup");
-//        this.encounterManager.insertHostile("volpup", "volpup");
-//        this.encounterManager.insertHostile("volpire", "volpire");
-
-//        this.encounterManager.setMaxPlayerCount(5);
+        EncyclopediaLogger.viewHostiles(event.getChannel(), HostileRepository.getAllHostiles());
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {

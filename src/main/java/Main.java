@@ -19,12 +19,7 @@ public class Main {
             encounterLoggerContext
         );
 
-        CommandManager commandManager = new CommandManager(
-            encountermanager,
-            new EncyclopediaLogger(),
-            new PrivateLogger()
-        );
-
+        CommandManager  commandManager  = new CommandManager(encountermanager, new PrivateLogger());
         CommandListener commandListener = new CommandListener(commandManager);
 
         Main.populateTestData();
@@ -35,5 +30,6 @@ public class Main {
         api.addEventListener(commandListener);
     }
 
-    private static void populateTestData() { }
+    private static void populateTestData() {
+    }
 }

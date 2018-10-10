@@ -1,8 +1,9 @@
 package bot.Hostile.Exception;
 
+import bot.CustomExceptionInterface;
 import bot.Exception.EncounterException;
 
-public class NoHostileFoundException extends RuntimeException implements EncounterException {
+public class NoHostileFoundException extends RuntimeException implements EncounterException, CustomExceptionInterface {
     public NoHostileFoundException(String speciesName) {
         super(
             String.format(
