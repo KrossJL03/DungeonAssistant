@@ -36,7 +36,7 @@ public class HostileRepository {
         Statement                            statement    = null;
         ArrayList<Hashtable<String, String>> hostileInfos = new ArrayList<>();
         String sql = String.format(
-            "SELECT species, danger_level, hitpoints, attack_dice FROM %s ORDER BY danger_level;",
+            "SELECT species, danger_level, hitpoints, attack_dice FROM %s ORDER BY danger_level, species;",
             HostileRepository.TABLE_NAME
         );
         try {
