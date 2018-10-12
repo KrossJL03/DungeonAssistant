@@ -5,7 +5,6 @@ import bot.Exception.OutOfBoundsStatExecption;
 
 public class PlayerCharacter {
 
-    private int    id;
     private String name;
     private Player owner;
     private int    strength;
@@ -15,7 +14,6 @@ public class PlayerCharacter {
     private int    hitpoints;
 
     PlayerCharacter(
-        int id,
         String name,
         Player owner,
         int strength,
@@ -25,7 +23,6 @@ public class PlayerCharacter {
         int hitpoints
     ) {
         PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
-        this.id = id;
         this.owner = owner;
         this.name = name;
         this.strength = strength;
@@ -61,6 +58,10 @@ public class PlayerCharacter {
 
     public Player getOwner() {
         return this.owner;
+    }
+
+    boolean isOwner(String userId) {
+        return this.owner.isSamePlayer(userId);
     }
 
     /**

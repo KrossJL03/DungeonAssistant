@@ -31,7 +31,6 @@ class PlayerCharacterRepository {
         int wisdom,
         int hitpoints
     ) {
-        PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
         String sql =
             String.format(
                 "INSERT OR REPLACE INTO %s(playerId, name, strength, defense, agility, wisdom, hitpoints)",
@@ -52,7 +51,7 @@ class PlayerCharacterRepository {
 
     static ArrayList<PlayerCharacter> getAllMyPCs(String playerId) {
         String sql = String.format(
-            "SELECT rowid, * FROM %s WHERE playerId = '%s';",
+            "SELECT * FROM %s WHERE playerId = '%s';",
             PlayerCharacterRepository.TABLE_NAME,
             playerId
         );
@@ -68,7 +67,6 @@ class PlayerCharacterRepository {
                 while (resultSet.next()) {
                     Player player = PlayerRepository.getPlayer(resultSet.getString("playerId"));
                     PlayerCharacter playerCharacter = new PlayerCharacter(
-                        resultSet.getInt("rowid"),
                         resultSet.getString("name"),
                         player,
                         resultSet.getInt("strength"),
@@ -100,11 +98,11 @@ class PlayerCharacterRepository {
         return playerCharacters;
     }
 
-    static PlayerCharacter getMyPC(String playerId, String name) {
+    static PlayerCharacter getMyPlayerCharacter(String playerId, String name) {
         Connection connection = null;
         Statement  statement  = null;
         String sql = String.format(
-            "SELECT rowid, * FROM %s WHERE playerId = '%s' AND name = '%s'",
+            "SELECT * FROM %s WHERE playerId = '%s' AND name = '%s'",
             PlayerCharacterRepository.TABLE_NAME,
             playerId,
             name
@@ -116,7 +114,6 @@ class PlayerCharacterRepository {
             if (resultSet != null) {
                 Player player = PlayerRepository.getPlayer(resultSet.getString("playerId"));
                 return new PlayerCharacter(
-                    resultSet.getInt("rowid"),
                     resultSet.getString("name"),
                     player,
                     resultSet.getInt("strength"),
@@ -143,17 +140,62 @@ class PlayerCharacterRepository {
         return null;
     }
 
+    static PlayerCharacter getPlayerCharacter(String name) {
+        Connection connection = null;
+        Statement  statement  = null;
+        String sql = String.format(
+            "SELECT * FROM %s WHERE name = '%s'",
+            PlayerCharacterRepository.TABLE_NAME,
+            name
+        );
+        try {
+            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet != null) {
+                Player player = PlayerRepository.getPlayer(resultSet.getString("playerId"));
+                return new PlayerCharacter(
+                    resultSet.getString("name"),
+                    player,
+                    resultSet.getInt("strength"),
+                    resultSet.getInt("defense"),
+                    resultSet.getInt("agility"),
+                    resultSet.getInt("wisdom"),
+                    resultSet.getInt("hitpoints")
+                );
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Throwable e) {
+                System.out.println("Failed to close");
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        PlayerCharacterRepository.createTableIfNotExists();
+    }
+
     static void createTableIfNotExists() {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s", PlayerCharacterRepository.TABLE_NAME) +
                      "(" +
-                     " playerId   TEXT NOT NULL, " +
-                     " name      TEXT NOT NULL, " +
+                     " playerId  TEXT NOT NULL, " +
+                     " name      TEXT NOT NULL , " +
                      " strength  INT  NOT NULL, " +
                      " defense   INT  NOT NULL, " +
                      " agility   INT  NOT NULL, " +
                      " wisdom    INT  NOT NULL, " +
                      " hitpoints INT  NOT NULL, " +
-                     " PRIMARY KEY (playerId, name COLLATE NOCASE)" +
+                     " PRIMARY KEY (name COLLATE NOCASE)" +
                      ")";
         PlayerCharacterRepository.executeUpdate(sql);
     }

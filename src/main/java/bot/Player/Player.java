@@ -2,27 +2,29 @@ package bot.Player;
 
 public class Player {
 
-    private int id;
     private String userId;
     private String name;
     private int cumulus;
 
-    public Player(int id, String userId, String name, int cumulus) {
-        this.id = id;
+    public Player(String userId, String name, int cumulus) {
         this.userId = userId;
         this.name = name;
         this.cumulus = cumulus;
-    }
-
-    public int getCumulus() {
-        return cumulus;
     }
 
     public String getAsMention() {
         return String.format("<@%s>", this.userId);
     }
 
+    public int getCumulus() {
+        return cumulus;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public boolean isSamePlayer(String userId) {
+        return this.userId.equals(userId);
     }
 }

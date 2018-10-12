@@ -2,6 +2,7 @@ package bot.PlayerCharacter;
 
 import bot.Exception.NoPlayerCharacterFoundException;
 import bot.Player.PlayerManager;
+import bot.PlayerCharacter.Exception.NotYourCharacterException;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,14 @@ public class PlayerCharacterManager {
         int hitpoints
     ) {
         PlayerManager.ensurePlayerExist(userId);
+        PlayerCharacter playerCharacter = PlayerCharacterRepository.getPlayerCharacter(name);
+        if (playerCharacter != null && !playerCharacter.isOwner(userId)) {
+            throw NotYourCharacterException.createForNameTaken(
+                playerCharacter.getName(),
+                playerCharacter.getOwner().getName()
+            );
+        }
+        PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
         PlayerCharacterRepository.insertPlayerCharacter(userId, name, strength, defense, agility, wisdom, hitpoints);
     }
 
@@ -30,7 +39,7 @@ public class PlayerCharacterManager {
     }
 
     public static PlayerCharacter getMyPC(String playerId, String name) {
-        PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPC(playerId, name);
+        PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPlayerCharacter(playerId, name);
         if (playerCharacter == null) {
             throw NoPlayerCharacterFoundException.create(name);
         }

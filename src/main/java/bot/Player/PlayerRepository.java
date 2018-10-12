@@ -20,8 +20,9 @@ public class PlayerRepository {
     }
 
     static boolean doesPlayerExist(String userId) {
-        Connection connection = null;
-        Statement  statement  = null;
+        Connection          connection = null;
+        Statement           statement  = null;
+        RepositoryException exception;
         String sql = String.format(
             "SELECT COUNT(*) FROM %s WHERE userId = '%s'",
             PlayerRepository.TABLE_NAME,
@@ -32,8 +33,8 @@ public class PlayerRepository {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet != null && resultSet.getBoolean("COUNT(*)");
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } catch (Throwable e) {
+            exception = RepositoryException.createFailedToUpdate();
         } finally {
             try {
                 if (statement != null) {
@@ -43,16 +44,19 @@ public class PlayerRepository {
                     connection.close();
                 }
             } catch (Throwable e) {
-                System.out.println("Failed to close");
+                exception = RepositoryException.createFailedToCloseConnection();
             }
         }
-        // todo throw exception
+        if (exception != null) {
+            throw exception;
+        }
         return false;
     }
 
     public static Player getPlayer(String userId) {
-        Connection connection = null;
-        Statement  statement  = null;
+        Connection          connection = null;
+        Statement           statement  = null;
+        RepositoryException exception  = null;
         String sql = String.format(
             "SELECT * FROM %s WHERE userId = '%s'",
             PlayerRepository.TABLE_NAME,
@@ -64,14 +68,13 @@ public class PlayerRepository {
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
                 return new Player(
-                    resultSet.getRow(),
                     resultSet.getString("userId"),
                     resultSet.getString("name"),
                     resultSet.getInt("cumulus")
                 );
             }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } catch (Throwable e) {
+            exception = RepositoryException.createFailedToUpdate();
         } finally {
             try {
                 if (statement != null) {
@@ -81,8 +84,11 @@ public class PlayerRepository {
                     connection.close();
                 }
             } catch (Throwable e) {
-                System.out.println("Failed to close");
+                exception = RepositoryException.createFailedToCloseConnection();
             }
+        }
+        if (exception != null) {
+            throw exception;
         }
         return null;
     }
