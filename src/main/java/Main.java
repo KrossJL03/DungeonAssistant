@@ -1,5 +1,9 @@
 import bot.*;
 
+import bot.Encounter.EncounterContext;
+import bot.Encounter.EncounterLogger;
+import bot.Encounter.EncounterLoggerContext;
+import bot.Encounter.EncounterManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
@@ -19,7 +23,7 @@ public class Main {
             encounterLoggerContext
         );
 
-        CommandManager  commandManager  = new CommandManager(encountermanager, new PrivateLogger());
+        CommandManager  commandManager  = new CommandManager(encountermanager);
         CommandListener commandListener = new CommandListener(commandManager);
 
         Main.populateTestData();

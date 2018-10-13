@@ -1,6 +1,8 @@
 package bot.PlayerCharacter.Exception;
 
-public class NotYourCharacterException extends RuntimeException {
+import bot.CustomExceptionInterface;
+
+public class NotYourCharacterException extends RuntimeException implements CustomExceptionInterface {
     private NotYourCharacterException(String message) {
         super(message);
     }

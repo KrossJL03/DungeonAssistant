@@ -1,4 +1,4 @@
-package bot;
+package bot.Encounter;
 
 import bot.Exception.ContextChannelNotSetException;
 import net.dv8tion.jda.core.entities.MessageChannel;

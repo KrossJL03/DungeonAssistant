@@ -1,9 +1,13 @@
 package bot;
 
+import bot.Encounter.EncounterManager;
 import bot.Hostile.Exception.NoHostileFoundException;
 import bot.Hostile.Hostile;
 import bot.Exception.*;
 import bot.Hostile.HostileManager;
+import bot.Item.Consumable.ConsumableItem;
+import bot.Item.Consumable.ConsumableManager;
+import bot.Item.Consumable.Exception.ItemNotFoundException;
 import bot.Player.Player;
 import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
@@ -19,12 +23,10 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandManager {
 
-    private EncounterManager   encounterManager;
-    private PrivateLogger      privateLogger;
+    private EncounterManager encounterManager;
 
-    public CommandManager(EncounterManager encounterManager, PrivateLogger privateLogger) {
+    public CommandManager(EncounterManager encounterManager) {
         this.encounterManager = encounterManager;
-        this.privateLogger = privateLogger;
     }
 
     void addHostile(MessageReceivedEvent event) {
@@ -135,7 +137,7 @@ public class CommandManager {
     }
 
     void helpCommand(MessageReceivedEvent event) {
-        this.privateLogger.showHelpPage(event.getAuthor(), this.isAdmin(event));
+        PrivateLogger.showHelpPage(event.getAuthor(), this.isAdmin(event));
     }
 
     void hurtHostile(MessageReceivedEvent event) {
@@ -156,7 +158,7 @@ public class CommandManager {
         }
     }
 
-    void joinEncounter(MessageReceivedEvent event) {
+    void joinCommand(MessageReceivedEvent event) {
         MessageChannel channel    = event.getChannel();
         User           owner      = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
@@ -249,6 +251,20 @@ public class CommandManager {
     void startEncounter(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             this.encounterManager.startEncounter(event.getChannel(), event.getGuild().getPublicRole());
+        }
+    }
+
+    void useItemCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            Player         player        = PlayerRepository.getPlayer(event.getAuthor().getId());
+            String[]       splitInput    = event.getMessage().getContentRaw().split("\\s+");
+            String         itemName      = splitInput[1];
+            String         recipientName = splitInput.length > 2 ? splitInput[2] : null;
+            ConsumableItem item          = ConsumableManager.getItem(itemName);
+            if (item == null) {
+                throw ItemNotFoundException.createForConsumable(itemName);
+            }
+            this.encounterManager.useItem(player, item, recipientName);
         }
     }
 

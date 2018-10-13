@@ -1,4 +1,4 @@
-package bot.Entity;
+package bot.Encounter.EncounterData;
 
 public interface EncounterDataInterface {
 
@@ -8,8 +8,8 @@ public interface EncounterDataInterface {
     String getName();
     EncounterDataInterface getSlayer();
     boolean isSlain();
-    void heal(int hitpoints);
-    void heal(float percent);
+    int heal(int hitpoints);
+    int heal(float percent);
     void hurt(int hitpoints);
     int rollDamage();
     int takeDamage(EncounterDataInterface attacker, int damage);

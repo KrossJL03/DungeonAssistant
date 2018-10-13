@@ -41,7 +41,7 @@ public class ItemAbstract {
         return image;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 

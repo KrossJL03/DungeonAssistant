@@ -1,8 +1,5 @@
 package bot.Item.Consumable;
 
-import bot.Entity.EncounterDataInterface;
-import bot.Entity.PCEncounterData;
-import bot.Exception.CharacterSlainException;
 import bot.Item.Consumable.Exception.InvalidConsumableException;
 
 public class ConsumableManager {
@@ -58,40 +55,8 @@ public class ConsumableManager {
         );
     }
 
-    public static void useItem(ConsumableItem item, PCEncounterData user, EncounterDataInterface recipient) {
-        boolean usedOnSelf = user.equals(recipient);
-
-        if (item.isHealing()) {
-            if (recipient.isSlain() && !item.isReviving()) {
-                throw CharacterSlainException.createFailedToHeal(recipient.getName(), recipient.getSlayer().getName());
-            } else if (!usedOnSelf && item.isUserHealed()) {
-                user.heal(item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed());
-            } else {
-                // todo "the guild leader in charge takes a phoenix feather out of their bag, reviving [Member player]! You're back with half HP, and get the "Zombie" title."
-                recipient.heal(item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed());
-            }
-        }
-
-        if (item.isDamaging()) {
-            recipient.hurt(item.getDamage());
-        }
-
-//        if (item.isTempStatBoost()) {
-//            // todo
-//        }
-//
-//        if (item.isProtecting()) {
-//            if (!usedOnSelf) {
-//                // todo results in protect action
-//            } else {
-//                // todo results in successful dodge action
-//            }
-//        }
-//
-//        if (item.isDmPinged()) {
-//            // todo
-//        }
-
+    public static ConsumableItem getItem(String itemName) {
+        return ConsumableRepository.getItem(itemName);
     }
 
 }

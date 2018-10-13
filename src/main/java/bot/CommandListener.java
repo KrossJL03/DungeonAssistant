@@ -61,7 +61,7 @@ public class CommandListener extends ListenerAdapter {
                         this.commandManager.helpCommand(event);
                         break;
                     case "$join":
-                        this.commandManager.joinEncounter(event);
+                        this.commandManager.joinCommand(event);
                         break;
                     case "$leave":
                         this.commandManager.leaveCommand(event);
@@ -75,6 +75,8 @@ public class CommandListener extends ListenerAdapter {
                     case "$return":
                         this.commandManager.returnCommand(event);
                         break;
+                    case "$use":
+                        this.commandManager.useItemCommand(event);
                     case "$view":
                         this.processViewCommand(event);
                         break;

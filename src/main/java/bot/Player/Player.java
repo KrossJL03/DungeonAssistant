@@ -24,6 +24,10 @@ public class Player {
         return name;
     }
 
+    public String getUserId() {
+        return this.userId;
+    }
+
     public boolean isSamePlayer(String userId) {
         return this.userId.equals(userId);
     }

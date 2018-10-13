@@ -102,10 +102,10 @@ class PlayerCharacterRepository {
         Connection connection = null;
         Statement  statement  = null;
         String sql = String.format(
-            "SELECT * FROM %s WHERE playerId = '%s' AND name = '%s'",
+            "SELECT * FROM %s WHERE playerId = '%s' AND lower(name) = '%s'",
             PlayerCharacterRepository.TABLE_NAME,
             playerId,
-            name
+            name.toLowerCase()
         );
         try {
             connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
@@ -144,9 +144,9 @@ class PlayerCharacterRepository {
         Connection connection = null;
         Statement  statement  = null;
         String sql = String.format(
-            "SELECT * FROM %s WHERE name = '%s'",
+            "SELECT * FROM %s WHERE lower(name) = '%s'",
             PlayerCharacterRepository.TABLE_NAME,
-            name
+            name.toLowerCase()
         );
         try {
             connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));

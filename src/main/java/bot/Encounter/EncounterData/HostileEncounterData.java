@@ -1,4 +1,4 @@
-package bot.Entity;
+package bot.Encounter.EncounterData;
 
 import bot.Hostile.Hostile;
 
@@ -54,18 +54,31 @@ public class HostileEncounterData implements EncounterDataInterface {
         return this.hostile.getSpecies();
     }
 
-    public void heal(int hitpoints) {
+    public int heal(int hitpoints) {
         if (this.isSlain()) {
             this.slayer = null;
         }
-        this.currentHp += hitpoints;
+        if (this.currentHp + hitpoints > this.getMaxHP()) {
+            hitpoints = this.getMaxHP() - this.currentHp;
+            this.currentHp = this.getMaxHP();
+        } else {
+            this.currentHp += hitpoints;
+        }
+        return hitpoints;
     }
 
-    public void heal(float percent) {
+    public int heal(float percent) {
         if (this.isSlain()) {
             this.slayer = null;
         }
-        this.currentHp += this.getMaxHP() * percent;
+        int hitpointsHealed = (int) Math.floor(this.getMaxHP() * percent);
+        if (this.currentHp + hitpointsHealed > this.getMaxHP()) {
+            hitpointsHealed = this.getMaxHP() - this.currentHp;
+            this.currentHp = this.getMaxHP();
+        } else {
+            this.currentHp += hitpointsHealed;
+        }
+        return hitpointsHealed;
     }
 
     public void hurt(int hitpoints) {

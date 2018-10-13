@@ -2,13 +2,11 @@ package bot;
 
 import net.dv8tion.jda.core.entities.User;
 
-public class PrivateLogger {
+class PrivateLogger {
 
     private static String NEWLINE = System.getProperty("line.separator");
 
-    public PrivateLogger() {}
-
-    void showHelpPage(User user, boolean isAdmin) {
+    static void showHelpPage(User user, boolean isAdmin) {
         StringBuilder output = new StringBuilder();
 
         output.append("**DUNGEON ASSISTANT COMMANDS:**");
@@ -21,8 +19,8 @@ public class PrivateLogger {
         if (isAdmin) {
             output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s", "$createHostile", "[Name] [HP] [AttackDice]"));
-            output.append(PrivateLogger.NEWLINE);
+//            output.append(String.format("   %-16s %-16s", "$createHostile", "[Name] [HP] [AttackDice]"));
+//            output.append(PrivateLogger.NEWLINE);
         } else {
             output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
             output.append(PrivateLogger.NEWLINE);
@@ -62,6 +60,13 @@ public class PrivateLogger {
             "[Name]",
             "Protect a teammate during the dodge turn"
         ));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "$use",
+            "[ItemName] (RecipientName)",
+            "Use an item. Optional recipient name, leave blank to use on yourself."
+        ));
         output.append("```");
 
         if (isAdmin) {
@@ -72,7 +77,7 @@ public class PrivateLogger {
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
                 "   %-16s %-16s %s",
-                "createHostile",
+                "addHostile",
                 "[Species] (Name)",
                 "Add a hostile, Name is optional"
             ));
@@ -133,24 +138,24 @@ public class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         if (isAdmin) {
-            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all characters registered"));
+            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all of your registered characters"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "loot", "", "View all hostiles registered"));
+            output.append(String.format("   %-16s %-16s %s", "loot [Species]", "", "View loot for a given hostile"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         } else {
-            output.append(String.format("   %-16s %-16s %s", "players", "", "View all characters registered"));
+            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all of your registered characters"));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         }
         output.append("```");
 
-        this.sendPrivateMessage(user, output.toString());
+        PrivateLogger.sendPrivateMessage(user, output.toString());
     }
 
-    private void sendPrivateMessage(User user, String content) {
+    private static void sendPrivateMessage(User user, String content) {
         user.openPrivateChannel().queue((channel) -> channel.sendMessage(content).queue());
     }
 }

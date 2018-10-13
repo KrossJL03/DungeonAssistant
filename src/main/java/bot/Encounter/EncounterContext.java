@@ -1,7 +1,9 @@
-package bot;
+package bot.Encounter;
 
-import bot.Entity.HostileEncounterData;
-import bot.Entity.PCEncounterData;
+import bot.Encounter.EncounterData.EncounterDataInterface;
+import bot.Encounter.EncounterData.HostileEncounterData;
+import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.Exception.EncounterDataNotFoundException;
 import bot.Player.Player;
 import bot.Exception.*;
 
@@ -12,7 +14,7 @@ public class EncounterContext {
     public static  String ATTACK_PHASE = "ATTACK";
     public static  String DODGE_PHASE  = "DODGE";
     public static  String JOIN_PHASE   = "JOIN";
-    static         String LOOT_PHASE   = "LOOT";
+    public static  String LOOT_PHASE   = "LOOT";
     private static String RP_PHASE     = "RP";
 
     private ArrayList<HostileEncounterData> hostiles;
@@ -88,13 +90,6 @@ public class EncounterContext {
         return activePlayers;
     }
 
-    ArrayList<PCEncounterData> getAlivePlayerCharacters() {
-        ArrayList<PCEncounterData> alivePlayerCharacters = new ArrayList<>();
-        alivePlayerCharacters.addAll(this.getActivePlayerCharacters());
-        alivePlayerCharacters.addAll(this.absentPlayerCharacters);
-        return alivePlayerCharacters;
-    }
-
     ArrayList<HostileEncounterData> getAllHostiles() {
         return this.hostiles;
     }
@@ -110,6 +105,19 @@ public class EncounterContext {
         return this.initiative.getCurrentPlayerCharacter();
     }
 
+    EncounterDataInterface getEncounterData(String name) {
+        String nameLower = name.toLowerCase();
+        ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
+        allCreatures.addAll(this.playerCharacters);
+        allCreatures.addAll(this.hostiles);
+        for (EncounterDataInterface creature : allCreatures) {
+            if (creature.getName().toLowerCase().equals(nameLower)) {
+                return creature;
+            }
+        }
+        return null;
+    }
+
     HostileEncounterData getHostile(String name) {
         String nameLower = name.toLowerCase();
         for (HostileEncounterData hostile : this.hostiles) {
@@ -120,7 +128,8 @@ public class EncounterContext {
                 return hostile;
             }
         }
-        throw new NoHostileInEncounterException(name);
+        // todo return null, throw exception outside
+        throw EncounterDataNotFoundException.createForHostile(name);
     }
 
     int getMaxPlayerCount() {
@@ -141,7 +150,8 @@ public class EncounterContext {
                 return playerCharacter;
             }
         }
-        throw new NoCharacterInEncounterException(name);
+        // todo return null, throw exception outside
+        throw EncounterDataNotFoundException.createForPlayerCharacter(name);
     }
 
     PCEncounterData getPlayerCharacter(Player player) {
@@ -150,7 +160,8 @@ public class EncounterContext {
                 return playerCharacter;
             }
         }
-        throw new NoCharacterInEncounterException(player);
+        // todo return null, throw exception outside
+        throw EncounterDataNotFoundException.createForPlayerCharacter(player);
     }
 
     boolean hasPlayerCharacterGone(PCEncounterData playerCharacter) {
@@ -177,6 +188,10 @@ public class EncounterContext {
         return this.isStarted && (this.getActiveHostiles().size() == 0 || this.getActivePlayerCharacters().size() == 0);
     }
 
+    boolean isPhase(String phase) {
+        return this.currentPhase.equals(phase);
+    }
+
     boolean isStarted() {
         return this.isStarted;
     }
@@ -189,7 +204,7 @@ public class EncounterContext {
     void playerHasReturned(Player player) {
         PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
         if (absentPlayerCharacter == null) {
-            throw new NoCharacterInEncounterException(player);
+            throw EncounterDataNotFoundException.createForPlayerCharacter(player);
         } else if (this.isFullDungeon()) {
             throw new FullDungeonException(player);
         }
@@ -240,14 +255,14 @@ public class EncounterContext {
 
     void removeHostile(HostileEncounterData hostile) {
         if (!this.hostiles.contains(hostile)) {
-            throw new NoHostileInEncounterException(hostile.getName());
+            throw EncounterDataNotFoundException.createForHostile(hostile.getName());
         }
         this.hostiles.remove(hostile);
     }
 
     void removePlayerCharacter(PCEncounterData playerCharacter) {
         if (!this.playerCharacters.contains(playerCharacter)) {
-            throw new NoCharacterInEncounterException(playerCharacter.getName());
+            throw EncounterDataNotFoundException.createForPlayerCharacter(playerCharacter.getName());
         }
         if (this.initiative.contains(playerCharacter)) {
             this.initiative.remove(playerCharacter);

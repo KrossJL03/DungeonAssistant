@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class ConsumableRepository {
+class ConsumableRepository {
 
     private static String TABLE_NAME = "consumable";
 
@@ -73,7 +73,7 @@ public class ConsumableRepository {
         ConsumableRepository.executeUpdate(sql);
     }
 
-    public static ConsumableItem getItem(String name) {
+    static ConsumableItem getItem(String name) {
         String sql = String.format(
             "SELECT rowid, *" +
             "FROM %s " +

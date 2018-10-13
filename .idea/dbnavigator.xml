@@ -50,7 +50,10 @@ SELECT * FROM player;
 DELETE FROM player;
 
 SELECT * FROM playerCharacter;
-DELETE FROM playerCharacter;]]></console>
+DELETE FROM playerCharacter;
+
+SELECT * FROM consumable;
+DELETE FROM consumable;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">

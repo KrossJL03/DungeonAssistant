@@ -1,10 +1,14 @@
-package bot;
+package bot.Encounter;
 
-import bot.Entity.*;
+import bot.Encounter.Exception.EncounterDataNotFoundException;
+import bot.Encounter.Exception.WrongPhaseException;
+import bot.Encounter.EncounterData.*;
 import bot.Exception.*;
 import bot.Hostile.Exception.NoHostileFoundException;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileManager;
+import bot.Item.Consumable.ConsumableItem;
+import bot.Item.Consumable.Exception.MissingRecipientException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -28,7 +32,7 @@ public class EncounterManager {
         this.loggerContext = loggerContext;
     }
 
-    void addHostile(String speciesName, String nickname) {
+    public void addHostile(String speciesName, String nickname) {
         try {
             Hostile              hostileSpecies  = HostileManager.getHostile(speciesName);
             String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
@@ -61,10 +65,10 @@ public class EncounterManager {
         }
     }
 
-    void attackAction(Player player, String hostileName) {
+    public void attackAction(Player player, String hostileName) {
         try {
             if (!this.context.isAttackPhase()) {
-                throw new WrongPhaseException(EncounterContext.ATTACK_PHASE, "attack");
+                throw WrongPhaseException.createForAttack();
             }
             PCEncounterData      playerCharacter = this.getPlayerCharacter(player);
             HostileEncounterData hostile         = this.context.getHostile(hostileName);
@@ -89,22 +93,22 @@ public class EncounterManager {
                 this.addKillToPlayerCharacters(hostile);
             }
             this.endPlayerAction();
-        } catch (WrongPhaseException | NotYourTurnException | NoHostileInEncounterException | HostileSlainException e) {
+        } catch (WrongPhaseException | NotYourTurnException | HostileSlainException e) {
             this.logger.logException(e);
         }
     }
 
-    void createEncounter(MessageChannel channel, Role dungeonMaster) {
+    public void createEncounter(MessageChannel channel, Role dungeonMaster) {
         this.context = new EncounterContext();
         this.loggerContext.setChannel(channel);
         this.loggerContext.setDungeonMaster(dungeonMaster);
         this.logger.logCreateEncounter();
     }
 
-    void dodgeAction(Player player) {
+    public void dodgeAction(Player player) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
+                throw WrongPhaseException.createForDodge();
             }
             PCEncounterData    playerCharacter = this.getPlayerCharacter(player);
             ArrayList<Integer> dodgeRolls      = new ArrayList<>();
@@ -134,7 +138,7 @@ public class EncounterManager {
         }
     }
 
-    void healHostile(String name, int hitpoints) {
+    public void healHostile(String name, int hitpoints) {
         try {
             HostileEncounterData hostile = this.context.getHostile(name);
             hostile.heal(hitpoints);
@@ -144,27 +148,23 @@ public class EncounterManager {
                 hostile.getCurrentHP(),
                 hostile.getMaxHP()
             );
-        } catch (NoHostileInEncounterException | HostileSlainException e) {
+        } catch (HostileSlainException e) {
             this.logger.logException(e);
         }
     }
 
-    void healPlayer(String name, int hitpoints) {
-        try {
-            PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-            playerCharacter.heal(hitpoints);
-            this.logger.logDungeonMasterHeal(
-                playerCharacter.getName(),
-                hitpoints,
-                playerCharacter.getCurrentHP(),
-                playerCharacter.getMaxHP()
-            );
-        } catch (NoCharacterInEncounterException e) {
-            this.logger.logException(e);
-        }
+    public void healPlayer(String name, int hitpoints) {
+        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
+        playerCharacter.heal(hitpoints);
+        this.logger.logDungeonMasterHeal(
+            playerCharacter.getName(),
+            hitpoints,
+            playerCharacter.getCurrentHP(),
+            playerCharacter.getMaxHP()
+        );
     }
 
-    void hurtHostile(String name, int hitpoints) {
+    public void hurtHostile(String name, int hitpoints) {
         try {
             HostileEncounterData hostile = this.context.getHostile(name);
             hostile.hurt(hitpoints);
@@ -178,12 +178,12 @@ public class EncounterManager {
                 this.addKillToPlayerCharacters(hostile);
                 this.logger.logDungeonMasterSlay(hostile.getName());
             }
-        } catch (NoHostileInEncounterException | HostileSlainException e) {
+        } catch (HostileSlainException e) {
             this.logger.logException(e);
         }
     }
 
-    void hurtPlayer(String name, int hitpoints) {
+    public void hurtPlayer(String name, int hitpoints) {
         try {
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
             playerCharacter.hurt(hitpoints);
@@ -196,12 +196,12 @@ public class EncounterManager {
             if (playerCharacter.isSlain()) {
                 this.logger.logDungeonMasterSlay(playerCharacter.getName());
             }
-        } catch (NoCharacterInEncounterException | CharacterSlainException e) {
+        } catch (CharacterSlainException e) {
             this.logger.logException(e);
         }
     }
 
-    void joinEncounter(PlayerCharacter playerCharacter) {
+    public void joinEncounter(PlayerCharacter playerCharacter) {
         try {
             if (!this.context.isStarted()) {
                 throw new EncounterNotStartedException();
@@ -217,22 +217,22 @@ public class EncounterManager {
         }
     }
 
-    void leaveEncounter(Player player) {
+    public void leaveEncounter(Player player) {
         try {
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
             playerCharacter.useAllActions();
             this.context.playerHasLeft(playerCharacter);
             this.logger.logLeftEncounter(playerCharacter.getName());
             this.endPlayerAction();
-        } catch (NoCharacterInEncounterException | PlayerCharacterAlreadyLeftException e) {
+        } catch (PlayerCharacterAlreadyLeftException e) {
             this.logger.logException(e);
         }
     }
 
-    void lootAction(Player player) {
+    public void lootAction(Player player) {
         try {
             if (!this.context.isLootPhase()) {
-                throw new WrongPhaseException(EncounterContext.LOOT_PHASE, "loot");
+                throw WrongPhaseException.createForLoot();
             }
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
             if (playerCharacter.hasLoot()) {
@@ -241,15 +241,15 @@ public class EncounterManager {
             playerCharacter.rollLoot();
             playerCharacter.useAllActions();
             this.logger.logActionLoot(playerCharacter);
-        } catch (NoCharacterInEncounterException | LootRerollException e) {
+        } catch (LootRerollException e) {
             this.logger.logException(e);
         }
     }
 
-    void protectAction(Player player, String name) {
+    public void protectAction(Player player, String name) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "protect");
+                throw WrongPhaseException.createForProtect();
             }
 
             PCEncounterData protectorCharacter = this.getPlayerCharacter(player);
@@ -283,7 +283,6 @@ public class EncounterManager {
         } catch (
             WrongPhaseException |
                 NotYourTurnException |
-                NoCharacterInEncounterException |
                 CharacterUnableToProtectException |
                 ProtectYourselfException |
                 ProtectedCharacterIsSlain |
@@ -293,42 +292,34 @@ public class EncounterManager {
         }
     }
 
-    void removeHostile(String name) {
-        try {
-            HostileEncounterData hostile = this.context.getHostile(name);
-            this.context.removeHostile(hostile);
-            this.logger.logRemovedHostile(name);
-        } catch (NoHostileInEncounterException e) {
-            this.logger.logException(e);
-        }
+    public void removeHostile(String name) {
+        HostileEncounterData hostile = this.context.getHostile(name);
+        this.context.removeHostile(hostile);
+        this.logger.logRemovedHostile(name);
     }
 
-    void removePlayerCharacter(String name) {
-        try {
-            PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-            this.context.removePlayerCharacter(playerCharacter);
-            this.logger.logRemovedPlayerCharacter(name);
-        } catch (NoCharacterInEncounterException e) {
-            this.logger.logException(e);
-        }
+    public void removePlayerCharacter(String name) {
+        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
+        this.context.removePlayerCharacter(playerCharacter);
+        this.logger.logRemovedPlayerCharacter(name);
     }
 
-    void returnToEncounter(Player player) {
+    public void returnToEncounter(Player player) {
         try {
             this.context.playerHasReturned(player);
             PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
             this.logger.logReturnToEncounter(playerCharacter.getName());
-        } catch (NoCharacterInEncounterException | FullDungeonException e) {
+        } catch (FullDungeonException e) {
             this.logger.logException(e);
         }
     }
 
-    void setMaxPlayerCount(int maxPlayerCount) {
+    public void setMaxPlayerCount(int maxPlayerCount) {
         this.context.setMaxPlayerCount(maxPlayerCount);
         this.logger.logSetMaxPlayers(maxPlayerCount);
     }
 
-    void skipPlayerTurn() {
+    public void skipPlayerTurn() {
         try {
             PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
             if (this.context.isAttackPhase()) {
@@ -343,7 +334,7 @@ public class EncounterManager {
         }
     }
 
-    void startAttackPhase() {
+    public void startAttackPhase() {
         try {
             if (!this.context.isStarted()) {
                 throw new EncounterNotStartedException();
@@ -359,7 +350,7 @@ public class EncounterManager {
         }
     }
 
-    void startDodgePhase() {
+    public void startDodgePhase() {
         try {
             if (!this.context.isStarted()) {
                 throw new EncounterNotStartedException();
@@ -378,7 +369,7 @@ public class EncounterManager {
         }
     }
 
-    void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
+    public void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
         try {
             if (this.context.isStarted()) {
                 throw new EncounterInProgessException();
@@ -395,7 +386,84 @@ public class EncounterManager {
         }
     }
 
-    void viewEncounterSummary() {
+    public void useItem(Player player, ConsumableItem item, String recipientName) {
+        if (!this.context.isPhase(item.getUsablePhase())) {
+            throw WrongPhaseException.createForItem(item.getName(), item.getUsablePhase());
+        }
+        PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
+        EncounterDataInterface recipient;
+        boolean                usedOnSelf      = false;
+        int                    hitpointsHealed = 0;
+        int                    damage          = 0;
+        boolean                isRevived       = false;
+
+        if (recipientName == null) {
+            if (item.isRecipientRequired()) {
+                throw MissingRecipientException.create(item.getName());
+            }
+            recipient = playerCharacter;
+            usedOnSelf = true;
+        } else {
+            recipient = this.context.getEncounterData(recipientName);
+            if (recipient == null) {
+                throw EncounterDataNotFoundException.createForRecipient(recipientName);
+            }
+        }
+
+        if (item.isHealing()) {
+            if (!usedOnSelf && item.isUserHealed()) {
+                hitpointsHealed = playerCharacter.heal(
+                    item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed()
+                );
+            } else {
+                if (recipient.isSlain()) {
+                    if (!item.isReviving()) {
+                        throw CharacterSlainException.createFailedToHeal(
+                            recipient.getName(),
+                            recipient.getSlayer().getName()
+                        );
+                    }
+                    isRevived = true;
+                }
+                hitpointsHealed = recipient.heal(
+                    item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed()
+                );
+            }
+        }
+
+        if (item.isDamaging()) {
+            damage = recipient.takeDamage(playerCharacter, item.getDamage());
+            if (recipient instanceof HostileEncounterData && recipient.isSlain()) {
+                this.addKillToPlayerCharacters((HostileEncounterData) recipient);
+            }
+        }
+
+//        if (item.isTempStatBoost()) {
+//            // todo
+//        }
+//
+//        if (item.isProtecting()) {
+//            // todo is protecting item and is NOT the dodge turn
+//            if (!usedOnSelf) {
+//                // todo results in protect action
+//            } else {
+//                // todo results in successful dodge action
+//
+//            }
+//        }
+
+        this.logger.logUsedItem(
+            playerCharacter, recipient, item,
+            hitpointsHealed,
+            damage,
+            isRevived
+        );
+
+        playerCharacter.useAction();
+        this.endPlayerAction();
+    }
+
+    public void viewEncounterSummary() {
         this.logger.logEncounterSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
     }
 
@@ -408,7 +476,7 @@ public class EncounterManager {
     private void dodgeActionSkipped(Player player) {
         try {
             if (!this.context.isDodgePhase()) {
-                throw new WrongPhaseException(EncounterContext.DODGE_PHASE, "dodge");
+                throw WrongPhaseException.createForDodge();
             }
             PCEncounterData playerCharacter = this.getPlayerCharacter(player);
             int             totalDamage     = 0;
@@ -467,9 +535,9 @@ public class EncounterManager {
         }
     }
 
-    private PCEncounterData getPlayerCharacter(Player owner) {
+    private PCEncounterData getPlayerCharacter(Player player) {
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        if (!playerCharacter.getOwner().equals(owner)) {
+        if (!playerCharacter.isOwner(player.getUserId())) {
             throw new NotYourTurnException();
         }
         return playerCharacter;

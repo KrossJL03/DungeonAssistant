@@ -1,6 +1,6 @@
-package bot;
+package bot.Encounter;
 
-import bot.Entity.PCEncounterData;
+import bot.Encounter.EncounterData.PCEncounterData;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

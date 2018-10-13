@@ -2,7 +2,7 @@ package bot.Item.Consumable;
 
 import bot.Item.ItemAbstract;
 
-class ConsumableItem extends ItemAbstract {
+public class ConsumableItem extends ItemAbstract {
 
     private String  usablePhase;
     private int     damage;
@@ -49,64 +49,64 @@ class ConsumableItem extends ItemAbstract {
         this.uses = uses;
     }
 
-    int getDamage() {
-        return damage;
+    public int getDamage() {
+        return this.damage;
     }
 
-    int getHitpointsHealed() {
-        return hitpointsHealed;
+    public int getHitpointsHealed() {
+        return this.hitpointsHealed;
     }
 
-    float getPercentHealed() {
-        return percentHealed;
+    public float getPercentHealed() {
+        return this.percentHealed;
     }
 
     int getTempStatBoost() {
-        return tempStatBoost;
+        return this.tempStatBoost;
+    }
+
+    public String getUsablePhase() {
+        return this.usablePhase;
     }
 
     int getUses() {
-        return uses;
+        return this.uses;
     }
 
-    boolean isDamaging() {
+    public boolean isDamaging() {
         return this.damage > 0;
     }
 
-    boolean isDmPinged() {
+    public boolean isDmPinged() {
         return this.pingDM;
     }
 
-    boolean isHealing() {
+    public boolean isHealing() {
         return this.isPointHealing() || this.isPercentHealing();
     }
 
-    boolean isPercentHealing() {
+    public boolean isPercentHealing() {
         return this.percentHealed > 0;
     }
 
-    boolean isProtecting() {
+    public boolean isProtecting() {
         return this.protects;
     }
 
-    boolean isRecipientRequired() {
+    public boolean isRecipientRequired() {
         return this.recipientRequired;
     }
 
-    boolean isReviving() {
+    public boolean isReviving() {
         return this.revives;
     }
 
-    boolean isTempStatBoost() {
+    public boolean isTempStatBoost() {
         return this.tempStatBoost > 0;
     }
 
-    boolean isUserHealed() {
+    public boolean isUserHealed() {
         return this.healsUser;
-    }
-
-    boolean isUsablePhase(String phase) {
-        return this.usablePhase.equals(phase);
     }
 
     private boolean isPointHealing() {

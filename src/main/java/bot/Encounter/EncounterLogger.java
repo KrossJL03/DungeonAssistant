@@ -1,8 +1,9 @@
-package bot;
+package bot.Encounter;
 
-import bot.Entity.*;
+import bot.Encounter.EncounterData.*;
 import bot.Exception.EncounterException;
 import bot.Hostile.Loot;
+import bot.Item.Consumable.ConsumableItem;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.ArrayList;
@@ -194,9 +195,9 @@ public class EncounterLogger {
     }
 
     void logActionLoot(PCEncounterData playerCharacter) {
-        ArrayList<HostileEncounterData> hostiles   = playerCharacter.getKills();
-        StringBuilder                   output     = new StringBuilder();
-        ArrayList<String>               slain      = new ArrayList<>();
+        ArrayList<HostileEncounterData> hostiles = playerCharacter.getKills();
+        StringBuilder                   output   = new StringBuilder();
+        ArrayList<String>               slain    = new ArrayList<>();
         for (HostileEncounterData hostile : hostiles) {
             EncounterDataInterface slayer = hostile.getSlayer();
             if (slayer instanceof PCEncounterData && slayer.equals(playerCharacter)) {
@@ -336,7 +337,7 @@ public class EncounterLogger {
         this.logMessage(
             "**ATTACK TURN!**" +
             EncounterLogger.NEWLINE +
-            "Please use `$attack [HostileName]` to attack. Ex: `$attack Stanely`"
+            "Please use `$attack [HostileName]` to attack. Ex: `$attack Stanley`"
         );
         this.logEncounterSummary(playerCharacters, hostiles);
     }
@@ -510,15 +511,80 @@ public class EncounterLogger {
         this.logMessage(String.format("%s has returns to the encounter!", name));
     }
 
-    void logPhaseLoot() {
-        this.logMessage(
-            "**LOOT TURN!**" +
-            EncounterLogger.NEWLINE +
-            "Please use `$loot` to harvest materials from the hostiles." +
-            EncounterLogger.NEWLINE +
-            "There is no turn order and if you are unable to roll now you may do so later."
-        );
+    void logUsedItem(
+        PCEncounterData playerCharacter,
+        EncounterDataInterface recipient,
+        ConsumableItem item,
+        int hitpointsHealed,
+        int damage,
+        boolean isRevived
+    ) {
+        String playerCharacterName = playerCharacter.getName();
+        boolean usedOnSelf = false;
+        if (recipient == null) {
+            recipient = playerCharacter;
+            usedOnSelf = true;
+        }
+        String recipientName = recipient.getName();
+
+        StringBuilder output = new StringBuilder();
+        if (item.isDmPinged()) {
+            output.append(this.context.getDungeonMasterMention());
+            output.append(EncounterLogger.NEWLINE);
+        }
+        output.append("```ml");
+        output.append(EncounterLogger.NEWLINE);
+        output.append(String.format(
+            "%s uses a %s on %s!",
+            playerCharacterName,
+            item.getName(),
+            usedOnSelf ? recipient.getName() : "themself"
+        ));
+        output.append(EncounterLogger.NEWLINE);
+        output.append(EncounterLogger.NEWLINE);
+        if (hitpointsHealed > 0) {
+            if (!usedOnSelf && item.isUserHealed()) {
+                output.append(String.format("%s regains %d HP!", playerCharacterName, hitpointsHealed));
+                output.append(EncounterLogger.NEWLINE);
+                output.append(String.format(
+                    "%d/%d health remaining",
+                    playerCharacter.getCurrentHP(),
+                    playerCharacter.getMaxHP()
+                ));
+            } else {
+                if (isRevived) {
+                    output.append(String.format("%s has been revived and earned the Zombie Title", recipientName));
+                    output.append(EncounterLogger.NEWLINE);
+                }
+                output.append(String.format("%s is healed by %d HP!", recipientName, hitpointsHealed));
+                output.append(EncounterLogger.NEWLINE);
+                output.append(String.format("%d/%d health remaining", recipient.getCurrentHP(), recipient.getMaxHP()));
+            }
+            output.append(EncounterLogger.NEWLINE);
+        }
+        if (damage > 0) {
+            output.append(String.format("%s takes %d dmg!", recipientName, damage));
+            output.append(EncounterLogger.NEWLINE);
+            if (recipient.isSlain()) {
+                output.append(String.format("%s was slain by %s!!!", recipientName, playerCharacterName));
+            } else {
+                output.append(String.format("%d/%d health remaining", recipient.getCurrentHP(), recipient.getMaxHP()));
+            }
+        }
+
+//        if (item.isTempStatBoost()) {
+//            // todo
+//        }
+//
+
+        // todo "the guild leader in charge takes a phoenix feather out of their bag, reviving [Member player]! You're back with half HP, and get the "Zombie" title."
+
+
+        output.append(EncounterLogger.NEWLINE);
+        output.append("```");
+        this.logMessage(output.toString());
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private String getHealthBar(EncounterDataInterface creature) {

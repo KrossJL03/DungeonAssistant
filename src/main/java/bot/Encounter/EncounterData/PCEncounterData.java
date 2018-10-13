@@ -1,4 +1,4 @@
-package bot.Entity;
+package bot.Encounter.EncounterData;
 
 import bot.Exception.CharacterSlainException;
 import bot.Player.Player;
@@ -117,18 +117,31 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.lootRolls.size() > 0;
     }
 
-    public void heal(int hitpoints) {
+    public int heal(int hitpoints) {
         if (this.isSlain()) {
             this.slayer = null;
         }
-        this.currentHp += hitpoints;
+        if (this.currentHp + hitpoints > this.getMaxHP()) {
+            hitpoints = this.getMaxHP() - this.currentHp;
+            this.currentHp = this.getMaxHP();
+        } else {
+            this.currentHp += hitpoints;
+        }
+        return hitpoints;
     }
 
-    public void heal(float percent) {
+    public int heal(float percent) {
         if (this.isSlain()) {
             this.slayer = null;
         }
-        this.currentHp += this.getMaxHP() * percent;
+        int hitpointsHealed = (int) Math.floor(this.getMaxHP() * percent);
+        if (this.currentHp + hitpointsHealed > this.getMaxHP()) {
+            hitpointsHealed = this.getMaxHP() - this.currentHp;
+            this.currentHp = this.getMaxHP();
+        } else {
+            this.currentHp += hitpointsHealed;
+        }
+        return hitpointsHealed;
     }
 
     public void hurt(int hitpoints) {
@@ -141,6 +154,10 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public boolean isCrit(int rollToHit) {
         return rollToHit >= this.getMinCrit();
+    }
+
+    public boolean isOwner(String userId) {
+        return this.playerCharacter.getOwner().isSamePlayer(userId);
     }
 
     public boolean isSlain() {
@@ -171,6 +188,7 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public int takeDamage(EncounterDataInterface attacker, int damage) {
         damage = (int) Math.floor(damage - this.getEndurance());
+        damage = damage < 1 ? 1 : damage;
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = attacker;
         }
