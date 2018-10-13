@@ -38,7 +38,7 @@ public class EncounterContext {
     void addCharacter(PCEncounterData newPlayerCharacter) {
         Player player = newPlayerCharacter.getOwner();
         for (PCEncounterData character : this.playerCharacters) {
-            if (character.getOwner().equals(player)) {
+            if (character.isOwner(player.getUserId())) {
                 throw new MultiplePlayerCharactersException(player, character.getName());
             }
         }
@@ -156,7 +156,7 @@ public class EncounterContext {
 
     PCEncounterData getPlayerCharacter(Player player) {
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (playerCharacter.getOwner().equals(player)) {
+            if (playerCharacter.isOwner(player.getUserId())) {
                 return playerCharacter;
             }
         }
@@ -272,7 +272,7 @@ public class EncounterContext {
 
     private PCEncounterData getAbsentPlayerCharacter(Player player) {
         for (PCEncounterData playerCharacter : this.absentPlayerCharacters) {
-            if (playerCharacter.getOwner().equals(player)) {
+            if (playerCharacter.isOwner(player.getUserId())) {
                 return playerCharacter;
             }
         }

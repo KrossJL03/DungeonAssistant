@@ -12,7 +12,7 @@ public class CharacterSlainException extends RuntimeException implements Encount
     ) {
         return new CharacterSlainException(
             String.format(
-                "%s was slain by %s and was not present for %s's death",
+                "%s was knocked out by %s and was not present for %s's death",
                 characterName,
                 slayerName,
                 hostileName
@@ -23,7 +23,7 @@ public class CharacterSlainException extends RuntimeException implements Encount
     public static CharacterSlainException createFailedToHeal(String characterName, String slayerName) {
         return new CharacterSlainException(
             String.format(
-                "%s was slain by %s and can only be healed by a reviving item",
+                "%s was knocked out by %s and can only be healed by a reviving item",
                 characterName,
                 slayerName
             )

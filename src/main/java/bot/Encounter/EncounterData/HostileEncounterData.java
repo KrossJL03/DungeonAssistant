@@ -83,6 +83,9 @@ public class HostileEncounterData implements EncounterDataInterface {
 
     public void hurt(int hitpoints) {
         this.currentHp -= hitpoints;
+        if (this.currentHp < 0) {
+            this.currentHp = 0;
+        }
     }
 
     public boolean isSlain() {
@@ -100,8 +103,10 @@ public class HostileEncounterData implements EncounterDataInterface {
     public int takeDamage(EncounterDataInterface attacker, int damage) {
         if (this.currentHp > 0 && this.currentHp - damage < 1) {
             this.slayer = attacker;
+            this.currentHp = 0;
+        } else {
+            this.currentHp -= damage;
         }
-        this.currentHp -= damage;
         return damage;
     }
 }

@@ -25,35 +25,36 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
-        <schema name="main" object-types="column, table, view" />
+        <schema name="main" object-types="table, view" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
-      <console name="Database" type="STANDARD"><![CDATA[DELETE FROM hostile;
+      <console name="Database" type="STANDARD"><![CDATA[SELECT * FROM player;
+DELETE FROM player;
+
+SELECT * FROM playerCharacter;
+DELETE FROM playerCharacter;
 
 SELECT * FROM hostile;
+DELETE FROM hostile;
+
+SELECT * FROM loot;
+DELETE FROM loot;
+
+SELECT * FROM consumable;
+DELETE FROM consumable;
+
+
+
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 
 SELECT h.rowid, h.*, l.* 
 FROM hostile h 
 INNER JOIN loot l ON l.hostile_id = h.rowid 
-WHERE lower(h.species) = 'hootaloo';
-
-SELECT * FROM loot WHERE hostile_id > 10;
-
-DELETE FROM loot;
-
-SELECT * FROM player;
-DELETE FROM player;
-
-SELECT * FROM playerCharacter;
-DELETE FROM playerCharacter;
-
-SELECT * FROM consumable;
-DELETE FROM consumable;]]></console>
+WHERE lower(h.species) = 'hootaloo';]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">

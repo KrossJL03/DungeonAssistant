@@ -39,7 +39,7 @@ public class EncounterLogger {
         output.append(String.format("'%s' takes %d damage!", hostile.getName(), damage));
         output.append(EncounterLogger.NEWLINE);
         if (hostile.isSlain()) {
-            output.append(String.format("%s was slain by %s!!!", hostile.getName(), pcName));
+            output.append(String.format("'%s' was slain by %s!!!", hostile.getName(), pcName));
         } else {
             output.append(String.format("%d/%d health remaining", hostile.getCurrentHP(), hostile.getMaxHP()));
         }
@@ -81,7 +81,7 @@ public class EncounterLogger {
         output.append(String.format("'%s' takes %d damage!", hostile.getName(), damage));
         output.append(EncounterLogger.NEWLINE);
         if (hostile.isSlain()) {
-            output.append(String.format("%s was slain by %s!!!", hostile.getName(), playerCharacter.getName()));
+            output.append(String.format("'%s' was slain by %s!!!", hostile.getName(), playerCharacter.getName()));
         } else {
             output.append(String.format("%d/%d health remaining", hostile.getCurrentHP(), hostile.getMaxHP()));
         }
@@ -262,9 +262,11 @@ public class EncounterLogger {
         ));
         output.append(EncounterLogger.NEWLINE);
         output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("Resisted %d dmg through sheer might!", totalDefended));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
+        if (totalDefended > 0) {
+            output.append(String.format("Resisted %d dmg through sheer might!", totalDefended));
+            output.append(EncounterLogger.NEWLINE);
+            output.append(EncounterLogger.NEWLINE);
+        }
         output.append(String.format("%s takes %d dmg total!", protectorCharacter.getName(), totalDamage));
         output.append(EncounterLogger.NEWLINE);
         if (protectorCharacter.isSlain()) {
@@ -566,7 +568,7 @@ public class EncounterLogger {
             output.append(String.format("%s takes %d dmg!", recipientName, damage));
             output.append(EncounterLogger.NEWLINE);
             if (recipient.isSlain()) {
-                output.append(String.format("%s was slain by %s!!!", recipientName, playerCharacterName));
+                output.append(String.format("'%s' was slain by %s!!!", recipientName, playerCharacterName));
             } else {
                 output.append(String.format("%d/%d health remaining", recipient.getCurrentHP(), recipient.getMaxHP()));
             }
@@ -593,7 +595,11 @@ public class EncounterLogger {
         int           maxHP     = creature.getMaxHP();
         if (creature.isSlain()) {
             EncounterDataInterface slayer = creature.getSlayer();
-            output.append(String.format("--- %s was slain", creature.getName()));
+            if (creature instanceof PCEncounterData) {
+                output.append(String.format("--- %s was knocked out", creature.getName()));
+            } else {
+                output.append(String.format("--- %s was slain", creature.getName()));
+            }
             if (slayer != null) {
                 output.append(String.format(" by %s", slayer.getName()));
             }

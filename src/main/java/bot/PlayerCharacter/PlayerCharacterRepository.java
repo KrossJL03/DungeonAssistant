@@ -181,10 +181,6 @@ class PlayerCharacterRepository {
         return null;
     }
 
-    public static void main(String[] args) {
-        PlayerCharacterRepository.createTableIfNotExists();
-    }
-
     static void createTableIfNotExists() {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s", PlayerCharacterRepository.TABLE_NAME) +
                      "(" +

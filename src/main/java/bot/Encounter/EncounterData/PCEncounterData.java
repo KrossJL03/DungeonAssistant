@@ -146,6 +146,9 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void hurt(int hitpoints) {
         this.currentHp -= hitpoints;
+        if (this.currentHp < 0) {
+            this.currentHp = 0;
+        }
     }
 
     public boolean isAbleToProtect() {
@@ -191,6 +194,7 @@ public class PCEncounterData implements EncounterDataInterface {
         damage = damage < 1 ? 1 : damage;
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = attacker;
+            this.currentHp = 0;
         }
         this.currentHp -= damage;
         return damage;

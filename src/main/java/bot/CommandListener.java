@@ -77,6 +77,7 @@ public class CommandListener extends ListenerAdapter {
                         break;
                     case "$use":
                         this.commandManager.useItemCommand(event);
+                        break;
                     case "$view":
                         this.processViewCommand(event);
                         break;

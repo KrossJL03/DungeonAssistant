@@ -120,7 +120,7 @@ public class EncounterManager {
                 if (dodgeRoll < 10) {
                     int damage = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
                     totalDamage += damage;
-                    totalDefended += damage == 0 ? hostile.getAttackRoll() : endurance;
+                    totalDefended += damage == 1 ? hostile.getAttackRoll() : endurance;
                 }
                 dodgeRolls.add(dodgeRoll);
             }
