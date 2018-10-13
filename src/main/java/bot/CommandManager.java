@@ -255,7 +255,7 @@ public class CommandManager {
     }
 
     void useItemCommand(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
+//        if (this.isAdmin(event)) {
             Player         player        = PlayerRepository.getPlayer(event.getAuthor().getId());
             String[]       splitInput    = event.getMessage().getContentRaw().split("\\s+");
             String         itemName      = splitInput[1];
@@ -265,7 +265,7 @@ public class CommandManager {
                 throw ItemNotFoundException.createForConsumable(itemName);
             }
             this.encounterManager.useItem(player, item, recipientName);
-        }
+//        }
     }
 
     void viewCharacters(MessageReceivedEvent event) {

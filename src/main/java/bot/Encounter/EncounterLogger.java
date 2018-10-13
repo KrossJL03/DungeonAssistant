@@ -13,6 +13,8 @@ public class EncounterLogger {
     private static String NEWLINE           = System.getProperty("line.separator");
     private static String FULL_HEALTH_ICON  = "█";
     private static String EMPTY_HEALTH_ICON = "─";
+    private static String ARROW_BODY        = "─";
+    private static String ARROW_HEAD        = "►";
 
     private EncounterLoggerContext context;
 
@@ -366,9 +368,11 @@ public class EncounterLogger {
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 output.append(String.format(
-                    "(d%d) '%s' attacks... %10d dmg!",
+                    "(d%d) '%s' attacks... %s%s %10d dmg!",
                     hostile.getAttackDice(),
                     hostile.getName(),
+                    this.repeatString(EncounterLogger.ARROW_BODY, 20 - hostile.getName().length()),
+                    EncounterLogger.ARROW_HEAD,
                     hostile.getAttackRoll()
                 ));
                 output.append(EncounterLogger.NEWLINE);
@@ -510,7 +514,7 @@ public class EncounterLogger {
     }
 
     void logReturnToEncounter(String name) {
-        this.logMessage(String.format("%s has returns to the encounter!", name));
+        this.logMessage(String.format("%s has returned to the encounter!", name));
     }
 
     void logUsedItem(
@@ -521,8 +525,8 @@ public class EncounterLogger {
         int damage,
         boolean isRevived
     ) {
-        String playerCharacterName = playerCharacter.getName();
-        boolean usedOnSelf = false;
+        String  playerCharacterName = playerCharacter.getName();
+        boolean usedOnSelf          = false;
         if (recipient == null) {
             recipient = playerCharacter;
             usedOnSelf = true;
@@ -540,7 +544,7 @@ public class EncounterLogger {
             "%s uses a %s on %s!",
             playerCharacterName,
             item.getName(),
-            usedOnSelf ? recipient.getName() : "themself"
+            usedOnSelf ? "themself" : recipient.getName()
         ));
         output.append(EncounterLogger.NEWLINE);
         output.append(EncounterLogger.NEWLINE);
