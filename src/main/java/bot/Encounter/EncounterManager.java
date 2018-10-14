@@ -114,13 +114,12 @@ public class EncounterManager {
             ArrayList<Integer> dodgeRolls      = new ArrayList<>();
             int                totalDamage     = 0;
             int                totalDefended   = 0;
-            int                endurance       = playerCharacter.getEndurance();
             for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
                 int dodgeRoll = playerCharacter.rollDodge();
                 if (dodgeRoll < 10) {
                     int damage = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
                     totalDamage += damage;
-                    totalDefended += damage == 1 ? hostile.getAttackRoll() : endurance;
+                    totalDefended += hostile.getAttackRoll() - damage;
                 }
                 dodgeRolls.add(dodgeRoll);
             }

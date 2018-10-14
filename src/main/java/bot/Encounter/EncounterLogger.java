@@ -368,10 +368,10 @@ public class EncounterLogger {
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 output.append(String.format(
-                    "(d%d) '%s' attacks... %s%s %10d dmg!",
+                    "(d%d) '%s' attacks %s%s %d dmg!",
                     hostile.getAttackDice(),
                     hostile.getName(),
-                    this.repeatString(EncounterLogger.ARROW_BODY, 20 - hostile.getName().length()),
+                    this.repeatString(EncounterLogger.ARROW_BODY, 15 - hostile.getName().length()),
                     EncounterLogger.ARROW_HEAD,
                     hostile.getAttackRoll()
                 ));
