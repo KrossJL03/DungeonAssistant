@@ -1,5 +1,6 @@
 package bot.Encounter.Exception;
 
+import bot.CommandListener;
 import bot.CustomExceptionInterface;
 import bot.Encounter.EncounterContext;
 import bot.Exception.EncounterException;
@@ -12,7 +13,8 @@ public class WrongPhaseException extends RuntimeException implements EncounterEx
     public static WrongPhaseException createForAttack() {
         return new WrongPhaseException(
             String.format(
-                "You can only `$attack` during the %s turn",
+                "You can only `%sattack` during the %s turn",
+                CommandListener.COMMAND_KEY,
                 EncounterContext.ATTACK_PHASE
             )
         );
@@ -21,7 +23,8 @@ public class WrongPhaseException extends RuntimeException implements EncounterEx
     public static WrongPhaseException createForDodge() {
         return new WrongPhaseException(
             String.format(
-                "You can only `$dodge` during the %s turn",
+                "You can only `%sdodge` during the %s turn",
+                CommandListener.COMMAND_KEY,
                 EncounterContext.DODGE_PHASE
             )
         );
@@ -40,7 +43,8 @@ public class WrongPhaseException extends RuntimeException implements EncounterEx
     public static WrongPhaseException createForLoot() {
         return new WrongPhaseException(
             String.format(
-                "You can only `$loot` during the %s turn",
+                "You can only `%sloot` during the %s turn",
+                CommandListener.COMMAND_KEY,
                 EncounterContext.LOOT_PHASE
             )
         );
@@ -49,7 +53,8 @@ public class WrongPhaseException extends RuntimeException implements EncounterEx
     public static WrongPhaseException createForProtect() {
         return new WrongPhaseException(
             String.format(
-                "You can only `$protect` during the %s turn",
+                "You can only `%sprotect` during the %s turn",
+                CommandListener.COMMAND_KEY,
                 EncounterContext.DODGE_PHASE
             )
         );

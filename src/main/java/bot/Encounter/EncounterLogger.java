@@ -1,5 +1,6 @@
 package bot.Encounter;
 
+import bot.CommandListener;
 import bot.Encounter.EncounterData.*;
 import bot.Exception.EncounterException;
 import bot.Hostile.Loot;
@@ -328,7 +329,10 @@ public class EncounterLogger {
                 EncounterLogger.NEWLINE +
                 "**LOOT TURN!**" +
                 EncounterLogger.NEWLINE +
-                "Please use `$loot` to harvest materials from the hostiles." +
+                String.format(
+                    "Please use `%sloot` to harvest materials from the hostiles.",
+                    CommandListener.COMMAND_KEY
+                ) +
                 EncounterLogger.NEWLINE +
                 "There is no turn order and if you are unable to roll now you may do so later."
             );
@@ -341,7 +345,11 @@ public class EncounterLogger {
         this.logMessage(
             "**ATTACK TURN!**" +
             EncounterLogger.NEWLINE +
-            "Please use `$attack [HostileName]` to attack. Ex: `$attack Stanley`"
+            String.format(
+                "Please use `%sattack [HostileName]` to attack. Ex: `%sattack Stanley`",
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY
+            )
         );
         this.logEncounterSummary(playerCharacters, hostiles);
     }
@@ -352,9 +360,14 @@ public class EncounterLogger {
         output.append("**DODGE TURN!**");
         output.append(EncounterLogger.NEWLINE);
         output.append(
-            "Please `$dodge` to try to avoid the attack, " +
-            "or `$protect [CharacterName]` to sacrifice yourself to save someone else. " +
-            "Ex: `$protect Cocoa`"
+            String.format(
+                "Please `%sdodge` to try to avoid the attack, " +
+                "or `%sprotect [CharacterName]` to sacrifice yourself to save someone else. " +
+                "Ex: `%sprotect Cocoa`",
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY
+            )
         );
         output.append(EncounterLogger.NEWLINE);
         output.append("```ml");
@@ -392,9 +405,15 @@ public class EncounterLogger {
             EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
-            "To bring a character to battle, use `$join [CharacterName]`." +
+            String.format(
+                "To bring a character to battle, use `%sjoin [CharacterName]`.",
+                CommandListener.COMMAND_KEY
+            ) +
             EncounterLogger.NEWLINE +
-            "Make sure your character has already been registered using the `$createCharacter`." +
+            String.format(
+                "Make sure your character has already been registered using the `%screateCharacter`.",
+                CommandListener.COMMAND_KEY
+            ) +
             EncounterLogger.NEWLINE +
             "You may join a battle at any time for as long as it's running, and as long as there are slots open!" +
             EncounterLogger.NEWLINE +

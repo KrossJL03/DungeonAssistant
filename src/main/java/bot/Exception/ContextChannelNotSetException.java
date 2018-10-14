@@ -1,5 +1,7 @@
 package bot.Exception;
 
-public class ContextChannelNotSetException extends RuntimeException {
+import bot.CustomExceptionInterface;
+
+public class ContextChannelNotSetException extends RuntimeException implements CustomExceptionInterface {
     public ContextChannelNotSetException() {}
 }

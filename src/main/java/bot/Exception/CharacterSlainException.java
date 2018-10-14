@@ -1,6 +1,8 @@
 package bot.Exception;
 
-public class CharacterSlainException extends RuntimeException implements EncounterException {
+import bot.CustomExceptionInterface;
+
+public class CharacterSlainException extends RuntimeException implements EncounterException, CustomExceptionInterface {
     private CharacterSlainException(String message) {
         super(message);
     }

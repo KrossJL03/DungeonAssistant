@@ -8,6 +8,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
 
+    public static String COMMAND_KEY = "?";
+
     private CommandManager commandManager;
 
     public CommandListener(CommandManager commandManager) {
@@ -27,58 +29,58 @@ public class CommandListener extends ListenerAdapter {
         String         input   = message.getContentRaw();
 
         try {
-            if (input.startsWith("$")) {
+            if (input.startsWith(CommandListener.COMMAND_KEY)) {
                 String[] splitArray = input.split("\\s+");
 
-                switch (splitArray[0].toLowerCase()) {
-                    case "$attack":
+                switch (splitArray[0].substring(1).toLowerCase()) {
+                    case "attack":
                         this.commandManager.attackCommand(event);
                         break;
-                    case "$createhostile":
+                    case "createhostile":
                         channel.sendMessage("Temporarily disabled").queue();
 //                        this.commandManager.createHostile(event);
                         break;
-                    case "$createcharacter":
+                    case "createcharacter":
                         this.commandManager.createCharacterCommand(event);
                         break;
-                    case "$deletehostile":
+                    case "deletehostile":
                         channel.sendMessage("Temporarily disabled").queue();
 //                        this.commandManager.deleteHostile(event);
                         break;
-                    case "$deletecharacter":
+                    case "deletecharacter":
                         this.commandManager.deleteCharacterCommand(event);
                         break;
-                    case "$dm":
+                    case "dm":
                         this.processDungeonMasterCommand(event);
                         break;
-                    case "$dodge":
+                    case "dodge":
                         this.commandManager.dodgeCommand(event);
                         break;
-                    case "$hello":
+                    case "hello":
                         this.commandManager.helloCommand(event);
                         break;
-                    case "$help":
+                    case "help":
                         this.commandManager.helpCommand(event);
                         break;
-                    case "$join":
+                    case "join":
                         this.commandManager.joinCommand(event);
                         break;
-                    case "$leave":
+                    case "leave":
                         this.commandManager.leaveCommand(event);
                         break;
-                    case "$loot":
+                    case "loot":
                         this.commandManager.lootCommand(event);
                         break;
-                    case "$protect":
+                    case "protect":
                         this.commandManager.protectCommand(event);
                         break;
-                    case "$return":
+                    case "return":
                         this.commandManager.returnCommand(event);
                         break;
-                    case "$use":
+                    case "use":
                         this.commandManager.useItemCommand(event);
                         break;
-                    case "$view":
+                    case "view":
                         this.processViewCommand(event);
                         break;
                     default:
@@ -89,7 +91,12 @@ public class CommandListener extends ListenerAdapter {
         } catch (ContextChannelNotSetException e) {
             channel.sendMessage("I'm not sure which channel to talk in...").queue();
         } catch (ArrayIndexOutOfBoundsException e) {
-            channel.sendMessage("Could you say that again? I think I'm missing something... Check `$help`").queue();
+            channel.sendMessage(
+                String.format(
+                    "Could you say that again? I think I'm missing something... Check `%shelp`",
+                    CommandListener.COMMAND_KEY
+                )
+            ).queue();
         } catch (NumberFormatException e) {
             channel.sendMessage("Hey could you say that again? Sorry, I'm bad with numbers.").queue();
         } catch (Throwable e) {

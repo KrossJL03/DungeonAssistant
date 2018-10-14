@@ -1,7 +1,11 @@
 package bot.Exception;
 
-public class CharacterUnableToProtectException extends RuntimeException implements EncounterException {
+import bot.CommandListener;
+import bot.CustomExceptionInterface;
+
+public class CharacterUnableToProtectException extends RuntimeException
+    implements EncounterException, CustomExceptionInterface {
     public CharacterUnableToProtectException() {
-        super("You've already used your `$protect` for this encounter");
+        super(String.format("You've already used your `%sprotect` for this encounter", CommandListener.COMMAND_KEY));
     }
 }

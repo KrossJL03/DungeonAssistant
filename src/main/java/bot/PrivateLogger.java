@@ -17,12 +17,26 @@ class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         if (isAdmin) {
-            output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
+            output.append(
+                String.format(
+                    "   %-16s%s %-16s",
+                    CommandListener.COMMAND_KEY,
+                    "createCharacter",
+                    "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
+                )
+            );
             output.append(PrivateLogger.NEWLINE);
 //            output.append(String.format("   %-16s %-16s", "$createHostile", "[Name] [HP] [AttackDice]"));
 //            output.append(PrivateLogger.NEWLINE);
         } else {
-            output.append(String.format("   %-16s %-16s", "$createCharacter", "[Name] [STR] [DEF] [AGI] [WIS] [HP]"));
+            output.append(
+                String.format(
+                    "   %-16s%s %-16s",
+                    CommandListener.COMMAND_KEY,
+                    "createCharacter",
+                    "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
+                )
+            );
             output.append(PrivateLogger.NEWLINE);
         }
         output.append("```");
@@ -32,46 +46,63 @@ class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s %-16s %s",
-            "$attack",
+            "   %-16s%s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "attack",
             "[HostileName]",
             "Attack a hostile during the attack turn"
         ));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s %-16s %s",
-            "$dodge",
+            "   %-16s%s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "dodge",
             "",
             "Attempt to dodge enemy attacks during the dodge turn"
         ));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s %-16s %s",
-            "$loot",
+            "   %-16s%s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "loot",
             "",
             "Collect materials and rewards at the end of an encounter"
         ));
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format("   %-16s %-16s %s", "$join", "[Name]", "Add a character to an encounter"));
+        output.append(
+            String.format(
+                "   %-16s%s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "join",
+                "[Name]",
+                "Add a character to an encounter"
+            )
+        );
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format(
-            "   %-16s %-16s %s",
-            "$protect",
-            "[Name]",
-            "Protect a teammate during the dodge turn"
-        ));
+        output.append(
+            String.format(
+                "   %-16s%s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "protect",
+                "[Name]",
+                "Protect a teammate during the dodge turn"
+            )
+        );
         output.append(PrivateLogger.NEWLINE);
-        output.append(String.format(
-            "   %-16s %-16s %s",
-            "$use",
-            "[ItemName] (RecipientName)",
-            "Use an item. Optional recipient name, leave blank to use on yourself."
-        ));
+        output.append(
+            String.format(
+                "   %-16s%s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "use",
+                "[ItemName] (RecipientName)",
+                "Use an item. Optional recipient name, leave blank to use on yourself."
+            )
+        );
         output.append("```");
 
         if (isAdmin) {
             output.append(PrivateLogger.NEWLINE);
-            output.append("Dungeon Master Commands [$dm + COMMAND]:");
+            output.append(String.format("Dungeon Master Commands [%sdm + COMMAND]:", CommandListener.COMMAND_KEY));
             output.append(PrivateLogger.NEWLINE);
             output.append("```ini");
             output.append(PrivateLogger.NEWLINE);
@@ -133,12 +164,17 @@ class PrivateLogger {
             output.append("```");
         }
         output.append(PrivateLogger.NEWLINE);
-        output.append("View Commands [$view + COMMAND]:");
+        output.append(String.format("View Commands [%sview + COMMAND]:", CommandListener.COMMAND_KEY));
         output.append(PrivateLogger.NEWLINE);
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         if (isAdmin) {
-            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all of your registered characters"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "characters",
+                "",
+                "View all of your registered characters"
+            ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
             output.append(PrivateLogger.NEWLINE);
@@ -146,7 +182,12 @@ class PrivateLogger {
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         } else {
-            output.append(String.format("   %-16s %-16s %s", "characters", "", "View all of your registered characters"));
+            output.append(String.format(
+                "   %-16s %-16s %s",
+                "characters",
+                "",
+                "View all of your registered characters"
+            ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         }

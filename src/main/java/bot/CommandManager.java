@@ -177,9 +177,13 @@ public class CommandManager {
                 ));
                 channel.sendMessage(output).queue();
             } else {
-                channel.sendMessage(String.format(
-                    "I don't remember %s, who are they again? Please tell me using the `$createCharacter` command", name
-                )).queue();
+                channel.sendMessage(
+                    String.format(
+                        "I don't remember %s, who are they again? Please tell me using the `%screateCharacter` command",
+                        name,
+                        CommandListener.COMMAND_KEY
+                    )
+                ).queue();
             }
         }
     }
