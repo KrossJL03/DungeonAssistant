@@ -154,7 +154,7 @@ public class EncounterLogger {
         output.append(String.format("%s takes %d dmg total!", playerCharacter.getName(), totalDamage));
         output.append(EncounterLogger.NEWLINE);
         if (playerCharacter.isSlain()) {
-            output.append(String.format("%s has been knocked out!!", playerCharacter.getName()));
+            output.append(String.format("%s has been 'knocked' 'out'!!", playerCharacter.getName()));
         } else {
             output.append(
                 String.format(
@@ -183,7 +183,7 @@ public class EncounterLogger {
         output.append(String.format("%s takes %d dmg total!", playerCharacter.getName(), totalDamage));
         output.append(EncounterLogger.NEWLINE);
         if (playerCharacter.isSlain()) {
-            output.append(String.format("%s has been knocked out!!", playerCharacter.getName()));
+            output.append(String.format("%s has been 'knocked' 'out'!!", playerCharacter.getName()));
         } else {
             output.append(
                 String.format(
@@ -273,7 +273,7 @@ public class EncounterLogger {
         output.append(String.format("%s takes %d dmg total!", protectorCharacter.getName(), totalDamage));
         output.append(EncounterLogger.NEWLINE);
         if (protectorCharacter.isSlain()) {
-            output.append(String.format("%s has been knocked out!!", protectorCharacter.getName()));
+            output.append(String.format("%s has been 'knocked' 'out'!!", protectorCharacter.getName()));
         } else {
             output.append(String.format(
                 "%d/%d health remaining",
@@ -629,6 +629,9 @@ public class EncounterLogger {
             }
         } else {
             output.append(creature.getName());
+            if (creature instanceof PCEncounterData) {
+                output.append(String.format(" %s", ((PCEncounterData) creature).getOwner()));
+            }
             output.append(EncounterLogger.NEWLINE);
             output.append(String.format("%-2s", currentHP > maxHP / 4 ? "+" : "-"));
             output.append(String.format("[%3d/%3d] ", currentHP, maxHP));

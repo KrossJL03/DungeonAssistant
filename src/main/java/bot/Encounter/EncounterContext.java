@@ -51,6 +51,7 @@ public class EncounterContext {
 
         if (this.isInitiativePhase()) {
             this.initiative.add(newPlayerCharacter);
+            newPlayerCharacter.resetActions(this.isAttackPhase());
         }
         for (PCEncounterData playerCharacter : this.playerCharacters) {
             if (playerCharacter.getAgility() < newPlayerCharacter.getAgility()) {
@@ -158,10 +159,6 @@ public class EncounterContext {
             }
         }
         throw EncounterDataNotFoundException.createForPlayerCharacter(player);
-    }
-
-    boolean hasPlayerCharacterGone(PCEncounterData playerCharacter) {
-        return !this.initiative.contains(playerCharacter);
     }
 
     boolean isAttackPhase() {

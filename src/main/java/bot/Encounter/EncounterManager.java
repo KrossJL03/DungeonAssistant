@@ -197,7 +197,7 @@ public class EncounterManager {
             throw ProtectedCharacterException.createProtectYourself();
         } else if (protectedCharacter.isSlain()) {
             throw ProtectedCharacterException.createIsSlain(protectedCharacter.getName());
-        } else if (this.context.hasPlayerCharacterGone(protectedCharacter)) {
+        } else if (!protectedCharacter.hasActions()) {
             throw ProtectedCharacterException.createTurnHasPassed(protectedCharacter.getName());
         }
 
@@ -315,24 +315,28 @@ public class EncounterManager {
         if (item.isHealing()) {
             if (!usedOnSelf && item.isUserHealed()) {
                 if (item.isPercentHealing()) {
-                    hitpointsHealed = playerCharacter.healPercent(item.getHitpointsHealed());
+                    hitpointsHealed = playerCharacter.healPercent(item.getPercentHealed());
                 } else {
                     hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
                 }
             } else {
-                if (recipient.isSlain()) {
-                    if (!item.isReviving()) {
-                        throw PlayerCharacterSlainException.createFailedToHeal(
-                            recipient.getName(),
-                            recipient.getSlayer().getName()
-                        );
-                    }
-                    isRevived = true;
+                if (item.isReviving() && !recipient.isSlain()){
+                    throw ItemRecipientException.createReviveLiving(
+                        recipient.getName(),
+                        recipient.getCurrentHP(),
+                        recipient.getMaxHP()
+                    );
+                }
+                if (!item.isReviving() && recipient.isSlain()) {
+                    throw PlayerCharacterSlainException.createFailedToHeal(
+                        recipient.getName(),
+                        recipient.getSlayer().getName()
+                    );
                 }
                 if (item.isPercentHealing()) {
-                    hitpointsHealed = playerCharacter.healPercent(item.getHitpointsHealed());
+                    hitpointsHealed = recipient.healPercent(item.getPercentHealed());
                 } else {
-                    hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
+                    hitpointsHealed = recipient.healPoints(item.getHitpointsHealed());
                 }
             }
         }
@@ -364,7 +368,7 @@ public class EncounterManager {
             item,
             hitpointsHealed,
             damage,
-            isRevived
+            item.isReviving()
         );
         playerCharacter.useAction();
         this.endPlayerAction();

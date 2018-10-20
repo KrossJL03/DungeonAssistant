@@ -20,7 +20,7 @@ class PrivateLogger {
             String.format(
                 "   %s%-16s %-16s",
                 CommandListener.COMMAND_KEY,
-                "createCharacter",
+                "create character",
                 "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
             )
         );
@@ -111,7 +111,7 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
-                "create",
+                "create encounter",
                 "",
                 "Begin creating a new encounter"
             ));
