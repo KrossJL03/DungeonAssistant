@@ -1,6 +1,6 @@
 package bot.PlayerCharacter;
 
-import bot.Exception.NoPlayerCharacterFoundException;
+import bot.PlayerCharacter.Exception.PlayerCharacterNotFoundException;
 import bot.Player.PlayerManager;
 import bot.PlayerCharacter.Exception.NotYourCharacterException;
 
@@ -41,7 +41,7 @@ public class PlayerCharacterManager {
     public static PlayerCharacter getMyPC(String playerId, String name) {
         PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPlayerCharacter(playerId, name);
         if (playerCharacter == null) {
-            throw NoPlayerCharacterFoundException.create(name);
+            throw PlayerCharacterNotFoundException.createNotInDatabase(name);
         }
         return playerCharacter;
     }

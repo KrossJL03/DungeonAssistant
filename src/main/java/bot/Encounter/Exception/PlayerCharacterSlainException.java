@@ -1,18 +1,18 @@
-package bot.Exception;
+package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 
-public class CharacterSlainException extends RuntimeException implements EncounterException, CustomExceptionInterface {
-    private CharacterSlainException(String message) {
+public class PlayerCharacterSlainException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+    private PlayerCharacterSlainException(String message) {
         super(message);
     }
 
-    public static CharacterSlainException createFailedToAddKill(
+    public static PlayerCharacterSlainException createFailedToAddKill(
         String characterName,
         String slayerName,
         String hostileName
     ) {
-        return new CharacterSlainException(
+        return new PlayerCharacterSlainException(
             String.format(
                 "%s was knocked out by %s and was not present for %s's death",
                 characterName,
@@ -22,8 +22,8 @@ public class CharacterSlainException extends RuntimeException implements Encount
         );
     }
 
-    public static CharacterSlainException createFailedToHeal(String characterName, String slayerName) {
-        return new CharacterSlainException(
+    public static PlayerCharacterSlainException createFailedToHeal(String characterName, String slayerName) {
+        return new PlayerCharacterSlainException(
             String.format(
                 "%s was knocked out by %s and can only be healed by a reviving item",
                 characterName,

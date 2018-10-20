@@ -1,7 +1,6 @@
 package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
-import bot.Exception.EncounterException;
 import bot.Player.Player;
 
 public class EncounterDataNotFoundException extends RuntimeException

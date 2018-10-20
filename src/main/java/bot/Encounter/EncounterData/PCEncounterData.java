@@ -1,6 +1,6 @@
 package bot.Encounter.EncounterData;
 
-import bot.Exception.CharacterSlainException;
+import bot.Encounter.Exception.PlayerCharacterSlainException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
 
@@ -28,7 +28,7 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void addKill(HostileEncounterData hostile) {
         if (this.isSlain()) {
-            throw CharacterSlainException.createFailedToAddKill(
+            throw PlayerCharacterSlainException.createFailedToAddKill(
                 this.playerCharacter.getName(),
                 this.slayer.getName(),
                 hostile.getName()

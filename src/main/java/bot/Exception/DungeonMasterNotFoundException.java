@@ -1,6 +1,7 @@
 package bot.Exception;
 
 import bot.CustomExceptionInterface;
+import bot.Encounter.Exception.EncounterException;
 
 public class DungeonMasterNotFoundException extends RuntimeException
     implements EncounterException, CustomExceptionInterface {

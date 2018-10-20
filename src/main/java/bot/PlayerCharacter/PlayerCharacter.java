@@ -1,7 +1,7 @@
 package bot.PlayerCharacter;
 
 import bot.Player.Player;
-import bot.Exception.OutOfBoundsStatExecption;
+import bot.Player.Exception.OutOfBoundsStatExecption;
 
 public class PlayerCharacter {
 

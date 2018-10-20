@@ -1,6 +1,5 @@
 package bot;
 
-import bot.Exception.ContextChannelNotSetException;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -88,8 +87,6 @@ public class CommandListener extends ListenerAdapter {
                         break;
                 }
             }
-        } catch (ContextChannelNotSetException e) {
-            channel.sendMessage("I'm not sure which channel to talk in...").queue();
         } catch (ArrayIndexOutOfBoundsException e) {
             channel.sendMessage(
                 String.format(

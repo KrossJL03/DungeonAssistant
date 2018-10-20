@@ -3,7 +3,6 @@ package bot.Encounter.Exception;
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
 import bot.Encounter.EncounterContext;
-import bot.Exception.EncounterException;
 
 public class WrongPhaseException extends RuntimeException implements EncounterException, CustomExceptionInterface {
     private WrongPhaseException(String message) {

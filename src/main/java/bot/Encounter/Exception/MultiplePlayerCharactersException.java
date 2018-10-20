@@ -1,6 +1,7 @@
-package bot.Exception;
+package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
+import bot.Encounter.Exception.EncounterException;
 import bot.Player.Player;
 
 public class MultiplePlayerCharactersException extends RuntimeException

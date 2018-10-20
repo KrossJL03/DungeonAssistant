@@ -3,9 +3,8 @@ package bot.Encounter;
 import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
-import bot.Encounter.Exception.EncounterDataNotFoundException;
+import bot.Encounter.Exception.*;
 import bot.Player.Player;
-import bot.Exception.*;
 
 import java.util.*;
 
@@ -47,7 +46,7 @@ public class EncounterContext {
             throw new MultiplePlayerCharactersException(player, absentPlayerCharacter.getName());
         }
         if (this.playerCharacters.size() == this.maxPlayerCount) {
-            throw new FullDungeonException(newPlayerCharacter.getOwner());
+            throw DungeonException.createFullDungeon(newPlayerCharacter.getOwner());
         }
 
         if (this.isInitiativePhase()) {
@@ -115,7 +114,7 @@ public class EncounterContext {
                 return creature;
             }
         }
-        return null;
+        throw EncounterDataNotFoundException.createForRecipient(name);
     }
 
     HostileEncounterData getHostile(String name) {
@@ -128,7 +127,6 @@ public class EncounterContext {
                 return hostile;
             }
         }
-        // todo return null, throw exception outside
         throw EncounterDataNotFoundException.createForHostile(name);
     }
 
@@ -150,7 +148,6 @@ public class EncounterContext {
                 return playerCharacter;
             }
         }
-        // todo return null, throw exception outside
         throw EncounterDataNotFoundException.createForPlayerCharacter(name);
     }
 
@@ -160,7 +157,6 @@ public class EncounterContext {
                 return playerCharacter;
             }
         }
-        // todo return null, throw exception outside
         throw EncounterDataNotFoundException.createForPlayerCharacter(player);
     }
 
@@ -206,7 +202,7 @@ public class EncounterContext {
         if (absentPlayerCharacter == null) {
             throw EncounterDataNotFoundException.createForPlayerCharacter(player);
         } else if (this.isFullDungeon()) {
-            throw new FullDungeonException(player);
+            throw DungeonException.createFullDungeon(player);
         }
         this.absentPlayerCharacters.remove(absentPlayerCharacter);
         this.addCharacter(absentPlayerCharacter);

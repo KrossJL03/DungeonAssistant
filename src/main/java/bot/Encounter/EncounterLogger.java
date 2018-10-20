@@ -2,7 +2,7 @@ package bot.Encounter;
 
 import bot.CommandListener;
 import bot.Encounter.EncounterData.*;
-import bot.Exception.EncounterException;
+import bot.Encounter.Exception.EncounterException;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import net.dv8tion.jda.core.entities.Role;
@@ -400,7 +400,8 @@ public class EncounterLogger {
 
     void logStartEncounter(Role mentionRole, int maxPlayers) {
         this.logMessage(
-//            mentionRole.getAsMention() + todo uncomment after testing
+            // todo uncomment after testing
+//            mentionRole.getAsMention() +
             "everyone" +
             EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +

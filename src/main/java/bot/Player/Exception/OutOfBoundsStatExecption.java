@@ -1,4 +1,4 @@
-package bot.Exception;
+package bot.Player.Exception;
 
 import bot.CustomExceptionInterface;
 

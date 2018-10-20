@@ -1,6 +1,6 @@
 package bot.Hostile;
 
-import bot.Hostile.Exception.NoHostileFoundException;
+import bot.Hostile.Exception.HostileNotFoundException;
 
 import java.util.ArrayList;
 
@@ -23,7 +23,7 @@ public class HostileManager {
     public static Hostile getHostile(String species) {
         Hostile hostile = HostileRepository.getHostile(species);
         if (hostile == null) {
-            throw new NoHostileFoundException(species);
+            throw HostileNotFoundException.createNotInDatabase(species);
         }
         return hostile;
     }
@@ -31,7 +31,7 @@ public class HostileManager {
     static void setLoot(String hostileSpecies, int diceRoll, String itemName, int quantity) {
         int hostileId = HostileRepository.getHostileId(hostileSpecies);
         if (hostileId < 0) {
-            throw new NoHostileFoundException(hostileSpecies);
+            throw HostileNotFoundException.createNotInDatabase(hostileSpecies);
         }
         LootRepository.insertLoot(hostileId, diceRoll, itemName, quantity);
     }

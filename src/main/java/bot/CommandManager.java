@@ -1,7 +1,7 @@
 package bot;
 
 import bot.Encounter.EncounterManager;
-import bot.Hostile.Exception.NoHostileFoundException;
+import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
 import bot.Exception.*;
 import bot.Hostile.HostileManager;
@@ -11,6 +11,7 @@ import bot.Item.Consumable.Exception.ItemNotFoundException;
 import bot.Player.Player;
 import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
+import bot.PlayerCharacter.Exception.PlayerCharacterNotFoundException;
 import bot.PlayerCharacter.PlayerCharacter;
 import bot.Hostile.HostileRepository;
 import bot.PlayerCharacter.PlayerCharacterManager;
@@ -167,7 +168,7 @@ public class CommandManager {
         try {
             PlayerCharacter playerCharacter = PlayerCharacterManager.getMyPC(owner.getId(), name);
             this.encounterManager.joinEncounter(playerCharacter);
-        } catch (NoPlayerCharacterFoundException e) {
+        } catch (PlayerCharacterNotFoundException e) {
             // todo create new logger
             ArrayList<PlayerCharacter> ownersPCs = PlayerCharacterManager.getAllMyPCs(owner.getId());
             if (!ownersPCs.isEmpty()) {
@@ -285,17 +286,13 @@ public class CommandManager {
 
     void viewHostileLoot(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
-            try {
-                String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-                String   species    = splitInput[2];
-                Hostile  hostile    = HostileRepository.getHostile(species);
-                if (hostile != null) {
-                    EncyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
-                } else {
-                    throw new NoHostileFoundException(species);
-                }
-            } catch (NoHostileFoundException e) {
-                EncyclopediaLogger.logException(event.getChannel(), e);
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   species    = splitInput[2];
+            Hostile  hostile    = HostileRepository.getHostile(species);
+            if (hostile != null) {
+                EncyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+            } else {
+                throw HostileNotFoundException.createNotInDatabase(species);
             }
         }
     }

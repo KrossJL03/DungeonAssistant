@@ -1,4 +1,4 @@
-package bot.Exception;
+package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 

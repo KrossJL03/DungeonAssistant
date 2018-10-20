@@ -1,7 +1,8 @@
-package bot.Exception;
+package bot.Encounter.Exception;
 
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
+import bot.Encounter.Exception.EncounterException;
 
 public class PlayerCharacterAlreadyLeftException extends RuntimeException
     implements EncounterException, CustomExceptionInterface {
