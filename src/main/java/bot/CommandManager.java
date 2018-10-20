@@ -33,8 +33,8 @@ public class CommandManager {
     void addHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   species    = splitInput[2];
-            String   name       = splitInput.length > 3 ? splitInput[3] : splitInput[2];
+            String   species    = splitInput[1];
+            String   name       = splitInput.length > 2 ? splitInput[2] : splitInput[1];
             this.encounterManager.addHostile(species, name);
         }
     }
@@ -52,16 +52,17 @@ public class CommandManager {
         User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
 
-        String name = splitInput[1];
-        int    STR  = Integer.parseInt(splitInput[2]);
-        int    DEF  = Integer.parseInt(splitInput[3]);
-        int    AGI  = Integer.parseInt(splitInput[4]);
-        int    WIS  = Integer.parseInt(splitInput[5]);
-        int    HP   = Integer.parseInt(splitInput[6]);
+        String name = splitInput[2];
+        int    STR  = Integer.parseInt(splitInput[3]);
+        int    DEF  = Integer.parseInt(splitInput[4]);
+        int    AGI  = Integer.parseInt(splitInput[5]);
+        int    WIS  = Integer.parseInt(splitInput[6]);
+        int    HP   = Integer.parseInt(splitInput[7]);
 
         PlayerCharacterManager.createPlayerCharacter(author.getId(), name, STR, DEF, AGI, WIS, HP);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
+        this.viewCharacters(event);
     }
 
     void createEncounter(MessageReceivedEvent event) {
@@ -111,21 +112,12 @@ public class CommandManager {
         this.encounterManager.dodgeAction(player);
     }
 
-    void healHostile(MessageReceivedEvent event) {
+    void healCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
-            int      hitpoints  = Integer.parseInt(splitInput[3]);
-            this.encounterManager.healHostile(name, hitpoints);
-        }
-    }
-
-    void healPlayer(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
-            int      hitpoints  = Integer.parseInt(splitInput[3]);
-            this.encounterManager.healPlayer(name, hitpoints);
+            String   name       = splitInput[1];
+            int      hitpoints  = Integer.parseInt(splitInput[2]);
+            this.encounterManager.heal(name, hitpoints);
         }
     }
 
@@ -141,21 +133,12 @@ public class CommandManager {
         PrivateLogger.showHelpPage(event.getAuthor(), this.isAdmin(event));
     }
 
-    void hurtHostile(MessageReceivedEvent event) {
+    void hurtCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
-            int      hitpoints  = Integer.parseInt(splitInput[3]);
-            this.encounterManager.hurtHostile(name, hitpoints);
-        }
-    }
-
-    void hurtPlayer(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
-            int      hitpoints  = Integer.parseInt(splitInput[3]);
-            this.encounterManager.hurtPlayer(name, hitpoints);
+            String   name       = splitInput[1];
+            int      hitpoints  = Integer.parseInt(splitInput[2]);
+            this.encounterManager.hurt(name, hitpoints);
         }
     }
 
@@ -209,7 +192,7 @@ public class CommandManager {
     void removePlayerCharacter(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
+            String   name       = splitInput[1];
             this.encounterManager.removePlayerCharacter(name);
         }
     }
@@ -217,7 +200,7 @@ public class CommandManager {
     void removeHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[2];
+            String   name       = splitInput[1];
             this.encounterManager.removeHostile(name);
         }
     }
@@ -230,7 +213,7 @@ public class CommandManager {
     void setMaxPlayers(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput     = event.getMessage().getContentRaw().split("\\s+");
-            int      maxPlayerCount = Integer.parseInt(splitInput[2]);
+            int      maxPlayerCount = Integer.parseInt(splitInput[1]);
             this.encounterManager.setMaxPlayerCount(maxPlayerCount);
         }
     }
@@ -271,6 +254,13 @@ public class CommandManager {
             }
             this.encounterManager.useItem(player, item, recipientName);
 //        }
+    }
+
+    void viewAllCharacters(MessageReceivedEvent event) {
+        EncyclopediaLogger.viewCharacters(
+            event.getChannel(),
+            PlayerCharacterManager.getAllPCs()
+        );
     }
 
     void viewCharacters(MessageReceivedEvent event) {

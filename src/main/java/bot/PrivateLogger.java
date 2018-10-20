@@ -16,29 +16,15 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
-        if (isAdmin) {
-            output.append(
-                String.format(
-                    "   %-16s%s %-16s",
-                    CommandListener.COMMAND_KEY,
-                    "createCharacter",
-                    "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
-                )
-            );
-            output.append(PrivateLogger.NEWLINE);
-//            output.append(String.format("   %-16s %-16s", "$createHostile", "[Name] [HP] [AttackDice]"));
-//            output.append(PrivateLogger.NEWLINE);
-        } else {
-            output.append(
-                String.format(
-                    "   %-16s%s %-16s",
-                    CommandListener.COMMAND_KEY,
-                    "createCharacter",
-                    "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
-                )
-            );
-            output.append(PrivateLogger.NEWLINE);
-        }
+        output.append(
+            String.format(
+                "   %s%-16s %-16s",
+                CommandListener.COMMAND_KEY,
+                "createCharacter",
+                "[Name] [STR] [DEF] [AGI] [WIS] [HP]"
+            )
+        );
+        output.append(PrivateLogger.NEWLINE);
         output.append("```");
         output.append(PrivateLogger.NEWLINE);
         output.append("Encounter Commands:");
@@ -46,7 +32,7 @@ class PrivateLogger {
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s%s %-16s %s",
+            "   %s%-16s %-16s %s",
             CommandListener.COMMAND_KEY,
             "attack",
             "[HostileName]",
@@ -54,7 +40,7 @@ class PrivateLogger {
         ));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s%s %-16s %s",
+            "   %s%-16s %-16s %s",
             CommandListener.COMMAND_KEY,
             "dodge",
             "",
@@ -62,7 +48,7 @@ class PrivateLogger {
         ));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
-            "   %-16s%s %-16s %s",
+            "   %s%-16s %-16s %s",
             CommandListener.COMMAND_KEY,
             "loot",
             "",
@@ -71,7 +57,7 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
-                "   %-16s%s %-16s %s",
+                "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
                 "join",
                 "[Name]",
@@ -81,7 +67,7 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
-                "   %-16s%s %-16s %s",
+                "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
                 "protect",
                 "[Name]",
@@ -91,7 +77,7 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
-                "   %-16s%s %-16s %s",
+                "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
                 "use",
                 "[ItemName] (RecipientName)",
@@ -102,65 +88,97 @@ class PrivateLogger {
 
         if (isAdmin) {
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("Dungeon Master Commands [%sdm + COMMAND]:", CommandListener.COMMAND_KEY));
+            output.append("Dungeon Master Commands:");
             output.append(PrivateLogger.NEWLINE);
             output.append("```ini");
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
-                "   %-16s %-16s %s",
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "addHostile",
                 "[Species] (Name)",
                 "Add a hostile, Name is optional"
             ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "attackTurn", "", "Start attack turn"));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "create", "", "Begin creating a new encounter"));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "dodgeTurn", "", "Start dodge turn"));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "attackTurn",
+                "",
+                "Start attack turn"
+            ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
-                "   %-16s %-16s %s",
-                "healHostile",
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "create",
+                "",
+                "Begin creating a new encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "dodgeTurn",
+                "",
+                "Start dodge turn"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "heal",
                 "[Name] [HP]",
                 "Heal a hostile by X hitpoints"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
-                "   %-16s %-16s %s",
-                "healPlayer",
-                "[Name] [HP]",
-                "Heal a player character by X hitpoints"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format(
-                "   %-16s %-16s %s",
-                "hurtHostile",
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "hurt",
                 "[Name] [HP]",
                 "Deal X damage to a hostile"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
-                "   %-16s %-16s %s",
-                "hurtPlayer",
-                "[Name] [HP]",
-                "Deal X damage to a player character"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format(
-                "   %-16s %-16s %s",
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "maxPlayers",
                 "[PlayerCount]",
                 "Set number of players permitted"
             ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "removeHostile", "[Name]", "Remove a hostile"));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "removeHostile",
+                "[Name]",
+                "Remove a hostile"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "removePlayer", "[Name]", "Remove a player"));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "removePlayer",
+                "[Name]",
+                "Remove a player"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "skip", "", "Skip the current player's turn"));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "skip",
+                "",
+                "Skip the current player's turn"
+            ));
             output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "start", "", "Start the encounter"));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "start",
+                "",
+                "Start the encounter"
+            ));
             output.append("```");
         }
         output.append(PrivateLogger.NEWLINE);
@@ -168,29 +186,25 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append("```ini");
         output.append(PrivateLogger.NEWLINE);
-        if (isAdmin) {
-            output.append(String.format(
-                "   %-16s %-16s %s",
-                "characters",
-                "",
-                "View all of your registered characters"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "loot [Species]", "", "View loot for a given hostile"));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
-        } else {
-            output.append(String.format(
-                "   %-16s %-16s %s",
-                "characters",
-                "",
-                "View all of your registered characters"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
-        }
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "allcharacters",
+            "",
+            "View all registered characters"
+        ));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %-16s %-16s %s",
+            "characters",
+            "",
+            "View your registered characters"
+        ));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format("   %-16s %-16s %s", "loot", "[Species]", "View loot for a given hostile"));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));
         output.append("```");
 
         PrivateLogger.sendPrivateMessage(user, output.toString());

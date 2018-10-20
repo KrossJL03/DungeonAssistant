@@ -54,7 +54,7 @@ public class HostileEncounterData implements EncounterDataInterface {
         return this.hostile.getSpecies();
     }
 
-    public int heal(int hitpoints) {
+    public int healPoints(int hitpoints) {
         if (this.isSlain()) {
             this.slayer = null;
         }
@@ -67,7 +67,7 @@ public class HostileEncounterData implements EncounterDataInterface {
         return hitpoints;
     }
 
-    public int heal(float percent) {
+    public int healPercent(float percent) {
         if (this.isSlain()) {
             this.slayer = null;
         }

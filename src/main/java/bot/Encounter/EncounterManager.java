@@ -122,54 +122,31 @@ public class EncounterManager {
         this.endPlayerAction();
     }
 
-    public void healHostile(String name, int hitpoints) {
-        HostileEncounterData hostile = this.context.getHostile(name);
-        hostile.heal(hitpoints);
+    public void heal(String name, int hitpoints) {
+        EncounterDataInterface recipient = this.context.getEncounterData(name);
+        recipient.healPoints(hitpoints);
         this.logger.logDungeonMasterHeal(
-            hostile.getName(),
+            recipient.getName(),
             hitpoints,
-            hostile.getCurrentHP(),
-            hostile.getMaxHP()
+            recipient.getCurrentHP(),
+            recipient.getMaxHP()
         );
     }
 
-    public void healPlayer(String name, int hitpoints) {
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-        playerCharacter.heal(hitpoints);
-        this.logger.logDungeonMasterHeal(
-            playerCharacter.getName(),
-            hitpoints,
-            playerCharacter.getCurrentHP(),
-            playerCharacter.getMaxHP()
-        );
-    }
-
-    public void hurtHostile(String name, int hitpoints) {
-        HostileEncounterData hostile = this.context.getHostile(name);
-        hostile.hurt(hitpoints);
+    public void hurt(String name, int hitpoints) {
+        EncounterDataInterface recipient = this.context.getEncounterData(name);
+        recipient.hurt(hitpoints);
         this.logger.logDungeonMasterHurt(
-            hostile.getName(),
+            recipient.getName(),
             hitpoints,
-            hostile.getCurrentHP(),
-            hostile.getMaxHP()
+            recipient.getCurrentHP(),
+            recipient.getMaxHP()
         );
-        if (hostile.isSlain()) {
-            this.addKillToPlayerCharacters(hostile);
-            this.logger.logDungeonMasterSlay(hostile.getName());
-        }
-    }
-
-    public void hurtPlayer(String name, int hitpoints) {
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-        playerCharacter.hurt(hitpoints);
-        this.logger.logDungeonMasterHurt(
-            playerCharacter.getName(),
-            hitpoints,
-            playerCharacter.getCurrentHP(),
-            playerCharacter.getMaxHP()
-        );
-        if (playerCharacter.isSlain()) {
-            this.logger.logDungeonMasterSlay(playerCharacter.getName());
+        if (recipient.isSlain()) {
+            if (recipient instanceof HostileEncounterData) {
+                this.addKillToPlayerCharacters((HostileEncounterData) recipient);
+            }
+            this.logger.logDungeonMasterSlay(recipient.getName());
         }
     }
 
@@ -337,9 +314,11 @@ public class EncounterManager {
 
         if (item.isHealing()) {
             if (!usedOnSelf && item.isUserHealed()) {
-                hitpointsHealed = playerCharacter.heal(
-                    item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed()
-                );
+                if (item.isPercentHealing()) {
+                    hitpointsHealed = playerCharacter.healPercent(item.getHitpointsHealed());
+                } else {
+                    hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
+                }
             } else {
                 if (recipient.isSlain()) {
                     if (!item.isReviving()) {
@@ -350,9 +329,11 @@ public class EncounterManager {
                     }
                     isRevived = true;
                 }
-                hitpointsHealed = recipient.heal(
-                    item.isPercentHealing() ? item.getPercentHealed() : item.getHitpointsHealed()
-                );
+                if (item.isPercentHealing()) {
+                    hitpointsHealed = playerCharacter.healPercent(item.getHitpointsHealed());
+                } else {
+                    hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
+                }
             }
         }
 

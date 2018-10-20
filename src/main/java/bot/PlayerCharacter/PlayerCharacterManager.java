@@ -38,6 +38,10 @@ public class PlayerCharacterManager {
         return PlayerCharacterRepository.getAllMyPCs(playerId);
     }
 
+    public static ArrayList<PlayerCharacter> getAllPCs() {
+        return PlayerCharacterRepository.getAllPCs();
+    }
+
     public static PlayerCharacter getMyPC(String playerId, String name) {
         PlayerCharacter playerCharacter = PlayerCharacterRepository.getMyPlayerCharacter(playerId, name);
         if (playerCharacter == null) {

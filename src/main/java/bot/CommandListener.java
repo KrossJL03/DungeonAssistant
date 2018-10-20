@@ -32,28 +32,29 @@ public class CommandListener extends ListenerAdapter {
                 String[] splitArray = input.split("\\s+");
 
                 switch (splitArray[0].substring(1).toLowerCase()) {
+                    case "addhostile":
+                        this.commandManager.addHostile(event);
+                        break;
                     case "attack":
                         this.commandManager.attackCommand(event);
                         break;
-                    case "createhostile":
-                        channel.sendMessage("Temporarily disabled").queue();
-//                        this.commandManager.createHostile(event);
+                    case "attackturn":
+                        this.commandManager.startAttackPhase(event);
                         break;
-                    case "createcharacter":
-                        this.commandManager.createCharacterCommand(event);
-                        break;
-                    case "deletehostile":
-                        channel.sendMessage("Temporarily disabled").queue();
-//                        this.commandManager.deleteHostile(event);
+                    case "create":
+                        this.processCreateCommand(event);
                         break;
                     case "deletecharacter":
                         this.commandManager.deleteCharacterCommand(event);
                         break;
-                    case "dm":
-                        this.processDungeonMasterCommand(event);
-                        break;
                     case "dodge":
                         this.commandManager.dodgeCommand(event);
+                        break;
+                    case "dodgeturn":
+                        this.commandManager.startDodgePhase(event);
+                        break;
+                    case "heal":
+                        this.commandManager.healCommand(event);
                         break;
                     case "hello":
                         this.commandManager.helloCommand(event);
@@ -61,8 +62,14 @@ public class CommandListener extends ListenerAdapter {
                     case "help":
                         this.commandManager.helpCommand(event);
                         break;
+                    case "hurt":
+                        this.commandManager.hurtCommand(event);
+                        break;
                     case "join":
                         this.commandManager.joinCommand(event);
+                        break;
+                    case "kick":
+                        this.commandManager.removePlayerCharacter(event);
                         break;
                     case "leave":
                         this.commandManager.leaveCommand(event);
@@ -70,11 +77,23 @@ public class CommandListener extends ListenerAdapter {
                     case "loot":
                         this.commandManager.lootCommand(event);
                         break;
+                    case "maxplayers":
+                        this.commandManager.setMaxPlayers(event);
+                        break;
                     case "protect":
                         this.commandManager.protectCommand(event);
                         break;
+                    case "removehostile":
+                        this.commandManager.removeHostile(event);
+                        break;
                     case "return":
                         this.commandManager.returnCommand(event);
+                        break;
+                    case "skip":
+                        this.commandManager.skipCommand(event);
+                        break;
+                    case "start":
+                        this.commandManager.startEncounter(event);
                         break;
                     case "use":
                         this.commandManager.useItemCommand(event);
@@ -107,51 +126,18 @@ public class CommandListener extends ListenerAdapter {
 
     }
 
-    private void processDungeonMasterCommand(MessageReceivedEvent event) {
+    private void processCreateCommand(MessageReceivedEvent event) {
         Message        message    = event.getMessage();
         MessageChannel channel    = event.getChannel();
         String         input      = message.getContentRaw();
         String[]       splitArray = input.split("\\s+");
 
         switch (splitArray[1].toLowerCase()) {
-            case "addhostile":
-                this.commandManager.addHostile(event);
+            case "character":
+                this.commandManager.createCharacterCommand(event);
                 break;
-            case "attackturn":
-                this.commandManager.startAttackPhase(event);
-                break;
-            case "create":
+            case "encounter":
                 this.commandManager.createEncounter(event);
-                break;
-            case "dodgeturn":
-                this.commandManager.startDodgePhase(event);
-                break;
-            case "healhostile":
-                this.commandManager.healHostile(event);
-                break;
-            case "healplayer":
-                this.commandManager.healPlayer(event);
-                break;
-            case "hurthostile":
-                this.commandManager.hurtHostile(event);
-                break;
-            case "hurtplayer":
-                this.commandManager.hurtPlayer(event);
-                break;
-            case "maxplayers":
-                this.commandManager.setMaxPlayers(event);
-                break;
-            case "removehostile":
-                this.commandManager.removeHostile(event);
-                break;
-            case "removeplayer":
-                this.commandManager.removePlayerCharacter(event);
-                break;
-            case "skip":
-                this.commandManager.skipCommand(event);
-                break;
-            case "start":
-                this.commandManager.startEncounter(event);
                 break;
             default:
                 channel.sendMessage("What was that you wanted to do for an encounter?").queue();
@@ -166,6 +152,9 @@ public class CommandListener extends ListenerAdapter {
         String[]       splitArray = input.split("\\s+");
 
         switch (splitArray[1].toLowerCase()) {
+            case "allcharacters":
+                this.commandManager.viewAllCharacters(event);
+                break;
             case "characters":
                 this.commandManager.viewCharacters(event);
                 break;

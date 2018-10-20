@@ -117,7 +117,7 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.lootRolls.size() > 0;
     }
 
-    public int heal(int hitpoints) {
+    public int healPoints(int hitpoints) {
         if (this.isSlain()) {
             this.slayer = null;
         }
@@ -130,14 +130,7 @@ public class PCEncounterData implements EncounterDataInterface {
         return hitpoints;
     }
 
-    public void hurt(int hitpoints) {
-        this.currentHp -= hitpoints;
-        if (this.currentHp < 0) {
-            this.currentHp = 0;
-        }
-    }
-
-    public int heal(float percent) {
+    public int healPercent(float percent) {
         if (this.isSlain()) {
             this.slayer = null;
         }
@@ -149,6 +142,13 @@ public class PCEncounterData implements EncounterDataInterface {
             this.currentHp += hitpointsHealed;
         }
         return hitpointsHealed;
+    }
+
+    public void hurt(int hitpoints) {
+        this.currentHp -= hitpoints;
+        if (this.currentHp < 0) {
+            this.currentHp = 0;
+        }
     }
 
     public boolean isAbleToProtect() {

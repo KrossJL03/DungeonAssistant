@@ -12,10 +12,6 @@ class EncyclopediaLogger {
 
     private static String NEWLINE = System.getProperty("line.separator");
 
-    static void logException(MessageChannel channel, Throwable e) {
-        channel.sendMessage(e.getMessage()).queue();
-    }
-
     static void viewCharacters(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
         StringBuilder output = new StringBuilder();
         output.append("```cs");
@@ -26,19 +22,6 @@ class EncyclopediaLogger {
         output.append(bot.EncyclopediaLogger.NEWLINE);
         for (PlayerCharacter character : playerCharacters) {
             output.append(String.format("'%s' /*%s*/", character.getName(), character.getOwner().getName()));
-            output.append(bot.EncyclopediaLogger.NEWLINE);
-            output.append(
-                String.format(
-                    " HP %3d | STR %2d | DEF %2d | AGI %2d | WIS %2d ",
-                    character.getHitpoints(),
-                    character.getStrength(),
-                    character.getDefense(),
-                    character.getAgility(),
-                    character.getWisdom()
-                )
-            );
-            output.append(bot.EncyclopediaLogger.NEWLINE);
-            output.append("------------------------------------------------");
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }
         output.append("```");
