@@ -20,6 +20,7 @@ public class ConsumableItem extends ItemAbstract {
         String name,
         String image,
         String description,
+        String shortDescription,
         int buyValue,
         int sellValue,
         int seasonalMonth,
@@ -35,7 +36,7 @@ public class ConsumableItem extends ItemAbstract {
         boolean recipientRequired,
         boolean revives
     ) {
-        super(name, image, description, buyValue, sellValue, seasonalMonth);
+        super(name, image, description, shortDescription, buyValue, sellValue, seasonalMonth);
         this.damage = damage;
         this.healsUser = healsUser;
         this.hitpointsHealed = hitpointsHealed;

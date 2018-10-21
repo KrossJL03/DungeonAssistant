@@ -202,6 +202,10 @@ class PrivateLogger {
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format("   %-16s %-16s %s", "hostiles", "", "View all hostiles registered"));
         output.append(PrivateLogger.NEWLINE);
+        output.append(String.format("   %-16s %-16s %s", "item", "[Name]", "View detailed item entry"));
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format("   %-16s %-16s %s", "items", "", "View all items"));
+        output.append(PrivateLogger.NEWLINE);
         output.append(String.format("   %-16s %-16s %s", "loot", "[Species]", "View loot for a given hostile"));
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format("   %-16s %-16s %s", "summary", "", "View encounter summary"));

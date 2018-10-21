@@ -190,13 +190,15 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public int takeDamage(EncounterDataInterface attacker, int damage) {
-        damage = (int) Math.floor(damage - this.getEndurance());
+        damage = damage - this.getEndurance();
         damage = damage < 1 ? 1 : damage;
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = attacker;
-            this.currentHp = 0;
         }
         this.currentHp -= damage;
+        if (this.currentHp < 0) {
+            this.currentHp = 0;
+        }
         return damage;
     }
 

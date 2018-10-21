@@ -1,5 +1,7 @@
 package bot.Item;
 
+import java.text.DateFormatSymbols;
+
 public class ItemAbstract {
 
     private int    buyValue;
@@ -7,37 +9,44 @@ public class ItemAbstract {
     private String description;
     private String image;
     private String name;
+    private String shortDescription;
     private int    seasonalMonth;
 
     protected ItemAbstract(
         String name,
         String image,
         String description,
+        String shortDescription,
         int buyValue,
         int sellValue,
         int seasonalMonth
-        ) {
+    ) {
         this.buyValue = buyValue;
         this.description = description;
         this.image = image;
         this.name = name;
         this.sellValue = sellValue;
         this.seasonalMonth = seasonalMonth;
+        this.shortDescription = shortDescription;
     }
 
-    int getBuyValue() {
+    public int getBuyValue() {
         return buyValue;
     }
 
-    int getSellValue() {
+    public int getSellValue() {
         return sellValue;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    String getImage() {
+    public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+    public String getImage() {
         return image;
     }
 
@@ -45,8 +54,16 @@ public class ItemAbstract {
         return name;
     }
 
-    int getSeasonalMonth() {
-        return seasonalMonth;
+    public String getSeasonalMonth() {
+        return this.seasonalMonth > 0 ? new DateFormatSymbols().getMonths()[this.seasonalMonth - 1] : "";
+    }
+
+    public boolean isBuyable() {
+        return this.buyValue > 0;
+    }
+
+    public boolean isSeasonal() {
+        return this.seasonalMonth != 0;
     }
 
 }

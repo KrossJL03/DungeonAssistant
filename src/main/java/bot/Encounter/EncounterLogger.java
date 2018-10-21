@@ -632,9 +632,9 @@ public class EncounterLogger {
             output.append(EncounterLogger.NEWLINE);
             output.append(String.format("%-2s", currentHP > maxHP / 4 ? "+" : "-"));
             output.append(String.format("[%3d/%3d] ", currentHP, maxHP));
-            int healthBlocks      = (maxHP / 10) + 1;
-            int fullHealthBlocks  = (int) Math.floor((double) currentHP / 10) + 1;
-            int emptyHealthBlocks = healthBlocks - fullHealthBlocks;
+            int healthBlocks      = (int) Math.ceil(maxHP / 10) + 1;
+            int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP)/10);
+            int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
             output.append(this.repeatString(EncounterLogger.FULL_HEALTH_ICON, fullHealthBlocks));
             if (emptyHealthBlocks > 0) {
                 output.append(this.repeatString(EncounterLogger.EMPTY_HEALTH_ICON, emptyHealthBlocks));

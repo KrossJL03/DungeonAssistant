@@ -255,14 +255,14 @@ public class CommandManager {
     }
 
     void viewAllCharacters(MessageReceivedEvent event) {
-        EncyclopediaLogger.viewCharacters(
+        RepositoryLogger.viewCharacters(
             event.getChannel(),
             PlayerCharacterManager.getAllPCs()
         );
     }
 
     void viewCharacters(MessageReceivedEvent event) {
-        EncyclopediaLogger.viewCharactersWithStats(
+        RepositoryLogger.viewCharactersWithStats(
             event.getChannel(),
             PlayerCharacterManager.getAllMyPCs(event.getAuthor().getId())
         );
@@ -278,7 +278,7 @@ public class CommandManager {
             String   species    = splitInput[2];
             Hostile  hostile    = HostileRepository.getHostile(species);
             if (hostile != null) {
-                EncyclopediaLogger.viewHostileLoot(event.getChannel(), hostile);
+                RepositoryLogger.viewHostileLoot(event.getChannel(), hostile);
             } else {
                 throw HostileNotFoundException.createNotInDatabase(species);
             }
@@ -286,7 +286,17 @@ public class CommandManager {
     }
 
     void viewHostiles(MessageReceivedEvent event) {
-        EncyclopediaLogger.viewHostiles(event.getChannel(), HostileRepository.getAllHostiles());
+        RepositoryLogger.viewHostiles(event.getChannel(), HostileRepository.getAllHostiles());
+    }
+
+    void viewItem(MessageReceivedEvent event) {
+        String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+        String   name       = splitInput[2];
+        RepositoryLogger.viewItem(event.getChannel(), ConsumableManager.getItem(name));
+    }
+
+    void viewItems(MessageReceivedEvent event) {
+        RepositoryLogger.viewItems(event.getChannel(), ConsumableManager.getAllItems());
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {

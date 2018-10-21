@@ -2,12 +2,15 @@ package bot.Item.Consumable;
 
 import bot.Item.Consumable.Exception.InvalidConsumableException;
 
+import java.util.ArrayList;
+
 public class ConsumableManager {
 
     static void createItem(
         String name,
         String image,
         String description,
+        String shortDescription,
         int buyValue,
         int sellValue,
         int seasonalMonth,
@@ -34,10 +37,14 @@ public class ConsumableManager {
         } else if (sellValue > 0 && buyValue == 0) {
             throw InvalidConsumableException.createExclusivelySellable(sellValue);
         }
+        if (shortDescription == null) {
+            shortDescription = ConsumableManager.buildShortDescription(hitpointsHealed, damage);
+        }
         ConsumableRepository.insertItem(
             name,
             image,
             description,
+            shortDescription,
             buyValue,
             sellValue,
             seasonalMonth,
@@ -55,8 +62,23 @@ public class ConsumableManager {
         );
     }
 
+    public static ArrayList<ConsumableItem> getAllItems() {
+        return ConsumableRepository.getAllItems();
+    }
+
     public static ConsumableItem getItem(String itemName) {
         return ConsumableRepository.getItem(itemName);
+    }
+
+    private static String buildShortDescription(int hitpointsHealed, int damage) {
+        String output = null;
+        if (hitpointsHealed > 0) {
+            output = String.format("Restores %d HP when eaten.", hitpointsHealed);
+        }
+        if (damage > 0) {
+            output = String.format("Deals %s damage", damage);
+        }
+        return output;
     }
 
 }
