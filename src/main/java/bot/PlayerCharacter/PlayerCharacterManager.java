@@ -11,11 +11,11 @@ public class PlayerCharacterManager {
     public static void createPlayerCharacter(
         String userId,
         String name,
+        int hitpoints,
         int strength,
         int defense,
         int agility,
-        int wisdom,
-        int hitpoints
+        int wisdom
     ) {
         PlayerManager.ensurePlayerExist(userId);
         PlayerCharacter playerCharacter = PlayerCharacterRepository.getPlayerCharacter(name);
@@ -25,7 +25,7 @@ public class PlayerCharacterManager {
                 playerCharacter.getOwner().getName()
             );
         }
-        PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
+        PlayerCharacter.validateStats(name, hitpoints, strength, defense, agility, wisdom);
         PlayerCharacterRepository.insertPlayerCharacter(userId, name, strength, defense, agility, wisdom, hitpoints);
     }
 

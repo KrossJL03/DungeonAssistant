@@ -69,11 +69,10 @@ class PlayerCharacterRepository {
                     PlayerCharacter playerCharacter = new PlayerCharacter(
                         resultSet.getString("name"),
                         player,
-                        resultSet.getInt("strength"),
+                        resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                         resultSet.getInt("defense"),
                         resultSet.getInt("agility"),
-                        resultSet.getInt("wisdom"),
-                        resultSet.getInt("hitpoints")
+                        resultSet.getInt("wisdom")
                     );
                     playerCharacters.add(playerCharacter);
                 }
@@ -117,11 +116,10 @@ class PlayerCharacterRepository {
                     PlayerCharacter playerCharacter = new PlayerCharacter(
                         resultSet.getString("name"),
                         player,
-                        resultSet.getInt("strength"),
+                        resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                         resultSet.getInt("defense"),
                         resultSet.getInt("agility"),
-                        resultSet.getInt("wisdom"),
-                        resultSet.getInt("hitpoints")
+                        resultSet.getInt("wisdom")
                     );
                     playerCharacters.add(playerCharacter);
                 }
@@ -164,11 +162,10 @@ class PlayerCharacterRepository {
                 return new PlayerCharacter(
                     resultSet.getString("name"),
                     player,
-                    resultSet.getInt("strength"),
+                    resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                     resultSet.getInt("defense"),
                     resultSet.getInt("agility"),
-                    resultSet.getInt("wisdom"),
-                    resultSet.getInt("hitpoints")
+                    resultSet.getInt("wisdom")
                 );
             }
         } catch (Exception e) {
@@ -205,11 +202,10 @@ class PlayerCharacterRepository {
                 return new PlayerCharacter(
                     resultSet.getString("name"),
                     player,
-                    resultSet.getInt("strength"),
+                    resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                     resultSet.getInt("defense"),
                     resultSet.getInt("agility"),
-                    resultSet.getInt("wisdom"),
-                    resultSet.getInt("hitpoints")
+                    resultSet.getInt("wisdom")
                 );
             }
         } catch (Exception e) {

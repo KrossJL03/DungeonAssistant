@@ -14,14 +14,47 @@ class EncyclopediaLogger {
 
     static void viewCharacters(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
         StringBuilder output = new StringBuilder();
-        output.append("```cs");
+        output.append("```md");
         output.append(bot.EncyclopediaLogger.NEWLINE);
-        output.append("# Character Database #");
+        output.append("          CHARACTER DATABASE           ");
         output.append(bot.EncyclopediaLogger.NEWLINE);
-        output.append("------------------------------------");
+        output.append("=======================================");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("Name            < Player >");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("---------------------------------------");
         output.append(bot.EncyclopediaLogger.NEWLINE);
         for (PlayerCharacter character : playerCharacters) {
-            output.append(String.format("'%s' /*%s*/", character.getName(), character.getOwner().getName()));
+            output.append(String.format("%-15s < %s >", character.getName(), character.getOwner().getName()));
+            output.append(bot.EncyclopediaLogger.NEWLINE);
+        }
+        output.append("```");
+        EncyclopediaLogger.logMessage(channel, output.toString());
+    }
+
+    static void viewCharactersWithStats(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
+        StringBuilder output = new StringBuilder();
+        output.append("```md");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("          CHARACTER DATABASE           ");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("=======================================");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("Name            <  HP STR DEF AGI WIS >");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        output.append("---------------------------------------");
+        output.append(bot.EncyclopediaLogger.NEWLINE);
+        for (PlayerCharacter character : playerCharacters) {
+            output.append(
+                String.format("%-15s < %3d %2d %3d %3d %3d  >",
+                    character.getName(),
+                    character.getHitpoints(),
+                    character.getStrength(),
+                    character.getDefense(),
+                    character.getAgility(),
+                    character.getWisdom()
+                )
+            );
             output.append(bot.EncyclopediaLogger.NEWLINE);
         }
         output.append("```");

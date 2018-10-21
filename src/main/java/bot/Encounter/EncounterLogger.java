@@ -14,8 +14,7 @@ public class EncounterLogger {
     private static String NEWLINE           = System.getProperty("line.separator");
     private static String FULL_HEALTH_ICON  = "█";
     private static String EMPTY_HEALTH_ICON = "─";
-    private static String ARROW_BODY        = "─";
-    private static String ARROW_HEAD        = "►";
+    private static String DOUBLE_ARROW      = "»";
 
     private EncounterLoggerContext context;
 
@@ -137,7 +136,7 @@ public class EncounterLogger {
         for (int i = 0; i < hostiles.size(); i++) {
             HostileEncounterData hostile   = hostiles.get(i);
             int                  dodgeRoll = dodgeRolls.get(i);
-            output.append(String.format("%2d » ", dodgeRoll));
+            output.append(String.format("%2d %s ", dodgeRoll, EncounterLogger.DOUBLE_ARROW));
             if (dodgeRoll < 10) {
                 output.append(String.format("HIT! %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
             } else {
@@ -224,7 +223,7 @@ public class EncounterLogger {
         for (HostileEncounterData hostile : hostiles) {
             int  lootRoll = playerCharacter.getLootRoll(hostile.getName());
             Loot loot     = hostile.getHostile().getLoot(lootRoll);
-            output.append(String.format("%2d » ", lootRoll));
+            output.append(String.format("%2d %s ", lootRoll, EncounterLogger.DOUBLE_ARROW));
             if (loot == null) {
                 output.append(String.format("(* nothing from %s *)", hostile.getName()));
             } else {
@@ -319,7 +318,6 @@ public class EncounterLogger {
         ArrayList<HostileEncounterData> hostiles,
         boolean win
     ) {
-        StringBuilder output = new StringBuilder();
         this.logEncounterSummary(playerCharacters, hostiles);
         this.logMessage("***THE BATTLE IS OVER!!!***");
         if (win) {
@@ -381,12 +379,11 @@ public class EncounterLogger {
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 output.append(String.format(
-                    "(d%d) '%s' attacks %s%s %d dmg!",
+                    "d%d %s %d dmg from '%s'!",
                     hostile.getAttackDice(),
-                    hostile.getName(),
-                    this.repeatString(EncounterLogger.ARROW_BODY, 15 - hostile.getName().length()),
-                    EncounterLogger.ARROW_HEAD,
-                    hostile.getAttackRoll()
+                    EncounterLogger.DOUBLE_ARROW,
+                    hostile.getAttackRoll(),
+                    hostile.getName()
                 ));
                 output.append(EncounterLogger.NEWLINE);
             }
@@ -412,7 +409,7 @@ public class EncounterLogger {
             ) +
             EncounterLogger.NEWLINE +
             String.format(
-                "Make sure your character has already been registered using the `%screateCharacter`.",
+                "Make sure your character has already been registered using the `%screate character`.",
                 CommandListener.COMMAND_KEY
             ) +
             EncounterLogger.NEWLINE +
@@ -630,7 +627,7 @@ public class EncounterLogger {
         } else {
             output.append(creature.getName());
             if (creature instanceof PCEncounterData) {
-                output.append(String.format(" %s", ((PCEncounterData) creature).getOwner()));
+                output.append(String.format(" [%s]", ((PCEncounterData) creature).getOwner().getName()));
             }
             output.append(EncounterLogger.NEWLINE);
             output.append(String.format("%-2s", currentHP > maxHP / 4 ? "+" : "-"));

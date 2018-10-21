@@ -16,13 +16,13 @@ public class PlayerCharacter {
     PlayerCharacter(
         String name,
         Player owner,
+        int hitpoints,
         int strength,
         int defense,
         int agility,
-        int wisdom,
-        int hitpoints
+        int wisdom
     ) {
-        PlayerCharacter.validateStats(name, strength, defense, agility, wisdom, hitpoints);
+        PlayerCharacter.validateStats(name, hitpoints, strength, defense, agility, wisdom);
         this.owner = owner;
         this.name = name;
         this.strength = strength;
@@ -71,7 +71,14 @@ public class PlayerCharacter {
         return this.name;
     }
 
-    static void validateStats(String name, int strength, int defense, int agility, int wisdom, int hitpoints) {
+    static void validateStats(
+        String name,
+        int hitpoints,
+        int strength,
+        int defense,
+        int agility,
+        int wisdom
+    ) {
         if (strength > 20) {
             throw new OutOfBoundsStatExecption(
                 String.format("%s is too strong! %d/20", name, strength)

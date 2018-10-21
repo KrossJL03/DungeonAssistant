@@ -53,13 +53,13 @@ public class CommandManager {
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
 
         String name = splitInput[2];
-        int    STR  = Integer.parseInt(splitInput[3]);
-        int    DEF  = Integer.parseInt(splitInput[4]);
-        int    AGI  = Integer.parseInt(splitInput[5]);
-        int    WIS  = Integer.parseInt(splitInput[6]);
-        int    HP   = Integer.parseInt(splitInput[7]);
+        int    HP   = Integer.parseInt(splitInput[3]);
+        int    STR  = Integer.parseInt(splitInput[4]);
+        int    DEF  = Integer.parseInt(splitInput[5]);
+        int    AGI  = Integer.parseInt(splitInput[6]);
+        int    WIS  = Integer.parseInt(splitInput[7]);
 
-        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, STR, DEF, AGI, WIS, HP);
+        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, HP, STR, DEF, AGI, WIS);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
         this.viewCharacters(event);
@@ -122,11 +122,11 @@ public class CommandManager {
     }
 
     void helloCommand(MessageReceivedEvent event) {
-        MessageChannel channel = event.getChannel();
-        User           author  = event.getAuthor();
-        PlayerManager.savePlayer(author.getId(), author.getName());
+        MessageChannel channel  = event.getChannel();
+        String         nickname = event.getMember().getNickname();
+        PlayerManager.savePlayer(event.getAuthor().getId(), nickname);
         // todo move to RepositoryLogger
-        channel.sendMessage(String.format("Hi %s! I've got all your information down now.", author.getName())).queue();
+        channel.sendMessage(String.format("Hi %s! I've got all your information down now.", nickname)).queue();
     }
 
     void helpCommand(MessageReceivedEvent event) {
@@ -163,7 +163,7 @@ public class CommandManager {
             } else {
                 channel.sendMessage(
                     String.format(
-                        "I don't remember %s, who are they again? Please tell me using the `%screateCharacter` command",
+                        "I don't remember %s, who are they again? Please tell me using the `%screate character` command",
                         name,
                         CommandListener.COMMAND_KEY
                     )
@@ -243,17 +243,15 @@ public class CommandManager {
     }
 
     void useItemCommand(MessageReceivedEvent event) {
-//        if (this.isAdmin(event)) {
-            Player         player        = PlayerRepository.getPlayer(event.getAuthor().getId());
-            String[]       splitInput    = event.getMessage().getContentRaw().split("\\s+");
-            String         itemName      = splitInput[1];
-            String         recipientName = splitInput.length > 2 ? splitInput[2] : null;
-            ConsumableItem item          = ConsumableManager.getItem(itemName);
-            if (item == null) {
-                throw ItemNotFoundException.createForConsumable(itemName);
-            }
-            this.encounterManager.useItem(player, item, recipientName);
-//        }
+        Player         player        = PlayerRepository.getPlayer(event.getAuthor().getId());
+        String[]       splitInput    = event.getMessage().getContentRaw().split("\\s+");
+        String         itemName      = splitInput[1];
+        String         recipientName = splitInput.length > 2 ? splitInput[2] : null;
+        ConsumableItem item          = ConsumableManager.getItem(itemName);
+        if (item == null) {
+            throw ItemNotFoundException.createForConsumable(itemName);
+        }
+        this.encounterManager.useItem(player, item, recipientName);
     }
 
     void viewAllCharacters(MessageReceivedEvent event) {
@@ -264,7 +262,7 @@ public class CommandManager {
     }
 
     void viewCharacters(MessageReceivedEvent event) {
-        EncyclopediaLogger.viewCharacters(
+        EncyclopediaLogger.viewCharactersWithStats(
             event.getChannel(),
             PlayerCharacterManager.getAllMyPCs(event.getAuthor().getId())
         );
@@ -304,6 +302,6 @@ public class CommandManager {
         if (event.getAuthor().getName().equals("JKSketchy")) {
             return true;
         }
-        return event.getMessage().getMember().getRoles().indexOf(this.getDungeonMaster(event)) > -1;
+        return event.getMember().getRoles().indexOf(this.getDungeonMaster(event)) > -1;
     }
 }
