@@ -419,10 +419,6 @@ public class EncounterLogger {
         );
     }
 
-    void logException(EncounterException e) {
-        this.logMessage(e.getMessage());
-    }
-
     void pingPlayerTurn(PCEncounterData playerCharacter) {
         this.logMessage(
             String.format(
@@ -543,12 +539,8 @@ public class EncounterLogger {
         boolean isRevived
     ) {
         String  playerCharacterName = playerCharacter.getName();
-        boolean usedOnSelf          = false;
-        if (recipient == null) {
-            recipient = playerCharacter;
-            usedOnSelf = true;
-        }
-        String recipientName = recipient.getName();
+        boolean usedOnSelf          = recipient == playerCharacter;
+        String  recipientName       = recipient.getName();
 
         StringBuilder output = new StringBuilder();
         if (item.isDmPinged()) {
@@ -598,14 +590,14 @@ public class EncounterLogger {
 //        if (item.isTempStatBoost()) {
 //            // todo
 //        }
-//
-
-        // todo "the guild leader in charge takes a phoenix feather out of their bag, reviving [Member player]! You're back with half HP, and get the "Zombie" title."
-
 
         output.append(EncounterLogger.NEWLINE);
         output.append("```");
         this.logMessage(output.toString());
+
+        if (item.isDodging()) {
+            this.logActionDodgePass(playerCharacter);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -633,7 +625,7 @@ public class EncounterLogger {
             output.append(String.format("%-2s", currentHP > maxHP / 4 ? "+" : "-"));
             output.append(String.format("[%3d/%3d] ", currentHP, maxHP));
             int healthBlocks      = (int) Math.ceil(maxHP / 10) + 1;
-            int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP)/10);
+            int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP) / 10);
             int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
             output.append(this.repeatString(EncounterLogger.FULL_HEALTH_ICON, fullHealthBlocks));
             if (emptyHealthBlocks > 0) {
@@ -692,6 +684,19 @@ public class EncounterLogger {
         output += EncounterLogger.NEWLINE;
         output += "```";
         return output;
+    }
+
+    private void logActionDodgePass(PCEncounterData playerCharacter) {
+        this.logMessage(
+            "```ml" +
+            EncounterLogger.NEWLINE +
+            String.format("%s successfully Dodges all attacks!", playerCharacter.getName()) +
+            EncounterLogger.NEWLINE +
+            String.format("%s takes 0 dmg total!", playerCharacter.getName()) +
+            EncounterLogger.NEWLINE +
+            String.format("%d/%d health remaining", playerCharacter.getCurrentHP(), playerCharacter.getMaxHP()) +
+            "```"
+        );
     }
 
     private void logMessage(String message) {

@@ -26,6 +26,7 @@ class ConsumableRepository {
         int tempStatBoost,
         int uses,
         float percentHealed,
+        boolean dodges,
         boolean healsUser,
         boolean pingDM,
         boolean protects,
@@ -47,13 +48,14 @@ class ConsumableRepository {
             " tempStatBoost, " +
             " uses, " +
             " percentHealed, " +
+            " dodges, " +
             " healsUser, " +
             " pingDM, " +
             " protects, " +
             " recipientRequired, " +
             " revives" +
             ") " +
-            "VALUES('%s','%s','%s','%s',%d,%d,%d,'%s',%d,%d,%d,%d,%f,%d,%d,%d,%d,%d)",
+            "VALUES('%s','%s','%s','%s',%d,%d,%d,'%s',%d,%d,%d,%d,%f,%d,%d,%d,%d,%d,%d)",
             ConsumableRepository.TABLE_NAME,
             name,
             image,
@@ -68,6 +70,7 @@ class ConsumableRepository {
             tempStatBoost,
             uses,
             percentHealed,
+            dodges ? 1 : 0,
             healsUser ? 1 : 0,
             pingDM ? 1 : 0,
             protects ? 1 : 0,
@@ -105,6 +108,7 @@ class ConsumableRepository {
                             resultSet.getInt("tempStatBoost"),
                             resultSet.getInt("uses"),
                             resultSet.getFloat("percentHealed"),
+                            resultSet.getBoolean("dodges"),
                             resultSet.getBoolean("healsUser"),
                             resultSet.getBoolean("pingDM"),
                             resultSet.getBoolean("protects"),
@@ -162,6 +166,7 @@ class ConsumableRepository {
                     resultSet.getInt("tempStatBoost"),
                     resultSet.getInt("uses"),
                     resultSet.getFloat("percentHealed"),
+                    resultSet.getBoolean("dodges"),
                     resultSet.getBoolean("healsUser"),
                     resultSet.getBoolean("pingDM"),
                     resultSet.getBoolean("protects"),
@@ -202,6 +207,7 @@ class ConsumableRepository {
                      " tempStatBoost     INT              DEFAULT 0, " +
                      " uses              INT              DEFAULT 1, " +
                      " percentHealed     FLOAT            DEFAULT 0.0, " +
+                     " dodges            INT              DEFAULT 0, " +
                      " healsUser         INT              DEFAULT 0, " +
                      " pingDM            INT              DEFAULT 0, " +
                      " protects          INT              DEFAULT 0, " +

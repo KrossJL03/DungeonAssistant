@@ -296,21 +296,12 @@ public class EncounterManager {
             throw WrongPhaseException.createForItem(item.getName(), item.getUsablePhase());
         }
         PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
-        EncounterDataInterface recipient;
-        boolean                usedOnSelf      = false;
+        EncounterDataInterface recipient       = recipientName == null ? playerCharacter : this.context.getEncounterData(recipientName);
+        boolean                usedOnSelf      = playerCharacter == recipient;
         int                    hitpointsHealed = 0;
         int                    damage          = 0;
-        boolean                isRevived       = false;
 
-        if (recipientName == null) {
-            if (item.isRecipientRequired()) {
-                throw MissingRecipientException.create(item.getName());
-            }
-            recipient = playerCharacter;
-            usedOnSelf = true;
-        } else {
-            recipient = this.context.getEncounterData(recipientName);
-        }
+        EncounterManager.validateItemUse(playerCharacter, item, recipient);
 
         if (item.isHealing()) {
             if (!usedOnSelf && item.isUserHealed()) {
@@ -320,19 +311,6 @@ public class EncounterManager {
                     hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
                 }
             } else {
-                if (item.isReviving() && !recipient.isSlain()){
-                    throw ItemRecipientException.createReviveLiving(
-                        recipient.getName(),
-                        recipient.getCurrentHP(),
-                        recipient.getMaxHP()
-                    );
-                }
-                if (!item.isReviving() && recipient.isSlain()) {
-                    throw PlayerCharacterSlainException.createFailedToHeal(
-                        recipient.getName(),
-                        recipient.getSlayer().getName()
-                    );
-                }
                 if (item.isPercentHealing()) {
                     hitpointsHealed = recipient.healPercent(item.getPercentHealed());
                 } else {
@@ -351,16 +329,6 @@ public class EncounterManager {
 //        if (item.isTempStatBoost()) {
 //            // todo
 //        }
-//
-//        if (item.isProtecting()) {
-//            // todo is protecting item and is NOT the dodge turn
-//            if (!usedOnSelf) {
-//                // todo results in protect action
-//            } else {
-//                // todo results in successful dodge action
-//
-//            }
-//        }
 
         this.logger.logUsedItem(
             playerCharacter,
@@ -370,6 +338,24 @@ public class EncounterManager {
             damage,
             item.isReviving()
         );
+
+        if (item.isProtecting()) {
+            ArrayList<HostileEncounterData> hostiles      = this.context.getActiveHostiles();
+            int                             totalDamage   = 0;
+            int                             totalDefended = 0;
+
+            for (HostileEncounterData hostile : hostiles) {
+                int damage2 = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
+                totalDamage += damage2;
+                totalDefended += damage2 == 0 ? hostile.getAttackRoll() : playerCharacter.getEndurance();
+            }
+
+            if (recipient instanceof PCEncounterData) {
+                this.logger.logActionProtect(playerCharacter, (PCEncounterData) recipient, totalDamage, totalDefended);
+                ((PCEncounterData) recipient).useAllActions();
+            }
+        }
+
         playerCharacter.useAction();
         this.endPlayerAction();
     }
@@ -448,5 +434,41 @@ public class EncounterManager {
             throw new NotYourTurnException();
         }
         return playerCharacter;
+    }
+
+    private static void validateItemUse(
+        PCEncounterData playerCharacter,
+        ConsumableItem item,
+        EncounterDataInterface recipient
+    ) {
+        if (recipient == playerCharacter && item.isRecipientRequired()) {
+            throw MissingRecipientException.create(item.getName());
+        }
+        if (item.isHealing()) {
+            if (item.isReviving() && !recipient.isSlain()) {
+                throw ItemRecipientException.createReviveLiving(
+                    recipient.getName(),
+                    recipient.getCurrentHP(),
+                    recipient.getMaxHP()
+                );
+            }
+            if (!item.isReviving() && recipient.isSlain()) {
+                throw PlayerCharacterSlainException.createFailedToHeal(
+                    recipient.getName(),
+                    recipient.getSlayer().getName()
+                );
+            }
+        }
+        if (item.isProtecting()) {
+            if (!(recipient instanceof PCEncounterData)) {
+                throw ProtectedCharacterException.createNotPlayerCharacter(recipient.getName());
+            } else if (recipient.equals(playerCharacter)) {
+                throw ProtectedCharacterException.createProtectYourself();
+            } else if (recipient.isSlain() && !item.isReviving()) {
+                throw ProtectedCharacterException.createIsSlain(recipient.getName());
+            } else if (!((PCEncounterData) recipient).hasActions()) {
+                throw ProtectedCharacterException.createTurnHasPassed(recipient.getName());
+            }
+        }
     }
 }

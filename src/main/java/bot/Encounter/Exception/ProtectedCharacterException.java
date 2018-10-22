@@ -12,6 +12,12 @@ public class ProtectedCharacterException extends RuntimeException implements Enc
         );
     }
 
+    public static ProtectedCharacterException createNotPlayerCharacter(String name) {
+        return new ProtectedCharacterException(
+            String.format("%s is not a player character and can not be protected.", name)
+        );
+    }
+
     public static ProtectedCharacterException createProtectYourself() {
         return new ProtectedCharacterException("You can't protect yourself.");
     }

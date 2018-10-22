@@ -10,6 +10,7 @@ public class ConsumableItem extends ItemAbstract {
     private int     tempStatBoost;
     private int     uses;
     private float   percentHealed;
+    private boolean dodges;
     private boolean healsUser;
     private boolean pingDM;
     private boolean protects;
@@ -30,6 +31,7 @@ public class ConsumableItem extends ItemAbstract {
         int tempStatBoost,
         int uses,
         float percentHealed,
+        boolean dodges,
         boolean healsUser,
         boolean pingDM,
         boolean protects,
@@ -38,6 +40,7 @@ public class ConsumableItem extends ItemAbstract {
     ) {
         super(name, image, description, shortDescription, buyValue, sellValue, seasonalMonth);
         this.damage = damage;
+        this.dodges = dodges;
         this.healsUser = healsUser;
         this.hitpointsHealed = hitpointsHealed;
         this.percentHealed = percentHealed;
@@ -80,6 +83,10 @@ public class ConsumableItem extends ItemAbstract {
 
     public boolean isDmPinged() {
         return this.pingDM;
+    }
+
+    public boolean isDodging() {
+        return this.dodges;
     }
 
     public boolean isHealing() {
