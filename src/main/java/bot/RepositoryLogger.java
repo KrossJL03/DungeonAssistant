@@ -128,6 +128,13 @@ class RepositoryLogger {
         if (item.isSeasonal()) {
             embed.addField("Seasonal", item.getSeasonalMonth(), true);
         }
+        if (item instanceof ConsumableItem) {
+            embed.addField(
+                "Usable Phase",
+                ((ConsumableItem) item).getUsablePhase(),
+                true
+            );
+        }
         RepositoryLogger.logEmbed(channel, embed.build());
     }
 

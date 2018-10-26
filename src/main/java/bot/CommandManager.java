@@ -7,7 +7,6 @@ import bot.Exception.*;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Item.Consumable.ConsumableManager;
-import bot.Item.Consumable.Exception.ItemNotFoundException;
 import bot.Player.Player;
 import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
@@ -251,9 +250,6 @@ public class CommandManager {
         String         itemName      = splitInput[1];
         String         recipientName = splitInput.length > 2 ? splitInput[2] : null;
         ConsumableItem item          = ConsumableManager.getItem(itemName);
-        if (item == null) {
-            throw ItemNotFoundException.createForConsumable(itemName);
-        }
         this.encounterManager.useItem(player, item, recipientName);
     }
 

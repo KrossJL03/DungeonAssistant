@@ -1,6 +1,7 @@
 package bot.Item.Consumable;
 
 import bot.Item.Consumable.Exception.InvalidConsumableException;
+import bot.Item.Consumable.Exception.ItemNotFoundException;
 
 import java.util.ArrayList;
 
@@ -69,7 +70,11 @@ public class ConsumableManager {
     }
 
     public static ConsumableItem getItem(String itemName) {
-        return ConsumableRepository.getItem(itemName);
+        ConsumableItem item = ConsumableRepository.getItem(itemName);
+        if (item == null) {
+            throw ItemNotFoundException.createForConsumable(itemName);
+        }
+        return item;
     }
 
     private static String buildShortDescription(int hitpointsHealed, int damage) {
