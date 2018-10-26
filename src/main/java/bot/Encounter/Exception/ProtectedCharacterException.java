@@ -1,6 +1,9 @@
 package bot.Encounter.Exception;
 
-public class ProtectedCharacterException extends RuntimeException implements EncounterException {
+import bot.CustomExceptionInterface;
+
+public class ProtectedCharacterException extends RuntimeException
+    implements EncounterException, CustomExceptionInterface {
 
     private ProtectedCharacterException(String message) {
         super(message);

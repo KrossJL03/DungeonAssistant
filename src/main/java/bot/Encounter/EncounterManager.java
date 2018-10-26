@@ -176,10 +176,11 @@ public class EncounterManager {
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
         if (playerCharacter.hasLoot()) {
-            throw new LootRerollException();
+            throw LootException.createReroll(player.getAsMention());
+        } else if (!playerCharacter.hasKills()) {
+            throw LootException.createNoKills(player.getAsMention());
         }
         playerCharacter.rollLoot();
-        playerCharacter.useAllActions();
         this.logger.logActionLoot(playerCharacter);
     }
 
@@ -458,6 +459,12 @@ public class EncounterManager {
                     recipient.getSlayer().getName()
                 );
             }
+            if (!item.isUserHealed() && recipient.getMaxHP() == recipient.getCurrentHP()) {
+                throw ItemRecipientException.createHealMaxHealth(recipient.getName(), recipient.getMaxHP());
+            }
+        }
+        if (item.isDamaging() && recipient instanceof PCEncounterData) {
+            throw ItemRecipientException.createDamagePlayer(recipient.getName(), item.getName());
         }
         if (item.isProtecting()) {
             if (!(recipient instanceof PCEncounterData)) {

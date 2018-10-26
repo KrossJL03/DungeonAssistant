@@ -12,8 +12,8 @@ public class EncounterContext {
 
     public static  String ATTACK_PHASE = "ATTACK";
     public static  String DODGE_PHASE  = "DODGE";
-    public static  String JOIN_PHASE   = "JOIN";
     public static  String LOOT_PHASE   = "LOOT";
+    private static String JOIN_PHASE   = "JOIN";
     private static String RP_PHASE     = "RP";
 
     private ArrayList<HostileEncounterData> hostiles;
@@ -106,7 +106,7 @@ public class EncounterContext {
     }
 
     EncounterDataInterface getEncounterData(String name) {
-        String nameLower = name.toLowerCase();
+        String                            nameLower    = name.toLowerCase();
         ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
         allCreatures.addAll(this.playerCharacters);
         allCreatures.addAll(this.hostiles);
@@ -239,9 +239,6 @@ public class EncounterContext {
     void startLootPhase() {
         if (this.isLootPhase()) {
             throw new StartCurrentPhaseException(EncounterContext.LOOT_PHASE);
-        }
-        for (PCEncounterData playerCharacter : this.playerCharacters) {
-            playerCharacter.resetActions(false);
         }
         this.currentPhase = EncounterContext.LOOT_PHASE;
     }

@@ -124,6 +124,9 @@ public class CommandManager {
     void helloCommand(MessageReceivedEvent event) {
         MessageChannel channel  = event.getChannel();
         String         nickname = event.getMember().getNickname();
+        if (nickname == null) {
+            nickname = event.getAuthor().getName();
+        }
         PlayerManager.savePlayer(event.getAuthor().getId(), nickname);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("Hi %s! I've got all your information down now.", nickname)).queue();

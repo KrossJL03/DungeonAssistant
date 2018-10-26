@@ -692,6 +692,7 @@ public class EncounterLogger {
             EncounterLogger.NEWLINE +
             String.format("%s successfully Dodges all attacks!", playerCharacter.getName()) +
             EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
             String.format("%s takes 0 dmg total!", playerCharacter.getName()) +
             EncounterLogger.NEWLINE +
             String.format("%d/%d health remaining", playerCharacter.getCurrentHP(), playerCharacter.getMaxHP()) +

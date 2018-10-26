@@ -113,6 +113,10 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentActions > 0;
     }
 
+    public boolean hasKills() {
+        return this.kills.size() > 0;
+    }
+
     public boolean hasLoot() {
         return this.lootRolls.size() > 0;
     }
