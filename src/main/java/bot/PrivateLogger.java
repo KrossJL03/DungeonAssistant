@@ -47,6 +47,24 @@ class PrivateLogger {
             "Attempt to dodge enemy attacks during the dodge turn"
         ));
         output.append(PrivateLogger.NEWLINE);
+        output.append(
+            String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "join",
+                "[Name]",
+                "Add a character to an encounter"
+            )
+        );
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %s%-16s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "leave",
+            "",
+            "Leave the encounter"
+        ));
+        output.append(PrivateLogger.NEWLINE);
         output.append(String.format(
             "   %s%-16s %-16s %s",
             CommandListener.COMMAND_KEY,
@@ -59,21 +77,19 @@ class PrivateLogger {
             String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
-                "join",
-                "[Name]",
-                "Add a character to an encounter"
-            )
-        );
-        output.append(PrivateLogger.NEWLINE);
-        output.append(
-            String.format(
-                "   %s%-16s %-16s %s",
-                CommandListener.COMMAND_KEY,
                 "protect",
                 "[Name]",
                 "Protect a teammate during the dodge turn"
             )
         );
+        output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %s%-16s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "rejoin",
+            "",
+            "Rejoin the encounter"
+        ));
         output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
@@ -143,6 +159,15 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
+                "kick",
+                "[Name]",
+                "Forcibly remove a character from an encounter. " +
+                "The rejoin command cannot be used by the player to return."
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "maxPlayers",
                 "[PlayerCount]",
                 "Set number of players permitted"
@@ -154,14 +179,6 @@ class PrivateLogger {
                 "removeHostile",
                 "[Name]",
                 "Remove a hostile"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format(
-                "   %s%-16s %-16s %s",
-                CommandListener.COMMAND_KEY,
-                "removePlayer",
-                "[Name]",
-                "Remove a player"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(

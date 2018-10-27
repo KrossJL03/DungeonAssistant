@@ -1,8 +1,9 @@
 package bot.Encounter;
 
 import bot.CommandListener;
-import bot.Encounter.EncounterData.*;
-import bot.Encounter.Exception.EncounterException;
+import bot.Encounter.EncounterData.EncounterDataInterface;
+import bot.Encounter.EncounterData.HostileEncounterData;
+import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import net.dv8tion.jda.core.entities.Role;
@@ -526,8 +527,8 @@ public class EncounterLogger {
         this.logMessage(String.format("%s has left the encounter", name));
     }
 
-    void logReturnToEncounter(String name) {
-        this.logMessage(String.format("%s has returned to the encounter!", name));
+    void logRejoinEncounter(String name) {
+        this.logMessage(String.format("%s has rejoined the encounter!", name));
     }
 
     void logUsedItem(

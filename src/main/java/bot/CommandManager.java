@@ -174,6 +174,14 @@ public class CommandManager {
         }
     }
 
+    void kickCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   name       = splitInput[1];
+            this.encounterManager.removePlayerCharacter(name);
+        }
+    }
+
     void leaveCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
         this.encounterManager.leaveEncounter(player);
@@ -191,14 +199,6 @@ public class CommandManager {
         this.encounterManager.protectAction(player, name);
     }
 
-    void removePlayerCharacter(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   name       = splitInput[1];
-            this.encounterManager.removePlayerCharacter(name);
-        }
-    }
-
     void removeHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
@@ -207,9 +207,9 @@ public class CommandManager {
         }
     }
 
-    void returnCommand(MessageReceivedEvent event) {
+    void rejoinCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
-        this.encounterManager.returnToEncounter(player);
+        this.encounterManager.rejoinEncounter(player);
     }
 
     void setMaxPlayers(MessageReceivedEvent event) {

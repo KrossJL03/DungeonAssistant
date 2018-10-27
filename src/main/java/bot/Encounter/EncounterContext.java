@@ -18,14 +18,14 @@ public class EncounterContext {
 
     private ArrayList<HostileEncounterData> hostiles;
     private ArrayList<PCEncounterData>      playerCharacters;
-    private ArrayList<PCEncounterData>      absentPlayerCharacters;
     private InitiativeQueue                 initiative;
     private String                          currentPhase;
+    private int                             absentPlayerCount;
     private int                             maxPlayerCount;
     private boolean                         isStarted;
 
     public EncounterContext() {
-        this.absentPlayerCharacters = new ArrayList<>();
+        this.absentPlayerCount = 0;
         this.currentPhase = "";
         this.initiative = new InitiativeQueue();
         this.hostiles = new ArrayList<>();
@@ -41,14 +41,9 @@ public class EncounterContext {
                 throw new MultiplePlayerCharactersException(player, character.getName());
             }
         }
-        PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
-        if (absentPlayerCharacter != null) {
-            throw new MultiplePlayerCharactersException(player, absentPlayerCharacter.getName());
-        }
-        if (this.playerCharacters.size() == this.maxPlayerCount) {
+        if (this.isFullDungeon()) {
             throw DungeonException.createFullDungeon(newPlayerCharacter.getOwner());
         }
-
         if (this.isInitiativePhase()) {
             this.initiative.add(newPlayerCharacter);
             newPlayerCharacter.resetActions(this.isAttackPhase());
@@ -83,7 +78,7 @@ public class EncounterContext {
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
         ArrayList<PCEncounterData> activePlayers = new ArrayList<>();
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (!playerCharacter.isSlain()) {
+            if (!playerCharacter.isSlain() && playerCharacter.isPresent()) {
                 activePlayers.add(playerCharacter);
             }
         }
@@ -115,6 +110,7 @@ public class EncounterContext {
                 return creature;
             }
         }
+        // todo getEncounterData doesn't know that this is a recipient case
         throw EncounterDataNotFoundException.createForRecipient(name);
     }
 
@@ -170,7 +166,7 @@ public class EncounterContext {
     }
 
     boolean isFullDungeon() {
-        return !(this.playerCharacters.size() < this.maxPlayerCount);
+        return !(this.playerCharacters.size() - this.absentPlayerCount < this.maxPlayerCount);
     }
 
     boolean isLootPhase() {
@@ -189,20 +185,24 @@ public class EncounterContext {
         return this.isStarted;
     }
 
-    void playerHasLeft(PCEncounterData playerCharacter) {
-        this.removePlayerCharacter(playerCharacter);
-        this.absentPlayerCharacters.add(playerCharacter);
+    PCEncounterData playerHasLeft(Player player) {
+        PCEncounterData playerCharacter = this.getPlayerCharacter(player);
+        playerCharacter.useAllActions();
+        playerCharacter.leave();
+        this.absentPlayerCount++;
+        return playerCharacter;
     }
 
-    void playerHasReturned(Player player) {
-        PCEncounterData absentPlayerCharacter = this.getAbsentPlayerCharacter(player);
-        if (absentPlayerCharacter == null) {
+    PCEncounterData playerHasRejoined(Player player) {
+        PCEncounterData playerCharacter = this.getPlayerCharacter(player);
+        if (playerCharacter == null) {
             throw EncounterDataNotFoundException.createForPlayerCharacter(player);
         } else if (this.isFullDungeon()) {
             throw DungeonException.createFullDungeon(player);
         }
-        this.absentPlayerCharacters.remove(absentPlayerCharacter);
-        this.addCharacter(absentPlayerCharacter);
+        playerCharacter.rejoin();
+        this.absentPlayerCount--;
+        return playerCharacter;
     }
 
     void setMaxPlayerCount(int maxPlayerCount) {
@@ -258,15 +258,6 @@ public class EncounterContext {
             this.initiative.remove(playerCharacter);
         }
         this.playerCharacters.remove(playerCharacter);
-    }
-
-    private PCEncounterData getAbsentPlayerCharacter(Player player) {
-        for (PCEncounterData playerCharacter : this.absentPlayerCharacters) {
-            if (playerCharacter.isOwner(player.getUserId())) {
-                return playerCharacter;
-            }
-        }
-        return null;
     }
 
     private boolean isInitiativePhase() {

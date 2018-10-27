@@ -69,7 +69,7 @@ public class CommandListener extends ListenerAdapter {
                         this.commandManager.joinCommand(event);
                         break;
                     case "kick":
-                        this.commandManager.removePlayerCharacter(event);
+                        this.commandManager.kickCommand(event);
                         break;
                     case "leave":
                         this.commandManager.leaveCommand(event);
@@ -83,11 +83,11 @@ public class CommandListener extends ListenerAdapter {
                     case "protect":
                         this.commandManager.protectCommand(event);
                         break;
+                    case "rejoin":
+                        this.commandManager.rejoinCommand(event);
+                        break;
                     case "removehostile":
                         this.commandManager.removeHostile(event);
-                        break;
-                    case "return":
-                        this.commandManager.returnCommand(event);
                         break;
                     case "skip":
                         this.commandManager.skipCommand(event);

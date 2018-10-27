@@ -16,11 +16,13 @@ public class PCEncounterData implements EncounterDataInterface {
     private int                             currentHp;
     private int                             currentActions;
     private boolean                         hasProtect;
+    private boolean                         isPresent;
 
     public PCEncounterData(PlayerCharacter playerCharacter) {
         this.currentActions = 0;
         this.currentHp = playerCharacter.getHitpoints();
         this.hasProtect = true;
+        this.isPresent = true;
         this.kills = new ArrayList<>();
         this.lootRolls = new Hashtable<>();
         this.playerCharacter = playerCharacter;
@@ -167,8 +169,20 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.playerCharacter.getOwner().isSamePlayer(userId);
     }
 
+    public boolean isPresent() {
+        return this.isPresent;
+    }
+
     public boolean isSlain() {
         return currentHp < 1;
+    }
+
+    public void leave() {
+        this.isPresent = false;
+    }
+
+    public void rejoin() {
+        this.isPresent = true;
     }
 
     public void resetActions(boolean isAttackPhase) {

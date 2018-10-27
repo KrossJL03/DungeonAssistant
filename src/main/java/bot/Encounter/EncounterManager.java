@@ -1,7 +1,9 @@
 package bot.Encounter;
 
+import bot.Encounter.EncounterData.EncounterDataInterface;
+import bot.Encounter.EncounterData.HostileEncounterData;
+import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.*;
-import bot.Encounter.EncounterData.*;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
@@ -163,9 +165,7 @@ public class EncounterManager {
     }
 
     public void leaveEncounter(Player player) {
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
-        playerCharacter.useAllActions();
-        this.context.playerHasLeft(playerCharacter);
+        PCEncounterData playerCharacter = this.context.playerHasLeft(player);
         this.logger.logLeftEncounter(playerCharacter.getName());
         this.endPlayerAction();
     }
@@ -231,10 +231,9 @@ public class EncounterManager {
         this.logger.logRemovedPlayerCharacter(name);
     }
 
-    public void returnToEncounter(Player player) {
-        this.context.playerHasReturned(player);
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
-        this.logger.logReturnToEncounter(playerCharacter.getName());
+    public void rejoinEncounter(Player player) {
+        PCEncounterData playerCharacter = this.context.playerHasRejoined(player);
+        this.logger.logRejoinEncounter(playerCharacter.getName());
     }
 
     public void setMaxPlayerCount(int maxPlayerCount) {
