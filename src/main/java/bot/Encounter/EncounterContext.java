@@ -13,6 +13,8 @@ public class EncounterContext {
     public static  String ATTACK_PHASE = "ATTACK";
     public static  String DODGE_PHASE  = "DODGE";
     public static  String LOOT_PHASE   = "LOOT";
+    private static String CREATE_PHASE = "CREATE";
+    private static String END_PHASE    = "END";
     private static String JOIN_PHASE   = "JOIN";
     private static String RP_PHASE     = "RP";
 
@@ -22,14 +24,12 @@ public class EncounterContext {
     private String                          currentPhase;
     private int                             absentPlayerCount;
     private int                             maxPlayerCount;
-    private boolean                         isStarted;
 
     public EncounterContext() {
         this.absentPlayerCount = 0;
-        this.currentPhase = "";
+        this.currentPhase = EncounterContext.CREATE_PHASE;
         this.initiative = new InitiativeQueue();
         this.hostiles = new ArrayList<>();
-        this.isStarted = false;
         this.maxPlayerCount = 0;
         this.playerCharacters = new ArrayList<>();
     }
@@ -40,9 +40,6 @@ public class EncounterContext {
             if (character.isOwner(player.getUserId())) {
                 throw new MultiplePlayerCharactersException(player, character.getName());
             }
-        }
-        if (this.isFullDungeon()) {
-            throw DungeonException.createFullDungeon(newPlayerCharacter.getOwner());
         }
         if (this.isInitiativePhase()) {
             this.initiative.add(newPlayerCharacter);
@@ -59,10 +56,6 @@ public class EncounterContext {
 
     void addHostile(HostileEncounterData newHostile) {
         this.hostiles.add(newHostile);
-    }
-
-    void endCurrentPhase() {
-        this.currentPhase = EncounterContext.RP_PHASE;
     }
 
     ArrayList<HostileEncounterData> getActiveHostiles() {
@@ -168,8 +161,12 @@ public class EncounterContext {
         return this.getActiveHostiles().size() > 0;
     }
 
+    boolean hasActivePlayers() {
+        return this.getActivePlayerCharacters().size() > 0;
+    }
+
     boolean havePlayersJoined() {
-        return this.isJoinPhase() && this.hasActivePlayers();
+        return !this.isJoinPhase() || this.hasActivePlayers();
     }
 
     boolean isAttackPhase() {
@@ -189,8 +186,7 @@ public class EncounterContext {
     }
 
     boolean isOver() {
-        // todo create isOver boolean that is set and never unset
-        return this.isStarted && (!this.hasActiveHostiles() || !this.hasActivePlayers());
+        return this.isLootPhase() || this.isEndPhase();
     }
 
     boolean isPhase(String phase) {
@@ -198,7 +194,7 @@ public class EncounterContext {
     }
 
     boolean isStarted() {
-        return this.isStarted;
+        return !this.currentPhase.equals(EncounterContext.CREATE_PHASE);
     }
 
     PCEncounterData playerHasLeft(Player player) {
@@ -252,9 +248,13 @@ public class EncounterContext {
         this.initiative = new InitiativeQueue(this.getAllPlayerCharacters());
     }
 
-    void startEncounter() {
+    void startEndPhase() {
+        this.currentPhase = EncounterContext.END_PHASE;
+        this.initiative = new InitiativeQueue();
+    }
+
+    void startJoinPhase() {
         this.currentPhase = EncounterContext.JOIN_PHASE;
-        this.isStarted = true;
     }
 
     void startLootPhase() {
@@ -262,6 +262,12 @@ public class EncounterContext {
             throw new StartCurrentPhaseException(EncounterContext.LOOT_PHASE);
         }
         this.currentPhase = EncounterContext.LOOT_PHASE;
+        this.initiative = new InitiativeQueue();
+    }
+
+    void startRpPhase() {
+        this.currentPhase = EncounterContext.RP_PHASE;
+        this.initiative = new InitiativeQueue();
     }
 
     void removeHostile(HostileEncounterData hostile) {
@@ -281,12 +287,12 @@ public class EncounterContext {
         this.playerCharacters.remove(playerCharacter);
     }
 
-    private boolean hasActivePlayers() {
-        return this.getActivePlayerCharacters().size() > 0;
-    }
-
     private boolean isInitiativePhase() {
         return this.isAttackPhase() || this.isDodgePhase();
+    }
+
+    private boolean isEndPhase() {
+        return this.currentPhase.equals(EncounterContext.END_PHASE);
     }
 
     private boolean isJoinPhase() {

@@ -32,6 +32,9 @@ public class EncounterManager {
     }
 
     public void addHostile(String speciesName, String nickname) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         Hostile              hostileSpecies  = HostileManager.getHostile(speciesName);
         String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
         HostileEncounterData newHostile      = new HostileEncounterData(hostileSpecies, capitalNickname);
@@ -61,8 +64,10 @@ public class EncounterManager {
     }
 
     public void attackAction(Player player, String hostileName) {
-        if (!this.context.isAttackPhase()) {
-            throw WrongPhaseException.createForAttack();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (!this.context.isAttackPhase()) {
+            throw EncounterPhaseException.createNotAttackPhase();
         }
         PCEncounterData      playerCharacter = this.getPlayerCharacter(player);
         HostileEncounterData hostile         = this.context.getHostile(hostileName);
@@ -97,8 +102,10 @@ public class EncounterManager {
     }
 
     public void dodgeAction(Player player) {
-        if (!this.context.isDodgePhase()) {
-            throw WrongPhaseException.createForDodge();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (!this.context.isDodgePhase()) {
+            throw EncounterPhaseException.createNotDodgePhase();
         }
         PCEncounterData    playerCharacter = this.getPlayerCharacter(player);
         ArrayList<Integer> dodgeRolls      = new ArrayList<>();
@@ -125,6 +132,9 @@ public class EncounterManager {
     }
 
     public void heal(String name, int hitpoints) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         EncounterDataInterface recipient = this.context.getEncounterData(name);
         recipient.healPoints(hitpoints);
         this.logger.logDungeonMasterHeal(
@@ -136,6 +146,9 @@ public class EncounterManager {
     }
 
     public void hurt(String name, int hitpoints) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         EncounterDataInterface recipient = this.context.getEncounterData(name);
         recipient.hurt(hitpoints);
         this.logger.logDungeonMasterHurt(
@@ -145,16 +158,30 @@ public class EncounterManager {
             recipient.getMaxHP()
         );
         if (recipient.isSlain()) {
+            this.logger.logDungeonMasterSlay(recipient.getName());
             if (recipient instanceof HostileEncounterData) {
                 this.addKillToPlayerCharacters((HostileEncounterData) recipient);
+                if (!this.context.hasActiveHostiles()) {
+                    this.context.startLootPhase();
+                    this.logger.logEndEncounter(
+                        this.context.getAllPlayerCharacters(),
+                        this.context.getAllHostiles(),
+                        true
+                    );
+                }
+            } else if (recipient instanceof PCEncounterData && recipient == this.context.getCurrentPlayerCharacter()) {
+                this.endCurrentPlayerAction();
             }
-            this.logger.logDungeonMasterSlay(recipient.getName());
         }
     }
 
     public void joinEncounter(PlayerCharacter playerCharacter) {
         if (!this.context.isStarted()) {
-            throw EncounterStatusException.createNotStarted();
+            throw EncounterPhaseException.createNotStarted();
+        } else if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (this.context.isFullDungeon()) {
+            throw DungeonException.createFullDungeon(playerCharacter.getOwner());
         }
         PCEncounterData encounterData = new PCEncounterData(playerCharacter);
         this.context.addCharacter(encounterData);
@@ -165,6 +192,9 @@ public class EncounterManager {
     }
 
     public void leaveEncounter(Player player) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         PCEncounterData currentPlayerCharacter;
         try {
             currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
@@ -180,7 +210,7 @@ public class EncounterManager {
 
     public void lootAction(Player player) {
         if (!this.context.isLootPhase()) {
-            throw WrongPhaseException.createForLoot();
+            throw EncounterPhaseException.createNotLootPhase();
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
         if (playerCharacter.hasLoot()) {
@@ -193,8 +223,10 @@ public class EncounterManager {
     }
 
     public void protectAction(Player player, String name) {
-        if (!this.context.isDodgePhase()) {
-            throw WrongPhaseException.createForProtect();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (!this.context.isDodgePhase()) {
+            throw EncounterPhaseException.createNotProtectPhase();
         }
 
         PCEncounterData protectorCharacter = this.getPlayerCharacter(player);
@@ -228,28 +260,43 @@ public class EncounterManager {
     }
 
     public void removeHostile(String name) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         HostileEncounterData hostile = this.context.getHostile(name);
         this.context.removeHostile(hostile);
         this.logger.logRemovedHostile(name);
     }
 
     public void removePlayerCharacter(String name) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
         this.context.removePlayerCharacter(playerCharacter);
         this.logger.logRemovedPlayerCharacter(name);
     }
 
     public void rejoinEncounter(Player player) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         PCEncounterData playerCharacter = this.context.playerHasRejoined(player);
         this.logger.logRejoinEncounter(playerCharacter.getName());
     }
 
     public void setMaxPlayerCount(int maxPlayerCount) {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         this.context.setMaxPlayerCount(maxPlayerCount);
         this.logger.logSetMaxPlayers(maxPlayerCount);
     }
 
     public void skipPlayerTurn() {
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
         if (this.context.isAttackPhase()) {
             this.logger.logActionAttackSkipped(playerCharacter.getName());
@@ -278,21 +325,23 @@ public class EncounterManager {
     }
 
     public void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
-        if (this.context.isStarted()) {
-            throw EncounterStatusException.createInProgress();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (this.context.isStarted()) {
+            throw EncounterPhaseException.createStartInProgressEncounter();
         } else if (this.context.getMaxPlayerCount() == 0) {
             throw new MaxZeroPlayersException();
         } else if (!this.context.hasActiveHostiles()) {
             throw new NoHostilesException();
         }
         this.loggerContext.setChannel(channel);
-        this.context.startEncounter();
+        this.context.startJoinPhase();
         this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
     }
 
     public void useItem(Player player, ConsumableItem item, String recipientName) {
         if (!this.context.isPhase(item.getUsablePhase())) {
-            throw WrongPhaseException.createForItem(item.getName(), item.getUsablePhase());
+            throw EncounterPhaseException.createNotItemUsablePhase(item.getName(), item.getUsablePhase());
         }
         PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
         EncounterDataInterface recipient;
@@ -381,7 +430,7 @@ public class EncounterManager {
 
     private void dodgeActionSkipped(Player player) {
         if (!this.context.isDodgePhase()) {
-            throw WrongPhaseException.createForDodge();
+            throw EncounterPhaseException.createNotDodgePhase();
         }
         PCEncounterData playerCharacter = this.getPlayerCharacter(player);
         int             totalDamage     = 0;
@@ -398,10 +447,15 @@ public class EncounterManager {
     }
 
     private void endCurrentPlayerAction() {
-        if (this.context.getActiveHostiles().isEmpty()) {
+        if (!this.context.hasActiveHostiles()) {
             this.context.startLootPhase();
-            this.logger.logEndEncounter(this.context.getAllPlayerCharacters(), this.context.getAllHostiles(), true);
-        } else if (this.context.getActivePlayerCharacters().isEmpty()) {
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                true
+            );
+        } else if (!this.context.hasActivePlayers()) {
+            this.context.startEndPhase();
             this.logger.logEndEncounter(
                 this.context.getAllPlayerCharacters(),
                 this.context.getAllHostiles(),
@@ -419,13 +473,13 @@ public class EncounterManager {
                     this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
                 } catch (EncounterDataNotFoundException e) {
                     if (this.context.isAttackPhase()) {
-                        this.context.endCurrentPhase();
+                        this.context.startRpPhase();
                         this.logger.logEndAttackPhase(
                             this.context.getAllPlayerCharacters(),
                             this.context.getAllHostiles()
                         );
                     } else if (this.context.isDodgePhase()) {
-                        this.context.endCurrentPhase();
+                        this.context.startRpPhase();
                         this.logger.logEndDodgePhase(
                             this.context.getAllPlayerCharacters(),
                             this.context.getAllHostiles()
@@ -489,12 +543,12 @@ public class EncounterManager {
     }
 
     private void validateStartEncounterPhase() {
-        if (!this.context.isStarted()) {
-            throw EncounterStatusException.createNotStarted();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (!this.context.isStarted()) {
+            throw EncounterPhaseException.createNotStarted();
         } else if (!this.context.havePlayersJoined()) {
             throw DungeonException.createNoPlayersHaveJoined();
-        } else if (this.context.isOver()) {
-            throw EncounterStatusException.createIsOver();
         }
     }
 }
