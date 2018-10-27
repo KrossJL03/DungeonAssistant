@@ -165,9 +165,12 @@ public class EncounterManager {
     }
 
     public void leaveEncounter(Player player) {
+        PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
         PCEncounterData playerCharacter = this.context.playerHasLeft(player);
         this.logger.logLeftEncounter(playerCharacter.getName());
-        this.endPlayerAction();
+        if (playerCharacter == currentPlayerCharacter) {
+            this.logger.pingPlayerTurn(this.context.getCurrentPlayerCharacter());
+        }
     }
 
     public void lootAction(Player player) {

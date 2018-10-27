@@ -433,12 +433,7 @@ public class EncounterLogger {
     // TODO: organize
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void logDungeonIsFull() {
-        this.logMessage(
-            String.format(
-                "*DUNGEON FULL!* %s Please wait for DungeonMaster to initiate the attack turn",
-                EncounterLogger.NEWLINE
-            )
-        );
+        this.logMessage("***THE DUNGEON IS NOW FULL!***");
     }
 
     void logEncounterSummary(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
