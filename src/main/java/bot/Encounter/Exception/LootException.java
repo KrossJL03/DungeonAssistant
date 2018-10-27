@@ -2,7 +2,7 @@ package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 
-public class LootException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+public class LootException extends RuntimeException implements CustomExceptionInterface {
     private LootException(String message) {
         super(message);
     }

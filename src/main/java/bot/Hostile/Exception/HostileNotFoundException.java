@@ -2,9 +2,8 @@ package bot.Hostile.Exception;
 
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
-import bot.Encounter.Exception.EncounterException;
 
-public class HostileNotFoundException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+public class HostileNotFoundException extends RuntimeException implements CustomExceptionInterface {
     private HostileNotFoundException(String message) {
         super(message);
     }

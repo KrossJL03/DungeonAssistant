@@ -2,7 +2,8 @@ package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 
-public class PlayerCharacterSlainException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+public class PlayerCharacterSlainException extends RuntimeException implements CustomExceptionInterface {
+
     private PlayerCharacterSlainException(String message) {
         super(message);
     }
@@ -31,4 +32,5 @@ public class PlayerCharacterSlainException extends RuntimeException implements E
             )
         );
     }
+
 }

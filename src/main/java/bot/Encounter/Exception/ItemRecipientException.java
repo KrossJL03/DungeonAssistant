@@ -2,8 +2,8 @@ package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 
-public class ItemRecipientException extends RuntimeException
-    implements EncounterException, CustomExceptionInterface {
+public class ItemRecipientException extends RuntimeException implements CustomExceptionInterface {
+
     private ItemRecipientException(String message) {
         super(message);
     }

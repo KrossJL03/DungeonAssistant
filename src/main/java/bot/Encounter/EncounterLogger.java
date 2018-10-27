@@ -380,7 +380,7 @@ public class EncounterLogger {
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 output.append(String.format(
-                    "d%d %s %d dmg from '%s'!",
+                    "d%d %s %2d dmg from '%s'!",
                     hostile.getAttackDice(),
                     EncounterLogger.DOUBLE_ARROW,
                     hostile.getAttackRoll(),
@@ -602,7 +602,9 @@ public class EncounterLogger {
         StringBuilder output    = new StringBuilder();
         int           currentHP = creature.getCurrentHP();
         int           maxHP     = creature.getMaxHP();
-        if (creature.isSlain()) {
+        if (creature instanceof PCEncounterData && !((PCEncounterData) creature).isPresent()) {
+            output.append(String.format("--- %s has left", creature.getName()));
+        } else if (creature.isSlain()) {
             EncounterDataInterface slayer = creature.getSlayer();
             if (creature instanceof PCEncounterData) {
                 output.append(String.format("--- %s was knocked out", creature.getName()));

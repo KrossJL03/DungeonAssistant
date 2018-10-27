@@ -2,8 +2,7 @@ package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
 
-public class ProtectedCharacterException extends RuntimeException
-    implements EncounterException, CustomExceptionInterface {
+public class ProtectedCharacterException extends RuntimeException implements CustomExceptionInterface {
 
     private ProtectedCharacterException(String message) {
         super(message);
@@ -30,4 +29,5 @@ public class ProtectedCharacterException extends RuntimeException
             String.format("%s's turn has already passed. They can not be protected.", name)
         );
     }
+
 }

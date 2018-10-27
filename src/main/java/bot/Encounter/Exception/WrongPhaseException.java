@@ -4,7 +4,8 @@ import bot.CommandListener;
 import bot.CustomExceptionInterface;
 import bot.Encounter.EncounterContext;
 
-public class WrongPhaseException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+public class WrongPhaseException extends RuntimeException implements CustomExceptionInterface {
+
     private WrongPhaseException(String message) {
         super(message);
     }
@@ -58,4 +59,5 @@ public class WrongPhaseException extends RuntimeException implements EncounterEx
             )
         );
     }
+
 }

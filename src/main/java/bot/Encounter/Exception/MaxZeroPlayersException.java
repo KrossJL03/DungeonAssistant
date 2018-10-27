@@ -2,9 +2,9 @@ package bot.Encounter.Exception;
 
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
-import bot.Encounter.Exception.EncounterException;
 
-public class MaxZeroPlayersException extends RuntimeException implements EncounterException, CustomExceptionInterface {
+public class MaxZeroPlayersException extends RuntimeException implements CustomExceptionInterface {
+
     public MaxZeroPlayersException() {
         super(
             String.format(
@@ -13,4 +13,5 @@ public class MaxZeroPlayersException extends RuntimeException implements Encount
             )
         );
     }
+
 }

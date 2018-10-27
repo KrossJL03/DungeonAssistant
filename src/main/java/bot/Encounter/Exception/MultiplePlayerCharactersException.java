@@ -1,11 +1,10 @@
 package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
-import bot.Encounter.Exception.EncounterException;
 import bot.Player.Player;
 
-public class MultiplePlayerCharactersException extends RuntimeException
-    implements EncounterException, CustomExceptionInterface {
+public class MultiplePlayerCharactersException extends RuntimeException implements CustomExceptionInterface {
+
     public MultiplePlayerCharactersException(Player player, String name) {
         super(
             String.format(
@@ -16,4 +15,5 @@ public class MultiplePlayerCharactersException extends RuntimeException
             )
         );
     }
+
 }

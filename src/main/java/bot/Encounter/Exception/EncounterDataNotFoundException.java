@@ -3,16 +3,34 @@ package bot.Encounter.Exception;
 import bot.CustomExceptionInterface;
 import bot.Player.Player;
 
-public class EncounterDataNotFoundException extends RuntimeException
-    implements EncounterException, CustomExceptionInterface {
+public class EncounterDataNotFoundException extends RuntimeException implements CustomExceptionInterface {
 
     private EncounterDataNotFoundException(String message) {
         super(message);
     }
 
+    public static EncounterDataNotFoundException createForEncounterData(String name) {
+        return new EncounterDataNotFoundException(
+            String.format(
+                "I couldn't find any creatures with the name '%s' in this battle...",
+                name
+            )
+        );
+    }
+
     public static EncounterDataNotFoundException createForHostile(String name) {
         return new EncounterDataNotFoundException(
             String.format("I don't see any hostiles named %s in this encounter", name)
+        );
+    }
+
+    public static EncounterDataNotFoundException createForCurrentPlayer() {
+        return new EncounterDataNotFoundException("I can't find the player who's turn it is...");
+    }
+
+    public static EncounterDataNotFoundException createForNextPlayer() {
+        return new EncounterDataNotFoundException(
+            "It looks like there aren't anymore players that can do anything else this turn..."
         );
     }
 

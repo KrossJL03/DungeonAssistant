@@ -3,8 +3,7 @@ package bot.Encounter.Exception;
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
 
-public class EncounterStatusException extends RuntimeException
-    implements EncounterException, CustomExceptionInterface {
+public class EncounterStatusException extends RuntimeException implements CustomExceptionInterface {
 
     private EncounterStatusException(String message) {
         super(message);
@@ -21,7 +20,7 @@ public class EncounterStatusException extends RuntimeException
     public static EncounterStatusException createIsOver() {
         return new EncounterStatusException(
             String.format(
-                "This encounter is over. If you'd like to start a new one use the `%sdm create` command",
+                "This encounter is over. If you'd like to start a new one use the `%screate encounter` command",
                 CommandListener.COMMAND_KEY
             )
         );

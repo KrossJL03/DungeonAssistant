@@ -86,7 +86,7 @@ public class EncounterManager {
         if (hostile.isSlain()) {
             this.addKillToPlayerCharacters(hostile);
         }
-        this.endPlayerAction();
+        this.endCurrentPlayerAction();
     }
 
     public void createEncounter(MessageChannel channel, Role dungeonMaster) {
@@ -121,7 +121,7 @@ public class EncounterManager {
             totalDefended
         );
         playerCharacter.useAction();
-        this.endPlayerAction();
+        this.endCurrentPlayerAction();
     }
 
     public void heal(String name, int hitpoints) {
@@ -165,11 +165,16 @@ public class EncounterManager {
     }
 
     public void leaveEncounter(Player player) {
-        PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+        PCEncounterData currentPlayerCharacter;
+        try {
+            currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+        } catch (NotInInitiativeException e) {
+            currentPlayerCharacter = null;
+        }
         PCEncounterData playerCharacter = this.context.playerHasLeft(player);
         this.logger.logLeftEncounter(playerCharacter.getName());
         if (playerCharacter == currentPlayerCharacter) {
-            this.logger.pingPlayerTurn(this.context.getCurrentPlayerCharacter());
+            this.endCurrentPlayerAction();
         }
     }
 
@@ -219,7 +224,7 @@ public class EncounterManager {
         protectorCharacter.useAction();
         protectorCharacter.useProtect();
         protectedCharacter.useAllActions();
-        this.endPlayerAction();
+        this.endCurrentPlayerAction();
     }
 
     public void removeHostile(String name) {
@@ -249,36 +254,27 @@ public class EncounterManager {
         if (this.context.isAttackPhase()) {
             this.logger.logActionAttackSkipped(playerCharacter.getName());
             playerCharacter.useAllActions();
-            this.endPlayerAction();
+            this.endCurrentPlayerAction();
         } else if (this.context.isDodgePhase()) {
             this.dodgeActionSkipped(playerCharacter.getOwner());
         }
     }
 
     public void startAttackPhase() {
-        if (!this.context.isStarted()) {
-            throw EncounterStatusException.createNotStarted();
-        } else if (this.context.isOver()) {
-            throw EncounterStatusException.createIsOver();
-        }
+        this.validateStartEncounterPhase();
         this.context.startAttackPhase();
         this.logger.logStartAttackPhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
         this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
     }
 
     public void startDodgePhase() {
-        if (!this.context.isStarted()) {
-            throw EncounterStatusException.createNotStarted();
-        } else if (this.context.isOver()) {
-            throw EncounterStatusException.createIsOver();
-        } else {
-            this.context.startDodgePhase();
-            for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
-                hostile.attack();
-            }
-            this.logger.logStartDodgePhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
-            this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
+        this.validateStartEncounterPhase();
+        this.context.startDodgePhase();
+        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
+            hostile.attack();
         }
+        this.logger.logStartDodgePhase(this.context.getAllPlayerCharacters(), this.context.getActiveHostiles());
+        this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
     }
 
     public void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
@@ -286,7 +282,7 @@ public class EncounterManager {
             throw EncounterStatusException.createInProgress();
         } else if (this.context.getMaxPlayerCount() == 0) {
             throw new MaxZeroPlayersException();
-        } else if (this.context.getAllHostiles().size() == 0) {
+        } else if (!this.context.hasActiveHostiles()) {
             throw new NoHostilesException();
         }
         this.loggerContext.setChannel(channel);
@@ -299,10 +295,20 @@ public class EncounterManager {
             throw WrongPhaseException.createForItem(item.getName(), item.getUsablePhase());
         }
         PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
-        EncounterDataInterface recipient       = recipientName == null ? playerCharacter : this.context.getEncounterData(recipientName);
-        boolean                usedOnSelf      = playerCharacter == recipient;
-        int                    hitpointsHealed = 0;
-        int                    damage          = 0;
+        EncounterDataInterface recipient;
+        if (recipientName != null) {
+            try {
+                recipient = this.context.getEncounterData(recipientName);
+            } catch (EncounterDataNotFoundException e) {
+                throw EncounterDataNotFoundException.createForRecipient(recipientName);
+            }
+        } else {
+            recipient = playerCharacter;
+        }
+
+        boolean usedOnSelf      = playerCharacter == recipient;
+        int     hitpointsHealed = 0;
+        int     damage          = 0;
 
         EncounterManager.validateItemUse(playerCharacter, item, recipient);
 
@@ -360,7 +366,7 @@ public class EncounterManager {
         }
 
         playerCharacter.useAction();
-        this.endPlayerAction();
+        this.endCurrentPlayerAction();
     }
 
     public void viewEncounterSummary() {
@@ -388,10 +394,10 @@ public class EncounterManager {
         }
         this.logger.logActionDodgeSkipped(playerCharacter, totalDamage, totalDefended);
         playerCharacter.useAllActions();
-        this.endPlayerAction();
+        this.endCurrentPlayerAction();
     }
 
-    private void endPlayerAction() {
+    private void endCurrentPlayerAction() {
         if (this.context.getActiveHostiles().isEmpty()) {
             this.context.startLootPhase();
             this.logger.logEndEncounter(this.context.getAllPlayerCharacters(), this.context.getAllHostiles(), true);
@@ -409,8 +415,9 @@ public class EncounterManager {
                     currentPlayerCharacter.getRemainingActions()
                 );
             } else {
-                PCEncounterData nextPlayerCharacter = this.context.getNextPlayerCharacter();
-                if (nextPlayerCharacter == null) {
+                try {
+                    this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
+                } catch (EncounterDataNotFoundException e) {
                     if (this.context.isAttackPhase()) {
                         this.context.endCurrentPhase();
                         this.logger.logEndAttackPhase(
@@ -424,8 +431,6 @@ public class EncounterManager {
                             this.context.getAllHostiles()
                         );
                     }
-                } else {
-                    this.logger.pingPlayerTurn(nextPlayerCharacter);
                 }
             }
         }
@@ -445,7 +450,11 @@ public class EncounterManager {
         EncounterDataInterface recipient
     ) {
         if (recipient == playerCharacter && item.isRecipientRequired()) {
-            throw MissingRecipientException.create(item.getName());
+            if (item.isProtecting()) {
+                throw ProtectedCharacterException.createProtectYourself();
+            } else {
+                throw MissingRecipientException.create(item.getName());
+            }
         }
         if (item.isHealing()) {
             if (item.isReviving() && !recipient.isSlain()) {
@@ -471,13 +480,21 @@ public class EncounterManager {
         if (item.isProtecting()) {
             if (!(recipient instanceof PCEncounterData)) {
                 throw ProtectedCharacterException.createNotPlayerCharacter(recipient.getName());
-            } else if (recipient.equals(playerCharacter)) {
-                throw ProtectedCharacterException.createProtectYourself();
             } else if (recipient.isSlain() && !item.isReviving()) {
                 throw ProtectedCharacterException.createIsSlain(recipient.getName());
             } else if (!((PCEncounterData) recipient).hasActions()) {
                 throw ProtectedCharacterException.createTurnHasPassed(recipient.getName());
             }
+        }
+    }
+
+    private void validateStartEncounterPhase() {
+        if (!this.context.isStarted()) {
+            throw EncounterStatusException.createNotStarted();
+        } else if (!this.context.havePlayersJoined()) {
+            throw DungeonException.createNoPlayersHaveJoined();
+        } else if (this.context.isOver()) {
+            throw EncounterStatusException.createIsOver();
         }
     }
 }

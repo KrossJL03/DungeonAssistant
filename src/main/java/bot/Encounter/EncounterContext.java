@@ -97,7 +97,11 @@ public class EncounterContext {
         if (!this.isInitiativePhase()) {
             throw new NotInInitiativeException();
         }
-        return this.initiative.getCurrentPlayerCharacter();
+        PCEncounterData currentPlayerCharacter = this.initiative.getCurrentPlayerCharacter();
+        if (currentPlayerCharacter == null) {
+            throw EncounterDataNotFoundException.createForCurrentPlayer();
+        }
+        return currentPlayerCharacter;
     }
 
     EncounterDataInterface getEncounterData(String name) {
@@ -110,8 +114,7 @@ public class EncounterContext {
                 return creature;
             }
         }
-        // todo getEncounterData doesn't know that this is a recipient case
-        throw EncounterDataNotFoundException.createForRecipient(name);
+        throw EncounterDataNotFoundException.createForEncounterData(name);
     }
 
     HostileEncounterData getHostile(String name) {
@@ -135,7 +138,11 @@ public class EncounterContext {
         if (!this.isInitiativePhase()) {
             throw new NotInInitiativeException();
         }
-        return this.initiative.getNextPlayerCharacter();
+        PCEncounterData nextPlayerCharacter = this.initiative.getNextPlayerCharacter();
+        if (nextPlayerCharacter == null) {
+            throw EncounterDataNotFoundException.createForNextPlayer();
+        }
+        return nextPlayerCharacter;
     }
 
     PCEncounterData getPlayerCharacter(String name) {
@@ -157,6 +164,14 @@ public class EncounterContext {
         throw EncounterDataNotFoundException.createForPlayerCharacter(player);
     }
 
+    boolean hasActiveHostiles() {
+        return this.getActiveHostiles().size() > 0;
+    }
+
+    boolean havePlayersJoined() {
+        return this.isJoinPhase() && this.hasActivePlayers();
+    }
+
     boolean isAttackPhase() {
         return this.currentPhase.equals(EncounterContext.ATTACK_PHASE);
     }
@@ -174,7 +189,8 @@ public class EncounterContext {
     }
 
     boolean isOver() {
-        return this.isStarted && (this.getActiveHostiles().size() == 0 || this.getActivePlayerCharacters().size() == 0);
+        // todo create isOver boolean that is set and never unset
+        return this.isStarted && (!this.hasActiveHostiles() || !this.hasActivePlayers());
     }
 
     boolean isPhase(String phase) {
@@ -187,6 +203,9 @@ public class EncounterContext {
 
     PCEncounterData playerHasLeft(Player player) {
         PCEncounterData playerCharacter = this.getPlayerCharacter(player);
+        if (!playerCharacter.isPresent()) {
+            throw PlayerCharacterPresentException.createHasAleadyLeft(player.getAsMention());
+        }
         playerCharacter.useAllActions();
         playerCharacter.leave();
         this.absentPlayerCount++;
@@ -197,6 +216,8 @@ public class EncounterContext {
         PCEncounterData playerCharacter = this.getPlayerCharacter(player);
         if (playerCharacter == null) {
             throw EncounterDataNotFoundException.createForPlayerCharacter(player);
+        } else if (playerCharacter.isPresent()) {
+            throw PlayerCharacterPresentException.createCannotRejoinIfPresent(player.getAsMention());
         } else if (this.isFullDungeon()) {
             throw DungeonException.createFullDungeon(player);
         }
@@ -260,7 +281,15 @@ public class EncounterContext {
         this.playerCharacters.remove(playerCharacter);
     }
 
+    private boolean hasActivePlayers() {
+        return this.getActivePlayerCharacters().size() > 0;
+    }
+
     private boolean isInitiativePhase() {
         return this.isAttackPhase() || this.isDodgePhase();
+    }
+
+    private boolean isJoinPhase() {
+        return this.currentPhase.equals(EncounterContext.JOIN_PHASE);
     }
 }
