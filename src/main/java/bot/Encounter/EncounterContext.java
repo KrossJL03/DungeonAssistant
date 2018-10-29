@@ -24,11 +24,13 @@ public class EncounterContext {
     private String                          currentPhase;
     private int                             absentPlayerCount;
     private int                             maxPlayerCount;
+    private boolean                         hasPhoenixDown;
 
     public EncounterContext() {
         this.absentPlayerCount = 0;
         this.currentPhase = EncounterContext.CREATE_PHASE;
         this.initiative = new InitiativeQueue();
+        this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
         this.maxPlayerCount = 0;
         this.playerCharacters = new ArrayList<>();
@@ -165,6 +167,10 @@ public class EncounterContext {
         return this.getActivePlayerCharacters().size() > 0;
     }
 
+    boolean hasPhoenixDown() {
+        return this.hasPhoenixDown;
+    }
+
     boolean havePlayersJoined() {
         return !this.isJoinPhase() || this.hasActivePlayers();
     }
@@ -179,6 +185,10 @@ public class EncounterContext {
 
     boolean isFullDungeon() {
         return !(this.playerCharacters.size() - this.absentPlayerCount < this.maxPlayerCount);
+    }
+
+    boolean isInitiativePhase() {
+        return this.isAttackPhase() || this.isDodgePhase();
     }
 
     boolean isLootPhase() {
@@ -296,8 +306,8 @@ public class EncounterContext {
         this.playerCharacters.remove(playerCharacter);
     }
 
-    private boolean isInitiativePhase() {
-        return this.isAttackPhase() || this.isDodgePhase();
+    void usePhoenixDown(){
+        this.hasPhoenixDown = false;
     }
 
     private boolean isEndPhase() {

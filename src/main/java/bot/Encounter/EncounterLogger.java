@@ -566,10 +566,10 @@ public class EncounterLogger {
                 ));
             } else {
                 if (isRevived) {
-                    output.append(String.format("%s has been revived and earned the Zombie Title", recipientName));
+                    output.append(String.format("%s has been revived and earned the \"Zombie\" Title", recipientName));
                     output.append(EncounterLogger.NEWLINE);
                 }
-                output.append(String.format("%s is healed by %d HP!", recipientName, hitpointsHealed));
+                output.append(String.format("%s is healed %d HP!", recipientName, hitpointsHealed));
                 output.append(EncounterLogger.NEWLINE);
                 output.append(String.format("%d/%d health remaining", recipient.getCurrentHP(), recipient.getMaxHP()));
             }
@@ -607,6 +607,16 @@ public class EncounterLogger {
         if (item.isDodging()) {
             this.logActionDodgePass(playerCharacter);
         }
+    }
+
+    void logFirstDeathRevived(String name, int hitpoints) {
+        this.logMessage(
+            "```ml" +
+            String.format("The guild leader in charge takes a phoenix feather out of their bag, reviving %s!", name) +
+            NEWLINE +
+            String.format(" %s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
+            "```"
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

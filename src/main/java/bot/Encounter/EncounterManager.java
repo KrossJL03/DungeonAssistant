@@ -170,8 +170,12 @@ public class EncounterManager {
                         true
                     );
                 }
-            } else if (recipient instanceof PCEncounterData && recipient == this.context.getCurrentPlayerCharacter()) {
-                this.endCurrentPlayerAction();
+            } else if (recipient instanceof PCEncounterData) {
+                if (this.context.isInitiativePhase() && recipient == this.context.getCurrentPlayerCharacter()) {
+                    this.endCurrentPlayerAction();
+                } else {
+                    this.reviveIfFirstSlainPC((PCEncounterData) recipient);
+                }
             }
         }
     }
@@ -452,6 +456,10 @@ public class EncounterManager {
     }
 
     private void endCurrentPlayerAction() {
+        PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+        if (currentPlayerCharacter.isSlain()) {
+            this.reviveIfFirstSlainPC(currentPlayerCharacter);
+        }
         if (!this.context.hasActiveHostiles()) {
             this.context.startLootPhase();
             this.logger.logEndEncounter(
@@ -467,7 +475,6 @@ public class EncounterManager {
                 false
             );
         } else {
-            PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
             if (currentPlayerCharacter.hasActions()) {
                 this.logger.logActionsRemaining(
                     currentPlayerCharacter.getName(),
@@ -501,6 +508,14 @@ public class EncounterManager {
             throw new NotYourTurnException();
         }
         return playerCharacter;
+    }
+
+    private void reviveIfFirstSlainPC(PCEncounterData playerCharacter) {
+        if (playerCharacter.isSlain() && this.context.hasPhoenixDown()) {
+            this.context.usePhoenixDown();
+            int hitpoints = playerCharacter.healPercent((float) 0.5);
+            this.logger.logFirstDeathRevived(playerCharacter.getName(), hitpoints);
+        }
     }
 
     private static void validateItemUse(
