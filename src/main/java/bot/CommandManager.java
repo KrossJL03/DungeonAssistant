@@ -16,6 +16,7 @@ import bot.Hostile.HostileRepository;
 import bot.PlayerCharacter.PlayerCharacterManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.core.entities.*;
@@ -245,12 +246,13 @@ public class CommandManager {
     }
 
     void useItemCommand(MessageReceivedEvent event) {
-        Player         player        = PlayerRepository.getPlayer(event.getAuthor().getId());
-        String[]       splitInput    = event.getMessage().getContentRaw().split("\\s+");
-        String         itemName      = splitInput[1];
-        String         recipientName = splitInput.length > 2 ? splitInput[2] : null;
-        ConsumableItem item          = ConsumableManager.getItem(itemName);
-        this.encounterManager.useItem(player, item, recipientName);
+        Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
+        String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
+        ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
+        String[]       context    = splitInput.length > 2 ?
+                                    Arrays.copyOfRange(splitInput, 2, splitInput.length) :
+                                    new String[0];
+        this.encounterManager.useItem(player, item, context);
     }
 
     void viewAllCharacters(MessageReceivedEvent event) {

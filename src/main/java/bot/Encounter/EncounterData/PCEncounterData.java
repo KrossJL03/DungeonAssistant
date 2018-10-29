@@ -1,5 +1,7 @@
 package bot.Encounter.EncounterData;
 
+import bot.Constant;
+import bot.Encounter.Exception.PCEncounterDataException;
 import bot.Encounter.Exception.PlayerCharacterSlainException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
@@ -9,29 +11,41 @@ import java.util.Hashtable;
 
 public class PCEncounterData implements EncounterDataInterface {
 
-    private PlayerCharacter                 playerCharacter;
+    private Player                          owner;
     private EncounterDataInterface          slayer;
     private ArrayList<HostileEncounterData> kills;
     private Hashtable<String, Integer>      lootRolls;
-    private int                             currentHp;
+    private String                          name;
+    private int                             agility;
     private int                             currentActions;
+    private int                             currentHp;
+    private int                             defense;
+    private int                             maxHp;
+    private int                             strength;
+    private int                             wisdom;
     private boolean                         hasProtect;
     private boolean                         isPresent;
 
     public PCEncounterData(PlayerCharacter playerCharacter) {
+        this.agility = playerCharacter.getAgility();
         this.currentActions = 0;
         this.currentHp = playerCharacter.getHitpoints();
+        this.defense = playerCharacter.getDefense();
         this.hasProtect = true;
         this.isPresent = true;
         this.kills = new ArrayList<>();
         this.lootRolls = new Hashtable<>();
-        this.playerCharacter = playerCharacter;
+        this.maxHp = playerCharacter.getHitpoints();
+        this.name = playerCharacter.getName();
+        this.owner = playerCharacter.getOwner();
+        this.strength = playerCharacter.getStrength();
+        this.wisdom = playerCharacter.getWisdom();
     }
 
     public void addKill(HostileEncounterData hostile) {
         if (this.isSlain()) {
             throw PlayerCharacterSlainException.createFailedToAddKill(
-                this.playerCharacter.getName(),
+                this.name,
                 this.slayer.getName(),
                 hostile.getName()
             );
@@ -40,11 +54,11 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public int getAgility() {
-        return this.playerCharacter.getAgility();
+        return this.agility;
     }
 
     public int getAttackDice() {
-        return this.playerCharacter.getStrength() + 10;
+        return this.strength + 10;
     }
 
     public int getCritDamage() {
@@ -56,15 +70,15 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public int getDefense() {
-        return this.playerCharacter.getDefense();
+        return this.defense;
     }
 
     public int getDodgeDice() {
-        return ((int) Math.floor(this.playerCharacter.getAgility() / 2)) + 10;
+        return ((int) Math.floor(this.agility / 2)) + 10;
     }
 
     public int getEndurance() {
-        return (int) Math.floor(this.playerCharacter.getDefense() / 2);
+        return (int) Math.floor(this.defense / 2);
     }
 
     public ArrayList<HostileEncounterData> getKills() {
@@ -76,23 +90,23 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public int getMaxActions() {
-        return (int) Math.floor(this.playerCharacter.getAgility() / 10) + 1;
+        return (int) Math.floor(this.agility / 10) + 1;
     }
 
     public int getMaxHP() {
-        return this.playerCharacter.getHitpoints();
+        return this.maxHp;
     }
 
     public int getMinCrit() {
-        return 20 - ((int) Math.floor(this.playerCharacter.getWisdom() / 4));
+        return 20 - ((int) Math.floor(this.wisdom / 4));
     }
 
     public String getName() {
-        return this.playerCharacter.getName();
+        return this.name;
     }
 
     public Player getOwner() {
-        return this.playerCharacter.getOwner();
+        return this.owner;
     }
 
     public int getRemainingActions() {
@@ -103,12 +117,29 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.slayer;
     }
 
+    public int getStat(String statName) {
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                return this.agility;
+            case Constant.STAT_DEFENSE:
+                return this.defense;
+            case Constant.STAT_MAX_HP:
+                return this.maxHp;
+            case Constant.STAT_STRENGTH:
+                return this.strength;
+            case Constant.STAT_WISDOM:
+                return this.wisdom;
+            default:
+                throw PCEncounterDataException.invalidStatName(statName);
+        }
+    }
+
     public int getStrength() {
-        return this.playerCharacter.getStrength();
+        return this.strength;
     }
 
     public int getWisdom() {
-        return this.playerCharacter.getWisdom();
+        return this.wisdom;
     }
 
     public boolean hasActions() {
@@ -157,6 +188,31 @@ public class PCEncounterData implements EncounterDataInterface {
         }
     }
 
+    public void increaseStat(String statName, int boost) {
+        if (!this.isStatBoostable(statName, boost)) {
+            throw PCEncounterDataException.createStatOutOfBounds(this.name, statName);
+        }
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                this.agility += boost;
+                break;
+            case Constant.STAT_DEFENSE:
+                this.defense += boost;
+                break;
+            case Constant.STAT_MAX_HP:
+                this.maxHp += (boost * Constant.HP_STAT_MULTIPLIER);
+                break;
+            case Constant.STAT_STRENGTH:
+                this.strength += boost;
+                break;
+            case Constant.STAT_WISDOM:
+                this.wisdom += boost;
+                break;
+            default:
+                throw PCEncounterDataException.invalidStatName(statName);
+        }
+    }
+
     public boolean isAbleToProtect() {
         return this.hasProtect;
     }
@@ -166,7 +222,7 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public boolean isOwner(String userId) {
-        return this.playerCharacter.getOwner().isSamePlayer(userId);
+        return this.owner.isSamePlayer(userId);
     }
 
     public boolean isPresent() {
@@ -175,6 +231,23 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public boolean isSlain() {
         return currentHp < 1;
+    }
+
+    public boolean isStatBoostable(String statName, int boost) {
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                return !((this.agility + boost) > Constant.MAX_AGILITY);
+            case Constant.STAT_DEFENSE:
+                return !((this.defense + boost) > Constant.MAX_DEFENSE);
+            case Constant.STAT_MAX_HP:
+                return !((this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)) > Constant.MAX_MAX_HP);
+            case Constant.STAT_STRENGTH:
+                return !((this.strength + boost) > Constant.MAX_STRENGTH);
+            case Constant.STAT_WISDOM:
+                return !((this.wisdom + boost) > Constant.MAX_WISDOM);
+            default:
+                throw PCEncounterDataException.invalidStatName(statName);
+        }
     }
 
     public void leave() {

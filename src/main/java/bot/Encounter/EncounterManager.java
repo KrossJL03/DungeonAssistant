@@ -1,5 +1,6 @@
 package bot.Encounter;
 
+import bot.Constant;
 import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
@@ -339,19 +340,32 @@ public class EncounterManager {
         this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
     }
 
-    public void useItem(Player player, ConsumableItem item, String recipientName) {
+    public void useItem(Player player, ConsumableItem item, String[] context) {
         if (!this.context.isPhase(item.getUsablePhase())) {
             throw EncounterPhaseException.createNotItemUsablePhase(item.getName(), item.getUsablePhase());
         }
         PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
-        EncounterDataInterface recipient;
-        if (recipientName != null) {
-            try {
-                recipient = this.context.getEncounterData(recipientName);
-            } catch (EncounterDataNotFoundException e) {
-                throw EncounterDataNotFoundException.createForRecipient(recipientName);
+        EncounterDataInterface recipient       = null;
+        String                 statName        = null;
+
+        for (String parameter : context) {
+            if (Constant.isStatName(parameter)) {
+                if (statName == null) {
+                    statName = parameter;
+                } else {
+                    throw ItemException.createMultipleStats(statName, parameter);
+                }
+            } else if (this.context.isPlayerCharacterInEncounter(parameter)) {
+                if (recipient == null) {
+                    recipient = this.context.getEncounterData(parameter);
+                } else {
+                    throw ItemException.createMultipleRecipients(recipient.getName(), parameter);
+                }
+            } else {
+                throw ItemException.createInvalidParameter(parameter);
             }
-        } else {
+        }
+        if (recipient == null) {
             recipient = playerCharacter;
         }
 
@@ -359,22 +373,12 @@ public class EncounterManager {
         int     hitpointsHealed = 0;
         int     damage          = 0;
 
-        EncounterManager.validateItemUse(playerCharacter, item, recipient);
+        EncounterManager.validateItemUse(playerCharacter, item, recipient, statName);
 
         if (item.isHealing()) {
-            if (!usedOnSelf && item.isUserHealed()) {
-                if (item.isPercentHealing()) {
-                    hitpointsHealed = playerCharacter.healPercent(item.getPercentHealed());
-                } else {
-                    hitpointsHealed = playerCharacter.healPoints(item.getHitpointsHealed());
-                }
-            } else {
-                if (item.isPercentHealing()) {
-                    hitpointsHealed = recipient.healPercent(item.getPercentHealed());
-                } else {
-                    hitpointsHealed = recipient.healPoints(item.getHitpointsHealed());
-                }
-            }
+            EncounterDataInterface healedED = (!usedOnSelf && item.isUserHealed()) ? playerCharacter : recipient;
+            hitpointsHealed = item.isPercentHealing() ? healedED.healPercent(item.getPercentHealed()) :
+                              healedED.healPoints(item.getHitpointsHealed());
         }
 
         if (item.isDamaging()) {
@@ -384,9 +388,9 @@ public class EncounterManager {
             }
         }
 
-//        if (item.isTempStatBoost()) {
-//            // todo
-//        }
+        if (item.isTempStatBoost() && recipient instanceof PCEncounterData) {
+            ((PCEncounterData) recipient).increaseStat(statName, item.getTempStatBoost());
+        }
 
         this.logger.logUsedItem(
             playerCharacter,
@@ -394,6 +398,7 @@ public class EncounterManager {
             item,
             hitpointsHealed,
             damage,
+            statName,
             item.isReviving()
         );
 
@@ -501,7 +506,8 @@ public class EncounterManager {
     private static void validateItemUse(
         PCEncounterData playerCharacter,
         ConsumableItem item,
-        EncounterDataInterface recipient
+        EncounterDataInterface recipient,
+        String statName
     ) {
         if (recipient == playerCharacter && item.isRecipientRequired()) {
             if (item.isProtecting()) {
@@ -511,14 +517,15 @@ public class EncounterManager {
             }
         }
         if (item.isHealing()) {
-            if (item.isReviving() && !recipient.isSlain()) {
-                throw ItemRecipientException.createReviveLiving(
-                    recipient.getName(),
-                    recipient.getCurrentHP(),
-                    recipient.getMaxHP()
-                );
-            }
-            if (!item.isReviving() && recipient.isSlain()) {
+            if (item.isReviving()) {
+                if (!recipient.isSlain()) {
+                    throw ItemRecipientException.createReviveLiving(
+                        recipient.getName(),
+                        recipient.getCurrentHP(),
+                        recipient.getMaxHP()
+                    );
+                }
+            } else if (recipient.isSlain()) {
                 throw PlayerCharacterSlainException.createFailedToHeal(
                     recipient.getName(),
                     recipient.getSlayer().getName()
@@ -538,6 +545,17 @@ public class EncounterManager {
                 throw ProtectedCharacterException.createIsSlain(recipient.getName());
             } else if (!((PCEncounterData) recipient).hasActions()) {
                 throw ProtectedCharacterException.createTurnHasPassed(recipient.getName());
+            }
+        }
+        if (item.isTempStatBoost()) {
+            if (statName == null) {
+                throw ItemException.createMissingStatName(item.getName());
+            } else if (recipient instanceof PCEncounterData) {
+                if (!((PCEncounterData) recipient).isStatBoostable(statName, item.getTempStatBoost())) {
+                    throw PCEncounterDataException.createStatOutOfBounds(recipient.getName(), statName);
+                }
+            } else {
+                throw ItemRecipientException.createBoostHostile(recipient.getName());
             }
         }
     }

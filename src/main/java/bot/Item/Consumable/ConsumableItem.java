@@ -65,7 +65,7 @@ public class ConsumableItem extends ItemAbstract {
         return this.percentHealed;
     }
 
-    int getTempStatBoost() {
+    public int getTempStatBoost() {
         return this.tempStatBoost;
     }
 

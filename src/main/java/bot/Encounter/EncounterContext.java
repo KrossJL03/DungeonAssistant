@@ -193,6 +193,15 @@ public class EncounterContext {
         return this.currentPhase.equals(phase);
     }
 
+    boolean isPlayerCharacterInEncounter(String name) {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     boolean isStarted() {
         return !this.currentPhase.equals(EncounterContext.CREATE_PHASE);
     }

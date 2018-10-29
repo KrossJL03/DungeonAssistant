@@ -1,5 +1,6 @@
 package bot.PlayerCharacter;
 
+import bot.Constant;
 import bot.Player.Player;
 import bot.Player.Exception.OutOfBoundsStatExecption;
 
@@ -79,29 +80,29 @@ public class PlayerCharacter {
         int agility,
         int wisdom
     ) {
-        if (strength > 20) {
+        if (strength > Constant.MAX_STRENGTH) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too strong! %d/20", name, strength)
+                String.format("%s is too strong! %d/%d", name, strength, Constant.MAX_STRENGTH)
             );
-        } else if (defense > 20) {
+        } else if (defense > Constant.MAX_DEFENSE) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too durable! %d/20", name, defense)
+                String.format("%s is too durable! %d/%d", name, defense, Constant.MAX_DEFENSE)
             );
-        } else if (agility > 20) {
+        } else if (agility > Constant.MAX_AGILITY) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too fast! %d/20", name, agility)
+                String.format("%s is too fast! %d/%d", name, agility, Constant.MAX_AGILITY)
             );
-        } else if (wisdom > 20) {
+        } else if (wisdom > Constant.MAX_WISDOM) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too wise! %d/20", name, wisdom)
+                String.format("%s is too wise! %d/%d", name, wisdom, Constant.MAX_WISDOM)
             );
-        } else if (hitpoints > 240) {
+        } else if (hitpoints > Constant.MAX_MAX_HP) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too healthy! %d/240", name, hitpoints)
+                String.format("%s is too healthy! %d/%d", name, hitpoints, Constant.MAX_MAX_HP)
             );
-        } else if (hitpoints < 40) {
+        } else if (hitpoints < Constant.MIN_MAX_HP) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too weak! They should have at last 40 HP!", name)
+                String.format("%s is too weak! They should have at least %d HP!", name, Constant.MIN_MAX_HP)
             );
         }
     }

@@ -4,6 +4,7 @@ import bot.CommandListener;
 import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.Exception.ItemRecipientException;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import net.dv8tion.jda.core.entities.Role;
@@ -532,6 +533,7 @@ public class EncounterLogger {
         ConsumableItem item,
         int hitpointsHealed,
         int damage,
+        String boostedStat,
         boolean isRevived
     ) {
         String  playerCharacterName = playerCharacter.getName();
@@ -582,11 +584,22 @@ public class EncounterLogger {
                 output.append(String.format("%d/%d health remaining", recipient.getCurrentHP(), recipient.getMaxHP()));
             }
         }
-
-//        if (item.isTempStatBoost()) {
-//            // todo
-//        }
-
+        if (item.isTempStatBoost()) {
+            if (recipient instanceof PCEncounterData) {
+                output.append(EncounterLogger.NEWLINE);
+                output.append(
+                    String.format(
+                        "%s's %s is increased by %d! That brings it to %d!",
+                        recipientName,
+                        boostedStat,
+                        item.getTempStatBoost(),
+                        ((PCEncounterData) recipient).getStat(boostedStat)
+                    )
+                );
+            } else {
+                throw ItemRecipientException.createBoostHostile(recipient.getName());
+            }
+        }
         output.append(EncounterLogger.NEWLINE);
         output.append("```");
         this.logMessage(output.toString());
