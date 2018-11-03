@@ -431,6 +431,11 @@ public class EncounterManager {
         this.logger.logEncounterSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
     }
 
+    // todo remove once inventory is implemented
+    public void pingDmItemUsed(Player player) {
+        this.logger.pingDmItemUsed(player);
+    }
+
     private void addKillToPlayerCharacters(HostileEncounterData hostile) {
         for (PCEncounterData playerCharcter : this.context.getActivePlayerCharacters()) {
             playerCharcter.addKill(hostile);

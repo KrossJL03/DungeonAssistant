@@ -7,6 +7,7 @@ import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.ItemRecipientException;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
+import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.ArrayList;
@@ -260,7 +261,7 @@ public class EncounterLogger {
         output.append("```ml");
         output.append(EncounterLogger.NEWLINE);
         output.append(String.format(
-            "%s jumps in front of %s and shields them from the attacks!",
+            "%s shields %s from the attacks!",
             protectorCharacter.getName(),
             protectedCharacter.getName()
         ));
@@ -616,6 +617,17 @@ public class EncounterLogger {
             NEWLINE +
             String.format(" %s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
             "```"
+        );
+    }
+
+    // todo remove once inventory is implemented
+    void pingDmItemUsed(Player player) {
+        this.logMessage(
+            String.format(
+                "%s, %s has used an item. Could you tell me what to do?",
+                this.context.getDungeonMasterMention(),
+                player.getAsMention()
+            )
         );
     }
 

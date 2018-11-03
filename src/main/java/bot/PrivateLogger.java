@@ -90,16 +90,26 @@ class PrivateLogger {
             "",
             "Rejoin the encounter"
         ));
+        // todo remove once inventory is implemented
         output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
-                "   %s%-16s %-16s %s",
-                CommandListener.COMMAND_KEY,
-                "use",
-                "[ItemName] (RecipientName)",
-                "Use an item. Optional recipient name, leave blank to use on yourself."
+                "   %-16s %-16s %s",
+                "rp!use",
+                "\"item Name\" [quantity]",
+                "Use an item through rp!bot. The DM will be pinged to activate the item for you. Please tell them who you want to use it on if applicable."
             )
         );
+//        output.append(PrivateLogger.NEWLINE);
+//        output.append(
+//            String.format(
+//                "   %s%-16s %-16s %s",
+//                CommandListener.COMMAND_KEY,
+//                "use",
+//                "[ItemName] (RecipientName)",
+//                "Use an item. Optional recipient name, leave blank to use on yourself."
+//            )
+//        );
         output.append("```");
 
         if (isAdmin) {
@@ -196,6 +206,17 @@ class PrivateLogger {
                 "",
                 "Start the encounter"
             ));
+            // todo remove once inventory is implemented
+            output.append(PrivateLogger.NEWLINE);
+            output.append(
+                String.format(
+                    "   %s%-16s %-16s %s",
+                    CommandListener.COMMAND_KEY,
+                    "use",
+                    "[ItemName] (RecipientName)",
+                    "Use an item. Optional recipient name, leave blank to use on yourself."
+                )
+            );
             output.append("```");
         }
         output.append(PrivateLogger.NEWLINE);

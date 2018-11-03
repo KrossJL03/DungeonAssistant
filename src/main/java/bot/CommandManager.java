@@ -246,13 +246,15 @@ public class CommandManager {
     }
 
     void useItemCommand(MessageReceivedEvent event) {
-        Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
-        String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
-        ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
-        String[]       context    = splitInput.length > 2 ?
-                                    Arrays.copyOfRange(splitInput, 2, splitInput.length) :
-                                    new String[0];
-        this.encounterManager.useItem(player, item, context);
+        if (this.isAdmin(event)) {
+            Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
+            String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
+            ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
+            String[] context = splitInput.length > 2 ?
+                               Arrays.copyOfRange(splitInput, 2, splitInput.length) :
+                               new String[0];
+            this.encounterManager.useItem(player, item, context);
+        }
     }
 
     void viewAllCharacters(MessageReceivedEvent event) {
@@ -298,6 +300,11 @@ public class CommandManager {
 
     void viewItems(MessageReceivedEvent event) {
         RepositoryLogger.viewItems(event.getChannel(), ConsumableManager.getAllItems());
+    }
+
+    //todo remove
+    void pingDmItemUsed(MessageReceivedEvent event) {
+        this.encounterManager.pingDmItemUsed(PlayerRepository.getPlayer(event.getAuthor().getId()));
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {

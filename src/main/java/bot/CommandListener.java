@@ -105,6 +105,9 @@ public class CommandListener extends ListenerAdapter {
                         channel.sendMessage("Sorry, did you say something? I don't know that command").queue();
                         break;
                 }
+            } else if (input.startsWith("rp!use")) {
+                // todo remove once inventory is implemented
+                this.commandManager.pingDmItemUsed(event);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             channel.sendMessage(
