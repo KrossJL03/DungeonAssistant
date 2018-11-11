@@ -1,1 +1,1 @@
-worker: node bot.js
+worker: java -jar src/main/java/Main.jar
