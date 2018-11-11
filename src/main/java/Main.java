@@ -28,9 +28,7 @@ public class Main {
 
         Main.populateTestData();
 
-        Properties properties = new Properties();
-        properties.load(new FileInputStream("config.properties"));
-        JDA api = new JDABuilder(properties.getProperty("token")).build();
+        JDA api = new JDABuilder(MyProperties.token).build();
         api.addEventListener(commandListener);
     }
 
