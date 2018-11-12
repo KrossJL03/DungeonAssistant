@@ -7,9 +7,6 @@ import bot.Encounter.EncounterManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
 public class Main {
     public static void main(String[] arguments) throws Exception {
         EncounterContext       encounterContext       = new EncounterContext();
