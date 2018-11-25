@@ -1,1 +1,1 @@
-worker: java -jar classes\artifacts\DungeonAssistant_jar\DungeonAssistant.jar
+worker: java -jar DungeonAssistant.jar
