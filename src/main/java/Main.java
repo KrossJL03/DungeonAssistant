@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.JDABuilder;
 
 public class Main {
     public static void main(String[] arguments) throws Exception {
+
         EncounterContext       encounterContext       = new EncounterContext();
         EncounterLoggerContext encounterLoggerContext = new EncounterLoggerContext();
 
@@ -25,7 +26,7 @@ public class Main {
 
         Main.populateTestData();
 
-        JDA api = new JDABuilder(MyProperties.token).build();
+        JDA api = new JDABuilder(System.getenv("token")).build();
         api.addEventListener(commandListener);
     }
 
