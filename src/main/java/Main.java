@@ -26,7 +26,7 @@ public class Main {
 
         Main.populateTestData();
 
-        JDA api = new JDABuilder(System.getenv("token")).build();
+        JDA api = new JDABuilder(MyProperties.token).build();
         api.addEventListener(commandListener);
     }
 
