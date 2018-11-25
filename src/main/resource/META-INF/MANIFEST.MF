@@ -1,5 +1,3 @@
 Manifest-Version: 1.0
-Class-Path: DungeonAssistant\classes\artifacts\DungeonAssistant_jar\Du
- ngeonAssistant.jar
 Main-Class: Main
 
