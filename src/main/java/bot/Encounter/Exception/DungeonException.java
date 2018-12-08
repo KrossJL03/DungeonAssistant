@@ -12,10 +12,4 @@ public class DungeonException extends RuntimeException implements CustomExceptio
     public static DungeonException createNoPlayersHaveJoined() {
         return new DungeonException("Wait, we can't start yet! No players have joined!");
     }
-
-    public static DungeonException createFullDungeon(Player player){
-        return new DungeonException(
-            String.format("Uh oh, looks like the dungeon is full. Sorry %s.", player.getAsMention())
-        );
-    }
 }

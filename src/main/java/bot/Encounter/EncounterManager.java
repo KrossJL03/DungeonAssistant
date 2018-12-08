@@ -5,7 +5,6 @@ import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.*;
-import bot.Hostile.Hostile;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Item.Consumable.Exception.MissingRecipientException;
@@ -18,12 +17,12 @@ import java.util.ArrayList;
 
 public class EncounterManager {
 
-    private EncounterContext       context;
+    private Encounter              context;
     private EncounterLogger        logger;
     private EncounterLoggerContext loggerContext;
 
     public EncounterManager(
-        EncounterContext context,
+        Encounter context,
         EncounterLogger logger,
         EncounterLoggerContext loggerContext
     ) {
@@ -36,32 +35,8 @@ public class EncounterManager {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        Hostile              hostileSpecies  = HostileManager.getHostile(speciesName);
-        String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
-        HostileEncounterData newHostile      = new HostileEncounterData(hostileSpecies, capitalNickname);
-        if (speciesName.toLowerCase().equals(nickname.toLowerCase())) {
-            int speciesCount = 0;
-            for (HostileEncounterData hostile : this.context.getAllHostiles()) {
-                if (hostile.getSpecies().equals(newHostile.getSpecies())) {
-                    if (hostile.getSpecies().equals(hostile.getName())) {
-                        hostile.setName(hostile.getName() + "A");
-                    }
-                    speciesCount++;
-                }
-            }
-            if (speciesCount > 0) {
-                char letter = (char) (65 + speciesCount);
-                newHostile = new HostileEncounterData(hostileSpecies, newHostile.getSpecies() + letter);
-            }
-        } else {
-            for (HostileEncounterData hostile : this.context.getAllHostiles()) {
-                if (hostile.getName().toLowerCase().equals(newHostile.getName().toLowerCase())) {
-                    throw new HostileNicknameInUseException(nickname);
-                }
-            }
-        }
-        this.context.addHostile(newHostile);
-        this.logger.logAddedHostile(newHostile);
+        HostileEncounterData hostileData = this.context.addHostile(HostileManager.getHostile(speciesName), nickname);
+        this.logger.logAddedHostile(hostileData);
     }
 
     public void attackAction(Player player, String hostileName) {
@@ -96,7 +71,7 @@ public class EncounterManager {
     }
 
     public void createEncounter(MessageChannel channel, Role dungeonMaster) {
-        this.context = new EncounterContext();
+        this.context = new Encounter();
         this.loggerContext.setChannel(channel);
         this.loggerContext.setDungeonMaster(dungeonMaster);
         this.logger.logCreateEncounter();
@@ -185,8 +160,6 @@ public class EncounterManager {
             throw EncounterPhaseException.createNotStarted();
         } else if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (this.context.isFullDungeon()) {
-            throw DungeonException.createFullDungeon(playerCharacter.getOwner());
         }
         PCEncounterData encounterData = new PCEncounterData(playerCharacter);
         this.context.addCharacter(encounterData);
@@ -359,7 +332,7 @@ public class EncounterManager {
                 } else {
                     throw ItemException.createMultipleStats(statName, parameter);
                 }
-            } else if (this.context.isPlayerCharacterInEncounter(parameter)) {
+            } else if (this.context.isPCInEncounter(parameter)) {
                 if (recipient == null) {
                     recipient = this.context.getEncounterData(parameter);
                 } else {
@@ -472,7 +445,7 @@ public class EncounterManager {
                 this.context.getAllHostiles(),
                 true
             );
-        } else if (!this.context.hasActivePlayers()) {
+        } else if (!this.context.hasActivePCs()) {
             this.context.startEndPhase();
             this.logger.logEndEncounter(
                 this.context.getAllPlayerCharacters(),

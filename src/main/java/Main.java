@@ -1,6 +1,6 @@
 import bot.*;
 
-import bot.Encounter.EncounterContext;
+import bot.Encounter.Encounter;
 import bot.Encounter.EncounterLogger;
 import bot.Encounter.EncounterLoggerContext;
 import bot.Encounter.EncounterManager;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.JDABuilder;
 public class Main {
     public static void main(String[] arguments) throws Exception {
 
-        EncounterContext       encounterContext       = new EncounterContext();
+        Encounter              encounterContext       = new Encounter();
         EncounterLoggerContext encounterLoggerContext = new EncounterLoggerContext();
 
         EncounterLogger encounterLogger = new EncounterLogger(encounterLoggerContext);

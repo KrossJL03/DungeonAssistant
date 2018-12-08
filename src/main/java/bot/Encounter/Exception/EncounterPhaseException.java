@@ -2,7 +2,7 @@ package bot.Encounter.Exception;
 
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
-import bot.Encounter.EncounterContext;
+import bot.Encounter.Encounter;
 
 public class EncounterPhaseException extends RuntimeException implements CustomExceptionInterface {
 
@@ -24,7 +24,7 @@ public class EncounterPhaseException extends RuntimeException implements CustomE
             String.format(
                 "You can only `%sattack` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterContext.ATTACK_PHASE
+                Encounter.ATTACK_PHASE
             )
         );
     }
@@ -34,7 +34,7 @@ public class EncounterPhaseException extends RuntimeException implements CustomE
             String.format(
                 "You can only `%sdodge` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterContext.DODGE_PHASE
+                Encounter.DODGE_PHASE
             )
         );
     }
@@ -54,7 +54,7 @@ public class EncounterPhaseException extends RuntimeException implements CustomE
             String.format(
                 "You can only `%sloot` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterContext.LOOT_PHASE
+                Encounter.LOOT_PHASE
             )
         );
     }
@@ -64,7 +64,7 @@ public class EncounterPhaseException extends RuntimeException implements CustomE
             String.format(
                 "You can only `%sprotect` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterContext.DODGE_PHASE
+                Encounter.DODGE_PHASE
             )
         );
     }
