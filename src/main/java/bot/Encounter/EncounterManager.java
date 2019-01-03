@@ -359,7 +359,7 @@ public class EncounterManager {
                 } else {
                     throw ItemException.createMultipleStats(statName, parameter);
                 }
-            } else if (this.context.isPlayerCharacterInEncounter(parameter)) {
+            } else if (this.context.isInEncounter(parameter)) {
                 if (recipient == null) {
                     recipient = this.context.getEncounterData(parameter);
                 } else {
@@ -529,7 +529,7 @@ public class EncounterManager {
         EncounterDataInterface recipient,
         String statName
     ) {
-        if (recipient == playerCharacter && item.isRecipientRequired()) {
+        if (recipient.isName(playerCharacter.getName()) && item.isRecipientRequired()) {
             if (item.isProtecting()) {
                 throw ProtectedCharacterException.createProtectYourself();
             } else {

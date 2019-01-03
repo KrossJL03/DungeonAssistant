@@ -100,12 +100,11 @@ public class EncounterContext {
     }
 
     EncounterDataInterface getEncounterData(String name) {
-        String                            nameLower    = name.toLowerCase();
         ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
         allCreatures.addAll(this.playerCharacters);
         allCreatures.addAll(this.hostiles);
         for (EncounterDataInterface creature : allCreatures) {
-            if (creature.getName().toLowerCase().equals(nameLower)) {
+            if (creature.isName(name)) {
                 return creature;
             }
         }
@@ -113,9 +112,8 @@ public class EncounterContext {
     }
 
     HostileEncounterData getHostile(String name) {
-        String nameLower = name.toLowerCase();
         for (HostileEncounterData hostile : this.hostiles) {
-            if (hostile.getName().toLowerCase().equals(nameLower)) {
+            if (hostile.isName(name)) {
                 if (hostile.isSlain()) {
                     throw new HostileSlainException(hostile.getName(), hostile.getSlayer().getName());
                 }
@@ -141,9 +139,8 @@ public class EncounterContext {
     }
 
     PCEncounterData getPlayerCharacter(String name) {
-        String nameLower = name.toLowerCase();
         for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (playerCharacter.getName().toLowerCase().equals(nameLower)) {
+            if (playerCharacter.isName(name)) {
                 return playerCharacter;
             }
         }
@@ -187,6 +184,18 @@ public class EncounterContext {
         return !(this.playerCharacters.size() - this.absentPlayerCount < this.maxPlayerCount);
     }
 
+    boolean isInEncounter(String name) {
+        ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
+        allCreatures.addAll(this.playerCharacters);
+        allCreatures.addAll(this.hostiles);
+        for (EncounterDataInterface creature : allCreatures) {
+            if (creature.isName(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     boolean isInitiativePhase() {
         return this.isAttackPhase() || this.isDodgePhase();
     }
@@ -201,15 +210,6 @@ public class EncounterContext {
 
     boolean isPhase(String phase) {
         return this.currentPhase.equals(phase);
-    }
-
-    boolean isPlayerCharacterInEncounter(String name) {
-        for (PCEncounterData playerCharacter : this.playerCharacters) {
-            if (playerCharacter.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     boolean isStarted() {
