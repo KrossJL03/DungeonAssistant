@@ -7,6 +7,7 @@ public interface EncounterDataInterface {
     int getMaxHP();
     String getName();
     EncounterDataInterface getSlayer();
+    boolean isName(String name);
     boolean isSlain();
     int healPoints(int hitpoints);
     int healPercent(float percent);

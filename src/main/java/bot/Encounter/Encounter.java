@@ -105,12 +105,11 @@ public class Encounter {
     }
 
     EncounterDataInterface getEncounterData(String name) {
-        String                            nameLower    = name.toLowerCase();
         ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
         allCreatures.addAll(this.pcRoster.getAll());
         allCreatures.addAll(this.hostiles);
         for (EncounterDataInterface creature : allCreatures) {
-            if (creature.getName().toLowerCase().equals(nameLower)) {
+            if (creature.isName(name)) {
                 return creature;
             }
         }
@@ -118,9 +117,8 @@ public class Encounter {
     }
 
     HostileEncounterData getHostile(String name) {
-        String nameLower = name.toLowerCase();
         for (HostileEncounterData hostile : this.hostiles) {
-            if (hostile.getName().toLowerCase().equals(nameLower)) {
+            if (hostile.isName(name)) {
                 if (hostile.isSlain()) {
                     throw new HostileSlainException(hostile.getName(), hostile.getSlayer().getName());
                 }
@@ -179,6 +177,18 @@ public class Encounter {
 
     boolean isFullDungeon() {
         return this.pcRoster.isRosterFull();
+    }
+
+    boolean isInEncounter(String name) {
+        ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
+        allCreatures.addAll(this.playerCharacters);
+        allCreatures.addAll(this.hostiles);
+        for (EncounterDataInterface creature : allCreatures) {
+            if (creature.isName(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean isInitiativePhase() {

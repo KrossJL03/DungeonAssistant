@@ -196,6 +196,10 @@ public class PCEncounterData implements EncounterDataInterface {
         return rollToHit >= this.getMinCrit();
     }
 
+    public boolean isName(String name) {
+        return this.name.toLowerCase().equals(name.toLowerCase());
+    }
+
     public boolean isOwner(String userId) {
         return this.owner.isSamePlayer(userId);
     }

@@ -88,6 +88,10 @@ public class HostileEncounterData implements EncounterDataInterface {
         }
     }
 
+    public boolean isName(String name) {
+        return this.name.toLowerCase().equals(name.toLowerCase());
+    }
+
     public boolean isSlain() {
         return this.currentHp < 1;
     }
