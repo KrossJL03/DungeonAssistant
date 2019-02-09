@@ -200,4 +200,8 @@ class PCRoster {
     void setMaxPlayerCount(int maxPlayerCount) {
         this.maxPlayerCount = maxPlayerCount;
     }
+
+    void sortRoster() {
+        this.roster.sort(PCEncounterData::compareTo);
+    }
 }

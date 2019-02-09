@@ -9,7 +9,7 @@ import bot.PlayerCharacter.PlayerCharacter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class PCEncounterData implements EncounterDataInterface {
+public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDataInterface {
 
     private Player                          owner;
     private EncounterDataInterface          slayer;
@@ -302,5 +302,9 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void useProtect() {
         this.hasProtect = false;
+    }
+
+    public int compareTo(PCEncounterData playerCharacter) {
+        return this.agility - playerCharacter.agility;
     }
 }

@@ -222,6 +222,7 @@ public class EncounterManager {
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
         playerCharacter.modifyStat(statName, statMod);
+        this.context.sortRoster();
         this.logger.logDungeonMasterStatMod(
             playerCharacter.getName(),
             statName,

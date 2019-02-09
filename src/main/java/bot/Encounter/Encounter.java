@@ -227,6 +227,10 @@ public class Encounter {
         this.pcRoster.setMaxPlayerCount(maxPlayerCount);
     }
 
+    void sortRoster() {
+        this.pcRoster.sortRoster();
+    }
+
     void startAttackPhase() {
         if (this.isAttackPhase()) {
             throw new StartCurrentPhaseException(Encounter.ATTACK_PHASE);
