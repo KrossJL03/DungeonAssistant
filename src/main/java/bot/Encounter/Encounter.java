@@ -66,7 +66,6 @@ public class Encounter {
                     throw new HostileNicknameInUseException(nickname);
                 }
             }
-            newHostileData = new HostileEncounterData(hostile, hostile.getSpecies());
         }
         this.hostiles.add(newHostileData);
         return newHostileData;
@@ -155,7 +154,7 @@ public class Encounter {
     }
 
     boolean hasActiveHostiles() {
-        return this.pcRoster.hasActive();
+        return this.getActiveHostiles().size() > 0;
     }
 
     boolean hasActivePCs() {

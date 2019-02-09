@@ -227,7 +227,7 @@ public class EncounterLogger {
             int  lootRoll = playerCharacter.getLootRoll(hostile.getName());
             Loot loot     = hostile.getHostile().getLoot(lootRoll);
             output.append(String.format("%2d %s ", lootRoll, EncounterLogger.DOUBLE_ARROW));
-            if (loot == null) {
+            if (loot.getItem() == null) {
                 output.append(String.format("(* nothing from %s *)", hostile.getName()));
             } else {
                 output.append(String.format("x%d %s from '%s'", loot.getQuantity(), loot.getItem(), hostile.getName()));
@@ -401,8 +401,8 @@ public class EncounterLogger {
     void logStartEncounter(Role mentionRole, int maxPlayers) {
         this.logMessage(
             // todo uncomment after testing
-//            mentionRole.getAsMention() +
-            "everyone" +
+            mentionRole.getAsMention() +
+//            "everyone" +
             EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
