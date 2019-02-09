@@ -83,7 +83,7 @@ class PCRoster {
     PCEncounterData getPC(String name) throws EncounterDataNotFoundException {
         String nameLower = name.toLowerCase();
         for (PCEncounterData playerCharacter : this.roster) {
-            if (playerCharacter.getName().toLowerCase().equals(nameLower)) {
+            if (playerCharacter.isName(nameLower)) {
                 return playerCharacter;
             }
         }

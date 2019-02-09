@@ -180,11 +180,11 @@ public class Encounter {
     }
 
     boolean isInEncounter(String name) {
-        ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
-        allCreatures.addAll(this.playerCharacters);
-        allCreatures.addAll(this.hostiles);
-        for (EncounterDataInterface creature : allCreatures) {
-            if (creature.isName(name)) {
+        if (this.pcRoster.isPCInEncounter(name)) {
+            return true;
+        }
+        for (HostileEncounterData hostile : this.hostiles) {
+            if (hostile.isName(name)) {
                 return true;
             }
         }
