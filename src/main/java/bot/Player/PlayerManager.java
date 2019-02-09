@@ -10,6 +10,10 @@ public class PlayerManager {
         }
     }
 
+    public static Player getPlayer(String userId) {
+        return PlayerRepository.getPlayer(userId);
+    }
+
     public static void savePlayer(String userId, String name) {
         if (PlayerRepository.doesPlayerExist(userId)) {
             PlayerRepository.updatePlayer(userId, name);

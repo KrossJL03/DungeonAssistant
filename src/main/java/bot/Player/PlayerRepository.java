@@ -74,7 +74,7 @@ public class PlayerRepository {
                 );
             }
         } catch (Throwable e) {
-            exception = RepositoryException.createFailedToUpdate();
+            exception = RepositoryException.createFailedToRetrieve();
         } finally {
             try {
                 if (statement != null) {

@@ -3,48 +3,62 @@ package bot.Encounter;
 import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.EncounterDataNotFoundException;
 import bot.Encounter.Exception.MultiplePlayerCharactersException;
+import bot.Encounter.Exception.PCRosterException;
 import bot.Encounter.Exception.PlayerCharacterPresentException;
 import bot.Player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 class PCRoster {
 
-    private ArrayList<PCEncounterData> roster;
-    private int                        absentPlayerCount;
+    private ArrayList<PCEncounterData> playerCharacters;
     private int                        maxPlayerCount;
 
     /**
      * PCRoster constructor
      */
     PCRoster() {
-        this.absentPlayerCount = 0;
         this.maxPlayerCount = 0;
-        this.roster = new ArrayList<>();
+        this.playerCharacters = new ArrayList<>();
     }
 
     /**
-     * Add PCEncounterData to the roster
+     * Add PCEncounterData to the playerCharacters
      *
      * @param newPlayerCharacter Player character to add
+     *
+     * @throws MultiplePlayerCharactersException If player already has character in the encounter
+     * @throws PCRosterException                 If max player count has been reached
      */
-    void addPC(PCEncounterData newPlayerCharacter) {
+    void addPC(@NotNull PCEncounterData newPlayerCharacter) {
+        // todo consider building PCEncounterData in roster
         Player player = newPlayerCharacter.getOwner();
-        if (this.isRosterFull()) {
-            throw RosterException.createFullRoster(player);
+        if (this.containsPlayer(player)) {
+            PCEncounterData character = this.getPC(player);
+            throw new MultiplePlayerCharactersException(player, character.getName());
+        } else if (this.isFull()) {
+            // this error is thrown last because multiple pc exception takes precedence
+            throw PCRosterException.createFullRoster(player);
         }
-        for (PCEncounterData character : this.roster) {
-            if (character.isOwner(player.getUserId())) {
-                throw new MultiplePlayerCharactersException(player, character.getName());
+        this.playerCharacters.add(newPlayerCharacter);
+        this.sortRoster();
+    }
+
+    /**
+     * Is EncounterData with given name currently in the playerCharacters
+     *
+     * @param name PlayerCharacter name
+     *
+     * @return bool
+     */
+    boolean containsPC(@NotNull String name) {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.isName(name)) {
+                return true;
             }
         }
-        for (PCEncounterData playerCharacter : this.roster) {
-            if (playerCharacter.getAgility() < newPlayerCharacter.getAgility()) {
-                this.roster.add(this.roster.indexOf(playerCharacter), newPlayerCharacter);
-                return;
-            }
-        }
-        this.roster.add(newPlayerCharacter);
+        return false;
     }
 
     /**
@@ -52,10 +66,10 @@ class PCRoster {
      *
      * @return ArrayList<PCEncounterData>
      */
-    ArrayList<PCEncounterData> getActive() {
+    @NotNull ArrayList<PCEncounterData> getActivePCs() {
         ArrayList<PCEncounterData> activeEncounterData = new ArrayList<>();
-        for (PCEncounterData pcEncounterData : this.roster) {
-            if (!pcEncounterData.isSlain() && pcEncounterData.isPresent()) {
+        for (PCEncounterData pcEncounterData : this.playerCharacters) {
+            if (pcEncounterData.isActive()) {
                 activeEncounterData.add(pcEncounterData);
             }
         }
@@ -67,23 +81,22 @@ class PCRoster {
      *
      * @return ArrayList<PCEncounterData>
      */
-    ArrayList<PCEncounterData> getAll() {
-        return this.roster;
+    @NotNull ArrayList<PCEncounterData> getAllPCs() {
+        return new ArrayList<>(this.playerCharacters);
     }
 
     /**
      * Get encounter data with given name
      *
-     * @param name Encounter data name
+     * @param name PlayerCharacter name
      *
      * @return EncounterDataInterface
      *
      * @throws EncounterDataNotFoundException Thrown when EncounterData is not found
      */
-    PCEncounterData getPC(String name) throws EncounterDataNotFoundException {
-        String nameLower = name.toLowerCase();
-        for (PCEncounterData playerCharacter : this.roster) {
-            if (playerCharacter.isName(nameLower)) {
+    @NotNull PCEncounterData getPC(@NotNull String name) throws EncounterDataNotFoundException {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.isName(name)) {
                 return playerCharacter;
             }
         }
@@ -93,115 +106,175 @@ class PCRoster {
     /**
      * Get encounter data with given name
      *
-     * @param player Encounter data player
+     * @param player Player
      *
      * @return EncounterDataInterface
      *
      * @throws EncounterDataNotFoundException Thrown when EncounterData is not found
      */
-    PCEncounterData getPC(Player player) throws EncounterDataNotFoundException {
-        for (PCEncounterData playerCharacter : this.roster) {
-            if (playerCharacter.isOwner(player.getUserId())) {
+    @NotNull PCEncounterData getPC(@NotNull Player player) throws EncounterDataNotFoundException {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.isOwner(player)) {
                 return playerCharacter;
             }
         }
         throw EncounterDataNotFoundException.createForPlayerCharacter(player);
     }
 
+    /**
+     * Get max player count
+     *
+     * @return int
+     */
     int getMaxPlayerCount() {
         return this.maxPlayerCount;
     }
 
     /**
-     * Does this roster have active EncounterData
+     * Does this roster have active PCEncounterData
      *
      * @return bool
      */
-    boolean hasActive() {
-        return this.getActive().size() > 0;
+    boolean hasActivePCs() {
+        return this.getActivePlayerCount() > 0;
     }
 
     /**
-     * Is EncounterData with given name currently in the roster
-     *
-     * @param name EncounterData name
+     * Is roster full
      *
      * @return bool
      */
-    boolean isPCInEncounter(String name) {
-        for (PCEncounterData playerCharacter : this.roster) {
-            if (playerCharacter.getName().equals(name)) {
+    boolean isFull() {
+        return this.getPresentPlayerCount() >= this.maxPlayerCount;
+    }
+
+    /**
+     * Mark Player's PCEncounterData as not present
+     *
+     * @param player Player
+     *
+     * @return PCEncounterData
+     *
+     * @throws PlayerCharacterPresentException If player has already left
+     */
+    PCEncounterData playerHasLeft(@NotNull Player player) {
+        // todo rename
+        PCEncounterData playerCharacter = this.getPC(player);
+        if (!playerCharacter.isPresent()) {
+            throw PlayerCharacterPresentException.createHasAleadyLeft(player.getAsMention());
+        }
+        playerCharacter.leave();
+        return playerCharacter;
+    }
+
+    /**
+     * Mark Player's PCEncounterData as present
+     *
+     * @param player Player
+     *
+     * @return PCEncounterData
+     *
+     * @throws PlayerCharacterPresentException If player is already present
+     * @throws PCRosterException               If roster is full
+     */
+    PCEncounterData playerHasRejoined(@NotNull Player player) {
+        // todo rename
+        PCEncounterData playerCharacter = this.getPC(player);
+        if (playerCharacter.isPresent()) {
+            throw PlayerCharacterPresentException.createCannotRejoinIfPresent(player.getAsMention());
+        } else if (this.isFull()) {
+            // this error is thrown last because already present message takes precedence
+            throw PCRosterException.createFullRoster(player);
+        }
+        playerCharacter.rejoin();
+        return playerCharacter;
+    }
+
+    /**
+     * Remove Player's PCEncounterData
+     *
+     * @param playerCharacter PCEncounterData
+     *
+     * @throws EncounterDataNotFoundException If player character is not found
+     */
+    void remove(@NotNull PCEncounterData playerCharacter) {
+        if (!this.containsPC(playerCharacter.getName())) {
+            throw EncounterDataNotFoundException.createForPlayerCharacter(playerCharacter.getName());
+        }
+        this.playerCharacters.remove(playerCharacter);
+    }
+
+    /**
+     * Set max player count
+     *
+     * @param maxPlayerCount Max player count
+     *
+     * @throws PCRosterException If present character count exceeds new limit
+     */
+    void setMaxPlayerCount(int maxPlayerCount) {
+        int presentPlayerCount = this.getPresentPlayerCount();
+        if (maxPlayerCount < presentPlayerCount) {
+            throw PCRosterException.createNewMaxPlayerCountGreaterThanCurrentPlayerCount(
+                maxPlayerCount,
+                presentPlayerCount
+            );
+        }
+        this.maxPlayerCount = maxPlayerCount;
+    }
+
+    /**
+     * Sort roster
+     */
+    void sortRoster() {
+        this.playerCharacters.sort(new PCAgilityComparator());
+    }
+
+    /**
+     * Is Player currently in the roster
+     *
+     * @param player Player
+     *
+     * @return bool
+     */
+    private boolean containsPlayer(@NotNull Player player) {
+        for (PCEncounterData playerCharacter : this.playerCharacters) {
+            if (playerCharacter.isOwner(player)) {
                 return true;
             }
         }
         return false;
     }
 
-    boolean isRosterFull() {
-        return !((this.getAll().size() - this.absentPlayerCount) < this.maxPlayerCount);
+    /**
+     * Get number of active players
+     *
+     * @return int
+     */
+    private int getActivePlayerCount() {
+        return this.getActivePCs().size();
     }
 
     /**
-     * Marks Player's PCEncounterData as "left"
+     * Get active player characters
      *
-     * @param player Player
-     *
-     * @return PCEncounterData
+     * @return ArrayList<PCEncounterData>
      */
-    PCEncounterData playerHasLeft(Player player) {
-        PCEncounterData playerCharacter = this.getPC(player);
-        if (!playerCharacter.isPresent()) {
-            throw PlayerCharacterPresentException.createHasAleadyLeft(player.getAsMention());
+    @NotNull private ArrayList<PCEncounterData> getPresentPCs() {
+        ArrayList<PCEncounterData> presentEncounterData = new ArrayList<>();
+        for (PCEncounterData pcEncounterData : this.playerCharacters) {
+            if (pcEncounterData.isPresent()) {
+                presentEncounterData.add(pcEncounterData);
+            }
         }
-        playerCharacter.useAllActions();
-        playerCharacter.leave();
-        this.absentPlayerCount++;
-        return playerCharacter;
+        return presentEncounterData;
     }
 
     /**
-     * Unmarks Player's PCEncounterData as "left"
+     * Get number of present players
      *
-     * @param player Player
-     *
-     * @return PCEncounterData
+     * @return int
      */
-    PCEncounterData playerHasRejoined(Player player) {
-        PCEncounterData playerCharacter = this.getPC(player);
-        if (playerCharacter == null) {
-            throw EncounterDataNotFoundException.createForPlayerCharacter(player);
-        } else if (playerCharacter.isPresent()) {
-            throw PlayerCharacterPresentException.createCannotRejoinIfPresent(player.getAsMention());
-        } else if (this.isRosterFull()) {
-            throw RosterException.createFullRoster(player);
-        }
-        playerCharacter.rejoin();
-        this.absentPlayerCount--;
-        return playerCharacter;
-    }
-
-    /**
-     * Removes Player's PCEncounterData from roster
-     *
-     * @param playerCharacter PCEncounterData
-     */
-    void remove(PCEncounterData playerCharacter) {
-        if (!this.roster.contains(playerCharacter)) {
-            throw EncounterDataNotFoundException.createForPlayerCharacter(playerCharacter.getName());
-        }
-        this.roster.remove(playerCharacter);
-    }
-
-    /**
-     * Set max player count
-     *
-     * @param maxPlayerCount Max player counter
-     */
-    void setMaxPlayerCount(int maxPlayerCount) {
-        this.maxPlayerCount = maxPlayerCount;
-    }
-
-    void sortRoster() {
-        this.roster.sort(PCEncounterData::compareTo);
+    private int getPresentPlayerCount() {
+        return this.getPresentPCs().size();
     }
 }

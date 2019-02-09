@@ -61,8 +61,8 @@ public class PlayerCharacter {
         return this.owner;
     }
 
-    boolean isOwner(String userId) {
-        return this.owner.isSamePlayer(userId);
+    boolean isOwner(Player player) {
+        return this.owner.isSamePlayer(player);
     }
 
     /**

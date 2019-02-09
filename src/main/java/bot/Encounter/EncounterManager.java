@@ -522,7 +522,7 @@ public class EncounterManager {
 
     private PCEncounterData getPlayerCharacter(Player player) {
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        if (!playerCharacter.isOwner(player.getUserId())) {
+        if (!playerCharacter.isOwner(player)) {
             throw new NotYourTurnException();
         }
         return playerCharacter;

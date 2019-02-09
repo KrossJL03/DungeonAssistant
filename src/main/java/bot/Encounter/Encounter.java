@@ -34,6 +34,7 @@ public class Encounter {
     }
 
     void addCharacter(PCEncounterData newPlayerCharacter) {
+        // todo start building PCEncounterData here
         this.pcRoster.addPC(newPlayerCharacter);
         if (this.isInitiativePhase()) {
             this.initiative.add(newPlayerCharacter);
@@ -82,7 +83,7 @@ public class Encounter {
     }
 
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
-        return this.pcRoster.getActive();
+        return this.pcRoster.getActivePCs();
     }
 
     ArrayList<HostileEncounterData> getAllHostiles() {
@@ -90,7 +91,7 @@ public class Encounter {
     }
 
     ArrayList<PCEncounterData> getAllPlayerCharacters() {
-        return this.pcRoster.getAll();
+        return this.pcRoster.getAllPCs();
     }
 
     PCEncounterData getCurrentPlayerCharacter() {
@@ -106,7 +107,7 @@ public class Encounter {
 
     EncounterDataInterface getEncounterData(String name) {
         ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
-        allCreatures.addAll(this.pcRoster.getAll());
+        allCreatures.addAll(this.pcRoster.getAllPCs());
         allCreatures.addAll(this.hostiles);
         for (EncounterDataInterface creature : allCreatures) {
             if (creature.isName(name)) {
@@ -156,7 +157,7 @@ public class Encounter {
     }
 
     boolean hasActivePCs() {
-        return this.pcRoster.hasActive();
+        return this.pcRoster.hasActivePCs();
     }
 
     boolean hasPhoenixDown() {
@@ -164,7 +165,7 @@ public class Encounter {
     }
 
     boolean havePlayersJoined() {
-        return !this.isJoinPhase() || this.pcRoster.hasActive();
+        return !this.isJoinPhase() || this.pcRoster.hasActivePCs();
     }
 
     boolean isAttackPhase() {
@@ -176,11 +177,11 @@ public class Encounter {
     }
 
     boolean isFullDungeon() {
-        return this.pcRoster.isRosterFull();
+        return this.pcRoster.isFull();
     }
 
     boolean isInEncounter(String name) {
-        if (this.pcRoster.isPCInEncounter(name)) {
+        if (this.pcRoster.containsPC(name)) {
             return true;
         }
         for (HostileEncounterData hostile : this.hostiles) {
@@ -207,10 +208,6 @@ public class Encounter {
         return this.currentPhase.equals(phase);
     }
 
-    boolean isPCInEncounter(String name) {
-        return this.pcRoster.isPCInEncounter(name);
-    }
-
     boolean isStarted() {
         return !this.currentPhase.equals(Encounter.CREATE_PHASE);
     }
@@ -235,7 +232,7 @@ public class Encounter {
         if (this.isAttackPhase()) {
             throw new StartCurrentPhaseException(Encounter.ATTACK_PHASE);
         }
-        for (PCEncounterData playerCharacter : this.pcRoster.getActive()) {
+        for (PCEncounterData playerCharacter : this.pcRoster.getActivePCs()) {
             playerCharacter.resetActions(true);
         }
         this.currentPhase = Encounter.ATTACK_PHASE;
@@ -246,7 +243,7 @@ public class Encounter {
         if (this.isDodgePhase()) {
             throw new StartCurrentPhaseException(Encounter.DODGE_PHASE);
         }
-        for (PCEncounterData playerCharacter : this.pcRoster.getActive()) {
+        for (PCEncounterData playerCharacter : this.pcRoster.getActivePCs()) {
             playerCharacter.resetActions(false);
         }
         this.currentPhase = Encounter.DODGE_PHASE;

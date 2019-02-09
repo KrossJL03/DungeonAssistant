@@ -12,9 +12,12 @@ public class RepositoryException extends RuntimeException implements CustomExcep
         return new RepositoryException("Uh oh, I couldn't close my connection...");
     }
 
+    public static RepositoryException createFailedToRetrieve() {
+        return new RepositoryException("Uh, couldn't find what you're looking for...");
+    }
+
     public static RepositoryException createFailedToUpdate() {
         return new RepositoryException("Uh, could you say that again? I'm having trouble saving it");
     }
-
 
 }

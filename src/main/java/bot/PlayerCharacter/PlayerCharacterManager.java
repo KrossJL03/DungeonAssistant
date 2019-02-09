@@ -1,5 +1,6 @@
 package bot.PlayerCharacter;
 
+import bot.Player.Player;
 import bot.PlayerCharacter.Exception.PlayerCharacterNotFoundException;
 import bot.Player.PlayerManager;
 import bot.PlayerCharacter.Exception.NotYourCharacterException;
@@ -18,8 +19,9 @@ public class PlayerCharacterManager {
         int wisdom
     ) {
         PlayerManager.ensurePlayerExist(userId);
+        Player          owner           = PlayerManager.getPlayer(userId);
         PlayerCharacter playerCharacter = PlayerCharacterRepository.getPlayerCharacter(name);
-        if (playerCharacter != null && !playerCharacter.isOwner(userId)) {
+        if (playerCharacter != null && !playerCharacter.isOwner(owner)) {
             throw NotYourCharacterException.createForNameTaken(
                 playerCharacter.getName(),
                 playerCharacter.getOwner().getName()

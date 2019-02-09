@@ -9,7 +9,7 @@ import bot.PlayerCharacter.PlayerCharacter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDataInterface {
+public class PCEncounterData implements EncounterDataInterface {
 
     private Player                          owner;
     private EncounterDataInterface          slayer;
@@ -192,6 +192,10 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
         return this.hasProtect;
     }
 
+    public boolean isActive() {
+        return !this.isSlain() && this.isPresent();
+    }
+
     public boolean isCrit(int rollToHit) {
         return rollToHit >= this.getMinCrit();
     }
@@ -200,8 +204,8 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
         return this.name.toLowerCase().equals(name.toLowerCase());
     }
 
-    public boolean isOwner(String userId) {
-        return this.owner.isSamePlayer(userId);
+    public boolean isOwner(Player player) {
+        return this.owner.isSamePlayer(player);
     }
 
     public boolean isPresent() {
@@ -225,6 +229,7 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
     }
 
     public void leave() {
+        this.useAllActions();
         this.isPresent = false;
     }
 
@@ -302,9 +307,5 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
 
     public void useProtect() {
         this.hasProtect = false;
-    }
-
-    public int compareTo(PCEncounterData playerCharacter) {
-        return this.agility - playerCharacter.agility;
     }
 }
