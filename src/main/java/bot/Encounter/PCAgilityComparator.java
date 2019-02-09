@@ -8,6 +8,6 @@ public class PCAgilityComparator implements Comparator<PCEncounterData> {
 
     @Override
     public int compare(PCEncounterData pc1, PCEncounterData pc2) {
-        return pc1.getAgility() - pc2.getAgility();
+        return pc2.getAgility() - pc1.getAgility();
     }
 }

@@ -1,10 +1,7 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounterData.PCEncounterData;
-import bot.Encounter.Exception.EncounterDataNotFoundException;
-import bot.Encounter.Exception.MultiplePlayerCharactersException;
-import bot.Encounter.Exception.PCRosterException;
-import bot.Encounter.Exception.PlayerCharacterPresentException;
+import bot.Encounter.Exception.*;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +13,7 @@ class PCRoster {
     private int                        maxPlayerCount;
 
     /**
-     * PCRoster constructor
+     * PCRosterTest constructor
      */
     PCRoster() {
         this.maxPlayerCount = 0;
@@ -37,12 +34,14 @@ class PCRoster {
         if (this.containsPlayer(player)) {
             PCEncounterData character = this.getPC(player);
             throw new MultiplePlayerCharactersException(player, character.getName());
+        } else if (!this.isMaxPlayerCountSet()) {
+            throw new MaxZeroPlayersException();
         } else if (this.isFull()) {
             // this error is thrown last because multiple pc exception takes precedence
             throw PCRosterException.createFullRoster(player);
         }
         this.playerCharacters.add(newPlayerCharacter);
-        this.sortRoster();
+        this.sort();
     }
 
     /**
@@ -212,6 +211,9 @@ class PCRoster {
      * @throws PCRosterException If present character count exceeds new limit
      */
     void setMaxPlayerCount(int maxPlayerCount) {
+        if (maxPlayerCount < 1) {
+            throw PCRosterException.createMaxPlayerCountLessThanOne();
+        }
         int presentPlayerCount = this.getPresentPlayerCount();
         if (maxPlayerCount < presentPlayerCount) {
             throw PCRosterException.createNewMaxPlayerCountGreaterThanCurrentPlayerCount(
@@ -225,7 +227,7 @@ class PCRoster {
     /**
      * Sort roster
      */
-    void sortRoster() {
+    void sort() {
         this.playerCharacters.sort(new PCAgilityComparator());
     }
 
@@ -276,5 +278,14 @@ class PCRoster {
      */
     private int getPresentPlayerCount() {
         return this.getPresentPCs().size();
+    }
+
+    /**
+     * Has the max player count been set
+     *
+     * @return boolean
+     */
+    private boolean isMaxPlayerCountSet() {
+        return this.maxPlayerCount > 0;
     }
 }

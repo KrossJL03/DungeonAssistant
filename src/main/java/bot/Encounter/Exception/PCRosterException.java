@@ -15,6 +15,10 @@ public class PCRosterException extends RuntimeException implements CustomExcepti
         );
     }
 
+    public static PCRosterException createMaxPlayerCountLessThanOne() {
+        return new PCRosterException("You can't have less than 1 player... that just doesn't work");
+    }
+
     public static PCRosterException createNewMaxPlayerCountGreaterThanCurrentPlayerCount(
         int newMaxPlayerCount,
         int presentPlayerCount

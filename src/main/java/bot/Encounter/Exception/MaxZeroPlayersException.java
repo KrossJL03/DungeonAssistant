@@ -8,7 +8,7 @@ public class MaxZeroPlayersException extends RuntimeException implements CustomE
     public MaxZeroPlayersException() {
         super(
             String.format(
-                "Wait! I don't know how many players to have! Tell me using `%smaxPlayers`.",
+                "Wait, I don't know how many players to have. DM could you tell me using `%smaxPlayers`?",
                 CommandListener.COMMAND_KEY
             )
         );

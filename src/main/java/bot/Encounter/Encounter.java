@@ -225,7 +225,7 @@ public class Encounter {
     }
 
     void sortRoster() {
-        this.pcRoster.sortRoster();
+        this.pcRoster.sort();
     }
 
     void startAttackPhase() {
