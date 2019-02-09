@@ -188,31 +188,6 @@ public class PCEncounterData implements EncounterDataInterface {
         }
     }
 
-    public void increaseStat(String statName, int boost) {
-        if (!this.isStatBoostable(statName, boost)) {
-            throw PCEncounterDataException.createStatOutOfBounds(this.name, statName);
-        }
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                this.agility += boost;
-                break;
-            case Constant.STAT_DEFENSE:
-                this.defense += boost;
-                break;
-            case Constant.STAT_MAX_HP:
-                this.maxHp += (boost * Constant.HP_STAT_MULTIPLIER);
-                break;
-            case Constant.STAT_STRENGTH:
-                this.strength += boost;
-                break;
-            case Constant.STAT_WISDOM:
-                this.wisdom += boost;
-                break;
-            default:
-                throw PCEncounterDataException.invalidStatName(statName);
-        }
-    }
-
     public boolean isAbleToProtect() {
         return this.hasProtect;
     }
@@ -233,25 +208,45 @@ public class PCEncounterData implements EncounterDataInterface {
         return currentHp < 1;
     }
 
-    public boolean isStatBoostable(String statName, int boost) {
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                return !((this.agility + boost) > Constant.MAX_AGILITY);
-            case Constant.STAT_DEFENSE:
-                return !((this.defense + boost) > Constant.MAX_DEFENSE);
-            case Constant.STAT_MAX_HP:
-                return !((this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)) > Constant.MAX_MAX_HP);
-            case Constant.STAT_STRENGTH:
-                return !((this.strength + boost) > Constant.MAX_STRENGTH);
-            case Constant.STAT_WISDOM:
-                return !((this.wisdom + boost) > Constant.MAX_WISDOM);
-            default:
-                throw PCEncounterDataException.invalidStatName(statName);
+    public boolean isStatModifiable(String statName, int boost) {
+        statName = statName.toLowerCase();
+        if (!Constant.isStatName(statName)) {
+            throw PCEncounterDataException.invalidStatName(statName);
         }
+        int newStat = statName.equals(Constant.STAT_MAX_HP)
+                      ? this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)
+                      : this.getStat(statName) + boost;
+
+        return !(newStat > Constant.getStatMax(statName) || newStat < Constant.getStatMin(statName));
     }
 
     public void leave() {
         this.isPresent = false;
+    }
+
+    public void modifyStat(String statName, int statBoost) {
+        if (!this.isStatModifiable(statName, statBoost)) {
+            throw PCEncounterDataException.createStatOutOfBounds(this.name, statName);
+        }
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                this.agility += statBoost;
+                return;
+            case Constant.STAT_DEFENSE:
+                this.defense += statBoost;
+                return;
+            case Constant.STAT_MAX_HP:
+                this.maxHp += statBoost;
+                return;
+            case Constant.STAT_STRENGTH:
+                this.strength += statBoost;
+                return;
+            case Constant.STAT_WISDOM:
+                this.wisdom += statBoost;
+                return;
+            default:
+                throw PCEncounterDataException.invalidStatName(statName);
+        }
     }
 
     public void rejoin() {

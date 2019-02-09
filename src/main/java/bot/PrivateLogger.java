@@ -47,6 +47,14 @@ class PrivateLogger {
             "Attempt to dodge enemy attacks during the dodge turn"
         ));
         output.append(PrivateLogger.NEWLINE);
+        output.append(String.format(
+            "   %s%-16s %-16s %s",
+            CommandListener.COMMAND_KEY,
+            "dodgePass",
+            "",
+            "Auto dodge all attacks. Use for smoke bombs, special abilities, or being protected. DM will be pinged to confirm."
+        ));
+        output.append(PrivateLogger.NEWLINE);
         output.append(
             String.format(
                 "   %s%-16s %-16s %s",
@@ -97,7 +105,7 @@ class PrivateLogger {
                 "   %-16s %-16s %s",
                 "rp!use",
                 "\"item Name\" [quantity]",
-                "Use an item through rp!bot. The DM will be pinged to activate the item for you. Please tell them who you want to use it on if applicable."
+                "Use an item through rp!bot. The DM will be pinged to activate the item."
             )
         );
 //        output.append(PrivateLogger.NEWLINE);
@@ -111,7 +119,9 @@ class PrivateLogger {
 //            )
 //        );
         output.append("```");
+        PrivateLogger.sendPrivateMessage(user, output.toString());
 
+        output = new StringBuilder();
         if (isAdmin) {
             output.append(PrivateLogger.NEWLINE);
             output.append("Dungeon Master Commands:");
@@ -137,6 +147,14 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
+                "boostStat",
+                "[CharacterName] [StatName] [StatBoost]",
+                "Increase a characters stat by the boost amount for the current encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "create encounter",
                 "",
                 "Begin creating a new encounter"
@@ -148,6 +166,30 @@ class PrivateLogger {
                 "dodgeTurn",
                 "",
                 "Start dodge turn"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "dropStat",
+                "[CharacterName] [StatName] [StatDrop]",
+                "Reduce a characters stat by the drop amount for the current encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "dodgePass",
+                "",
+                "The current character successfully dodges all attacks this round"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "endTurn",
+                "",
+                "End a players turn. No ill side effects."
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -206,17 +248,17 @@ class PrivateLogger {
                 "",
                 "Start the encounter"
             ));
-            // todo remove once inventory is implemented
-            output.append(PrivateLogger.NEWLINE);
-            output.append(
-                String.format(
-                    "   %s%-16s %-16s %s",
-                    CommandListener.COMMAND_KEY,
-                    "use",
-                    "[ItemName] (RecipientName)",
-                    "Use an item. Optional recipient name, leave blank to use on yourself."
-                )
-            );
+            // todo add once inventory is implemented
+//            output.append(PrivateLogger.NEWLINE);
+//            output.append(
+//                String.format(
+//                    "   %s%-16s %-16s %s",
+//                    CommandListener.COMMAND_KEY,
+//                    "use",
+//                    "[ItemName] (RecipientName)",
+//                    "Use an item. Optional recipient name, leave blank to use on yourself."
+//                )
+//            );
             output.append("```");
         }
         output.append(PrivateLogger.NEWLINE);

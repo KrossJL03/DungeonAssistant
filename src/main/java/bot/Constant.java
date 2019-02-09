@@ -12,7 +12,11 @@ public class Constant {
     public static final int MAX_STRENGTH = 20;
     public static final int MAX_WISDOM   = 20;
 
-    public static final int MIN_MAX_HP = 50;
+    public static final int MIN_AGILITY  = 0;
+    public static final int MIN_DEFENSE  = 0;
+    public static final int MIN_MAX_HP   = 50;
+    public static final int MIN_STRENGTH = 0;
+    public static final int MIN_WISDOM   = 0;
 
     public static final int HP_STAT_MULTIPLIER = 10;
 
@@ -34,6 +38,23 @@ public class Constant {
                 return MAX_STRENGTH;
             case Constant.STAT_WISDOM:
                 return MAX_WISDOM;
+            default:
+                throw PCEncounterDataException.invalidStatName(statName);
+        }
+    }
+
+    public static int getStatMin(String statName) {
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                return MIN_AGILITY;
+            case Constant.STAT_DEFENSE:
+                return MIN_DEFENSE;
+            case Constant.STAT_MAX_HP:
+                return MIN_MAX_HP;
+            case Constant.STAT_STRENGTH:
+                return MIN_STRENGTH;
+            case Constant.STAT_WISDOM:
+                return MIN_WISDOM;
             default:
                 throw PCEncounterDataException.invalidStatName(statName);
         }

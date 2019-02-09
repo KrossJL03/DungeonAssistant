@@ -50,8 +50,14 @@ public class CommandListener extends ListenerAdapter {
                     case "dodge":
                         this.commandManager.dodgeCommand(event);
                         break;
+                    case "dodgepass":
+                        this.commandManager.dodgePassCommand(event);
+                        break;
                     case "dodgeturn":
                         this.commandManager.startDodgePhase(event);
+                        break;
+                    case "endturn":
+                        this.commandManager.endTurnCommand(event);
                         break;
                     case "heal":
                         this.commandManager.healCommand(event);
@@ -95,9 +101,15 @@ public class CommandListener extends ListenerAdapter {
                     case "start":
                         this.commandManager.startEncounter(event);
                         break;
-                    case "use":
-                        this.commandManager.useItemCommand(event);
-                        break;
+                    case "statboost":
+                        this.commandManager.boostStatCommand(event);
+                        return;
+                    case "statdrop":
+                        this.commandManager.dropStatCommand(event);
+                        return;
+//                    case "use":
+//                        this.commandManager.useItemCommand(event);
+//                        break;
                     case "view":
                         this.processViewCommand(event);
                         break;

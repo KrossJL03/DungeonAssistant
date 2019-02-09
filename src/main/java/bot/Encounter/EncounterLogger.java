@@ -512,6 +512,19 @@ public class EncounterLogger {
         this.logMessage(String.format("%s takes %d dmg! [%d/%d]", name, hitpoints, currentHP, maxHP));
     }
 
+    void logDungeonMasterStatMod(String name, String statName, int statMod, int newStatTotal) {
+        this.logMessage(
+            String.format(
+                "%s's %s has gone %s by %d, making it %d!",
+                name,
+                statName,
+                statMod > 0 ? "up" : "down",
+                statMod,
+                newStatTotal
+            )
+        );
+    }
+
     void logDungeonMasterSlay(String name) {
         this.logMessage(String.format("%s was slain", name));
     }
@@ -620,6 +633,16 @@ public class EncounterLogger {
         );
     }
 
+    void pingDmDodgePass(Player player) {
+        this.logMessage(
+            String.format(
+                "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
+                this.context.getDungeonMasterMention(),
+                player.getAsMention()
+            )
+        );
+    }
+
     // todo remove once inventory is implemented
     void pingDmItemUsed(Player player) {
         this.logMessage(
@@ -628,6 +651,20 @@ public class EncounterLogger {
                 this.context.getDungeonMasterMention(),
                 player.getAsMention()
             )
+        );
+    }
+
+    void logActionDodgePass(PCEncounterData playerCharacter) {
+        this.logMessage(
+            "```ml" +
+            EncounterLogger.NEWLINE +
+            String.format("%s successfully Dodges all attacks!", playerCharacter.getName()) +
+            EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
+            String.format("%s takes 0 dmg total!", playerCharacter.getName()) +
+            EncounterLogger.NEWLINE +
+            String.format("%d/%d health remaining", playerCharacter.getCurrentHP(), playerCharacter.getMaxHP()) +
+            "```"
         );
     }
 
@@ -717,20 +754,6 @@ public class EncounterLogger {
         output += EncounterLogger.NEWLINE;
         output += "```";
         return output;
-    }
-
-    private void logActionDodgePass(PCEncounterData playerCharacter) {
-        this.logMessage(
-            "```ml" +
-            EncounterLogger.NEWLINE +
-            String.format("%s successfully Dodges all attacks!", playerCharacter.getName()) +
-            EncounterLogger.NEWLINE +
-            EncounterLogger.NEWLINE +
-            String.format("%s takes 0 dmg total!", playerCharacter.getName()) +
-            EncounterLogger.NEWLINE +
-            String.format("%d/%d health remaining", playerCharacter.getCurrentHP(), playerCharacter.getMaxHP()) +
-            "```"
-        );
     }
 
     private void logMessage(String message) {

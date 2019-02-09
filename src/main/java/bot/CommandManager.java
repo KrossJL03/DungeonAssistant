@@ -5,7 +5,6 @@ import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
 import bot.Exception.*;
 import bot.Hostile.HostileManager;
-import bot.Item.Consumable.ConsumableItem;
 import bot.Item.Consumable.ConsumableManager;
 import bot.Player.Player;
 import bot.Player.PlayerManager;
@@ -16,7 +15,6 @@ import bot.Hostile.HostileRepository;
 import bot.PlayerCharacter.PlayerCharacterManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.core.entities.*;
@@ -44,6 +42,16 @@ public class CommandManager {
         String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
         String   hostileName = splitInput[1];
         this.encounterManager.attackAction(player, hostileName);
+    }
+
+    void boostStatCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   name       = splitInput[1];
+            String   statName   = splitInput[2];
+            int      statBoost  = Integer.parseInt(splitInput[3]);
+            this.encounterManager.modifyStat(name, statName, statBoost);
+        }
     }
 
     // todo move to RepositoryManager
@@ -110,6 +118,31 @@ public class CommandManager {
     void dodgeCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
         this.encounterManager.dodgeAction(player);
+    }
+
+    void dodgePassCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            this.encounterManager.dodgePassAction();
+        } else {
+            Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+            this.encounterManager.dodgePassActionHelp(player);
+        }
+    }
+
+    void dropStatCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   name       = splitInput[1];
+            String   statName   = splitInput[2];
+            int      statBoost  = 0 - Integer.parseInt(splitInput[3]);
+            this.encounterManager.modifyStat(name, statName, statBoost);
+        }
+    }
+
+    void endTurnCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            this.encounterManager.endCurrentPlayersTurn();
+        }
     }
 
     void healCommand(MessageReceivedEvent event) {
@@ -245,16 +278,23 @@ public class CommandManager {
         }
     }
 
+    /**
+     * Use Item Command
+     * todo reimplement later
+     *
+     * @param event MessageReceivedEvent
+     */
     void useItemCommand(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
-            String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
-            ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
-            String[] context = splitInput.length > 2 ?
-                               Arrays.copyOfRange(splitInput, 2, splitInput.length) :
-                               new String[0];
-            this.encounterManager.useItem(player, item, context);
-        }
+        this.pingDmItemUsed(event);
+//        if (this.isAdmin(event)) {
+//            Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
+//            String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
+//            ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
+//            String[] context = splitInput.length > 2 ?
+//                               Arrays.copyOfRange(splitInput, 2, splitInput.length) :
+//                               new String[0];
+//            this.encounterManager.useItem(player, item, context);
+//        }
     }
 
     void viewAllCharacters(MessageReceivedEvent event) {

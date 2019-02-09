@@ -107,6 +107,21 @@ public class EncounterManager {
         this.endCurrentPlayerAction();
     }
 
+    public void dodgePassAction() {
+        PCEncounterData    playerCharacter = this.context.getCurrentPlayerCharacter();
+        this.logger.logActionDodgePass(playerCharacter);
+        playerCharacter.useAction();
+        this.endCurrentPlayerAction();
+    }
+
+    public void dodgePassActionHelp(Player player) {
+        this.logger.pingDmDodgePass(player);
+    }
+
+    public void endCurrentPlayersTurn() {
+        this.endCurrentPlayerAction();
+    }
+
     public void heal(String name, int hitpoints) {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
@@ -198,6 +213,21 @@ public class EncounterManager {
         }
         playerCharacter.rollLoot();
         this.logger.logActionLoot(playerCharacter);
+    }
+
+    public void modifyStat(String name, String statName, int statMod) {
+        statName = statName.toLowerCase();
+        if (this.context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
+        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
+        playerCharacter.modifyStat(statName, statMod);
+        this.logger.logDungeonMasterStatMod(
+            playerCharacter.getName(),
+            statName,
+            statMod,
+            playerCharacter.getStat(statName)
+        );
     }
 
     public void protectAction(Player player, String name) {
@@ -317,6 +347,15 @@ public class EncounterManager {
         this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
     }
 
+    /**
+     * Use Item
+     *
+     * @param player  Player
+     * @param item    ConsumableItem
+     * @param context Context
+     *
+     * @deprecated
+     */
     public void useItem(Player player, ConsumableItem item, String[] context) {
         if (!this.context.isPhase(item.getUsablePhase())) {
             throw EncounterPhaseException.createNotItemUsablePhase(item.getName(), item.getUsablePhase());
@@ -366,7 +405,7 @@ public class EncounterManager {
         }
 
         if (item.isTempStatBoost() && recipient instanceof PCEncounterData) {
-            ((PCEncounterData) recipient).increaseStat(statName, item.getTempStatBoost());
+            ((PCEncounterData) recipient).modifyStat(statName, item.getTempStatBoost());
         }
 
         this.logger.logUsedItem(
@@ -544,7 +583,7 @@ public class EncounterManager {
             if (statName == null) {
                 throw ItemException.createMissingStatName(item.getName());
             } else if (recipient instanceof PCEncounterData) {
-                if (!((PCEncounterData) recipient).isStatBoostable(statName, item.getTempStatBoost())) {
+                if (!((PCEncounterData) recipient).isStatModifiable(statName, item.getTempStatBoost())) {
                     throw PCEncounterDataException.createStatOutOfBounds(recipient.getName(), statName);
                 }
             } else {
