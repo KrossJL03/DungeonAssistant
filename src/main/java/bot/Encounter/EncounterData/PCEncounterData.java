@@ -5,6 +5,7 @@ import bot.Encounter.Exception.PCEncounterDataException;
 import bot.Encounter.Exception.PlayerCharacterSlainException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -304,7 +305,7 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
         this.hasProtect = false;
     }
 
-    public int compareTo(PCEncounterData playerCharacter) {
-        return this.agility - playerCharacter.agility;
+    public int compareTo(@NotNull PCEncounterData playerCharacter) {
+        return playerCharacter.agility - this.agility;
     }
 }

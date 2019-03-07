@@ -118,7 +118,15 @@ public class EncounterManager {
         this.logger.pingDmDodgePass(player);
     }
 
+    public void endCurrentPlayersAction() {
+        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
+        playerCharacter.useAction();
+        this.endCurrentPlayerAction();
+    }
+
     public void endCurrentPlayersTurn() {
+        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
+        playerCharacter.useAllActions();
         this.endCurrentPlayerAction();
     }
 

@@ -139,6 +139,12 @@ public class CommandManager {
         }
     }
 
+    void endActionCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            this.encounterManager.endCurrentPlayersAction();
+        }
+    }
+
     void endTurnCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             this.encounterManager.endCurrentPlayersTurn();
