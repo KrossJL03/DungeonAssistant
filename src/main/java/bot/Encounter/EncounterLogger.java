@@ -141,7 +141,7 @@ public class EncounterLogger {
             int                  dodgeRoll = dodgeRolls.get(i);
             output.append(String.format("%2d %s ", dodgeRoll, EncounterLogger.DOUBLE_ARROW));
             if (dodgeRoll < 10) {
-                output.append(String.format("HIT! %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
+                output.append(String.format("'FAIL' %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
             } else {
                 output.append(String.format("(* Successfully dodged %s! *)", hostile.getName()));
             }

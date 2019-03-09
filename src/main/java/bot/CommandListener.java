@@ -56,6 +56,9 @@ public class CommandListener extends ListenerAdapter {
                     case "dodgeturn":
                         this.commandManager.startDodgePhase(event);
                         break;
+                    case "endaction":
+                        this.commandManager.endActionCommand(event);
+                        break;
                     case "endturn":
                         this.commandManager.endTurnCommand(event);
                         break;

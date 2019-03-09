@@ -147,14 +147,6 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
-                "boostStat",
-                "[CharacterName] [StatName] [StatBoost]",
-                "Increase a characters stat by the boost amount for the current encounter"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format(
-                "   %s%-16s %-16s %s",
-                CommandListener.COMMAND_KEY,
                 "create encounter",
                 "",
                 "Begin creating a new encounter"
@@ -166,14 +158,6 @@ class PrivateLogger {
                 "dodgeTurn",
                 "",
                 "Start dodge turn"
-            ));
-            output.append(PrivateLogger.NEWLINE);
-            output.append(String.format(
-                "   %s%-16s %-16s %s",
-                CommandListener.COMMAND_KEY,
-                "dropStat",
-                "[CharacterName] [StatName] [StatDrop]",
-                "Reduce a characters stat by the drop amount for the current encounter"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -247,6 +231,22 @@ class PrivateLogger {
                 "start",
                 "",
                 "Start the encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "statBoost",
+                "[CharacterName] [StatName] [StatBoost]",
+                "Increase a characters stat by the boost amount for the current encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "statDrop",
+                "[CharacterName] [StatName] [StatDrop]",
+                "Reduce a characters stat by the drop amount for the current encounter"
             ));
             // todo add once inventory is implemented
 //            output.append(PrivateLogger.NEWLINE);

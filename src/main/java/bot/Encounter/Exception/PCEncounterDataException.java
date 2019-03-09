@@ -12,9 +12,10 @@ public class PCEncounterDataException extends RuntimeException implements Custom
     public static PCEncounterDataException createStatOutOfBounds(String name, String statName) {
         return new PCEncounterDataException(
             String.format(
-                "%s's %s can't exceed %d!",
+                "%s's %s must be between %d and %d!",
                 name,
                 statName,
+                Constant.getStatMin(statName),
                 Constant.getStatMax(statName)
             )
         );

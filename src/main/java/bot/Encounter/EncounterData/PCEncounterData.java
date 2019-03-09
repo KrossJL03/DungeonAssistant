@@ -5,6 +5,7 @@ import bot.Encounter.Exception.PCEncounterDataException;
 import bot.Encounter.Exception.PlayerCharacterSlainException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -246,6 +247,12 @@ public class PCEncounterData implements EncounterDataInterface {
                 return;
             case Constant.STAT_MAX_HP:
                 this.maxHp += statBoost;
+                this.currentHp += statBoost;
+                if (this.currentHp > this.maxHp) {
+                    this.currentHp = this.maxHp;
+                } else if (this.currentHp < Constant.MIN_MAX_HP) {
+                    this.currentHp = Constant.MIN_MAX_HP;
+                }
                 return;
             case Constant.STAT_STRENGTH:
                 this.strength += statBoost;
@@ -307,5 +314,9 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public void useProtect() {
         this.hasProtect = false;
+    }
+
+    public int compareTo(@NotNull PCEncounterData playerCharacter) {
+        return playerCharacter.agility - this.agility;
     }
 }

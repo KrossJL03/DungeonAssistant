@@ -118,7 +118,15 @@ public class EncounterManager {
         this.logger.pingDmDodgePass(player);
     }
 
+    public void endCurrentPlayersAction() {
+        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
+        playerCharacter.useAction();
+        this.endCurrentPlayerAction();
+    }
+
     public void endCurrentPlayersTurn() {
+        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
+        playerCharacter.useAllActions();
         this.endCurrentPlayerAction();
     }
 
@@ -198,6 +206,13 @@ public class EncounterManager {
         this.logger.logLeftEncounter(playerCharacter.getName());
         if (playerCharacter == currentPlayerCharacter) {
             this.endCurrentPlayerAction();
+        } else if (!this.context.hasActivePCs()) {
+            this.context.startEndPhase();
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                false
+            );
         }
     }
 
