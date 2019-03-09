@@ -206,6 +206,13 @@ public class EncounterManager {
         this.logger.logLeftEncounter(playerCharacter.getName());
         if (playerCharacter == currentPlayerCharacter) {
             this.endCurrentPlayerAction();
+        } else if (!this.context.hasActivePCs()) {
+            this.context.startEndPhase();
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                false
+            );
         }
     }
 

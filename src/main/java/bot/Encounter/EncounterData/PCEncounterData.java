@@ -242,6 +242,12 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
                 return;
             case Constant.STAT_MAX_HP:
                 this.maxHp += statBoost;
+                this.currentHp += statBoost;
+                if (this.currentHp > this.maxHp) {
+                    this.currentHp = this.maxHp;
+                } else if (this.currentHp < Constant.MIN_MAX_HP) {
+                    this.currentHp = Constant.MIN_MAX_HP;
+                }
                 return;
             case Constant.STAT_STRENGTH:
                 this.strength += statBoost;
