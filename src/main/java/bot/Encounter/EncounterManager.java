@@ -1,6 +1,7 @@
 package bot.Encounter;
 
 import bot.Constant;
+import bot.Encounter.EncounterData.AttackActionResult;
 import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
@@ -47,23 +48,19 @@ public class EncounterManager {
         }
         PCEncounterData      playerCharacter = this.getPlayerCharacter(player);
         HostileEncounterData hostile         = this.context.getHostile(hostileName);
-        int                  hitRoll         = playerCharacter.rollToHit();
 
-        if (hitRoll < 2) {
+        AttackActionResult result = playerCharacter.attack(hostile);
+
+        if (result.isFail()) {
             this.logger.logActionAttackFail(playerCharacter.getName(), hostile.getName());
-        } else if (hitRoll < 6) {
-            this.logger.logActionAttackMiss(hostile, playerCharacter.getName(), hitRoll);
-        } else if (playerCharacter.isCrit(hitRoll)) {
-            int damage = playerCharacter.getCritDamage();
-            hostile.takeDamage(playerCharacter, damage);
-            this.logger.logActionAttackCrit(playerCharacter.getName(), hostile, hitRoll, damage);
+        } else if (result.isMiss()) {
+            this.logger.logActionAttackMiss(hostile, playerCharacter.getName(), result.getHitRoll());
+        } else if (result.isCrit()) {
+            this.logger.logActionAttackCrit(playerCharacter.getName(), hostile, result.getHitRoll(), result.getDamageRoll());
         } else {
-            int damage = playerCharacter.rollDamage();
-            hostile.takeDamage(playerCharacter, damage);
-            this.logger.logActionAttackHit(playerCharacter, hostile, hitRoll, damage);
+            this.logger.logActionAttackHit(playerCharacter, hostile, result.getHitRoll(), result.getDamageRoll());
         }
 
-        playerCharacter.useAction();
         if (hostile.isSlain()) {
             this.addKillToPlayerCharacters(hostile);
         }

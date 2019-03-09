@@ -54,16 +54,42 @@ public class PCEncounterData implements EncounterDataInterface {
         this.kills.add(hostile);
     }
 
+    /**
+     * Attack a target
+     *
+     * @param target EncounterData that is being targets by the attack
+     *
+     * @return AttackActionResult
+     */
+    public AttackActionResult attack(EncounterDataInterface target) {
+
+        HitRoll hitRoll    = this.rollToHit();
+        int     damageRoll = 0;
+
+        if (hitRoll.isHit()) {
+            damageRoll = hitRoll.isCrit() ? this.getCritDamage() : this.rollDamage();
+            target.takeDamage(this, damageRoll);
+        }
+
+        this.useAction();
+
+        return new AttackActionResult(
+            this.name,
+            target.getName(),
+            hitRoll,
+            this.getAttackDice(),
+            damageRoll,
+            target.getCurrentHP(),
+            target.getMaxHP()
+        );
+    }
+
     public int getAgility() {
         return this.agility;
     }
 
     public int getAttackDice() {
         return this.strength + 10;
-    }
-
-    public int getCritDamage() {
-        return (int) Math.floor(this.getAttackDice() * 1.5);
     }
 
     public int getCurrentHP() {
@@ -287,10 +313,6 @@ public class PCEncounterData implements EncounterDataInterface {
         }
     }
 
-    public int rollToHit() {
-        return (int) Math.floor(Math.random() * 20) + 1;
-    }
-
     public int takeDamage(EncounterDataInterface attacker, int damage) {
         damage = damage - this.getEndurance();
         damage = damage < 1 ? 1 : damage;
@@ -318,5 +340,14 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public int compareTo(@NotNull PCEncounterData playerCharacter) {
         return playerCharacter.agility - this.agility;
+    }
+
+    private int getCritDamage() {
+        return (int) Math.floor(this.getAttackDice() * 1.5);
+    }
+
+    private HitRoll rollToHit() {
+        int roll = (int) Math.floor(Math.random() * 20) + 1;
+        return new HitRoll(roll, this.getMinCrit());
     }
 }
