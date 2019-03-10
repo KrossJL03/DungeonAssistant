@@ -15,7 +15,9 @@ public class PlayerCharacterManager {
         int strength,
         int defense,
         int agility,
-        int wisdom
+        int wisdom,
+        String appLink,
+        String statsLink
     ) {
         PlayerManager.ensurePlayerExist(userId);
         PlayerCharacter playerCharacter = PlayerCharacterRepository.getPlayerCharacter(name);
@@ -26,7 +28,7 @@ public class PlayerCharacterManager {
             );
         }
         PlayerCharacter.validateStats(name, hitpoints, strength, defense, agility, wisdom);
-        PlayerCharacterRepository.insertPlayerCharacter(userId, name, strength, defense, agility, wisdom, hitpoints);
+        PlayerCharacterRepository.insertPlayerCharacter(userId, name, strength, defense, agility, wisdom, hitpoints, appLink, statsLink);
     }
 
     public static void deletePlayerCharacter(String userId, String name) {

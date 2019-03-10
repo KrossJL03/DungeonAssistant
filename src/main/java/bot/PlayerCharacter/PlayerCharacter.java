@@ -13,6 +13,8 @@ public class PlayerCharacter {
     private int    agility;
     private int    wisdom;
     private int    hitpoints;
+    private String appLink;
+    private String statsLink;
 
     PlayerCharacter(
         String name,
@@ -21,7 +23,9 @@ public class PlayerCharacter {
         int strength,
         int defense,
         int agility,
-        int wisdom
+        int wisdom,
+        String appLink,
+        String statsLink
     ) {
         PlayerCharacter.validateStats(name, hitpoints, strength, defense, agility, wisdom);
         this.owner = owner;
@@ -31,6 +35,8 @@ public class PlayerCharacter {
         this.agility = agility;
         this.wisdom = wisdom;
         this.hitpoints = hitpoints;
+        this.appLink = appLink;
+        this.statsLink = statsLink;
     }
 
     public int getAgility() {

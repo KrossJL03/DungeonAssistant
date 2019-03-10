@@ -60,14 +60,16 @@ public class CommandManager {
         User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
 
-        String name = splitInput[2];
-        int    HP   = Integer.parseInt(splitInput[3]);
-        int    STR  = Integer.parseInt(splitInput[4]);
-        int    DEF  = Integer.parseInt(splitInput[5]);
-        int    AGI  = Integer.parseInt(splitInput[6]);
-        int    WIS  = Integer.parseInt(splitInput[7]);
+        String name      = splitInput[2];
+        int    HP        = Integer.parseInt(splitInput[3]);
+        int    STR       = Integer.parseInt(splitInput[4]);
+        int    DEF       = Integer.parseInt(splitInput[5]);
+        int    AGI       = Integer.parseInt(splitInput[6]);
+        int    WIS       = Integer.parseInt(splitInput[7]);
+        String appLink   = splitInput[8];
+        String statsLink = splitInput[9];
 
-        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, HP, STR, DEF, AGI, WIS);
+        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, HP, STR, DEF, AGI, WIS, appLink, statsLink);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
         this.viewCharacters(event);
@@ -354,7 +356,7 @@ public class CommandManager {
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {
-        List<Role> roles = event.getGuild().getRolesByName("DungeonMaster", false);
+        List<Role> roles = event.getGuild().getRolesByName("Dungeon Master", false);
         if (!roles.isEmpty()) {
             return roles.get(0);
         }

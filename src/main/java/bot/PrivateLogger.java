@@ -21,7 +21,16 @@ class PrivateLogger {
                 "   %s%-16s %-16s",
                 CommandListener.COMMAND_KEY,
                 "create character",
-                "[Name] [HP] [STR] [DEF] [AGI] [WIS]"
+                "[Name] [HP] [STR] [DEF] [AGI] [WIS] [AppLink] [StatsLink]"
+            )
+        );
+        output.append(PrivateLogger.NEWLINE);
+        output.append(
+            String.format(
+                "   %s%-16s %-16s",
+                CommandListener.COMMAND_KEY,
+                "deletecharacter",
+                "[Name]"
             )
         );
         output.append(PrivateLogger.NEWLINE);
