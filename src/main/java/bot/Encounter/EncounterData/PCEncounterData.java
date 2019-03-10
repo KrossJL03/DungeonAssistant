@@ -84,6 +84,59 @@ public class PCEncounterData implements EncounterDataInterface {
         );
     }
 
+    /**
+     * Dodge hostile attacks
+     *
+     * @param hostiles Hostiles to dodge
+     *
+     * @return DodgeActionResult
+     */
+    public DodgeActionResult dodge(@NotNull ArrayList<HostileEncounterData> hostiles) {
+
+        ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
+        for (HostileEncounterData hostile : hostiles) {
+            int damageResisted    = 0;
+            int hostileDamageRoll = hostile.getAttackRoll();
+            int dodgeRoll         = this.rollToDodge();
+            if (dodgeRoll < 10) {
+                damageResisted = hostileDamageRoll - this.takeDamage(hostile, hostileDamageRoll);
+            }
+            DodgeResult result = new DodgeResult(hostile.getName(), dodgeRoll, hostileDamageRoll, damageResisted);
+            dodgeResults.add(result);
+        }
+
+        this.useAction();
+
+        return new DodgeActionResult(this.name, dodgeResults, this.getDodgeDice(), this.currentHp, this.maxHp);
+    }
+
+    /**
+     * Dodge hostile attacks
+     *
+     * @param hostiles Hostiles to dodge
+     *
+     * @return DodgeActionResult
+     */
+    public DodgeActionResult failToDodge(@NotNull ArrayList<HostileEncounterData> hostiles) {
+
+        ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
+        for (HostileEncounterData hostile : hostiles) {
+            int         hostileDamageRoll = hostile.getAttackRoll();
+            int         damageResisted    = hostileDamageRoll - this.takeDamage(hostile, hostileDamageRoll);
+            DodgeResult result            = new DodgeResult(
+                hostile.getName(),
+                0,
+                hostileDamageRoll,
+                damageResisted
+            );
+            dodgeResults.add(result);
+        }
+
+        this.useAllActions();
+
+        return new DodgeActionResult(this.name, dodgeResults, this.getDodgeDice(), this.currentHp, this.maxHp);
+    }
+
     public int getAgility() {
         return this.agility;
     }
@@ -303,10 +356,6 @@ public class PCEncounterData implements EncounterDataInterface {
         return (int) Math.floor(Math.random() * this.getAttackDice()) + 1;
     }
 
-    public int rollDodge() {
-        return (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
-    }
-
     public void rollLoot() {
         for (HostileEncounterData hostile : this.kills) {
             this.lootRolls.put(hostile.getName(), (int) Math.floor(Math.random() * 10) + 1);
@@ -344,6 +393,10 @@ public class PCEncounterData implements EncounterDataInterface {
 
     private int getCritDamage() {
         return (int) Math.floor(this.getAttackDice() * 1.5);
+    }
+
+    private int rollToDodge() {
+        return (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
     }
 
     private HitRoll rollToHit() {

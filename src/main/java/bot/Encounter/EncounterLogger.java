@@ -1,14 +1,13 @@
 package bot.Encounter;
 
 import bot.CommandListener;
-import bot.Encounter.EncounterData.EncounterDataInterface;
-import bot.Encounter.EncounterData.HostileEncounterData;
-import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.EncounterData.*;
 import bot.Encounter.Exception.ItemRecipientException;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -118,51 +117,42 @@ public class EncounterLogger {
         this.logMessage(String.format("%s's turn has been skipped", name));
     }
 
-    void logActionDodge(
-        PCEncounterData playerCharacter,
-        ArrayList<HostileEncounterData> hostiles,
-        ArrayList<Integer> dodgeRolls,
-        int totalDamage,
-        int totalDefended
-    ) {
-        if (hostiles.size() != dodgeRolls.size()) {
-            throw new IllegalArgumentException();
-        }
+    void logActionDodge(@NotNull DodgeActionResult dodgeActionResult) {
+
         StringBuilder output = new StringBuilder();
         output.append("```ml");
         output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s attempts to Dodge %d attacks!", playerCharacter.getName(), dodgeRolls.size()));
+        output.append(String.format("%s attempts to Dodge %d attacks!", dodgeActionResult.getPcName(), dodgeActionResult.getHostileAttackCount()));
         output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("d%d \"dodge dice\" (success = 10)", playerCharacter.getDodgeDice()));
+        output.append(String.format("d%d \"dodge dice\" (success = 10)", dodgeActionResult.getPcDodgeDie()));
         output.append(EncounterLogger.NEWLINE);
         output.append(EncounterLogger.NEWLINE);
-        for (int i = 0; i < hostiles.size(); i++) {
-            HostileEncounterData hostile   = hostiles.get(i);
-            int                  dodgeRoll = dodgeRolls.get(i);
+        for (DodgeResult dodgeResult : dodgeActionResult.getDodgeResults()) {
+            int                  dodgeRoll = dodgeResult.getDodgeRoll();
             output.append(String.format("%2d %s ", dodgeRoll, EncounterLogger.DOUBLE_ARROW));
-            if (dodgeRoll < 10) {
-                output.append(String.format("'FAIL' %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
+            if (dodgeResult.isSuccess()) {
+                output.append(String.format("(* Successfully dodged %s! *)", dodgeResult.getHostileName()));
             } else {
-                output.append(String.format("(* Successfully dodged %s! *)", hostile.getName()));
+                output.append(String.format("'FAIL' %2d dmg from '%s'", dodgeResult.getHostileDamageRoll(), dodgeResult.getHostileName()));
             }
             output.append(EncounterLogger.NEWLINE);
         }
-        if (totalDefended > 0) {
+        if (dodgeActionResult.getTotalDamageResisted() > 0) {
             output.append(EncounterLogger.NEWLINE);
-            output.append(String.format("Resisted %d dmg through sheer might!", totalDefended));
+            output.append(String.format("Resisted %d dmg through sheer might!", dodgeActionResult.getTotalDamageResisted()));
             output.append(EncounterLogger.NEWLINE);
         }
         output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s takes %d dmg total!", playerCharacter.getName(), totalDamage));
+        output.append(String.format("%s takes %d dmg total!", dodgeActionResult.getPcName(), dodgeActionResult.getTotalDamageDealt()));
         output.append(EncounterLogger.NEWLINE);
-        if (playerCharacter.isSlain()) {
-            output.append(String.format("%s has been 'knocked' 'out'!!", playerCharacter.getName()));
+        if (dodgeActionResult.isPcSlain()) {
+            output.append(String.format("%s has been 'knocked' 'out'!!", dodgeActionResult.getPcName()));
         } else {
             output.append(
                 String.format(
                     "%d/%d health remaining",
-                    playerCharacter.getCurrentHP(),
-                    playerCharacter.getMaxHP()
+                    dodgeActionResult.getPcCurrentHp(),
+                    dodgeActionResult.getPcMaxHp()
                 )
             );
         }

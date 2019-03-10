@@ -1,10 +1,7 @@
 package bot.Encounter;
 
 import bot.Constant;
-import bot.Encounter.EncounterData.AttackActionResult;
-import bot.Encounter.EncounterData.EncounterDataInterface;
-import bot.Encounter.EncounterData.HostileEncounterData;
-import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.EncounterData.*;
 import bot.Encounter.Exception.*;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
@@ -56,7 +53,12 @@ public class EncounterManager {
         } else if (result.isMiss()) {
             this.logger.logActionAttackMiss(hostile, playerCharacter.getName(), result.getHitRoll());
         } else if (result.isCrit()) {
-            this.logger.logActionAttackCrit(playerCharacter.getName(), hostile, result.getHitRoll(), result.getDamageRoll());
+            this.logger.logActionAttackCrit(
+                playerCharacter.getName(),
+                hostile,
+                result.getHitRoll(),
+                result.getDamageRoll()
+            );
         } else {
             this.logger.logActionAttackHit(playerCharacter, hostile, result.getHitRoll(), result.getDamageRoll());
         }
@@ -80,32 +82,17 @@ public class EncounterManager {
         } else if (!this.context.isDodgePhase()) {
             throw EncounterPhaseException.createNotDodgePhase();
         }
-        PCEncounterData    playerCharacter = this.getPlayerCharacter(player);
-        ArrayList<Integer> dodgeRolls      = new ArrayList<>();
-        int                totalDamage     = 0;
-        int                totalDefended   = 0;
-        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
-            int dodgeRoll = playerCharacter.rollDodge();
-            if (dodgeRoll < 10) {
-                int damage = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
-                totalDamage += damage;
-                totalDefended += hostile.getAttackRoll() - damage;
-            }
-            dodgeRolls.add(dodgeRoll);
-        }
-        this.logger.logActionDodge(
-            playerCharacter,
-            this.context.getActiveHostiles(),
-            dodgeRolls,
-            totalDamage,
-            totalDefended
-        );
-        playerCharacter.useAction();
+
+        PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
+        DodgeActionResult result          = playerCharacter.dodge(this.context.getActiveHostiles());
+
+        this.logger.logActionDodge(result);
+
         this.endCurrentPlayerAction();
     }
 
     public void dodgePassAction() {
-        PCEncounterData    playerCharacter = this.context.getCurrentPlayerCharacter();
+        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
         this.logger.logActionDodgePass(playerCharacter);
         playerCharacter.useAction();
         this.endCurrentPlayerAction();
@@ -471,17 +458,15 @@ public class EncounterManager {
         if (!this.context.isDodgePhase()) {
             throw EncounterPhaseException.createNotDodgePhase();
         }
-        PCEncounterData playerCharacter = this.getPlayerCharacter(player);
-        int             totalDamage     = 0;
-        int             totalDefended   = 0;
-        int             endurance       = playerCharacter.getEndurance();
-        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
-            int damage = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
-            totalDamage += damage;
-            totalDefended += damage == 0 ? hostile.getAttackRoll() : endurance;
-        }
-        this.logger.logActionDodgeSkipped(playerCharacter, totalDamage, totalDefended);
-        playerCharacter.useAllActions();
+        PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
+        DodgeActionResult result          = playerCharacter.failToDodge(this.context.getActiveHostiles());
+
+        this.logger.logActionDodgeSkipped(
+            playerCharacter,
+            result.getTotalDamageDealt(),
+            result.getTotalDamageResisted()
+        );
+
         this.endCurrentPlayerAction();
     }
 
