@@ -180,6 +180,22 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
+                "endAction",
+                "",
+                "End a single action of a player. No ill side effects."
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "endEncounter",
+                "",
+                "End the encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "endTurn",
                 "",
                 "End a players turn. No ill side effects."

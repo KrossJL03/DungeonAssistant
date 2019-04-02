@@ -130,6 +130,15 @@ public class EncounterManager {
         this.endCurrentPlayerAction();
     }
 
+    public void endEncounter() {
+        this.context.startEndPhase();
+        this.logger.logEndEncounter(
+            this.context.getAllPlayerCharacters(),
+            this.context.getAllHostiles(),
+            0
+        );
+    }
+
     public void heal(String name, int hitpoints) {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
@@ -165,7 +174,7 @@ public class EncounterManager {
                     this.logger.logEndEncounter(
                         this.context.getAllPlayerCharacters(),
                         this.context.getAllHostiles(),
-                        true
+                        1
                     );
                 }
             } else if (recipient instanceof PCEncounterData) {
@@ -211,7 +220,7 @@ public class EncounterManager {
             this.logger.logEndEncounter(
                 this.context.getAllPlayerCharacters(),
                 this.context.getAllHostiles(),
-                false
+                -1
             );
         }
     }
@@ -297,6 +306,13 @@ public class EncounterManager {
             throw EncounterPhaseException.createEndPhase();
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
+        if (this.context.isInitiativePhase()) {
+            PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+            if (currentPlayerCharacter.isName(name)) {
+                currentPlayerCharacter.useAllActions();
+                this.endCurrentPlayerAction();
+            }
+        }
         this.context.removePlayerCharacter(playerCharacter);
         this.logger.logRemovedPlayerCharacter(name);
     }
@@ -498,14 +514,14 @@ public class EncounterManager {
             this.logger.logEndEncounter(
                 this.context.getAllPlayerCharacters(),
                 this.context.getAllHostiles(),
-                true
+                1
             );
         } else if (!this.context.hasActivePCs()) {
             this.context.startEndPhase();
             this.logger.logEndEncounter(
                 this.context.getAllPlayerCharacters(),
                 this.context.getAllHostiles(),
-                false
+                -1
             );
         } else {
             if (currentPlayerCharacter.hasActions()) {

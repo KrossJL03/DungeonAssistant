@@ -147,6 +147,12 @@ public class CommandManager {
         }
     }
 
+    void endEncounterCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            this.encounterManager.endEncounter();
+        }
+    }
+
     void endTurnCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             this.encounterManager.endCurrentPlayersTurn();

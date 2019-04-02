@@ -59,6 +59,9 @@ public class CommandListener extends ListenerAdapter {
                     case "endaction":
                         this.commandManager.endActionCommand(event);
                         break;
+                    case "endencounter":
+                        this.commandManager.endEncounterCommand(event);
+                        break;
                     case "endturn":
                         this.commandManager.endTurnCommand(event);
                         break;

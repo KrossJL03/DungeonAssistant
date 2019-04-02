@@ -141,9 +141,9 @@ public class EncounterLogger {
             int                  dodgeRoll = dodgeRolls.get(i);
             output.append(String.format("%2d %s ", dodgeRoll, EncounterLogger.DOUBLE_ARROW));
             if (dodgeRoll < 10) {
-                output.append(String.format("'FAIL' %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
+                output.append(String.format("'FAIL'! %2d dmg from '%s'", hostile.getAttackRoll(), hostile.getName()));
             } else {
-                output.append(String.format("(* Successfully dodged %s! *)", hostile.getName()));
+                output.append(String.format("DODGED! (* No dmg from %s! *)", hostile.getName()));
             }
             output.append(EncounterLogger.NEWLINE);
         }
@@ -319,11 +319,11 @@ public class EncounterLogger {
     void logEndEncounter(
         ArrayList<PCEncounterData> playerCharacters,
         ArrayList<HostileEncounterData> hostiles,
-        boolean win
+        int type
     ) {
         this.logEncounterSummary(playerCharacters, hostiles);
         this.logMessage("***THE BATTLE IS OVER!!!***");
-        if (win) {
+        if (type == 1) {
             this.logMessage(
                 "Great work everyone! You did it!" +
                 EncounterLogger.NEWLINE +
@@ -337,8 +337,10 @@ public class EncounterLogger {
                 EncounterLogger.NEWLINE +
                 "There is no turn order and if you are unable to roll now you may do so later."
             );
-        } else {
+        } else if (type == -1) {
             this.logMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
+        } else {
+            this.logMessage("Game over everyone, the DM commands it! Thanks for playing!");
         }
     }
 
@@ -626,9 +628,11 @@ public class EncounterLogger {
     void logFirstDeathRevived(String name, int hitpoints) {
         this.logMessage(
             "```ml" +
+            NEWLINE +
             String.format("The guild leader in charge takes a phoenix feather out of their bag, reviving %s!", name) +
             NEWLINE +
             String.format(" %s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
+            NEWLINE +
             "```"
         );
     }
