@@ -206,7 +206,23 @@ class PrivateLogger {
                 CommandListener.COMMAND_KEY,
                 "heal",
                 "[Name] [HP]",
-                "Heal a hostile by X hitpoints"
+                "Heal a hostile or PC by X hitpoints"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "healAllHostiles",
+                "[HP]",
+                "Heal all hostiles by X hitpoints"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "healAllPCs",
+                "[HP]",
+                "Heal all PCs by X hitpoints"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -214,7 +230,23 @@ class PrivateLogger {
                 CommandListener.COMMAND_KEY,
                 "hurt",
                 "[Name] [HP]",
-                "Deal X damage to a hostile"
+                "Deal X damage to a PC or hostile"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "hurtAllHostiles",
+                "[HP]",
+                "Deal X damage to all hostiles"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "hurtAllPCs",
+                "[HP]",
+                "Deal X damage to all PCs"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -285,7 +317,10 @@ class PrivateLogger {
 //                )
 //            );
             output.append("```");
+            PrivateLogger.sendPrivateMessage(user, output.toString());
+            output = new StringBuilder();
         }
+
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format("View Commands [%sview + COMMAND]:", CommandListener.COMMAND_KEY));
         output.append(PrivateLogger.NEWLINE);

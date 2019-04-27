@@ -153,6 +153,18 @@ public class EncounterManager {
         );
     }
 
+    public void healAllHostiles(int hitpoints) {
+        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
+            this.heal(hostile.getName(), hitpoints);
+        }
+    }
+
+    public void healAllPcs(int hitpoints) {
+        for (PCEncounterData playerCharacter : this.context.getActivePlayerCharacters()) {
+            this.heal(playerCharacter.getName(), hitpoints);
+        }
+    }
+
     public void hurt(String name, int hitpoints) {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
@@ -184,6 +196,18 @@ public class EncounterManager {
                     this.reviveIfFirstSlainPC((PCEncounterData) recipient);
                 }
             }
+        }
+    }
+
+    public void hurtAllHostiles(int hitpoints) {
+        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
+            this.hurt(hostile.getName(), hitpoints);
+        }
+    }
+
+    public void hurtAllPcs(int hitpoints) {
+        for (PCEncounterData playerCharacter : this.context.getActivePlayerCharacters()) {
+            this.hurt(playerCharacter.getName(), hitpoints);
         }
     }
 

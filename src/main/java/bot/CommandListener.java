@@ -68,6 +68,12 @@ public class CommandListener extends ListenerAdapter {
                     case "heal":
                         this.commandManager.healCommand(event);
                         break;
+                    case "healallhostiles":
+                        this.commandManager.healAllHostilesCommand(event);
+                        break;
+                    case "healallpcs":
+                        this.commandManager.healAllPcsCommand(event);
+                        break;
                     case "hello":
                         this.commandManager.helloCommand(event);
                         break;
@@ -76,6 +82,12 @@ public class CommandListener extends ListenerAdapter {
                         break;
                     case "hurt":
                         this.commandManager.hurtCommand(event);
+                        break;
+                    case "hurtallhostiles":
+                        this.commandManager.hurtAllHostilesCommand(event);
+                        break;
+                    case "hurtallpcs":
+                        this.commandManager.hurtAllPcsCommand(event);
                         break;
                     case "join":
                         this.commandManager.joinCommand(event);

@@ -168,6 +168,22 @@ public class CommandManager {
         }
     }
 
+    void healAllHostilesCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.healAllHostiles(hitpoints);
+        }
+    }
+
+    void healAllPcsCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.healAllPcs(hitpoints);
+        }
+    }
+
     void helloCommand(MessageReceivedEvent event) {
         MessageChannel channel  = event.getChannel();
         String         nickname = event.getMember().getNickname();
@@ -189,6 +205,22 @@ public class CommandManager {
             String   name       = splitInput[1];
             int      hitpoints  = Integer.parseInt(splitInput[2]);
             this.encounterManager.hurt(name, hitpoints);
+        }
+    }
+
+    void hurtAllHostilesCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.hurtAllHostiles(hitpoints);
+        }
+    }
+
+    void hurtAllPcsCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.hurtAllPcs(hitpoints);
         }
     }
 
