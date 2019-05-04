@@ -6,6 +6,8 @@ import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.*;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
+import org.apache.commons.text.WordUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -43,7 +45,7 @@ public class Encounter {
     }
 
     HostileEncounterData addHostile(Hostile hostile, String nickname) {
-        String               capitalNickname = nickname.substring(0, 1).toUpperCase() + nickname.substring(1);
+        String               capitalNickname = WordUtils.capitalizeFully(nickname);
         HostileEncounterData newHostileData  = new HostileEncounterData(hostile, capitalNickname);
         String               hostileSpecies  = hostile.getSpecies();
         String               nicknameToLower = nickname.toLowerCase();
@@ -84,6 +86,11 @@ public class Encounter {
 
     ArrayList<PCEncounterData> getActivePlayerCharacters() {
         return this.pcRoster.getActivePCs();
+    }
+
+    @NotNull
+    ArrayList<PCEncounterData> getAlivePlayerCharacters() {
+        return this.pcRoster.getAlivePCs();
     }
 
     ArrayList<HostileEncounterData> getAllHostiles() {

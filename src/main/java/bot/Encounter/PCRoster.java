@@ -76,6 +76,22 @@ class PCRoster {
     }
 
     /**
+     * Get active player characters
+     *
+     * @return ArrayList<PCEncounterData>
+     */
+    @NotNull
+    ArrayList<PCEncounterData> getAlivePCs() {
+        ArrayList<PCEncounterData> activeEncounterData = new ArrayList<>();
+        for (PCEncounterData pcEncounterData : this.playerCharacters) {
+            if (!pcEncounterData.isSlain()) {
+                activeEncounterData.add(pcEncounterData);
+            }
+        }
+        return activeEncounterData;
+    }
+
+    /**
      * Get all encounter data
      *
      * @return ArrayList<PCEncounterData>

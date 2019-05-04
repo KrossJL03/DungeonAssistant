@@ -5,44 +5,54 @@ import org.jetbrains.annotations.NotNull;
 public class AttackActionResult implements ActionResultInterface {
 
     private HitRoll hitRoll;
-    private String  hostileName;
-    private String  pcName;
+    private String  attackerName;
+    private String  targetName;
     private int     damageDie;
     private int     damageRoll;
-    private int     hostileCurrentHp;
-    private int     hostileMaxHp;
+    private int     targetCurrentHp;
+    private int     targetMaxHp;
 
     /**
      * AttackActionResult constructor
      *
-     * @param pcName           PlayerCharacter name
-     * @param hostileName      Hostile name
-     * @param hitRoll          Roll to hit hostile
-     * @param damageDie        Damage die rolled by player character
-     * @param damageRoll       Damage dealt to hostile
-     * @param hostileCurrentHp Hostile's current hitpoints
-     * @param hostileMaxHp     Hostile's max hitpoints
+     * @param attackerName    Attacker name
+     * @param targetName      Target name
+     * @param hitRoll         Roll to hit hostile
+     * @param damageDie       Damage die rolled by player character
+     * @param damageRoll      Damage dealt to hostile
+     * @param targetCurrentHp Target's current hitpoints
+     * @param targetMaxHp     Target's max hitpoints
      */
     AttackActionResult(
-        @NotNull String pcName,
-        @NotNull String hostileName,
+        @NotNull String attackerName,
+        @NotNull String targetName,
         @NotNull HitRoll hitRoll,
         int damageDie,
         int damageRoll,
-        int hostileCurrentHp,
-        int hostileMaxHp
+        int targetCurrentHp,
+        int targetMaxHp
     ) {
         this.damageDie = damageDie;
         this.damageRoll = damageRoll;
         this.hitRoll = hitRoll;
-        this.hostileCurrentHp = hostileCurrentHp;
-        this.hostileMaxHp = hostileMaxHp;
-        this.hostileName = hostileName;
-        this.pcName = pcName;
+        this.targetCurrentHp = targetCurrentHp;
+        this.targetMaxHp = targetMaxHp;
+        this.targetName = targetName;
+        this.attackerName = attackerName;
     }
 
     /**
-     * Get max damageRoll a pc could roll
+     * Get attacker name
+     *
+     * @return String
+     */
+    @NotNull
+    public String getAttackerName() {
+        return attackerName;
+    }
+
+    /**
+     * Get max damageRoll an attacker could roll
      *
      * @return int
      */
@@ -51,7 +61,7 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get damageRoll delt to hostile
+     * Get damageRoll delt to target
      *
      * @return int
      */
@@ -60,7 +70,7 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get roll to hit hostile
+     * Get roll to hit target
      *
      * @return int
      */
@@ -69,65 +79,57 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get hostile current hitpoints
+     * Get target current hitpoints
      *
      * @return int
      */
-    public int getHostileCurrentHp() {
-        return hostileCurrentHp;
+    public int getTargetCurrentHp() {
+        return targetCurrentHp;
     }
 
     /**
-     * Get hostile max hitpoints
+     * Get target max hitpoints
      *
      * @return int
      */
-    public int getHostileMaxHp() {
-        return hostileMaxHp;
+    public int getTargetMaxHp() {
+        return targetMaxHp;
     }
 
     /**
-     * Get hostile name
+     * Get target name
      *
      * @return String
      */
     @NotNull
-    public String getHostileName() {
-        return hostileName;
+    public String getTargetName() {
+        return targetName;
     }
 
     /**
-     * Get player character name
+     * Is the hit roll a crit
      *
-     * @return String
+     * @return bool
      */
-    @NotNull
-    public String getPcName() {
-        return pcName;
-    }
-
     public boolean isCrit() {
         return this.hitRoll.isCrit();
     }
 
+    /**
+     * Is the hit roll a fail
+     *
+     * @return bool
+     */
     public boolean isFail() {
         return this.hitRoll.isFail();
     }
 
+    /**
+     * Is the hit roll a hit
+     *
+     * @return bool
+     */
     public boolean isHit() {
         return this.hitRoll.isHit();
-    }
-
-    public boolean isMiss() {
-        return this.hitRoll.isMiss();
-    }
-
-    /**
-     * Is hostile slain
-     *
-     * @return boolean
-     */
-    public boolean isHostileSlain() {
-        return this.hostileCurrentHp < 1;
     }
 }

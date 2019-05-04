@@ -1,9 +1,12 @@
-package bot.Encounter;
+package bot.Encounter.Logger;
 
 import bot.CommandListener;
 import bot.Encounter.EncounterData.*;
 import bot.Encounter.Exception.ItemRecipientException;
-import bot.Hostile.Loot;
+import bot.Encounter.Logger.Message.ActionMessageBuilder;
+import bot.Encounter.Logger.Message.AttackActionDataInterface;
+import bot.Encounter.Logger.Message.DodgeActionDataInterface;
+import bot.Encounter.Logger.Message.LootActionDataInterface;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
@@ -18,230 +21,56 @@ public class EncounterLogger {
     private static String EMPTY_HEALTH_ICON = "─";
     private static String DOUBLE_ARROW      = "»";
 
+    private ActionMessageBuilder   actionMessageBuilder;
     private EncounterLoggerContext context;
 
+    /**
+     * EncounterLogger constructor
+     *
+     * @param context Encounter logger context
+     */
     public EncounterLogger(EncounterLoggerContext context) {
         this.context = context;
+        this.actionMessageBuilder = new ActionMessageBuilder(this.context.getDungeonMasterMention());
     }
 
-    void logActionAttackCrit(
-        String pcName,
-        HostileEncounterData hostile,
-        int hitRoll,
-        int damage
-    ) {
-        StringBuilder output = new StringBuilder();
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s attacks %s!", pcName, hostile.getName()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("d20 \"hit dice\" rolled %d [CRIT]", hitRoll));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("MAX DAMAGE %d!!", damage));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("'%s' takes %d damage!", hostile.getName(), damage));
-        output.append(EncounterLogger.NEWLINE);
-        if (hostile.isSlain()) {
-            output.append(String.format("'%s' was slain by %s!!!", hostile.getName(), pcName));
-        } else {
-            output.append(String.format("%d/%d health remaining", hostile.getCurrentHP(), hostile.getMaxHP()));
-        }
-        output.append(EncounterLogger.NEWLINE);
-        output.append("```");
-        this.logMessage(output.toString());
+    /**
+     * Log attack action
+     *
+     * @param actionData Action data
+     */
+    public void logAttackAction(@NotNull AttackActionDataInterface actionData) {
+        this.sendMessage(this.actionMessageBuilder.buildAttackActionMessage(actionData));
     }
 
-    void logActionAttackFail(String pcName, String hostileName) {
-        this.logMessage(
-            "```ml" +
-            EncounterLogger.NEWLINE +
-            String.format("%s attacks %s!", pcName, hostileName) +
-            EncounterLogger.NEWLINE +
-            "d20 \"hit dice\" rolled 1 [FAIL]" +
-            EncounterLogger.NEWLINE + EncounterLogger.NEWLINE +
-            "well... that's 'unfortunate'" +
-            "```" +
-            String.format("Sit tight while me and %s discuss your fate", this.context.getDungeonMasterMention())
-        );
+    /**
+     * Log skipped attack action
+     *
+     * @param name Character name
+     */
+    public void logAttackActionSkipped(String name) {
+        this.sendMessage(String.format("%s's turn has been skipped", name));
     }
 
-    void logActionAttackHit(
-        PCEncounterData playerCharacter,
-        HostileEncounterData hostile,
-        int hitRoll,
-        int damage
-    ) {
-        StringBuilder output = new StringBuilder();
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s attacks %s!", playerCharacter.getName(), hostile.getName()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("d20 \"hit dice\" rolled %d [Hit]", hitRoll));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("d%d \"dmg dice\" rolled %d", playerCharacter.getAttackDice(), damage));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("'%s' takes %d damage!", hostile.getName(), damage));
-        output.append(EncounterLogger.NEWLINE);
-        if (hostile.isSlain()) {
-            output.append(String.format("'%s' was slain by %s!!!", hostile.getName(), playerCharacter.getName()));
-        } else {
-            output.append(String.format("%d/%d health remaining", hostile.getCurrentHP(), hostile.getMaxHP()));
-        }
-        output.append(EncounterLogger.NEWLINE);
-        output.append("```");
-        this.logMessage(output.toString());
+    /**
+     * Log dodge action
+     *
+     * @param actionData Action data
+     */
+    public void logDodgeAction(@NotNull DodgeActionDataInterface actionData) {
+        this.sendMessage(this.actionMessageBuilder.buildDodgeActionMessage(actionData));
     }
 
-    void logActionAttackMiss(HostileEncounterData hostile, String pcName, int hitRoll) {
-        this.logMessage(
-            "```ml" +
-            EncounterLogger.NEWLINE +
-            String.format("%s attacks %s!", pcName, hostile.getName()) +
-            EncounterLogger.NEWLINE +
-            String.format("d20 \"hit dice\" rolled %d [Miss]", hitRoll) +
-            EncounterLogger.NEWLINE + EncounterLogger.NEWLINE +
-            String.format(
-                "'%s' is has %d/%d health remaining",
-                hostile.getName(),
-                hostile.getCurrentHP(),
-                hostile.getMaxHP()
-            ) +
-            EncounterLogger.NEWLINE +
-            "```"
-        );
+    /**
+     * Log loot action
+     *
+     * @param actionData Action data
+     */
+    public void logLootAction(@NotNull LootActionDataInterface actionData) {
+        this.sendMessage(this.actionMessageBuilder.buildLootActionMessage(actionData));
     }
 
-    void logActionAttackSkipped(String name) {
-        this.logMessage(String.format("%s's turn has been skipped", name));
-    }
-
-    void logActionDodge(@NotNull DodgeActionResult dodgeActionResult) {
-
-        StringBuilder output = new StringBuilder();
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s attempts to Dodge %d attacks!", dodgeActionResult.getPcName(), dodgeActionResult.getHostileAttackCount()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("d%d \"dodge dice\" (success = 10)", dodgeActionResult.getPcDodgeDie()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        for (DodgeResult dodgeResult : dodgeActionResult.getDodgeResults()) {
-            int                  dodgeRoll = dodgeResult.getDodgeRoll();
-            output.append(String.format("%2d %s ", dodgeRoll, EncounterLogger.DOUBLE_ARROW));
-            if (dodgeResult.isSuccess()) {
-                output.append(String.format("(* Successfully dodged %s! *)", dodgeResult.getHostileName()));
-            } else {
-                output.append(String.format("'FAIL' %2d dmg from '%s'", dodgeResult.getHostileDamageRoll(), dodgeResult.getHostileName()));
-            }
-            output.append(EncounterLogger.NEWLINE);
-        }
-        if (dodgeActionResult.getTotalDamageResisted() > 0) {
-            output.append(EncounterLogger.NEWLINE);
-            output.append(String.format("Resisted %d dmg through sheer might!", dodgeActionResult.getTotalDamageResisted()));
-            output.append(EncounterLogger.NEWLINE);
-        }
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s takes %d dmg total!", dodgeActionResult.getPcName(), dodgeActionResult.getTotalDamageDealt()));
-        output.append(EncounterLogger.NEWLINE);
-        if (dodgeActionResult.isPcSlain()) {
-            output.append(String.format("%s has been 'knocked' 'out'!!", dodgeActionResult.getPcName()));
-        } else {
-            output.append(
-                String.format(
-                    "%d/%d health remaining",
-                    dodgeActionResult.getPcCurrentHp(),
-                    dodgeActionResult.getPcMaxHp()
-                )
-            );
-        }
-        output.append("```");
-        this.logMessage(output.toString());
-    }
-
-    void logActionDodgeSkipped(PCEncounterData playerCharacter, int totalDamage, int totalDefended) {
-        StringBuilder output = new StringBuilder();
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s was distracted, they failed to dodge the attacks!", playerCharacter.getName()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s is hit for 'full' damage!", playerCharacter.getName()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("Resisted %d dmg through sheer might!", totalDefended));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%s takes %d dmg total!", playerCharacter.getName(), totalDamage));
-        output.append(EncounterLogger.NEWLINE);
-        if (playerCharacter.isSlain()) {
-            output.append(String.format("%s has been 'knocked' 'out'!!", playerCharacter.getName()));
-        } else {
-            output.append(
-                String.format(
-                    "%d/%d health remaining",
-                    playerCharacter.getCurrentHP(),
-                    playerCharacter.getMaxHP()
-                )
-            );
-        }
-        output.append("```");
-        this.logMessage(output.toString());
-    }
-
-    void logActionLoot(PCEncounterData playerCharacter) {
-        ArrayList<HostileEncounterData> hostiles = playerCharacter.getKills();
-        StringBuilder                   output   = new StringBuilder();
-        ArrayList<String>               slain    = new ArrayList<>();
-        for (HostileEncounterData hostile : hostiles) {
-            EncounterDataInterface slayer = hostile.getSlayer();
-            if (slayer instanceof PCEncounterData && slayer.equals(playerCharacter)) {
-                slain.add(hostile.getName());
-            }
-        }
-        output.append(playerCharacter.getOwner().getAsMention());
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(
-            String.format(
-                "%s helped slay %d hostiles!",
-                playerCharacter.getName(),
-                hostiles.size()
-            )
-        );
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("%dd10 \"loot dice\"", hostiles.size()));
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        for (HostileEncounterData hostile : hostiles) {
-            int  lootRoll = playerCharacter.getLootRoll(hostile.getName());
-            Loot loot     = hostile.getHostile().getLoot(lootRoll);
-            output.append(String.format("%2d %s ", lootRoll, EncounterLogger.DOUBLE_ARROW));
-            if (loot.getItem() == null) {
-                output.append(String.format("(* nothing from %s *)", hostile.getName()));
-            } else {
-                output.append(String.format("x%d %s from '%s'", loot.getQuantity(), loot.getItem(), hostile.getName()));
-            }
-            output.append(EncounterLogger.NEWLINE);
-        }
-        output.append(EncounterLogger.NEWLINE);
-        if (slain.size() > 0) {
-            output.append(
-                String.format(
-                    "ALSO they earned %dc for landing the final blow%s on '%s'!",
-                    slain.size() * 300,
-                    slain.size() > 1 ? "s" : "",
-                    String.join("', '", slain)
-                )
-            );
-            output.append(EncounterLogger.NEWLINE);
-        }
-        output.append("Congratulations!");
-        output.append("```");
-        this.logMessage(output.toString());
-    }
-
-    void logActionProtect(
+    public void logActionProtect(
         PCEncounterData protectorCharacter,
         PCEncounterData protectedCharacter,
         int totalDamage,
@@ -279,17 +108,17 @@ public class EncounterLogger {
             protectedCharacter.getOwner().getAsMention(),
             protectedCharacter.getName()
         ));
-        this.logMessage(output.toString());
+        this.sendMessage(output.toString());
     }
 
-    void logActionsRemaining(String name, int actionsRemaining) {
-        this.logMessage(
+    public void logActionsRemaining(String name, int actionsRemaining) {
+        this.sendMessage(
             String.format("%s has %d %s remaining", name, actionsRemaining, actionsRemaining > 1 ? "actions" : "action")
         );
     }
 
-    void logEndAttackPhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
-        this.logMessage(
+    public void logEndAttackPhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
+        this.sendMessage(
             "**ATTACK TURN IS OVER!**" +
             EncounterLogger.NEWLINE +
             "You may take this time to RP amoungst yourselves. The DODGE turn will begin shortly."
@@ -297,8 +126,8 @@ public class EncounterLogger {
         this.logEncounterSummary(playerCharacters, hostiles);
     }
 
-    void logEndDodgePhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
-        this.logMessage(
+    public void logEndDodgePhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
+        this.sendMessage(
             "**DODGE TURN IS OVER!**" +
             EncounterLogger.NEWLINE +
             "You may take this time to RP amoungst yourselves. The ATTACK turn will begin shortly."
@@ -306,15 +135,15 @@ public class EncounterLogger {
         this.logEncounterSummary(playerCharacters, hostiles);
     }
 
-    void logEndEncounter(
+    public void logEndEncounter(
         ArrayList<PCEncounterData> playerCharacters,
         ArrayList<HostileEncounterData> hostiles,
         boolean win
     ) {
         this.logEncounterSummary(playerCharacters, hostiles);
-        this.logMessage("***THE BATTLE IS OVER!!!***");
+        this.sendMessage("***THE BATTLE IS OVER!!!***");
         if (win) {
-            this.logMessage(
+            this.sendMessage(
                 "Great work everyone! You did it!" +
                 EncounterLogger.NEWLINE +
                 EncounterLogger.NEWLINE +
@@ -328,12 +157,12 @@ public class EncounterLogger {
                 "There is no turn order and if you are unable to roll now you may do so later."
             );
         } else {
-            this.logMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
+            this.sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
         }
     }
 
-    void logStartAttackPhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
-        this.logMessage(
+    public void logStartAttackPhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
+        this.sendMessage(
             "**ATTACK TURN!**" +
             EncounterLogger.NEWLINE +
             String.format(
@@ -345,7 +174,7 @@ public class EncounterLogger {
         this.logEncounterSummary(playerCharacters, hostiles);
     }
 
-    void logStartDodgePhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
+    public void logStartDodgePhase(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
         StringBuilder output      = new StringBuilder();
         int           totalDamage = 0;
         output.append("**DODGE TURN!**");
@@ -384,15 +213,13 @@ public class EncounterLogger {
         output.append(EncounterLogger.NEWLINE);
         output.append(String.format("combined attacks add up to %d dmg!!", totalDamage));
         output.append("```");
-        this.logMessage(output.toString());
+        this.sendMessage(output.toString());
         this.logEncounterSummary(playerCharacters, hostiles);
     }
 
-    void logStartEncounter(Role mentionRole, int maxPlayers) {
-        this.logMessage(
-            // todo uncomment after testing
+    public void logStartEncounter(Role mentionRole, int maxPlayers) {
+        this.sendMessage(
             mentionRole.getAsMention() +
-//            "everyone" +
             EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
@@ -412,8 +239,8 @@ public class EncounterLogger {
         );
     }
 
-    void pingPlayerTurn(PCEncounterData playerCharacter) {
-        this.logMessage(
+    public void pingPlayerTurn(PCEncounterData playerCharacter) {
+        this.sendMessage(
             String.format(
                 "%s, it's %s's turn!",
                 playerCharacter.getOwner().getAsMention(),
@@ -424,11 +251,11 @@ public class EncounterLogger {
 
     // TODO: organize
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    void logDungeonIsFull() {
-        this.logMessage("***THE DUNGEON IS NOW FULL!***");
+    public void logDungeonIsFull() {
+        this.sendMessage("***THE DUNGEON IS NOW FULL!***");
     }
 
-    void logEncounterSummary(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
+    public void logEncounterSummary(ArrayList<PCEncounterData> playerCharacters, ArrayList<HostileEncounterData> hostiles) {
         StringBuilder output = new StringBuilder();
         output.append("```diff");
         output.append(EncounterLogger.NEWLINE);
@@ -458,15 +285,15 @@ public class EncounterLogger {
         }
         output.append("```");
         output.append(EncounterLogger.NEWLINE);
-        this.logMessage(output.toString());
+        this.sendMessage(output.toString());
     }
 
-    void logCreateEncounter() {
-        this.logMessage("Encounter creation has started!");
+    public void logCreateEncounter() {
+        this.sendMessage("Encounter creation has started!");
     }
 
-    void logAddedHostile(HostileEncounterData hostile) {
-        this.logMessage(
+    public void logAddedHostile(HostileEncounterData hostile) {
+        this.sendMessage(
             String.format(
                 "Hostile %s has been added to the encounter %s",
                 hostile.getName(),
@@ -475,8 +302,8 @@ public class EncounterLogger {
         );
     }
 
-    void logAddedPlayerCharacter(PCEncounterData playerCharacter) {
-        this.logMessage(
+    public void logAddedPlayerCharacter(PCEncounterData playerCharacter) {
+        this.sendMessage(
             String.format(
                 "%s: %s has been added! %s",
                 playerCharacter.getOwner().getAsMention(),
@@ -486,24 +313,24 @@ public class EncounterLogger {
         );
     }
 
-    void logRemovedHostile(String name) {
-        this.logMessage(String.format("Hostile %s has been removed", name));
+    public void logRemovedHostile(String name) {
+        this.sendMessage(String.format("Hostile %s has been removed", name));
     }
 
-    void logRemovedPlayerCharacter(String name) {
-        this.logMessage(String.format("PlayerCharacter %s has been removed", name));
+    public void logRemovedPlayerCharacter(String name) {
+        this.sendMessage(String.format("PlayerCharacter %s has been removed", name));
     }
 
-    void logDungeonMasterHeal(String name, int hitpoints, int currentHP, int maxHP) {
-        this.logMessage(String.format("%s heals %d points! [%d/%d]", name, hitpoints, currentHP, maxHP));
+    public void logDungeonMasterHeal(String name, int hitpoints, int currentHP, int maxHP) {
+        this.sendMessage(String.format("%s heals %d points! [%d/%d]", name, hitpoints, currentHP, maxHP));
     }
 
-    void logDungeonMasterHurt(String name, int hitpoints, int currentHP, int maxHP) {
-        this.logMessage(String.format("%s takes %d dmg! [%d/%d]", name, hitpoints, currentHP, maxHP));
+    public void logDungeonMasterHurt(String name, int hitpoints, int currentHP, int maxHP) {
+        this.sendMessage(String.format("%s takes %d dmg! [%d/%d]", name, hitpoints, currentHP, maxHP));
     }
 
-    void logDungeonMasterStatMod(String name, String statName, int statMod, int newStatTotal) {
-        this.logMessage(
+    public void logDungeonMasterStatMod(String name, String statName, int statMod, int newStatTotal) {
+        this.sendMessage(
             String.format(
                 "%s's %s has gone %s by %d, making it %d!",
                 name,
@@ -515,23 +342,23 @@ public class EncounterLogger {
         );
     }
 
-    void logDungeonMasterSlay(String name) {
-        this.logMessage(String.format("%s was slain", name));
+    public void logDungeonMasterSlay(String name) {
+        this.sendMessage(String.format("%s was slain", name));
     }
 
-    void logSetMaxPlayers(int maxPlayerCount) {
-        this.logMessage(String.format("Max player count has been set to %d", maxPlayerCount));
+    public void logSetMaxPlayers(int maxPlayerCount) {
+        this.sendMessage(String.format("Max player count has been set to %d", maxPlayerCount));
     }
 
-    void logLeftEncounter(String name) {
-        this.logMessage(String.format("%s has left the encounter", name));
+    public void logLeftEncounter(String name) {
+        this.sendMessage(String.format("%s has left the encounter", name));
     }
 
-    void logRejoinEncounter(String name) {
-        this.logMessage(String.format("%s has rejoined the encounter!", name));
+    public void logRejoinEncounter(String name) {
+        this.sendMessage(String.format("%s has rejoined the encounter!", name));
     }
 
-    void logUsedItem(
+    public void logUsedItem(
         PCEncounterData playerCharacter,
         EncounterDataInterface recipient,
         ConsumableItem item,
@@ -606,16 +433,17 @@ public class EncounterLogger {
         }
         output.append(EncounterLogger.NEWLINE);
         output.append("```");
-        this.logMessage(output.toString());
+        this.sendMessage(output.toString());
 
         if (item.isDodging()) {
             this.logActionDodgePass(playerCharacter);
         }
     }
 
-    void logFirstDeathRevived(String name, int hitpoints) {
-        this.logMessage(
+    public void logFirstDeathRevived(String name, int hitpoints) {
+        this.sendMessage(
             "```ml" +
+            NEWLINE +
             String.format("The guild leader in charge takes a phoenix feather out of their bag, reviving %s!", name) +
             NEWLINE +
             String.format(" %s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
@@ -623,8 +451,8 @@ public class EncounterLogger {
         );
     }
 
-    void pingDmDodgePass(Player player) {
-        this.logMessage(
+    public void pingDmDodgePass(Player player) {
+        this.sendMessage(
             String.format(
                 "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
                 this.context.getDungeonMasterMention(),
@@ -634,8 +462,8 @@ public class EncounterLogger {
     }
 
     // todo remove once inventory is implemented
-    void pingDmItemUsed(Player player) {
-        this.logMessage(
+    public void pingDmItemUsed(Player player) {
+        this.sendMessage(
             String.format(
                 "%s, %s has used an item. Could you tell me what to do?",
                 this.context.getDungeonMasterMention(),
@@ -644,8 +472,8 @@ public class EncounterLogger {
         );
     }
 
-    void logActionDodgePass(PCEncounterData playerCharacter) {
-        this.logMessage(
+    public void logActionDodgePass(PCEncounterData playerCharacter) {
+        this.sendMessage(
             "```ml" +
             EncounterLogger.NEWLINE +
             String.format("%s successfully Dodges all attacks!", playerCharacter.getName()) +
@@ -746,12 +574,12 @@ public class EncounterLogger {
         return output;
     }
 
-    private void logMessage(String message) {
-        this.context.getChannel().sendMessage(message).queue();
-    }
-
     private String repeatString(String stringToRepeat, int count) {
         return new String(new char[count]).replace("\0", stringToRepeat);
+    }
+
+    private void sendMessage(String message) {
+        this.context.getChannel().sendMessage(message).queue();
     }
 
 }

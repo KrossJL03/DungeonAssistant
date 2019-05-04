@@ -4,40 +4,83 @@ import org.jetbrains.annotations.NotNull;
 
 public class DodgeResult {
 
-    private String hostileName;
-    private int    dodgeRoll;
-    private int    damageResisted;
-    private int    hostileDamageRoll;
+    private String    attackerName;
+    private DodgeRoll dodgeRoll;
+    private int       attackerDamageRoll;
+    private int       damageResisted;
 
-    DodgeResult(@NotNull String hostile, int dodgeRoll, int hostileDamageRoll, int damageResisted) {
+    /**
+     * DodgeResult constructor
+     *
+     * @param attackerName       Attacker name
+     * @param dodgeRoll          Dodge roll
+     * @param attackerDamageRoll Attack damage roll
+     * @param damageResisted     Damage resisted
+     */
+    DodgeResult(
+        @NotNull String attackerName,
+        @NotNull DodgeRoll dodgeRoll,
+        int attackerDamageRoll,
+        int damageResisted
+    ) {
         this.damageResisted = damageResisted;
         this.dodgeRoll = dodgeRoll;
-        this.hostileName = hostile;
-        this.hostileDamageRoll = hostileDamageRoll;
+        this.attackerName = attackerName;
+        this.attackerDamageRoll = attackerDamageRoll;
     }
 
-    int getDamageDealt() {
-        return this.hostileDamageRoll = this.damageResisted;
-    }
-
-    int getDamageResisted() {
-        return damageResisted;
-    }
-
-    public int getDodgeRoll() {
-        return dodgeRoll;
-    }
-
+    /**
+     * Get attacker name
+     *
+     * @return String
+     */
     @NotNull
-    public String getHostileName() {
-        return hostileName;
+    public String getAttackerName() {
+        return this.attackerName;
     }
 
-    public int getHostileDamageRoll() {
-        return hostileDamageRoll;
+    /**
+     * Get attacker damage roll
+     *
+     * @return int
+     */
+    public int getAttackerDamageRoll() {
+        return this.attackerDamageRoll;
     }
 
+    /**
+     * Get damage dealt
+     *
+     * @return int
+     */
+    public int getDamageDealt() {
+        return this.attackerDamageRoll - this.damageResisted;
+    }
+
+    /**
+     * Get damage resisted
+     *
+     * @return int
+     */
+    public int getDamageResisted() {
+        return this.damageResisted;
+    }
+
+    /**
+     * Get dodge roll
+     *
+     * @return int
+     */
+    public int getDodgeRoll() {
+        return this.dodgeRoll.getRoll();
+    }
+
+    /**
+     * Was the dodge successful
+     *
+     * @return boolean
+     */
     public boolean isSuccess() {
-        return this.dodgeRoll >= 10;
+        return !this.dodgeRoll.isFail();
     }
 }

@@ -3,6 +3,8 @@ package bot.Encounter;
 import bot.Constant;
 import bot.Encounter.EncounterData.*;
 import bot.Encounter.Exception.*;
+import bot.Encounter.Logger.EncounterLogger;
+import bot.Encounter.Logger.EncounterLoggerContext;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Item.Consumable.Exception.MissingRecipientException;
@@ -47,21 +49,7 @@ public class EncounterManager {
         HostileEncounterData hostile         = this.context.getHostile(hostileName);
 
         AttackActionResult result = playerCharacter.attack(hostile);
-
-        if (result.isFail()) {
-            this.logger.logActionAttackFail(playerCharacter.getName(), hostile.getName());
-        } else if (result.isMiss()) {
-            this.logger.logActionAttackMiss(hostile, playerCharacter.getName(), result.getHitRoll());
-        } else if (result.isCrit()) {
-            this.logger.logActionAttackCrit(
-                playerCharacter.getName(),
-                hostile,
-                result.getHitRoll(),
-                result.getDamageRoll()
-            );
-        } else {
-            this.logger.logActionAttackHit(playerCharacter, hostile, result.getHitRoll(), result.getDamageRoll());
-        }
+        this.logger.logAttackAction(new AttackActionAdapter(result));
 
         if (hostile.isSlain()) {
             this.addKillToPlayerCharacters(hostile);
@@ -72,7 +60,7 @@ public class EncounterManager {
     public void createEncounter(MessageChannel channel, Role dungeonMaster) {
         this.context = new Encounter();
         this.loggerContext.setChannel(channel);
-        this.loggerContext.setDungeonMaster(dungeonMaster);
+        this.loggerContext.setDungeonMasterMention(dungeonMaster);
         this.logger.logCreateEncounter();
     }
 
@@ -86,7 +74,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.dodge(this.context.getActiveHostiles());
 
-        this.logger.logActionDodge(result);
+        this.logger.logDodgeAction(new DodgeActionAdapter(result, false));
 
         this.endCurrentPlayerAction();
     }
@@ -145,12 +133,7 @@ public class EncounterManager {
             if (recipient instanceof HostileEncounterData) {
                 this.addKillToPlayerCharacters((HostileEncounterData) recipient);
                 if (!this.context.hasActiveHostiles()) {
-                    this.context.startLootPhase();
-                    this.logger.logEndEncounter(
-                        this.context.getAllPlayerCharacters(),
-                        this.context.getAllHostiles(),
-                        true
-                    );
+                    this.startLootPhase();
                 }
             } else if (recipient instanceof PCEncounterData) {
                 if (this.context.isInitiativePhase() && recipient == this.context.getCurrentPlayerCharacter()) {
@@ -205,13 +188,8 @@ public class EncounterManager {
             throw EncounterPhaseException.createNotLootPhase();
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
-        if (playerCharacter.hasLoot()) {
-            throw LootException.createReroll(player.getAsMention());
-        } else if (!playerCharacter.hasKills()) {
-            throw LootException.createNoKills(player.getAsMention());
-        }
-        playerCharacter.rollLoot();
-        this.logger.logActionLoot(playerCharacter);
+        LootActionResult actionResult = playerCharacter.getLoot();
+        this.logger.logLootAction(new LootActionAdapter(actionResult));
     }
 
     public void modifyStat(String name, String statName, int statMod) {
@@ -307,7 +285,7 @@ public class EncounterManager {
         }
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
         if (this.context.isAttackPhase()) {
-            this.logger.logActionAttackSkipped(playerCharacter.getName());
+            this.logger.logAttackActionSkipped(playerCharacter.getName());
             playerCharacter.useAllActions();
             this.endCurrentPlayerAction();
         } else if (this.context.isDodgePhase()) {
@@ -461,11 +439,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.failToDodge(this.context.getActiveHostiles());
 
-        this.logger.logActionDodgeSkipped(
-            playerCharacter,
-            result.getTotalDamageDealt(),
-            result.getTotalDamageResisted()
-        );
+        this.logger.logDodgeAction(new DodgeActionAdapter(result, true));
 
         this.endCurrentPlayerAction();
     }
@@ -476,12 +450,7 @@ public class EncounterManager {
             this.reviveIfFirstSlainPC(currentPlayerCharacter);
         }
         if (!this.context.hasActiveHostiles()) {
-            this.context.startLootPhase();
-            this.logger.logEndEncounter(
-                this.context.getAllPlayerCharacters(),
-                this.context.getAllHostiles(),
-                true
-            );
+            this.startLootPhase();
         } else if (!this.context.hasActivePCs()) {
             this.context.startEndPhase();
             this.logger.logEndEncounter(
@@ -523,6 +492,19 @@ public class EncounterManager {
             throw new NotYourTurnException();
         }
         return playerCharacter;
+    }
+
+    private void startLootPhase()
+    {
+        this.context.startLootPhase();
+        for (PCEncounterData playerCharacter : this.context.getAlivePlayerCharacters()) {
+            playerCharacter.rollLoot();
+        }
+        this.logger.logEndEncounter(
+            this.context.getAllPlayerCharacters(),
+            this.context.getAllHostiles(),
+            true
+        );
     }
 
     private void reviveIfFirstSlainPC(PCEncounterData playerCharacter) {

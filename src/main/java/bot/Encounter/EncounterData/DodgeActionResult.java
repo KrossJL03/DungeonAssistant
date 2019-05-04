@@ -7,23 +7,32 @@ import java.util.ArrayList;
 public class DodgeActionResult implements ActionResultInterface {
 
     private ArrayList<DodgeResult> dodgeResults;
-    private String                 pcName;
-    private int                    pcCurrentHp;
-    private int                    pcDodgeDie;
-    private int                    pcMaxHp;
+    private String                 targetName;
+    private int                    targetCurrentHp;
+    private int                    targetDodgeDie;
+    private int                    targetMaxHp;
 
+    /**
+     * DodgeActionResult constructor
+     *
+     * @param targetName      Target name
+     * @param dodgeResults    Dodge results
+     * @param targetDodgeDie  Target dodge die
+     * @param targetCurrentHp Target current hp
+     * @param targetMaxHp     Target max hp
+     */
     DodgeActionResult(
-        @NotNull String pcName,
+        @NotNull String targetName,
         @NotNull ArrayList<DodgeResult> dodgeResults,
-        int pcDodgeDie,
-        int currentHp,
-        int maxHp
+        int targetDodgeDie,
+        int targetCurrentHp,
+        int targetMaxHp
     ) {
         this.dodgeResults = dodgeResults;
-        this.pcCurrentHp = currentHp;
-        this.pcDodgeDie = pcDodgeDie;
-        this.pcMaxHp = maxHp;
-        this.pcName = pcName;
+        this.targetCurrentHp = targetCurrentHp;
+        this.targetDodgeDie = targetDodgeDie;
+        this.targetMaxHp = targetMaxHp;
+        this.targetName = targetName;
     }
 
     /**
@@ -37,83 +46,48 @@ public class DodgeActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get number of hostile attacks
+     * Get minimum roll needed for a successful dodge
      *
      * @return int
      */
-    public int getHostileAttackCount() {
-        return this.dodgeResults.size();
+    public int getMinSucessDodgeRoll() {
+        return DodgeRoll.DODGE_ROLL_PASS;
     }
 
     /**
-     * Get PC's current hp
+     * Get target's current hitpoints
      *
      * @return int
      */
-    public int getPcCurrentHp() {
-        return pcCurrentHp;
+    public int getTargetCurrentHp() {
+        return targetCurrentHp;
     }
 
     /**
-     * Get PC dodge die
+     * Get target dodge die
      *
      * @return int
      */
-    public int getPcDodgeDie() {
-        return pcDodgeDie;
+    public int getTargetDodgeDie() {
+        return targetDodgeDie;
     }
 
     /**
-     * Get PC's max hp
+     * Get target's max hitpoints
      *
      * @return int
      */
-    public int getPcMaxHp() {
-        return pcMaxHp;
+    public int getTargetMaxHp() {
+        return targetMaxHp;
     }
 
     /**
-     * Get PC name
+     * Get target name
      *
      * @return String
      */
     @NotNull
-    public String getPcName() {
-        return pcName;
-    }
-
-    /**
-     * Get total damage dealt to PC by hostile attacks
-     *
-     * @return int
-     */
-    public int getTotalDamageDealt() {
-        int totalDamageDealt = 0;
-        for (DodgeResult result : this.dodgeResults) {
-            totalDamageDealt += result.getDamageDealt();
-        }
-        return totalDamageDealt;
-    }
-
-    /**
-     * Get total damage resisted by PC
-     *
-     * @return int
-     */
-    public int getTotalDamageResisted() {
-        int totalDamageDealt = 0;
-        for (DodgeResult result : this.dodgeResults) {
-            totalDamageDealt += result.getDamageResisted();
-        }
-        return totalDamageDealt;
-    }
-
-    /**
-     * Is PC slain
-     *
-     * @return boolean
-     */
-    public boolean isPcSlain() {
-        return this.pcCurrentHp <= 0;
+    public String getTargetName() {
+        return targetName;
     }
 }

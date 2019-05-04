@@ -23,10 +23,6 @@ public class Loot{
         return quantity;
     }
 
-    public boolean isSameItem(Loot loot) {
-        return loot.getItem().equals(this.item);
-    }
-
     public String toString() {
         return String.format("x%d %s", this.quantity, this.item);
     }

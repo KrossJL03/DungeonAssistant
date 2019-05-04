@@ -8,14 +8,13 @@ import bot.PlayerCharacter.PlayerCharacter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 public class PCEncounterData implements EncounterDataInterface {
 
     private Player                          owner;
     private EncounterDataInterface          slayer;
     private ArrayList<HostileEncounterData> kills;
-    private Hashtable<String, Integer>      lootRolls;
+    private LootActionResult                loot;
     private String                          name;
     private int                             agility;
     private int                             currentActions;
@@ -35,7 +34,7 @@ public class PCEncounterData implements EncounterDataInterface {
         this.hasProtect = true;
         this.isPresent = true;
         this.kills = new ArrayList<>();
-        this.lootRolls = new Hashtable<>();
+        this.loot = new LootActionResult(name, owner);
         this.maxHp = playerCharacter.getHitpoints();
         this.name = playerCharacter.getName();
         this.owner = playerCharacter.getOwner();
@@ -95,10 +94,10 @@ public class PCEncounterData implements EncounterDataInterface {
 
         ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
         for (HostileEncounterData hostile : hostiles) {
-            int damageResisted    = 0;
-            int hostileDamageRoll = hostile.getAttackRoll();
-            int dodgeRoll         = this.rollToDodge();
-            if (dodgeRoll < 10) {
+            int       damageResisted    = 0;
+            int       hostileDamageRoll = hostile.getAttackRoll();
+            DodgeRoll dodgeRoll         = this.rollToDodge();
+            if (dodgeRoll.isFail()) {
                 damageResisted = hostileDamageRoll - this.takeDamage(hostile, hostileDamageRoll);
             }
             DodgeResult result = new DodgeResult(hostile.getName(), dodgeRoll, hostileDamageRoll, damageResisted);
@@ -121,11 +120,11 @@ public class PCEncounterData implements EncounterDataInterface {
 
         ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
         for (HostileEncounterData hostile : hostiles) {
-            int         hostileDamageRoll = hostile.getAttackRoll();
-            int         damageResisted    = hostileDamageRoll - this.takeDamage(hostile, hostileDamageRoll);
-            DodgeResult result            = new DodgeResult(
+            int hostileDamageRoll = hostile.getAttackRoll();
+            int damageResisted    = hostileDamageRoll - this.takeDamage(hostile, hostileDamageRoll);
+            DodgeResult result = new DodgeResult(
                 hostile.getName(),
-                0,
+                new DodgeRoll(0),
                 hostileDamageRoll,
                 damageResisted
             );
@@ -161,12 +160,8 @@ public class PCEncounterData implements EncounterDataInterface {
         return (int) Math.floor(this.defense / 2);
     }
 
-    public ArrayList<HostileEncounterData> getKills() {
-        return this.kills;
-    }
-
-    public int getLootRoll(String hostileName) {
-        return this.lootRolls.get(hostileName);
+    public LootActionResult getLoot() {
+        return this.loot;
     }
 
     public int getMaxActions() {
@@ -226,14 +221,6 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentActions > 0;
     }
 
-    public boolean hasKills() {
-        return this.kills.size() > 0;
-    }
-
-    public boolean hasLoot() {
-        return this.lootRolls.size() > 0;
-    }
-
     public int healPoints(int hitpoints) {
         if (this.isSlain()) {
             this.slayer = null;
@@ -274,10 +261,6 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public boolean isActive() {
         return !this.isSlain() && this.isPresent();
-    }
-
-    public boolean isCrit(int rollToHit) {
-        return rollToHit >= this.getMinCrit();
     }
 
     public boolean isName(String name) {
@@ -357,9 +340,16 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public void rollLoot() {
+        ArrayList<HostileEncounterData> finalBlows = new ArrayList<>();
+        ArrayList<LootRoll>             lootRolls  = new ArrayList<>();
         for (HostileEncounterData hostile : this.kills) {
-            this.lootRolls.put(hostile.getName(), (int) Math.floor(Math.random() * 10) + 1);
+            int roll = (int) Math.floor(Math.random() * 10) + 1;
+            lootRolls.add(new LootRoll(roll, hostile.getName(), hostile.getLoot(roll)));
+            if (this.equals(hostile.getSlayer())) {
+                finalBlows.add(hostile);
+            }
         }
+        this.loot = new LootActionResult(this.name, this.owner, lootRolls, finalBlows);
     }
 
     public int takeDamage(EncounterDataInterface attacker, int damage) {
@@ -395,8 +385,9 @@ public class PCEncounterData implements EncounterDataInterface {
         return (int) Math.floor(this.getAttackDice() * 1.5);
     }
 
-    private int rollToDodge() {
-        return (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
+    private DodgeRoll rollToDodge() {
+        int roll = (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
+        return new DodgeRoll(roll);
     }
 
     private HitRoll rollToHit() {

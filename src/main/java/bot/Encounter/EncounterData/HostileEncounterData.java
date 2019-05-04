@@ -1,6 +1,7 @@
 package bot.Encounter.EncounterData;
 
 import bot.Hostile.Hostile;
+import bot.Hostile.Loot;
 
 public class HostileEncounterData implements EncounterDataInterface {
 
@@ -112,5 +113,9 @@ public class HostileEncounterData implements EncounterDataInterface {
             this.currentHp -= damage;
         }
         return damage;
+    }
+
+    Loot getLoot(int roll) {
+        return this.hostile.getLoot(roll);
     }
 }
