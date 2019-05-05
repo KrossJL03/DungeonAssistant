@@ -1,11 +1,12 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import bot.Encounter.Logger.Mention;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public interface LootActionDataInterface {
+public interface LootActionResultInterface
+{
 
     /**
      * Get bonus for all final bows
@@ -20,7 +21,7 @@ public interface LootActionDataInterface {
      * @return ArrayList
      */
     @NotNull
-    ArrayList<String> getFinalBlows();
+    ArrayList<String> getFinalBlowNames();
 
     /**
      * Get kill count
@@ -37,6 +38,13 @@ public interface LootActionDataInterface {
     int getLootDie();
 
     /**
+     * Get individual loot rolls
+     *
+     * @return ArrayList
+     */
+    ArrayList<LootRollInterface> getLootRolls();
+
+    /**
      * Get mention
      *
      * @return Mention
@@ -49,13 +57,6 @@ public interface LootActionDataInterface {
      * @return String
      */
     String getName();
-
-    /**
-     * Get individual loot actions
-     *
-     * @return ArrayList
-     */
-    ArrayList<LootSubActionDataInterface> getSubActions();
 
     /**
      * Has any final blows

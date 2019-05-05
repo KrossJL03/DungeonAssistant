@@ -1,7 +1,9 @@
 package bot.Encounter.EncounterData;
 
-public class Slayer {
+import org.jetbrains.annotations.NotNull;
 
+public class Slayer
+{
     private String name;
 
     /**
@@ -9,14 +11,16 @@ public class Slayer {
      *
      * @param name Slayer name
      */
-    Slayer(String name) {
+    @NotNull Slayer(String name)
+    {
         this.name = name;
     }
 
     /**
      * Slayer constructor (empty)
      */
-    Slayer() {
+    @NotNull Slayer()
+    {
         this.name = "";
     }
 
@@ -25,7 +29,8 @@ public class Slayer {
      *
      * @return boolean
      */
-    public boolean exists() {
+    public boolean exists()
+    {
         return !name.isEmpty();
     }
 
@@ -34,7 +39,8 @@ public class Slayer {
      *
      * @return String
      */
-    public String getName() {
+    public @NotNull String getName()
+    {
         return name;
     }
 
@@ -45,7 +51,8 @@ public class Slayer {
      *
      * @return boolean
      */
-    boolean isSlayer(EncounterDataInterface slayer) {
+    boolean isSlayer(EncounterDataInterface slayer)
+    {
         return name.equals(slayer.getName());
     }
 }

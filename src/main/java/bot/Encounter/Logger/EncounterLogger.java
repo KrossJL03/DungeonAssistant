@@ -1,8 +1,12 @@
 package bot.Encounter.Logger;
 
 import bot.CommandListener;
+import bot.Encounter.AttackActionResultInterface;
+import bot.Encounter.DodgeActionResultInterface;
 import bot.Encounter.EncounterData.*;
 import bot.Encounter.Logger.MessageBuilder.*;
+import bot.Encounter.LootActionResultInterface;
+import bot.Encounter.ProtectActionResultInterface;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
 import org.jetbrains.annotations.NotNull;
@@ -32,43 +36,43 @@ public class EncounterLogger
     }
 
     /**
-     * Log attack action
+     * Log attack result
      *
-     * @param actionData Action data
+     * @param result Action result
      */
-    public void logAction(@NotNull AttackActionDataInterface actionData)
+    public void logAction(@NotNull AttackActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(actionData, context.getDungeonMasterMention()));
+        sendMessage(actionMessageBuilder.buildActionMessage(result, context.getDungeonMasterMention()));
     }
 
     /**
-     * Log dodge action
+     * Log dodge result
      *
-     * @param actionData Action data
+     * @param result Action result
      */
-    public void logAction(@NotNull DodgeActionDataInterface actionData)
+    public void logAction(@NotNull DodgeActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(actionData));
+        sendMessage(actionMessageBuilder.buildActionMessage(result));
     }
 
     /**
-     * Log loot action
+     * Log loot result
      *
-     * @param actionData Action data
+     * @param result Action result
      */
-    public void logAction(@NotNull LootActionDataInterface actionData)
+    public void logAction(@NotNull LootActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(actionData));
+        sendMessage(actionMessageBuilder.buildActionMessage(result));
     }
 
     /**
-     * Log protect action
+     * Log protect result
      *
-     * @param actionData Action data
+     * @param result Action result
      */
-    public void logAction(@NotNull ProtectActionDataInterface actionData)
+    public void logAction(@NotNull ProtectActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(actionData));
+        sendMessage(actionMessageBuilder.buildActionMessage(result));
     }
 
     /**

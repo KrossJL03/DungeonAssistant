@@ -1,17 +1,20 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.DodgeActionResultInterface;
+import bot.Encounter.DodgeResultInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class DodgeActionResult implements ActionResultInterface {
-
-    private ArrayList<DodgeResult> dodgeResults;
-    private Slayer                 targetSlayer;
-    private String                 targetName;
-    private int                    targetCurrentHp;
-    private int                    targetDodgeDie;
-    private int                    targetMaxHp;
+public class DodgeActionResult implements DodgeActionResultInterface
+{
+    private ArrayList<DodgeResultInterface> dodgeResults;
+    private Slayer                          targetSlayer;
+    private String                          targetName;
+    private int                             targetCurrentHp;
+    private int                             targetDodgeDie;
+    private int                             targetMaxHp;
+    private boolean                         isForcedFail;
 
     /**
      * DodgeActionResult constructor
@@ -22,16 +25,20 @@ public class DodgeActionResult implements ActionResultInterface {
      * @param targetCurrentHp Target current hp
      * @param targetMaxHp     Target max hp
      * @param targetSlayer    Target slayer
+     * @param isForcedFail    Was this action a forced fail
      */
     DodgeActionResult(
         @NotNull String targetName,
-        @NotNull ArrayList<DodgeResult> dodgeResults,
+        @NotNull ArrayList<DodgeResultInterface> dodgeResults,
         int targetDodgeDie,
         int targetCurrentHp,
         int targetMaxHp,
-        @NotNull Slayer targetSlayer
-    ) {
+        @NotNull Slayer targetSlayer,
+        boolean isForcedFail
+    )
+    {
         this.dodgeResults = dodgeResults;
+        this.isForcedFail = isForcedFail;
         this.targetCurrentHp = targetCurrentHp;
         this.targetDodgeDie = targetDodgeDie;
         this.targetMaxHp = targetMaxHp;
@@ -40,68 +47,127 @@ public class DodgeActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get all dodge results
-     *
-     * @return ArrayList
+     * {@inheritDoc}
      */
-    @NotNull
-    public ArrayList<DodgeResult> getDodgeResults() {
+    @Override
+    public int getAttackCount()
+    {
+        return dodgeResults.size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDamageDealt()
+    {
+        int totalDamageDealt = 0;
+        for (DodgeResultInterface result : dodgeResults) {
+            totalDamageDealt += result.getDamageDealt();
+        }
+        return totalDamageDealt;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDamageResisted()
+    {
+        int totalDamageResisted = 0;
+        for (DodgeResultInterface result : dodgeResults) {
+            totalDamageResisted += result.getDamageResisted();
+        }
+        return totalDamageResisted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull ArrayList<DodgeResultInterface> getDodgeResults()
+    {
         return dodgeResults;
     }
 
     /**
-     * Get minimum roll needed for a successful dodge
-     *
-     * @return int
+     * {@inheritDoc}
      */
-    public int getMinSucessDodgeRoll() {
+    @Override
+    public int getMinSucessDodgeRoll()
+    {
         return DodgeRoll.DODGE_ROLL_PASS;
     }
 
     /**
-     * Get target's current hitpoints
-     *
-     * @return int
+     * {@inheritDoc}
      */
-    public int getTargetCurrentHp() {
+    @Override
+    public int getTargetCurrentHp()
+    {
         return targetCurrentHp;
     }
 
     /**
-     * Get target dodge die
-     *
-     * @return int
+     * {@inheritDoc}
      */
-    public int getTargetDodgeDie() {
-        return targetDodgeDie;
-    }
-
-    /**
-     * Get target's max hitpoints
-     *
-     * @return int
-     */
-    public int getTargetMaxHp() {
+    @Override
+    public int getTargetMaxHp()
+    {
         return targetMaxHp;
     }
 
     /**
-     * Get target name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getTargetName() {
+    @Override
+    public @NotNull String getTargetName()
+    {
         return targetName;
     }
 
     /**
-     * Get target slayer
-     *
-     * @return Slayer
+     * {@inheritDoc}
      */
-    @NotNull
-    public Slayer getTargetSlayer() {
+    @Override
+    public @NotNull Slayer getTargetSlayer()
+    {
         return targetSlayer;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isForceFail()
+    {
+        return isForcedFail;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getTargetDodgeDie()
+    {
+        return targetDodgeDie;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetExplorer()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetSlain()
+    {
+        return targetCurrentHp < 1;
     }
 }

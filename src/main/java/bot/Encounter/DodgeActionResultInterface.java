@@ -1,10 +1,11 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public interface DodgeActionDataInterface extends CombatActionDataInterface {
+public interface DodgeActionResultInterface extends CombatActionResultInterface
+{
 
     /**
      * Get number of attacks
@@ -14,11 +15,12 @@ public interface DodgeActionDataInterface extends CombatActionDataInterface {
     int getAttackCount();
 
     /**
-     * Get target dodge die
+     * Get individual dodge results
      *
-     * @return int
+     * @return ArrayList<DodgeResultInterface>
      */
-    int getDodgeDie();
+    @NotNull
+    ArrayList<DodgeResultInterface> getDodgeResults();
 
     /**
      * Get minimum roll needed for a successful dodge
@@ -28,12 +30,11 @@ public interface DodgeActionDataInterface extends CombatActionDataInterface {
     int getMinSucessDodgeRoll();
 
     /**
-     * Get sub action data
+     * Get target dodge die
      *
-     * @return ArrayList<DodgeSubActionDataInterface>
+     * @return int
      */
-    @NotNull
-    ArrayList<DodgeSubActionDataInterface> getSubActionData();
+    int getTargetDodgeDie();
 
     /**
      * Was this action a forced fail

@@ -1,11 +1,12 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.DodgeResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class DodgeResult {
-
-    private String    attackerName;
+public class DodgeResult implements DodgeResultInterface
+{
     private DodgeRoll dodgeRoll;
+    private String    attackerName;
     private int       attackerDamageRoll;
     private int       damageResisted;
 
@@ -23,63 +24,56 @@ public class DodgeResult {
         int attackerDamageRoll,
         int damageResisted
     ) {
+        this.attackerDamageRoll = attackerDamageRoll;
+        this.attackerName = attackerName;
         this.damageResisted = damageResisted;
         this.dodgeRoll = dodgeRoll;
-        this.attackerName = attackerName;
-        this.attackerDamageRoll = attackerDamageRoll;
     }
 
     /**
-     * Get attacker name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getAttackerName() {
+    @Override
+    public @NotNull String getAttackerName() {
         return attackerName;
     }
 
     /**
-     * Get attacker damage roll
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getAttackerDamageRoll() {
         return attackerDamageRoll;
     }
 
     /**
-     * Get damage dealt
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getDamageDealt() {
         return isSuccess() ? 0 : attackerDamageRoll - damageResisted;
     }
 
     /**
-     * Get damage resisted
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getDamageResisted() {
         return damageResisted;
     }
 
     /**
-     * Get dodge roll
-     *
-     * @return int
+     * {@inheritDoc}
      */
-    public int getDodgeRoll() {
+    @Override
+    public int getTargetDodgeRoll() {
         return dodgeRoll.getRoll();
     }
 
     /**
-     * Was the dodge successful
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
+    @Override
     public boolean isSuccess() {
         return !dodgeRoll.isFail();
     }

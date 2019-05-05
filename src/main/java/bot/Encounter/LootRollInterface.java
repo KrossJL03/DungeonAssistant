@@ -1,10 +1,10 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
-public interface LootSubActionDataInterface {
-
+public interface LootRollInterface
+{
     /**
      * Get kill name
      *

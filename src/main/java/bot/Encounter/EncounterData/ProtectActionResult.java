@@ -1,9 +1,11 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.Logger.Mention;
+import bot.Encounter.ProtectActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class ProtectActionResult implements ActionResultInterface {
-
+public class ProtectActionResult implements ProtectActionResultInterface
+{
     private Slayer targetSlayer;
     private String protectedName;
     private String protectedOwnerId;
@@ -25,7 +27,7 @@ public class ProtectActionResult implements ActionResultInterface {
      * @param targetMaxHp     Target max hp
      * @param targetSlayer    Target slayer
      */
-    ProtectActionResult(
+    @NotNull ProtectActionResult(
         String targetName,
         @NotNull String protectedName,
         @NotNull String protectedOwnerId,
@@ -33,7 +35,7 @@ public class ProtectActionResult implements ActionResultInterface {
         int damageResisted,
         int targetCurrentHp,
         int targetMaxHp,
-        Slayer targetSlayer
+        @NotNull Slayer targetSlayer
     ) {
         this.damageDealt = damageDealt;
         this.damageResisted = damageResisted;
@@ -46,74 +48,82 @@ public class ProtectActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get damage dealt
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getDamageDealt() {
         return damageDealt;
     }
 
     /**
-     * Get damage resisted
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getDamageResisted() {
         return damageResisted;
     }
 
     /**
-     * Get protected name
-     *
-     * @return String
+     * {@inheritDoc}
      */
+    @Override
     public @NotNull String getProtectedName() {
         return protectedName;
     }
 
     /**
-     * Get protected owner id
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    public @NotNull String getProtectedOwnerId() {
-        return protectedOwnerId;
+    @Override
+    public @NotNull Mention getProtectedOwnerMention() {
+        return new Mention(protectedOwnerId);
     }
 
     /**
-     * Get target current hp
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getTargetCurrentHp() {
         return targetCurrentHp;
     }
 
     /**
-     * Get target max hp
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getTargetMaxHp() {
         return targetMaxHp;
     }
 
     /**
-     * Get target name
-     *
-     * @return String
+     * {@inheritDoc}
      */
+    @Override
     public @NotNull String getTargetName() {
         return targetName;
     }
 
     /**
-     * Get target slayer
-     *
-     * @return Slayer
+     * {@inheritDoc}
      */
+    @Override
     public @NotNull Slayer getTargetSlayer() {
         return targetSlayer;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetExplorer() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetSlain() {
+        return targetCurrentHp < 1;
     }
 }

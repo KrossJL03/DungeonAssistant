@@ -1,9 +1,10 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.AttackActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class AttackActionResult implements ActionResultInterface {
-
+public class AttackActionResult implements AttackActionResultInterface
+{
     private HitRoll hitRoll;
     private Slayer  targetSlayer;
     private String  attackerName;
@@ -46,104 +47,133 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get attacker name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getAttackerName() {
+    @Override
+    public @NotNull String getAttackerName() {
         return attackerName;
     }
 
     /**
-     * Get max damageRoll an attacker could roll
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
+    public int getDamageDealt() {
+        return damageRoll; // todo update for PVP
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getDamageDie() {
         return damageDie;
     }
 
     /**
-     * Get damageRoll dealt to target
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
+    public int getDamageResisted()
+    {
+        return 0; // todo update for PVP
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getDamageRoll() {
         return damageRoll;
     }
 
     /**
-     * Get roll to hit target
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getHitRoll() {
         return hitRoll.getRoll();
     }
 
     /**
-     * Get target current hitpoints
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
+    public @NotNull String getHitTypeString() {
+        return isHit() ? (isCrit() ? "crit" : "hit") : (isFail() ? "fail" : "miss");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getTargetCurrentHp() {
         return targetCurrentHp;
     }
 
     /**
-     * Get target max hitpoints
-     *
-     * @return int
+     * {@inheritDoc}
      */
+    @Override
     public int getTargetMaxHp() {
         return targetMaxHp;
     }
 
     /**
-     * Get target name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getTargetName() {
+    @Override
+    public @NotNull String getTargetName() {
         return targetName;
     }
 
     /**
-     * Get target slayer
-     *
-     * @return Slayer
+     * {@inheritDoc}
      */
-    @NotNull
-    public Slayer getTargetSlayer() {
+    @Override
+    public @NotNull Slayer getTargetSlayer() {
         return targetSlayer;
     }
 
     /**
-     * Is the hit roll a crit
-     *
-     * @return bool
+     * {@inheritDoc}
      */
+    @Override
     public boolean isCrit() {
         return hitRoll.isCrit();
     }
 
     /**
-     * Is the hit roll a fail
-     *
-     * @return bool
+     * {@inheritDoc}
      */
+    @Override
     public boolean isFail() {
         return hitRoll.isFail();
     }
 
     /**
-     * Is the hit roll a hit
-     *
-     * @return bool
+     * {@inheritDoc}
      */
+    @Override
     public boolean isHit() {
         return hitRoll.isHit();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetExplorer()
+    {
+        return false; // todo update for PVP
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTargetSlain()
+    {
+        return targetCurrentHp < 1;
     }
 }

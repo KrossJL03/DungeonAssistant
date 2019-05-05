@@ -1,16 +1,21 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.Logger.Mention;
+import bot.Encounter.LootActionResultInterface;
+import bot.Encounter.LootRollInterface;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class LootActionResult implements ActionResultInterface {
-
+public class LootActionResult implements LootActionResultInterface
+{
     private ArrayList<HostileEncounterData> finalBlows;
-    private ArrayList<LootRoll>             lootRolls;
+    private ArrayList<LootRollInterface>    lootRolls;
     private Player                          owner;
     private String                          name;
+    private int                             finalBlowBonus;
+    private int                             lootDie;
     private boolean                         isRolled;
 
     /**
@@ -19,7 +24,8 @@ public class LootActionResult implements ActionResultInterface {
      * @param name  Name
      * @param owner Owner
      */
-    LootActionResult(String name, Player owner) {
+    @NotNull LootActionResult(@NotNull String name, @NotNull Player owner)
+    {
         this.finalBlows = new ArrayList<>();
         this.isRolled = false;
         this.lootRolls = new ArrayList<>();
@@ -30,65 +36,113 @@ public class LootActionResult implements ActionResultInterface {
     /**
      * LootActionResult constructor
      *
-     * @param name      Name
-     * @param owner     Owner
-     * @param lootRolls Loot rolls
-     * @param kills     Kills
+     * @param name           Name
+     * @param owner          Owner
+     * @param lootRolls      Loot rolls
+     * @param kills          Kills
+     * @param lootDie        Loot die used to roll loot
+     * @param finalBlowBonus Bonus cumulus for final blows
      */
-    LootActionResult(String name, Player owner, ArrayList<LootRoll> lootRolls, ArrayList<HostileEncounterData> kills) {
+    @NotNull LootActionResult(
+        @NotNull String name,
+        @NotNull Player owner,
+        @NotNull ArrayList<LootRollInterface> lootRolls,
+        @NotNull ArrayList<HostileEncounterData> kills,
+        int lootDie,
+        int finalBlowBonus
+    )
+    {
+        this.finalBlowBonus = finalBlowBonus;
         this.finalBlows = kills;
         this.isRolled = true;
+        this.lootDie = lootDie;
         this.lootRolls = lootRolls;
         this.name = name;
         this.owner = owner;
     }
 
     /**
-     * Get final blows
-     *
-     * @return ArrayList
+     * {@inheritDoc}
      */
-    @NotNull
-    public ArrayList<HostileEncounterData> getFinalBlows() {
-        return this.finalBlows;
+    @Override
+    public int getFinalBlowBonus()
+    {
+        return finalBlowBonus;
     }
 
     /**
-     * Get loot rolls
-     *
-     * @return ArrayList
+     * {@inheritDoc}
      */
-    @NotNull
-    public ArrayList<LootRoll> getLootRolls() {
-        return this.lootRolls;
+    @Override
+    public @NotNull ArrayList<String> getFinalBlowNames()
+    {
+        ArrayList<String> finalBlowNames = new ArrayList<>();
+        for (HostileEncounterData hostile : finalBlows) {
+            finalBlowNames.add(hostile.getName());
+        }
+        return finalBlowNames;
     }
 
     /**
-     * Get name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getName() {
-        return this.name;
+    @Override
+    public int getKillCount()
+    {
+        return lootRolls.size();
     }
 
     /**
-     * Get owner
-     *
-     * @return Player
+     * {@inheritDoc}
      */
-    @NotNull
-    public Player getOwner() {
-        return this.owner;
+    @Override
+    public int getLootDie()
+    {
+        return lootDie;
     }
 
     /**
-     * Has rolled loot
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
-    public boolean hasRolledLoot() {
-        return this.isRolled;
+    @Override
+    public ArrayList<LootRollInterface> getLootRolls()
+    {
+        return lootRolls;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull Mention getMention()
+    {
+        return new Mention(owner.getUserId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull String getName()
+    {
+        return name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasFinalBlows()
+    {
+        return finalBlows.size() > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean noLoot()
+    {
+        return !isRolled;
     }
 }

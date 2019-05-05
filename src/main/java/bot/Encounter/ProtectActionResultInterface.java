@@ -1,10 +1,10 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import bot.Encounter.Logger.Mention;
 import org.jetbrains.annotations.NotNull;
 
-public interface ProtectActionDataInterface extends CombatActionDataInterface {
-
+public interface ProtectActionResultInterface extends CombatActionResultInterface
+{
     /**
      * Get name of protected explorer
      *

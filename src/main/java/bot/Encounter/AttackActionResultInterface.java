@@ -1,16 +1,15 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface AttackActionDataInterface extends CombatActionDataInterface {
-
+public interface AttackActionResultInterface extends CombatActionResultInterface
+{
     /**
      * Get attacker name
      *
      * @return String
      */
-    @NotNull
-    String getAttackerName();
+    @NotNull String getAttackerName();
 
     /**
      * Get damage die
@@ -34,12 +33,11 @@ public interface AttackActionDataInterface extends CombatActionDataInterface {
     int getHitRoll();
 
     /**
-     * Get hit type
+     * Get hit type as string
      *
      * @return String
      */
-    @NotNull
-    String getHitType();
+    @NotNull String getHitTypeString();
 
     /**
      * Is crit hit roll

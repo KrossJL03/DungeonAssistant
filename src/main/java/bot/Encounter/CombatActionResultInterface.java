@@ -1,10 +1,10 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter;
 
 import bot.Encounter.EncounterData.Slayer;
 import org.jetbrains.annotations.NotNull;
 
-interface CombatActionDataInterface {
-
+public interface CombatActionResultInterface
+{
     /**
      * Get damage dealt to target
      *

@@ -44,7 +44,7 @@ public class EncounterManager {
         HostileEncounterData hostile         = this.context.getHostile(hostileName);
 
         AttackActionResult result = playerCharacter.attack(hostile);
-        this.logger.logAction(new AttackActionAdapter(result));
+        this.logger.logAction(result);
 
         if (hostile.isSlain()) {
             this.addKillToPlayerCharacters(hostile);
@@ -69,8 +69,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.dodge(this.context.getActiveHostiles());
 
-        this.logger.logAction(new DodgeActionAdapter(result, false));
-
+        this.logger.logAction(result);
         this.endCurrentPlayerAction();
     }
 
@@ -184,7 +183,7 @@ public class EncounterManager {
         }
         PCEncounterData  playerCharacter = this.context.getPlayerCharacter(player);
         LootActionResult actionResult    = playerCharacter.getLoot();
-        this.logger.logAction(new LootActionAdapter(actionResult));
+        this.logger.logAction(actionResult);
     }
 
     public void modifyStat(String name, String statName, int statMod) {
@@ -218,7 +217,7 @@ public class EncounterManager {
             context.getActiveHostiles()
         );
 
-        logger.logAction(new ProtectActionAdapter(actionResult));
+        logger.logAction(actionResult);
         endCurrentPlayerAction();
     }
 
@@ -324,8 +323,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.failToDodge(this.context.getActiveHostiles());
 
-        this.logger.logAction(new DodgeActionAdapter(result, true));
-
+        this.logger.logAction(result);
         this.endCurrentPlayerAction();
     }
 

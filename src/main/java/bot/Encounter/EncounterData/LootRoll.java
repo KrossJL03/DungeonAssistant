@@ -1,10 +1,11 @@
 package bot.Encounter.EncounterData;
 
+import bot.Encounter.LootRollInterface;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
-public class LootRoll {
-
+public class LootRoll implements LootRollInterface
+{
     private Loot   loot;
     private String hostileName;
     private int    roll;
@@ -16,38 +17,33 @@ public class LootRoll {
      * @param hostileName Hostile name
      * @param loot        loot
      */
-    LootRoll(int roll, String hostileName, Loot loot) {
+    @NotNull LootRoll(int roll, @NotNull String hostileName, @NotNull Loot loot) {
         this.hostileName = hostileName;
         this.loot = loot;
         this.roll = roll;
     }
 
     /**
-     * Get hostile name
-     *
-     * @return String
+     * {@inheritDoc}
      */
-    @NotNull
-    public String getHostileName() {
-        return this.hostileName;
+    @Override
+    public @NotNull String getKillName() {
+        return hostileName;
     }
 
     /**
-     * Get loot
-     *
-     * @return Loot
+     * {@inheritDoc}
      */
-    @NotNull
-    public Loot getLoot() {
-        return this.loot;
+    @Override
+    public @NotNull Loot getLoot() {
+        return loot;
     }
 
     /**
-     * Get roll
-     *
-     * @return ing
+     * {@inheritDoc}
      */
-    public int getRoll() {
-        return this.roll;
+    @Override
+    public int getLootRoll() {
+        return roll;
     }
 }
