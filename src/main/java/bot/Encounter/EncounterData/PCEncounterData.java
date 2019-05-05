@@ -3,6 +3,8 @@ package bot.Encounter.EncounterData;
 import bot.Constant;
 import bot.Encounter.Exception.PCEncounterDataException;
 import bot.Encounter.Exception.PlayerCharacterSlainException;
+import bot.Encounter.Exception.PlayerCharacterUnableToProtectException;
+import bot.Encounter.Exception.ProtectedCharacterException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 public class PCEncounterData implements EncounterDataInterface {
 
     private Player                          owner;
-    private EncounterDataInterface          slayer;
+    private Slayer                          slayer;
     private ArrayList<HostileEncounterData> kills;
     private LootActionResult                loot;
     private String                          name;
@@ -38,6 +40,7 @@ public class PCEncounterData implements EncounterDataInterface {
         this.maxHp = playerCharacter.getHitpoints();
         this.name = playerCharacter.getName();
         this.owner = playerCharacter.getOwner();
+        this.slayer = new Slayer();
         this.strength = playerCharacter.getStrength();
         this.wisdom = playerCharacter.getWisdom();
     }
@@ -79,7 +82,8 @@ public class PCEncounterData implements EncounterDataInterface {
             this.getAttackDice(),
             damageRoll,
             target.getCurrentHP(),
-            target.getMaxHP()
+            target.getMaxHP(),
+            target.getSlayer()
         );
     }
 
@@ -106,7 +110,14 @@ public class PCEncounterData implements EncounterDataInterface {
 
         this.useAction();
 
-        return new DodgeActionResult(this.name, dodgeResults, this.getDodgeDice(), this.currentHp, this.maxHp);
+        return new DodgeActionResult(
+            this.name,
+            dodgeResults,
+            this.getDodgeDice(),
+            this.currentHp,
+            this.maxHp,
+            this.slayer
+        );
     }
 
     /**
@@ -133,7 +144,14 @@ public class PCEncounterData implements EncounterDataInterface {
 
         this.useAllActions();
 
-        return new DodgeActionResult(this.name, dodgeResults, this.getDodgeDice(), this.currentHp, this.maxHp);
+        return new DodgeActionResult(
+            this.name,
+            dodgeResults,
+            this.getDodgeDice(),
+            this.currentHp,
+            this.maxHp,
+            this.slayer
+        );
     }
 
     public int getAgility() {
@@ -154,10 +172,6 @@ public class PCEncounterData implements EncounterDataInterface {
 
     public int getDodgeDice() {
         return ((int) Math.floor(this.agility / 2)) + 10;
-    }
-
-    public int getEndurance() {
-        return (int) Math.floor(this.defense / 2);
     }
 
     public LootActionResult getLoot() {
@@ -188,7 +202,7 @@ public class PCEncounterData implements EncounterDataInterface {
         return this.currentActions;
     }
 
-    public EncounterDataInterface getSlayer() {
+    public Slayer getSlayer() {
         return this.slayer;
     }
 
@@ -276,19 +290,7 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public boolean isSlain() {
-        return currentHp < 1;
-    }
-
-    public boolean isStatModifiable(String statName, int boost) {
-        statName = statName.toLowerCase();
-        if (!Constant.isStatName(statName)) {
-            throw PCEncounterDataException.invalidStatName(statName);
-        }
-        int newStat = statName.equals(Constant.STAT_MAX_HP)
-                      ? this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)
-                      : this.getStat(statName) + boost;
-
-        return !(newStat > Constant.getStatMax(statName) || newStat < Constant.getStatMin(statName));
+        return this.slayer.exists();
     }
 
     public void leave() {
@@ -327,6 +329,53 @@ public class PCEncounterData implements EncounterDataInterface {
         }
     }
 
+    /**
+     * Protect recipient from hostile attacks
+     *
+     * @param recipient PC being protected
+     * @param hostiles  Hostiles to protect against
+     *
+     * @return ProtectActionResult
+     */
+    public @NotNull ProtectActionResult protect(
+        @NotNull PCEncounterData recipient,
+        @NotNull ArrayList<HostileEncounterData> hostiles
+    ) {
+        if (!this.hasProtect) {
+            throw PlayerCharacterUnableToProtectException.createProtectAlreadyUsed();
+        } else if (this.equals(recipient)) {
+            throw ProtectedCharacterException.createProtectYourself();
+        } else if (recipient.isSlain()) {
+            throw ProtectedCharacterException.createIsSlain(recipient.getName());
+        } else if (!recipient.hasActions()) {
+            throw ProtectedCharacterException.createTurnHasPassed(recipient.getName());
+        }
+
+        int damageDealt    = 0;
+        int damageResisted = 0;
+
+        for (HostileEncounterData hostile : hostiles) {
+            int damage = this.takeDamage(hostile, hostile.getAttackRoll());
+            damageDealt += damage;
+            damageResisted += hostile.getAttackRoll() - damage;
+        }
+
+        this.useAction();
+        this.useProtect();
+        recipient.useAllActions();
+
+        return new ProtectActionResult(
+            name,
+            recipient.getName(),
+            recipient.getOwner().getUserId(),
+            damageDealt,
+            damageResisted,
+            currentHp,
+            maxHp,
+            slayer
+        );
+    }
+
     public void rejoin() {
         this.isPresent = true;
     }
@@ -345,7 +394,7 @@ public class PCEncounterData implements EncounterDataInterface {
         for (HostileEncounterData hostile : this.kills) {
             int roll = (int) Math.floor(Math.random() * 10) + 1;
             lootRolls.add(new LootRoll(roll, hostile.getName(), hostile.getLoot(roll)));
-            if (this.equals(hostile.getSlayer())) {
+            if (hostile.getSlayer().isSlayer(this)) {
                 finalBlows.add(hostile);
             }
         }
@@ -356,7 +405,7 @@ public class PCEncounterData implements EncounterDataInterface {
         damage = damage - this.getEndurance();
         damage = damage < 1 ? 1 : damage;
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
-            this.slayer = attacker;
+            this.slayer = new Slayer(attacker.getName());
         }
         this.currentHp -= damage;
         if (this.currentHp < 0) {
@@ -373,16 +422,28 @@ public class PCEncounterData implements EncounterDataInterface {
         this.currentActions = 0;
     }
 
-    public void useProtect() {
-        this.hasProtect = false;
-    }
-
     public int compareTo(@NotNull PCEncounterData playerCharacter) {
         return playerCharacter.agility - this.agility;
     }
 
     private int getCritDamage() {
         return (int) Math.floor(this.getAttackDice() * 1.5);
+    }
+
+    private int getEndurance() {
+        return (int) Math.floor(this.defense / 2);
+    }
+
+    private boolean isStatModifiable(String statName, int boost) {
+        statName = statName.toLowerCase();
+        if (!Constant.isStatName(statName)) {
+            throw PCEncounterDataException.invalidStatName(statName);
+        }
+        int newStat = statName.equals(Constant.STAT_MAX_HP)
+                      ? this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)
+                      : this.getStat(statName) + boost;
+
+        return !(newStat > Constant.getStatMax(statName) || newStat < Constant.getStatMin(statName));
     }
 
     private DodgeRoll rollToDodge() {
@@ -393,5 +454,9 @@ public class PCEncounterData implements EncounterDataInterface {
     private HitRoll rollToHit() {
         int roll = (int) Math.floor(Math.random() * 20) + 1;
         return new HitRoll(roll, this.getMinCrit());
+    }
+
+    private void useProtect() {
+        this.hasProtect = false;
     }
 }

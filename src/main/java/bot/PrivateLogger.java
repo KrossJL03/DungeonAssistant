@@ -108,16 +108,6 @@ class PrivateLogger {
                 "Use an item through rp!bot. The DM will be pinged to activate the item."
             )
         );
-//        output.append(PrivateLogger.NEWLINE);
-//        output.append(
-//            String.format(
-//                "   %s%-16s %-16s %s",
-//                CommandListener.COMMAND_KEY,
-//                "use",
-//                "[ItemName] (RecipientName)",
-//                "Use an item. Optional recipient name, leave blank to use on yourself."
-//            )
-//        );
         output.append("```");
         PrivateLogger.sendPrivateMessage(user, output.toString());
 
@@ -248,17 +238,6 @@ class PrivateLogger {
                 "[CharacterName] [StatName] [StatDrop]",
                 "Reduce a characters stat by the drop amount for the current encounter"
             ));
-            // todo add once inventory is implemented
-//            output.append(PrivateLogger.NEWLINE);
-//            output.append(
-//                String.format(
-//                    "   %s%-16s %-16s %s",
-//                    CommandListener.COMMAND_KEY,
-//                    "use",
-//                    "[ItemName] (RecipientName)",
-//                    "Use an item. Optional recipient name, leave blank to use on yourself."
-//                )
-//            );
             output.append("```");
         }
         output.append(PrivateLogger.NEWLINE);

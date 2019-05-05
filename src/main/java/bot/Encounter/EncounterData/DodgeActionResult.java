@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class DodgeActionResult implements ActionResultInterface {
 
     private ArrayList<DodgeResult> dodgeResults;
+    private Slayer                 targetSlayer;
     private String                 targetName;
     private int                    targetCurrentHp;
     private int                    targetDodgeDie;
@@ -20,19 +21,22 @@ public class DodgeActionResult implements ActionResultInterface {
      * @param targetDodgeDie  Target dodge die
      * @param targetCurrentHp Target current hp
      * @param targetMaxHp     Target max hp
+     * @param targetSlayer    Target slayer
      */
     DodgeActionResult(
         @NotNull String targetName,
         @NotNull ArrayList<DodgeResult> dodgeResults,
         int targetDodgeDie,
         int targetCurrentHp,
-        int targetMaxHp
+        int targetMaxHp,
+        @NotNull Slayer targetSlayer
     ) {
         this.dodgeResults = dodgeResults;
         this.targetCurrentHp = targetCurrentHp;
         this.targetDodgeDie = targetDodgeDie;
         this.targetMaxHp = targetMaxHp;
         this.targetName = targetName;
+        this.targetSlayer = targetSlayer;
     }
 
     /**
@@ -89,5 +93,15 @@ public class DodgeActionResult implements ActionResultInterface {
     @NotNull
     public String getTargetName() {
         return targetName;
+    }
+
+    /**
+     * Get target slayer
+     *
+     * @return Slayer
+     */
+    @NotNull
+    public Slayer getTargetSlayer() {
+        return targetSlayer;
     }
 }

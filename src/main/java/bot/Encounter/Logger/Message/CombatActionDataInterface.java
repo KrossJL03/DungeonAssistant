@@ -1,8 +1,23 @@
 package bot.Encounter.Logger.Message;
 
+import bot.Encounter.EncounterData.Slayer;
 import org.jetbrains.annotations.NotNull;
 
 interface CombatActionDataInterface {
+
+    /**
+     * Get damage dealt to target
+     *
+     * @return int
+     */
+    int getDamageDealt();
+
+    /**
+     * Get damage resisted by the target
+     *
+     * @return int
+     */
+    int getDamageResisted();
 
     /**
      * Get target current hitpoints
@@ -25,6 +40,21 @@ interface CombatActionDataInterface {
      */
     @NotNull
     String getTargetName();
+
+    /**
+     * Get target slayer
+     *
+     * @return Slayer
+     */
+    @NotNull
+    Slayer getTargetSlayer();
+
+    /**
+     * Is the target an explorer
+     *
+     * @return boolean
+     */
+    boolean isTargetExplorer();
 
     /**
      * Is target slain

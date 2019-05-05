@@ -284,25 +284,6 @@ public class CommandManager {
         }
     }
 
-    /**
-     * Use Item Command
-     * todo reimplement later
-     *
-     * @param event MessageReceivedEvent
-     */
-    void useItemCommand(MessageReceivedEvent event) {
-        this.pingDmItemUsed(event);
-//        if (this.isAdmin(event)) {
-//            Player         player     = PlayerRepository.getPlayer(event.getAuthor().getId());
-//            String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
-//            ConsumableItem item       = ConsumableManager.getItem(splitInput[1]);
-//            String[] context = splitInput.length > 2 ?
-//                               Arrays.copyOfRange(splitInput, 2, splitInput.length) :
-//                               new String[0];
-//            this.encounterManager.useItem(player, item, context);
-//        }
-    }
-
     void viewAllCharacters(MessageReceivedEvent event) {
         RepositoryLogger.viewCharacters(
             event.getChannel(),

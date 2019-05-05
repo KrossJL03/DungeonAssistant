@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class AttackActionResult implements ActionResultInterface {
 
     private HitRoll hitRoll;
+    private Slayer  targetSlayer;
     private String  attackerName;
     private String  targetName;
     private int     damageDie;
@@ -22,6 +23,7 @@ public class AttackActionResult implements ActionResultInterface {
      * @param damageRoll      Damage dealt to hostile
      * @param targetCurrentHp Target's current hitpoints
      * @param targetMaxHp     Target's max hitpoints
+     * @param targetSlayer    Target's slayer
      */
     AttackActionResult(
         @NotNull String attackerName,
@@ -30,15 +32,17 @@ public class AttackActionResult implements ActionResultInterface {
         int damageDie,
         int damageRoll,
         int targetCurrentHp,
-        int targetMaxHp
+        int targetMaxHp,
+        @NotNull Slayer targetSlayer
     ) {
+        this.attackerName = attackerName;
         this.damageDie = damageDie;
         this.damageRoll = damageRoll;
         this.hitRoll = hitRoll;
         this.targetCurrentHp = targetCurrentHp;
         this.targetMaxHp = targetMaxHp;
         this.targetName = targetName;
-        this.attackerName = attackerName;
+        this.targetSlayer = targetSlayer;
     }
 
     /**
@@ -61,7 +65,7 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
-     * Get damageRoll delt to target
+     * Get damageRoll dealt to target
      *
      * @return int
      */
@@ -107,12 +111,22 @@ public class AttackActionResult implements ActionResultInterface {
     }
 
     /**
+     * Get target slayer
+     *
+     * @return Slayer
+     */
+    @NotNull
+    public Slayer getTargetSlayer() {
+        return targetSlayer;
+    }
+
+    /**
      * Is the hit roll a crit
      *
      * @return bool
      */
     public boolean isCrit() {
-        return this.hitRoll.isCrit();
+        return hitRoll.isCrit();
     }
 
     /**
@@ -121,7 +135,7 @@ public class AttackActionResult implements ActionResultInterface {
      * @return bool
      */
     public boolean isFail() {
-        return this.hitRoll.isFail();
+        return hitRoll.isFail();
     }
 
     /**
@@ -130,6 +144,6 @@ public class AttackActionResult implements ActionResultInterface {
      * @return bool
      */
     public boolean isHit() {
-        return this.hitRoll.isHit();
+        return hitRoll.isHit();
     }
 }

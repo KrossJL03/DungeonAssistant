@@ -1,19 +1,14 @@
 package bot.Encounter;
 
-import bot.Constant;
 import bot.Encounter.EncounterData.*;
 import bot.Encounter.Exception.*;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.EncounterLoggerContext;
 import bot.Hostile.HostileManager;
-import bot.Item.Consumable.ConsumableItem;
-import bot.Item.Consumable.Exception.MissingRecipientException;
 import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
-
-import java.util.ArrayList;
 
 public class EncounterManager {
 
@@ -187,8 +182,8 @@ public class EncounterManager {
         if (!this.context.isLootPhase()) {
             throw EncounterPhaseException.createNotLootPhase();
         }
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(player);
-        LootActionResult actionResult = playerCharacter.getLoot();
+        PCEncounterData  playerCharacter = this.context.getPlayerCharacter(player);
+        LootActionResult actionResult    = playerCharacter.getLoot();
         this.logger.logLootAction(new LootActionAdapter(actionResult));
     }
 
@@ -209,40 +204,22 @@ public class EncounterManager {
     }
 
     public void protectAction(Player player, String name) {
-        if (this.context.isOver()) {
+        if (context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (!this.context.isDodgePhase()) {
+        } else if (!context.isDodgePhase()) {
             throw EncounterPhaseException.createNotProtectPhase();
         }
 
-        PCEncounterData protectorCharacter = this.getPlayerCharacter(player);
-        if (!protectorCharacter.isAbleToProtect()) {
-            throw PlayerCharacterUnableToProtectException.createProtectAlreadyUsed();
-        }
-        PCEncounterData protectedCharacter = this.context.getPlayerCharacter(name);
-        if (protectedCharacter.equals(protectorCharacter)) {
-            throw ProtectedCharacterException.createProtectYourself();
-        } else if (protectedCharacter.isSlain()) {
-            throw ProtectedCharacterException.createIsSlain(protectedCharacter.getName());
-        } else if (!protectedCharacter.hasActions()) {
-            throw ProtectedCharacterException.createTurnHasPassed(protectedCharacter.getName());
-        }
+        PCEncounterData protectorCharacter = getPlayerCharacter(player);
+        PCEncounterData protectedCharacter = context.getPlayerCharacter(name);
 
-        ArrayList<HostileEncounterData> hostiles      = this.context.getActiveHostiles();
-        int                             totalDamage   = 0;
-        int                             totalDefended = 0;
+        ProtectActionResult actionResult = protectorCharacter.protect(
+            protectedCharacter,
+            context.getActiveHostiles()
+        );
 
-        for (HostileEncounterData hostile : hostiles) {
-            int damage = protectorCharacter.takeDamage(hostile, hostile.getAttackRoll());
-            totalDamage += damage;
-            totalDefended += damage == 0 ? hostile.getAttackRoll() : protectorCharacter.getEndurance();
-        }
-
-        this.logger.logActionProtect(protectorCharacter, protectedCharacter, totalDamage, totalDefended);
-        protectorCharacter.useAction();
-        protectorCharacter.useProtect();
-        protectedCharacter.useAllActions();
-        this.endCurrentPlayerAction();
+        logger.logActionProtect(new ProtectActionAdapter(actionResult));
+        endCurrentPlayerAction();
     }
 
     public void removeHostile(String name) {
@@ -325,98 +302,6 @@ public class EncounterManager {
         this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
     }
 
-    /**
-     * Use Item
-     *
-     * @param player  Player
-     * @param item    ConsumableItem
-     * @param context Context
-     *
-     * @deprecated
-     */
-    public void useItem(Player player, ConsumableItem item, String[] context) {
-        if (!this.context.isPhase(item.getUsablePhase())) {
-            throw EncounterPhaseException.createNotItemUsablePhase(item.getName(), item.getUsablePhase());
-        }
-        PCEncounterData        playerCharacter = this.getPlayerCharacter(player);
-        EncounterDataInterface recipient       = null;
-        String                 statName        = null;
-
-        for (String parameter : context) {
-            if (Constant.isStatName(parameter)) {
-                if (statName == null) {
-                    statName = parameter;
-                } else {
-                    throw ItemException.createMultipleStats(statName, parameter);
-                }
-            } else if (this.context.isInEncounter(parameter)) {
-                if (recipient == null) {
-                    recipient = this.context.getEncounterData(parameter);
-                } else {
-                    throw ItemException.createMultipleRecipients(recipient.getName(), parameter);
-                }
-            } else {
-                throw ItemException.createInvalidParameter(parameter);
-            }
-        }
-        if (recipient == null) {
-            recipient = playerCharacter;
-        }
-
-        boolean usedOnSelf      = playerCharacter == recipient;
-        int     hitpointsHealed = 0;
-        int     damage          = 0;
-
-        EncounterManager.validateItemUse(playerCharacter, item, recipient, statName);
-
-        if (item.isHealing()) {
-            EncounterDataInterface healedED = (!usedOnSelf && item.isUserHealed()) ? playerCharacter : recipient;
-            hitpointsHealed = item.isPercentHealing() ? healedED.healPercent(item.getPercentHealed()) :
-                              healedED.healPoints(item.getHitpointsHealed());
-        }
-
-        if (item.isDamaging()) {
-            damage = recipient.takeDamage(playerCharacter, item.getDamage());
-            if (recipient instanceof HostileEncounterData && recipient.isSlain()) {
-                this.addKillToPlayerCharacters((HostileEncounterData) recipient);
-            }
-        }
-
-        if (item.isTempStatBoost() && recipient instanceof PCEncounterData) {
-            ((PCEncounterData) recipient).modifyStat(statName, item.getTempStatBoost());
-        }
-
-        this.logger.logUsedItem(
-            playerCharacter,
-            recipient,
-            item,
-            hitpointsHealed,
-            damage,
-            statName,
-            item.isReviving()
-        );
-
-        if (item.isProtecting()) {
-            ArrayList<HostileEncounterData> hostiles      = this.context.getActiveHostiles();
-            int                             totalDamage   = 0;
-            int                             totalDefended = 0;
-
-            for (HostileEncounterData hostile : hostiles) {
-                int damage2 = playerCharacter.takeDamage(hostile, hostile.getAttackRoll());
-                totalDamage += damage2;
-                totalDefended += damage2 == 0 ? hostile.getAttackRoll() : playerCharacter.getEndurance();
-            }
-
-            if (recipient instanceof PCEncounterData) {
-                this.logger.logActionProtect(playerCharacter, (PCEncounterData) recipient, totalDamage, totalDefended);
-                ((PCEncounterData) recipient).useAllActions();
-            }
-        }
-
-        playerCharacter.useAction();
-        this.endCurrentPlayerAction();
-    }
-
     public void viewEncounterSummary() {
         this.logger.logEncounterSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
     }
@@ -494,8 +379,7 @@ public class EncounterManager {
         return playerCharacter;
     }
 
-    private void startLootPhase()
-    {
+    private void startLootPhase() {
         this.context.startLootPhase();
         for (PCEncounterData playerCharacter : this.context.getAlivePlayerCharacters()) {
             playerCharacter.rollLoot();
@@ -512,63 +396,6 @@ public class EncounterManager {
             this.context.usePhoenixDown();
             int hitpoints = playerCharacter.healPercent((float) 0.5);
             this.logger.logFirstDeathRevived(playerCharacter.getName(), hitpoints);
-        }
-    }
-
-    private static void validateItemUse(
-        PCEncounterData playerCharacter,
-        ConsumableItem item,
-        EncounterDataInterface recipient,
-        String statName
-    ) {
-        if (recipient.isName(playerCharacter.getName()) && item.isRecipientRequired()) {
-            if (item.isProtecting()) {
-                throw ProtectedCharacterException.createProtectYourself();
-            } else {
-                throw MissingRecipientException.create(item.getName());
-            }
-        }
-        if (item.isHealing()) {
-            if (item.isReviving()) {
-                if (!recipient.isSlain()) {
-                    throw ItemRecipientException.createReviveLiving(
-                        recipient.getName(),
-                        recipient.getCurrentHP(),
-                        recipient.getMaxHP()
-                    );
-                }
-            } else if (recipient.isSlain()) {
-                throw PlayerCharacterSlainException.createFailedToHeal(
-                    recipient.getName(),
-                    recipient.getSlayer().getName()
-                );
-            }
-            if (!item.isUserHealed() && recipient.getMaxHP() == recipient.getCurrentHP()) {
-                throw ItemRecipientException.createHealMaxHealth(recipient.getName(), recipient.getMaxHP());
-            }
-        }
-        if (item.isDamaging() && recipient instanceof PCEncounterData) {
-            throw ItemRecipientException.createDamagePlayer(recipient.getName(), item.getName());
-        }
-        if (item.isProtecting()) {
-            if (!(recipient instanceof PCEncounterData)) {
-                throw ProtectedCharacterException.createNotPlayerCharacter(recipient.getName());
-            } else if (recipient.isSlain() && !item.isReviving()) {
-                throw ProtectedCharacterException.createIsSlain(recipient.getName());
-            } else if (!((PCEncounterData) recipient).hasActions()) {
-                throw ProtectedCharacterException.createTurnHasPassed(recipient.getName());
-            }
-        }
-        if (item.isTempStatBoost()) {
-            if (statName == null) {
-                throw ItemException.createMissingStatName(item.getName());
-            } else if (recipient instanceof PCEncounterData) {
-                if (!((PCEncounterData) recipient).isStatModifiable(statName, item.getTempStatBoost())) {
-                    throw PCEncounterDataException.createStatOutOfBounds(recipient.getName(), statName);
-                }
-            } else {
-                throw ItemRecipientException.createBoostHostile(recipient.getName());
-            }
         }
     }
 

@@ -6,7 +6,7 @@ public interface EncounterDataInterface {
     int getCurrentHP();
     int getMaxHP();
     String getName();
-    EncounterDataInterface getSlayer();
+    Slayer getSlayer();
     boolean isName(String name);
     boolean isSlain();
     int healPoints(int hitpoints);

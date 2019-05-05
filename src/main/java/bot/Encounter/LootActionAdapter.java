@@ -3,6 +3,7 @@ package bot.Encounter;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.LootActionResult;
 import bot.Encounter.EncounterData.LootRoll;
+import bot.Encounter.Logger.Mention;
 import bot.Encounter.Logger.Message.LootActionDataInterface;
 import bot.Encounter.Logger.Message.LootSubActionDataInterface;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class LootActionAdapter implements LootActionDataInterface {
      */
     @Override
     public int getFinalBlowBonus() {
-        return 300; //todo
+        return 300 * getFinalBlows().size(); //todo make constant
     }
 
     /**
@@ -37,7 +38,7 @@ public class LootActionAdapter implements LootActionDataInterface {
     @NotNull
     public ArrayList<String> getFinalBlows() {
         ArrayList<String> finalBlowNames = new ArrayList<>();
-        for (HostileEncounterData hostile : this.result.getFinalBlows()) {
+        for (HostileEncounterData hostile : result.getFinalBlows()) {
             finalBlowNames.add(hostile.getName());
         }
         return finalBlowNames;
@@ -48,7 +49,7 @@ public class LootActionAdapter implements LootActionDataInterface {
      */
     @Override
     public int getKillCount() {
-        return this.result.getLootRolls().size();
+        return result.getLootRolls().size();
     }
 
     /**
@@ -63,8 +64,8 @@ public class LootActionAdapter implements LootActionDataInterface {
      * {@inheritDoc}
      */
     @Override
-    public String getMention() {
-        return this.result.getOwner().getAsMention();
+    public Mention getMention() {
+        return new Mention(result.getOwner().getUserId());
     }
 
     /**
@@ -72,7 +73,7 @@ public class LootActionAdapter implements LootActionDataInterface {
      */
     @Override
     public String getName() {
-        return this.result.getName();
+        return result.getName();
     }
 
     /**
@@ -81,7 +82,7 @@ public class LootActionAdapter implements LootActionDataInterface {
     @Override
     public ArrayList<LootSubActionDataInterface> getSubActions() {
         ArrayList<LootSubActionDataInterface> subActionData = new ArrayList<>();
-        for (LootRoll result : this.result.getLootRolls()) {
+        for (LootRoll result : result.getLootRolls()) {
             subActionData.add(new LootSubActionAdapter(result));
         }
         return subActionData;
@@ -92,7 +93,7 @@ public class LootActionAdapter implements LootActionDataInterface {
      */
     @Override
     public boolean hasFinalBlows() {
-        return this.result.getFinalBlows().size() > 0;
+        return result.getFinalBlows().size() > 0;
     }
 
     /**
@@ -100,6 +101,6 @@ public class LootActionAdapter implements LootActionDataInterface {
      */
     @Override
     public boolean noLoot() {
-        return this.result.hasRolledLoot();
+        return !result.hasRolledLoot();
     }
 }

@@ -1,5 +1,6 @@
 package bot.Encounter.Logger.Message;
 
+import bot.Encounter.Logger.Mention;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -38,9 +39,9 @@ public interface LootActionDataInterface {
     /**
      * Get mention
      *
-     * @return String
+     * @return Mention
      */
-    String getMention();
+    Mention getMention();
 
     /**
      * Get name

@@ -9,6 +9,15 @@ public class Mention {
     /**
      * Mention constructor
      *
+     * @param userId User id
+     */
+    public Mention(String userId) {
+        this.value = String.format("<@%s>", userId);
+    }
+
+    /**
+     * Mention constructor
+     *
      * @param role Role
      */
     Mention(Role role) {

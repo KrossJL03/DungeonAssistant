@@ -12,10 +12,6 @@ public class Player {
         this.cumulus = cumulus;
     }
 
-    public String getAsMention() {
-        return String.format("<@%s>", this.userId);
-    }
-
     public int getCumulus() {
         return cumulus;
     }
@@ -24,11 +20,11 @@ public class Player {
         return name;
     }
 
-    public boolean isSamePlayer(Player player) {
-        return this.userId.equals(player.getUserId());
+    public String getUserId() {
+        return userId;
     }
 
-    private String getUserId() {
-        return this.userId;
+    public boolean isSamePlayer(Player player) {
+        return userId.equals(player.getUserId());
     }
 }

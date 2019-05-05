@@ -110,9 +110,6 @@ public class CommandListener extends ListenerAdapter {
                     case "statdrop":
                         this.commandManager.dropStatCommand(event);
                         return;
-//                    case "use":
-//                        this.commandManager.useItemCommand(event);
-//                        break;
                     case "view":
                         this.processViewCommand(event);
                         break;

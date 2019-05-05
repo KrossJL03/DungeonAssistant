@@ -14,13 +14,6 @@ public interface DodgeActionDataInterface extends CombatActionDataInterface {
     int getAttackCount();
 
     /**
-     * Get total damage dealt to the target
-     *
-     * @return int
-     */
-    int getDamage();
-
-    /**
      * Get target dodge die
      *
      * @return int
@@ -33,13 +26,6 @@ public interface DodgeActionDataInterface extends CombatActionDataInterface {
      * @return int
      */
     int getMinSucessDodgeRoll();
-
-    /**
-     * Get total damage resisted by the target
-     *
-     * @return int
-     */
-    int getResistedDamage();
 
     /**
      * Get sub action data

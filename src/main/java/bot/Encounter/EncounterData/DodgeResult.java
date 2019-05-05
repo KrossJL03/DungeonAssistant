@@ -36,7 +36,7 @@ public class DodgeResult {
      */
     @NotNull
     public String getAttackerName() {
-        return this.attackerName;
+        return attackerName;
     }
 
     /**
@@ -45,7 +45,7 @@ public class DodgeResult {
      * @return int
      */
     public int getAttackerDamageRoll() {
-        return this.attackerDamageRoll;
+        return attackerDamageRoll;
     }
 
     /**
@@ -54,7 +54,7 @@ public class DodgeResult {
      * @return int
      */
     public int getDamageDealt() {
-        return this.attackerDamageRoll - this.damageResisted;
+        return isSuccess() ? 0 : attackerDamageRoll - damageResisted;
     }
 
     /**
@@ -63,7 +63,7 @@ public class DodgeResult {
      * @return int
      */
     public int getDamageResisted() {
-        return this.damageResisted;
+        return damageResisted;
     }
 
     /**
@@ -72,7 +72,7 @@ public class DodgeResult {
      * @return int
      */
     public int getDodgeRoll() {
-        return this.dodgeRoll.getRoll();
+        return dodgeRoll.getRoll();
     }
 
     /**
@@ -81,6 +81,6 @@ public class DodgeResult {
      * @return boolean
      */
     public boolean isSuccess() {
-        return !this.dodgeRoll.isFail();
+        return !dodgeRoll.isFail();
     }
 }

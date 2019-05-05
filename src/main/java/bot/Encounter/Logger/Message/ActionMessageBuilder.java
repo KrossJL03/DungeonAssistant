@@ -9,17 +9,12 @@ import java.util.ArrayList;
 public class ActionMessageBuilder {
 
     private ActionMessageFormatter formatter;
-    private Mention                dungeonMasterMention;
 
     /**
-     * Action MessageBuilder constuctor
-     *
-     * @param dungeonMasterMention Dungeon master mention
+     * Action MessageBuilder constructor
      */
     @NotNull
-    public ActionMessageBuilder(Mention dungeonMasterMention) {
-        // todo make mention not nullable
-        this.dungeonMasterMention = dungeonMasterMention;
+    public ActionMessageBuilder() {
         this.formatter = new ActionMessageFormatter();
     }
 
@@ -27,25 +22,26 @@ public class ActionMessageBuilder {
      * Build message from attack action result
      *
      * @param actionData Attack action result
+     * @param dmMention  Dungeon master mention
      *
      * @return String
      */
     @NotNull
-    public String buildAttackActionMessage(@NotNull AttackActionDataInterface actionData) {
+    public String buildAttackActionMessage(@NotNull AttackActionDataInterface actionData, Mention dmMention) {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                textBlockLines = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
 
         codeBlockLines.add(String.format(
             "%s attacks %s!",
-            this.formatter.makeYellow(actionData.getAttackerName()),
-            this.formatter.makeRed(actionData.getTargetName())
+            formatter.makeYellow(actionData.getAttackerName()),
+            formatter.makeRed(actionData.getTargetName())
         ));
         codeBlockLines.add(String.format(
             "d20 %s rolled %d [%s]",
-            this.formatter.makeCyan("hit dice"),
+            formatter.makeCyan("hit dice"),
             actionData.getHitRoll(),
-            this.formatter.makeYellow(actionData.getHitType()).toUpperCase()
+            formatter.makeYellow(actionData.getHitType()).toUpperCase()
         ));
 
         if (actionData.isHit()) {
@@ -55,26 +51,21 @@ public class ActionMessageBuilder {
                 codeBlockLines.add(String.format(
                     "d%d %s rolled %d",
                     actionData.getDamageDie(),
-                    this.formatter.makeCyan("dmg dice"),
+                    formatter.makeCyan("dmg dice"),
                     actionData.getDamageRoll()
                 ));
             }
-            codeBlockLines.add(MessageConstants.BREAK);
-            codeBlockLines.add(String.format(
-                "%s takes %d damage!",
-                this.formatter.makeRed(actionData.getTargetName()),
-                actionData.getDamageRoll()
-            ));
         }
 
         if (actionData.isFail()) {
-            codeBlockLines.add(String.format("well... that's %s", this.formatter.makeRed("unfortunate")));
-            textBlockLines.add(String.format(
-                "Sit tight while me and %s discuss your fate",
-                this.dungeonMasterMention.getValue()
-            ));
+            codeBlockLines.add(String.format("well... that's %s", formatter.makeRed("unfortunate")));
+            textBlockLines.add(String.format("Sit tight while me and %s discuss your fate", dmMention.getValue()));
         } else {
-            codeBlockLines.add(this.getTargetStatusMessage(actionData));
+            codeBlockLines.add(MessageConstants.BREAK);
+            if (actionData.getDamageDealt() > 0) {
+                codeBlockLines.add(getDamageDealtLine(actionData, false));
+            }
+            codeBlockLines.add(getTargetStatusLine(actionData));
         }
 
         blocks.add(new CodeBlock(codeBlockLines, formatter.getStyle()));
@@ -93,58 +84,46 @@ public class ActionMessageBuilder {
      */
     @NotNull
     public String buildDodgeActionMessage(@NotNull DodgeActionDataInterface actionData) {
-        ArrayList<MessageBlockInterface> blocks           = new ArrayList<>();
-        ArrayList<String>                codeMessageLines = new ArrayList<>();
+        ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
+        ArrayList<String>                codeBlockLines = new ArrayList<>();
 
         if (actionData.isForceFail()) {
-            codeMessageLines.add(String.format(
+            codeBlockLines.add(String.format(
                 "%s was distracted, they %s to %s the attacks!",
-                this.formatter.makeYellow(actionData.getTargetName()),
-                this.formatter.makeYellow("failed"),
-                this.formatter.makeYellow("dodge")
+                formatter.makeYellow(actionData.getTargetName()),
+                formatter.makeYellow("failed"),
+                formatter.makeYellow("dodge")
             ));
-            codeMessageLines.add(String.format(
-                "%s is hit for %s damage!",
-                this.formatter.makeYellow(actionData.getTargetName()),
-                this.formatter.makeRed("full")
-            ));
+            codeBlockLines.add(getHitForFullDamageLine(actionData.getTargetName()));
         } else {
-            codeMessageLines.add(String.format(
+            codeBlockLines.add(String.format(
                 "%s attempts to %s %d attacks!",
-                this.formatter.makeYellow(actionData.getTargetName()),
-                this.formatter.makeYellow("dodge"),
+                formatter.makeYellow(actionData.getTargetName()),
+                formatter.makeYellow("dodge"),
                 actionData.getAttackCount()
             ));
-            codeMessageLines.add(String.format(
+            codeBlockLines.add(String.format(
                 "d%d %s %s",
                 actionData.getDodgeDie(),
-                this.formatter.makeCyan("dodge dice"),
-                this.formatter.makeGrey(String.format("success = %d", actionData.getMinSucessDodgeRoll()))
+                formatter.makeCyan("dodge dice"),
+                formatter.makeGrey(String.format("success = %d", actionData.getMinSucessDodgeRoll()))
             ));
-            codeMessageLines.add(MessageConstants.BREAK);
+            codeBlockLines.add(MessageConstants.BREAK);
             for (DodgeSubActionDataInterface subActionData : actionData.getSubActionData()) {
-                codeMessageLines.add(this.getDodgeSubActionMessage(subActionData));
-                codeMessageLines.add(MessageConstants.BREAK);
+                codeBlockLines.add(getDodgeSubActionLine(subActionData));
             }
         }
 
-        if (actionData.getResistedDamage() > 0) {
-            codeMessageLines.add(String.format(
-                "Resisted %d dmg through sheer might!",
-                actionData.getResistedDamage()
-            ));
-            codeMessageLines.add(MessageConstants.BREAK);
+        if (actionData.getDamageResisted() > 0) {
+            codeBlockLines.add(MessageConstants.BREAK);
+            codeBlockLines.add(getDamageResistedLine(actionData.getDamageResisted()));
         }
 
-        codeMessageLines.add(String.format(
-            "%s takes %d dmg total!",
-            this.formatter.makeYellow(actionData.getTargetName()),
-            actionData.getDamage()
-        ));
+        codeBlockLines.add(MessageConstants.BREAK);
+        codeBlockLines.add(getDamageDealtLine(actionData, true));
+        codeBlockLines.add(getTargetStatusLine(actionData));
 
-        codeMessageLines.add(this.getTargetStatusMessage(actionData));
-
-        blocks.add(new CodeBlock(codeMessageLines, this.formatter.getStyle()));
+        blocks.add(new CodeBlock(codeBlockLines, formatter.getStyle()));
 
         Message message = new Message(blocks);
         return message.getPrintout();
@@ -163,15 +142,15 @@ public class ActionMessageBuilder {
         ArrayList<String>                textBlockLines = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
 
-        textBlockLines.add(actionData.getMention());
+        textBlockLines.add(actionData.getMention().getValue());
 
         if (actionData.noLoot()) {
-            return "Looks like you don't have any loot. That's a problem"; // todo
+            throw LoggerException.createNoLoot(actionData.getName());
         }
 
         codeBlockLines.add(String.format(
             "%s helped slay %d hostile%s!",
-            this.formatter.makeYellow(actionData.getName()),
+            formatter.makeYellow(actionData.getName()),
             actionData.getKillCount(),
             actionData.getKillCount() > 1 ? "s" : ""
         ));
@@ -179,23 +158,27 @@ public class ActionMessageBuilder {
             "%dd%d %s",
             actionData.getKillCount(),
             actionData.getLootDie(),
-            this.formatter.makeCyan("loot dice")
+            formatter.makeCyan("loot dice")
         ));
 
         codeBlockLines.add(MessageConstants.BREAK);
 
         for (LootSubActionDataInterface subAction : actionData.getSubActions()) {
-            codeBlockLines.add(this.getLootSubActionMessage(subAction));
+            codeBlockLines.add(getLootSubActionline(subAction));
         }
 
         codeBlockLines.add(MessageConstants.BREAK);
 
         if (actionData.hasFinalBlows()) {
+            ArrayList<String> formattedKills = new ArrayList<>();
+            for (String finalBlowName : actionData.getFinalBlows()) {
+                formattedKills.add(formatter.makeRed(finalBlowName));
+            }
             codeBlockLines.add(String.format(
                 "ALSO they earned %dc for landing the final blow%s on %s!",
                 actionData.getFinalBlowBonus(),
                 actionData.getFinalBlows().size() > 1 ? "s" : "",
-                this.formatter.makeRed(String.join("', '", actionData.getFinalBlows()))
+                String.join(",  ", formattedKills)
             ));
         }
         codeBlockLines.add("Congratulations!");
@@ -207,15 +190,83 @@ public class ActionMessageBuilder {
         return message.getPrintout();
     }
 
+    public String buildProtectActionMessage(ProtectActionDataInterface actionData) {
+        ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
+        ArrayList<String>                textBlockLines = new ArrayList<>();
+        ArrayList<String>                codeBlockLines = new ArrayList<>();
+
+        codeBlockLines.add(String.format(
+            "%s shields %s from the attacks!",
+            actionData.getTargetName(),
+            actionData.getProtectedName()
+        ));
+        codeBlockLines.add(getHitForFullDamageLine(actionData.getTargetName()));
+        codeBlockLines.add(MessageConstants.BREAK);
+
+        if (actionData.getDamageResisted() > 0) {
+            codeBlockLines.add(getDamageResistedLine(actionData.getDamageResisted()));
+            codeBlockLines.add(MessageConstants.BREAK);
+        }
+
+        codeBlockLines.add(getDamageDealtLine(actionData, true));
+        codeBlockLines.add(getTargetStatusLine(actionData));
+
+        textBlockLines.add(String.format(
+            "%s, %s has been protected. They take no damage this round.",
+            actionData.getProtectedOwnerMention().getValue(),
+            actionData.getProtectedName()
+        ));
+
+        blocks.add(new CodeBlock(codeBlockLines, formatter.getStyle()));
+        blocks.add(new TextBlock(textBlockLines));
+
+        Message message = new Message(blocks);
+        return message.getPrintout();
+    }
+
     /**
-     * Get dodge sub action message
+     * Get damage dealt line
+     *
+     * @param actionData        Action data
+     * @param isMultipleAttacks Were multiple attacks inflicted
+     *
+     * @return String
+     */
+    @NotNull
+    private String getDamageDealtLine(CombatActionDataInterface actionData, boolean isMultipleAttacks) {
+        String targetName = actionData.isTargetExplorer()
+                            ? formatter.makeYellow(actionData.getTargetName())
+                            : formatter.makeRed(actionData.getTargetName());
+        return String.format(
+            "%s takes %d damage%s!",
+            targetName,
+            actionData.getDamageDealt(),
+            isMultipleAttacks ? " total" : ""
+        );
+    }
+
+
+    /**
+     * Get damage resisted line
+     *
+     * @param damageResisted Damage resisted
+     *
+     * @return String
+     */
+    @NotNull
+    private String getDamageResistedLine(int damageResisted) {
+        return String.format("Resisted %d dmg through sheer might!", damageResisted);
+    }
+
+    /**
+     * Get dodge sub action line
      *
      * @param actionData Dodge sub action data
      *
      * @return String
      */
     @NotNull
-    private String getDodgeSubActionMessage(DodgeSubActionDataInterface actionData) {
+    private String getDodgeSubActionLine(DodgeSubActionDataInterface actionData) {
         StringBuilder output    = new StringBuilder();
         int           dodgeRoll = actionData.getDodgeRoll();
 
@@ -224,13 +275,13 @@ public class ActionMessageBuilder {
         if (actionData.isSuccess()) {
             output.append(String.format(
                 "%s! %s",
-                this.formatter.makeYellow("DODGED"),
-                this.formatter.makeGrey(String.format("no dmg from %s", actionData.getAttackerName()))
+                formatter.makeYellow("DODGED"),
+                formatter.makeGrey(String.format("no dmg from %s", actionData.getAttackerName()))
             ));
         } else {
             output.append(String.format(
                 "%s! %2d dmg from '%s'",
-                this.formatter.makeRed("FAIL"),
+                formatter.makeRed("FAIL"),
                 actionData.getDamageRoll(),
                 actionData.getAttackerName()
             ));
@@ -240,27 +291,43 @@ public class ActionMessageBuilder {
     }
 
     /**
-     * Get loot sub action message
+     * Get "hit for full damage" line
+     *
+     * @param name Target name
+     *
+     * @return String
+     */
+    @NotNull
+    private String getHitForFullDamageLine(String name) {
+        return String.format(
+            "%s is hit for %s damage!",
+            formatter.makeYellow(name),
+            formatter.makeRed("full")
+        );
+    }
+
+    /**
+     * Get loot sub action line
      *
      * @param actionData Loot sub action data
      *
      * @return String
      */
     @NotNull
-    private String getLootSubActionMessage(LootSubActionDataInterface actionData) {
+    private String getLootSubActionline(LootSubActionDataInterface actionData) {
         StringBuilder output = new StringBuilder();
         Loot          loot   = actionData.getLoot();
 
         output.append(String.format("%2d %s ", actionData.getLootRoll(), MessageConstants.DOUBLE_ARROW));
 
         if (loot.getItem() == null || loot.getItem().equals("null")) {
-            output.append(this.formatter.makeGrey(String.format("nothing from %s", actionData.getKillName())));
+            output.append(formatter.makeGrey(String.format("nothing from %s", actionData.getKillName())));
         } else {
             output.append(String.format(
-                "x%d %s from '%s'",
+                "x%d %s from %s",
                 loot.getQuantity(),
-                this.formatter.makeYellow(loot.getItem()),
-                this.formatter.makeRed(actionData.getKillName())
+                formatter.makeYellow(loot.getItem()),
+                formatter.makeRed(actionData.getKillName())
             ));
         }
 
@@ -268,58 +335,27 @@ public class ActionMessageBuilder {
     }
 
     /**
-     * Get remainign health message
+     * Get target status line
      *
-     * @param actionData Combat action data
-     *
-     * @return String
-     */
-    @NotNull
-    private String getRemainingHealthMessage(CombatActionDataInterface actionData) {
-        return String.format(
-            "%d/%d health remaining",
-            actionData.getTargetCurrentHp(),
-            actionData.getTargetMaxHp()
-        );
-    }
-
-    /**
-     * Get target status mesage
-     *
-     * @param actionData Attack action data
+     * @param actionData Action data
      *
      * @return String
      */
     @NotNull
-    private String getTargetStatusMessage(AttackActionDataInterface actionData) {
+    private String getTargetStatusLine(CombatActionDataInterface actionData) {
         if (actionData.isTargetSlain()) {
             return String.format(
-                "%s was slain by %s!!!",
-                this.formatter.makeRed(actionData.getTargetName()),
-                this.formatter.makeYellow(actionData.getAttackerName())
-            );
-        } else {
-            return this.getRemainingHealthMessage(actionData);
-        }
-    }
-
-    /**
-     * Get target status message
-     *
-     * @param actionData Dodge action data
-     *
-     * @return String
-     */
-    @NotNull
-    private String getTargetStatusMessage(DodgeActionDataInterface actionData) {
-        if (actionData.isTargetSlain()) {
-            return String.format(
-                "%s has been %s!!",
+                "%s was %s%s!!",
                 actionData.getTargetName(),
-                this.formatter.makeRed("knocked out")
+                formatter.makeRed(actionData.isTargetExplorer() ? "knocked out" : "slain"),
+                actionData.isTargetSlain() ? String.format(" by %s", actionData.getTargetSlayer().getName()) : ""
             );
         } else {
-            return this.getRemainingHealthMessage(actionData);
+            return String.format(
+                "%d/%d health remaining",
+                actionData.getTargetCurrentHp(),
+                actionData.getTargetMaxHp()
+            );
         }
     }
 }

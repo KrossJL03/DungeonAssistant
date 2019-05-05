@@ -5,87 +5,87 @@ import bot.Hostile.Loot;
 
 public class HostileEncounterData implements EncounterDataInterface {
 
-    private Hostile                hostile;
-    private int                    currentHp;
-    private String                 name;
-    private EncounterDataInterface slayer;
-    private int                    attackRoll;
+    private Hostile hostile;
+    private int     currentHp;
+    private String  name;
+    private Slayer  slayer;
+    private int     attackRoll;
 
     public HostileEncounterData(Hostile hostile, String name) {
+        this.attackRoll = 0;
         this.currentHp = hostile.getHitpoints();
         this.hostile = hostile;
-        this.slayer = null;
-        this.attackRoll = 0;
         this.name = name;
+        this.slayer = new Slayer();
     }
 
     public void attack() {
-        this.attackRoll = this.rollDamage();
+        attackRoll = rollDamage();
     }
 
     public int getAttackDice() {
-        return this.hostile.getAttackDice();
+        return hostile.getAttackDice();
     }
 
     public int getAttackRoll() {
-        return this.attackRoll;
+        return attackRoll;
     }
 
     public int getCurrentHP() {
-        return this.currentHp;
+        return currentHp;
     }
 
     public Hostile getHostile() {
-        return this.hostile;
+        return hostile;
     }
 
     public int getMaxHP() {
-        return this.hostile.getHitpoints();
+        return hostile.getHitpoints();
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public EncounterDataInterface getSlayer() {
-        return this.slayer;
+    public Slayer getSlayer() {
+        return slayer;
     }
 
     public String getSpecies() {
-        return this.hostile.getSpecies();
+        return hostile.getSpecies();
     }
 
     public int healPoints(int hitpoints) {
-        if (this.isSlain()) {
-            this.slayer = null;
+        if (isSlain()) {
+            slayer = null;
         }
-        if (this.currentHp + hitpoints > this.getMaxHP()) {
-            hitpoints = this.getMaxHP() - this.currentHp;
-            this.currentHp = this.getMaxHP();
+        if (currentHp + hitpoints > getMaxHP()) {
+            hitpoints = getMaxHP() - currentHp;
+            currentHp = getMaxHP();
         } else {
-            this.currentHp += hitpoints;
+            currentHp += hitpoints;
         }
         return hitpoints;
     }
 
     public int healPercent(float percent) {
-        if (this.isSlain()) {
-            this.slayer = null;
+        if (isSlain()) {
+            slayer = null;
         }
-        int hitpointsHealed = (int) Math.floor(this.getMaxHP() * percent);
-        if (this.currentHp + hitpointsHealed > this.getMaxHP()) {
-            hitpointsHealed = this.getMaxHP() - this.currentHp;
-            this.currentHp = this.getMaxHP();
+        int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
+        if (currentHp + hitpointsHealed > getMaxHP()) {
+            hitpointsHealed = getMaxHP() - currentHp;
+            currentHp = getMaxHP();
         } else {
-            this.currentHp += hitpointsHealed;
+            currentHp += hitpointsHealed;
         }
         return hitpointsHealed;
     }
 
     public void hurt(int hitpoints) {
-        this.currentHp -= hitpoints;
-        if (this.currentHp < 0) {
-            this.currentHp = 0;
+        currentHp -= hitpoints;
+        if (currentHp < 0) {
+            currentHp = 0;
         }
     }
 
@@ -94,11 +94,11 @@ public class HostileEncounterData implements EncounterDataInterface {
     }
 
     public boolean isSlain() {
-        return this.currentHp < 1;
+        return currentHp < 1;
     }
 
     public int rollDamage() {
-        return (int) Math.floor(Math.random() * this.getAttackDice()) + 1;
+        return (int) Math.floor(Math.random() * getAttackDice()) + 1;
     }
 
     public void setName(String name) {
@@ -106,16 +106,16 @@ public class HostileEncounterData implements EncounterDataInterface {
     }
 
     public int takeDamage(EncounterDataInterface attacker, int damage) {
-        if (this.currentHp > 0 && this.currentHp - damage < 1) {
-            this.slayer = attacker;
-            this.currentHp = 0;
+        if (currentHp > 0 && currentHp - damage < 1) {
+            slayer = new Slayer(attacker.getName());
+            currentHp = 0;
         } else {
-            this.currentHp -= damage;
+            currentHp -= damage;
         }
         return damage;
     }
 
     Loot getLoot(int roll) {
-        return this.hostile.getLoot(roll);
+        return hostile.getLoot(roll);
     }
 }

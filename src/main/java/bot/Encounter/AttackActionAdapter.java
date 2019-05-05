@@ -1,6 +1,7 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounterData.AttackActionResult;
+import bot.Encounter.EncounterData.Slayer;
 import bot.Encounter.Logger.Message.AttackActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,8 +31,24 @@ public class AttackActionAdapter implements AttackActionDataInterface {
      * {@inheritDoc}
      */
     @Override
+    public int getDamageDealt() {
+        return result.getDamageRoll();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getDamageDie() {
         return result.getDamageDie();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDamageResisted() {
+        return 0; // todo update for PVP
     }
 
     /**
@@ -88,6 +105,15 @@ public class AttackActionAdapter implements AttackActionDataInterface {
      * {@inheritDoc}
      */
     @Override
+    @NotNull
+    public Slayer getTargetSlayer() {
+        return result.getTargetSlayer();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isCrit() {
         return result.isCrit();
     }
@@ -111,8 +137,15 @@ public class AttackActionAdapter implements AttackActionDataInterface {
     /**
      * {@inheritDoc}
      */
+    public boolean isTargetExplorer() {
+        return false; // todo make adjustable for PVP
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isTargetSlain() {
-        return result.getTargetCurrentHp() < 1;
+        return getTargetSlayer().exists();
     }
 }

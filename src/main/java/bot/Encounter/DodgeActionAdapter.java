@@ -2,6 +2,7 @@ package bot.Encounter;
 
 import bot.Encounter.EncounterData.DodgeActionResult;
 import bot.Encounter.EncounterData.DodgeResult;
+import bot.Encounter.EncounterData.Slayer;
 import bot.Encounter.Logger.Message.DodgeActionDataInterface;
 import bot.Encounter.Logger.Message.DodgeSubActionDataInterface;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +37,9 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      * {@inheritDoc}
      */
     @Override
-    public int getDamage() {
+    public int getDamageDealt() {
         int totalDamageDealt = 0;
-        for (DodgeResult result : this.result.getDodgeResults()) {
+        for (DodgeResult result : result.getDodgeResults()) {
             totalDamageDealt += result.getDamageDealt();
         }
         return totalDamageDealt;
@@ -49,7 +50,7 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public int getDodgeDie() {
-        return this.result.getTargetDodgeDie();
+        return result.getTargetDodgeDie();
     }
 
     /**
@@ -57,16 +58,16 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public int getMinSucessDodgeRoll() {
-        return this.result.getMinSucessDodgeRoll();
+        return result.getMinSucessDodgeRoll();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getResistedDamage() {
+    public int getDamageResisted() {
         int totalDamageResisted = 0;
-        for (DodgeResult result : this.result.getDodgeResults()) {
+        for (DodgeResult result : result.getDodgeResults()) {
             totalDamageResisted += result.getDamageResisted();
         }
         return totalDamageResisted;
@@ -79,7 +80,7 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
     @NotNull
     public ArrayList<DodgeSubActionDataInterface> getSubActionData() {
         ArrayList<DodgeSubActionDataInterface> subActionData = new ArrayList<>();
-        for (DodgeResult result : this.result.getDodgeResults()) {
+        for (DodgeResult result : result.getDodgeResults()) {
             subActionData.add(new DodgeSubActionAdapter(result));
         }
         return subActionData;
@@ -90,7 +91,7 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public int getTargetCurrentHp() {
-        return this.result.getTargetCurrentHp();
+        return result.getTargetCurrentHp();
     }
 
     /**
@@ -98,7 +99,7 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public int getTargetMaxHp() {
-        return this.result.getTargetMaxHp();
+        return result.getTargetMaxHp();
     }
 
     /**
@@ -107,7 +108,16 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
     @Override
     @NotNull
     public String getTargetName() {
-        return this.result.getTargetName();
+        return result.getTargetName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NotNull
+    public Slayer getTargetSlayer() {
+        return result.getTargetSlayer();
     }
 
     /**
@@ -115,7 +125,14 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public boolean isForceFail() {
-        return this.isForceFail;
+        return isForceFail;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isTargetExplorer() {
+        return true;
     }
 
     /**
@@ -123,6 +140,6 @@ public class DodgeActionAdapter implements DodgeActionDataInterface {
      */
     @Override
     public boolean isTargetSlain() {
-        return this.getTargetCurrentHp() <= 0;
+        return getTargetSlayer().exists();
     }
 }

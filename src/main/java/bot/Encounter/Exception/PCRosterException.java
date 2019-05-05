@@ -1,6 +1,7 @@
 package bot.Encounter.Exception;
 
 import bot.CustomExceptionInterface;
+import bot.Encounter.Logger.Mention;
 import bot.Player.Player;
 
 public class PCRosterException extends RuntimeException implements CustomExceptionInterface {
@@ -11,7 +12,10 @@ public class PCRosterException extends RuntimeException implements CustomExcepti
 
     public static PCRosterException createFullRoster(Player player){
         return new PCRosterException(
-            String.format("Uh oh, looks like the dungeon is full. Sorry %s.", player.getAsMention())
+            String.format(
+                "Uh oh, looks like the dungeon is full. Sorry %s.",
+                (new Mention(player.getUserId()).getValue())
+            )
         );
     }
 

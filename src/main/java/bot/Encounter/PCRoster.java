@@ -176,7 +176,7 @@ class PCRoster {
         // todo rename
         PCEncounterData playerCharacter = this.getPC(player);
         if (!playerCharacter.isPresent()) {
-            throw PlayerCharacterPresentException.createHasAleadyLeft(player.getAsMention());
+            throw PlayerCharacterPresentException.createHasAleadyLeft(player);
         }
         playerCharacter.leave();
         return playerCharacter;
@@ -196,7 +196,7 @@ class PCRoster {
         // todo rename
         PCEncounterData playerCharacter = this.getPC(player);
         if (playerCharacter.isPresent()) {
-            throw PlayerCharacterPresentException.createCannotRejoinIfPresent(player.getAsMention());
+            throw PlayerCharacterPresentException.createCannotRejoinIfPresent(player);
         } else if (this.isFull()) {
             // this error is thrown last because already present message takes precedence
             throw PCRosterException.createFullRoster(player);
