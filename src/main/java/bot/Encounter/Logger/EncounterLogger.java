@@ -307,7 +307,8 @@ public class EncounterLogger
             NEWLINE +
             String.format("The guild leader in charge takes a phoenix feather out of their bag, reviving %s!", name) +
             NEWLINE +
-            String.format(" %s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
+            NEWLINE +
+            String.format("%s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
             "```"
         );
     }

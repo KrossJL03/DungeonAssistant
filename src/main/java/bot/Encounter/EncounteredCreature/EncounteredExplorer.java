@@ -46,13 +46,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.hasProtect = true;
         this.isPresent = true;
         this.kills = new ArrayList<>();
-        this.loot = new LootActionResult(name, owner);
         this.maxHp = explorer.getHitpoints();
         this.name = explorer.getName();
         this.owner = explorer.getOwner();
         this.slayer = new Slayer();
         this.strength = explorer.getStrength();
         this.wisdom = explorer.getWisdom();
+
+        this.loot = new LootActionResult(name, owner);
     }
 
     /**
