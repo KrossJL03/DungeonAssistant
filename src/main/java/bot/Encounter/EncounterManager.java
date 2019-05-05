@@ -162,6 +162,18 @@ public class EncounterManager
     }
 
     /**
+     * End encounter
+     */
+    public void endEncounter() {
+        this.context.startEndPhase();
+        this.logger.logEndEncounter(
+            this.context.getAllPlayerCharacters(),
+            this.context.getAllHostiles(),
+            0
+        );
+    }
+
+    /**
      * Heal encountered creature with given name by given amount of hitpoints
      *
      * @param name      Encountered creature name
@@ -182,6 +194,18 @@ public class EncounterManager
             encounterCreature.getCurrentHP(),
             encounterCreature.getMaxHP()
         );
+    }
+
+    public void healAllHostiles(int hitpoints) {
+        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
+            this.heal(hostile.getName(), hitpoints);
+        }
+    }
+
+    public void healAllPcs(int hitpoints) {
+        for (PCEncounterData playerCharacter : this.context.getActivePlayerCharacters()) {
+            this.heal(playerCharacter.getName(), hitpoints);
+        }
     }
 
     /**
@@ -210,7 +234,12 @@ public class EncounterManager
             if (encounterCreature instanceof EncounteredHostile) {
                 addKillToExplorers((EncounteredHostile) encounterCreature);
                 if (!encounter.hasActiveHostiles()) {
-                    startLootPhase();
+                    encounter.startLootPhase();
+                    logger.logEndEncounter(
+                        context.getAllPlayerCharacters(),
+                        context.getAllHostiles(),
+                        1
+                    );
                 }
             } else if (encounterCreature instanceof EncounteredExplorerInterface) {
                 if (encounter.isInitiativePhase() && encounterCreature == encounter.getCurrentExplorer()) {
@@ -219,6 +248,18 @@ public class EncounterManager
                     reviveIfFirstSlainExplorer((EncounteredExplorerInterface) encounterCreature);
                 }
             }
+        }
+    }
+
+    public void hurtAllHostiles(int hitpoints) {
+        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
+            this.hurt(hostile.getName(), hitpoints);
+        }
+    }
+
+    public void hurtAllPcs(int hitpoints) {
+        for (PCEncounterData playerCharacter : this.context.getActivePlayerCharacters()) {
+            this.hurt(playerCharacter.getName(), hitpoints);
         }
     }
 
@@ -271,7 +312,7 @@ public class EncounterManager
             logger.logEndEncounter(
                 encounter.getAllExplorers(),
                 encounter.getAllHostiles(),
-                false
+                -1
             );
         }
     }
@@ -377,8 +418,15 @@ public class EncounterManager
             throw EncounterPhaseException.createEndPhase();
         }
         EncounteredExplorerInterface encounteredExplorer = this.encounter.getExplorer(name);
-        this.encounter.removeExplorer(encounteredExplorer);
-        this.logger.logRemovedExplorer(name);
+        if (context.isInitiativePhase()) {
+            EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
+            if (currentExplorer.isName(name)) {
+                currentExplorer.useAllActions();
+                endCurrentPlayerAction();
+            }
+        }
+        encounter.removeExplorer(encounteredExplorer);
+        logger.logRemovedExplorer(name);
     }
 
     /**
@@ -541,16 +589,21 @@ public class EncounterManager
     {
         EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
         if (currentExplorer.isSlain()) {
-            this.reviveIfFirstSlainExplorer(currentExplorer);
+            reviveIfFirstSlainExplorer(currentExplorer);
         }
-        if (!this.encounter.hasActiveHostiles()) {
-            this.startLootPhase();
-        } else if (!this.encounter.hasActiveExplorers()) {
-            this.encounter.startEndPhase();
-            this.logger.logEndEncounter(
-                this.encounter.getAllExplorers(),
-                this.encounter.getAllHostiles(),
-                false
+        if (!encounter.hasActiveHostiles()) {
+            encounter.startLootPhase();
+            logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                1
+            );
+        } else if (!encounter.hasActiveExplorers()) {
+            encounter.startEndPhase();
+            logger.logEndEncounter(
+                encounter.getAllExplorers(),
+                encounter.getAllHostiles(),
+                -1
             );
         } else {
             if (currentExplorer.hasActions()) {

@@ -66,14 +66,16 @@ public class CommandManager {
         User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
 
-        String name = splitInput[2];
-        int    HP   = Integer.parseInt(splitInput[3]);
-        int    STR  = Integer.parseInt(splitInput[4]);
-        int    DEF  = Integer.parseInt(splitInput[5]);
-        int    AGI  = Integer.parseInt(splitInput[6]);
-        int    WIS  = Integer.parseInt(splitInput[7]);
+        String name      = splitInput[2];
+        int    HP        = Integer.parseInt(splitInput[3]);
+        int    STR       = Integer.parseInt(splitInput[4]);
+        int    DEF       = Integer.parseInt(splitInput[5]);
+        int    AGI       = Integer.parseInt(splitInput[6]);
+        int    WIS       = Integer.parseInt(splitInput[7]);
+        String appLink   = splitInput[8];
+        String statsLink = splitInput[9];
 
-        ExplorerManager.createExplorer(author.getId(), name, HP, STR, DEF, AGI, WIS);
+        PlayerCharacterManager.createExplorer(author.getId(), name, HP, STR, DEF, AGI, WIS, appLink, statsLink);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
         this.viewCharacters(event);
@@ -157,6 +159,12 @@ public class CommandManager {
         }
     }
 
+    void endEncounterCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            this.encounterManager.endEncounter();
+        }
+    }
+
     void endTurnCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             this.encounterManager.endCurrentPlayersTurn();
@@ -169,6 +177,22 @@ public class CommandManager {
             String   name       = splitInput[1];
             int      hitpoints  = Integer.parseInt(splitInput[2]);
             this.encounterManager.heal(name, hitpoints);
+        }
+    }
+
+    void healAllHostilesCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.healAllHostiles(hitpoints);
+        }
+    }
+
+    void healAllPcsCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.healAllPcs(hitpoints);
         }
     }
 
@@ -193,6 +217,22 @@ public class CommandManager {
             String   name       = splitInput[1];
             int      hitpoints  = Integer.parseInt(splitInput[2]);
             this.encounterManager.hurt(name, hitpoints);
+        }
+    }
+
+    void hurtAllHostilesCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.hurtAllHostiles(hitpoints);
+        }
+    }
+
+    void hurtAllPcsCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.hurtAllPcs(hitpoints);
         }
     }
 
@@ -367,7 +407,7 @@ public class CommandManager {
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {
-        List<Role> roles = event.getGuild().getRolesByName("DungeonMaster", false);
+        List<Role> roles = event.getGuild().getRolesByName("Dungeon Master", false);
         if (!roles.isEmpty()) {
             return roles.get(0);
         }

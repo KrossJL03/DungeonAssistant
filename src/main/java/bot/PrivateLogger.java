@@ -21,7 +21,16 @@ class PrivateLogger {
                 "   %s%-16s %-16s",
                 CommandListener.COMMAND_KEY,
                 "create character",
-                "[Name] [HP] [STR] [DEF] [AGI] [WIS]"
+                "[Name] [HP] [STR] [DEF] [AGI] [WIS] [AppLink] [StatsLink]"
+            )
+        );
+        output.append(PrivateLogger.NEWLINE);
+        output.append(
+            String.format(
+                "   %s%-16s %-16s",
+                CommandListener.COMMAND_KEY,
+                "deletecharacter",
+                "[Name]"
             )
         );
         output.append(PrivateLogger.NEWLINE);
@@ -161,6 +170,22 @@ class PrivateLogger {
             output.append(String.format(
                 "   %s%-16s %-16s %s",
                 CommandListener.COMMAND_KEY,
+                "endAction",
+                "",
+                "End a single action of a player. No ill side effects."
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "endEncounter",
+                "",
+                "End the encounter"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
                 "endTurn",
                 "",
                 "End a players turn. No ill side effects."
@@ -171,7 +196,23 @@ class PrivateLogger {
                 CommandListener.COMMAND_KEY,
                 "heal",
                 "[Name] [HP]",
-                "Heal a hostile by X hitpoints"
+                "Heal a hostile or PC by X hitpoints"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "healAllHostiles",
+                "[HP]",
+                "Heal all hostiles by X hitpoints"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "healAllPCs",
+                "[HP]",
+                "Heal all PCs by X hitpoints"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -179,7 +220,23 @@ class PrivateLogger {
                 CommandListener.COMMAND_KEY,
                 "hurt",
                 "[Name] [HP]",
-                "Deal X damage to a hostile"
+                "Deal X damage to a PC or hostile"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "hurtAllHostiles",
+                "[HP]",
+                "Deal X damage to all hostiles"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "hurtAllPCs",
+                "[HP]",
+                "Deal X damage to all PCs"
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -239,7 +296,10 @@ class PrivateLogger {
                 "Reduce a characters stat by the drop amount for the current encounter"
             ));
             output.append("```");
+            PrivateLogger.sendPrivateMessage(user, output.toString());
+            output = new StringBuilder();
         }
+
         output.append(PrivateLogger.NEWLINE);
         output.append(String.format("View Commands [%sview + COMMAND]:", CommandListener.COMMAND_KEY));
         output.append(PrivateLogger.NEWLINE);

@@ -30,22 +30,26 @@ class ExplorerRepository
         int defense,
         int agility,
         int wisdom,
-        int hitpoints
+        int hitpoints,
+        String appLink,
+        String statsLink
     ) {
         String sql =
             String.format(
-                "INSERT OR REPLACE INTO %s(playerId, name, strength, defense, agility, wisdom, hitpoints)",
+                "INSERT OR REPLACE INTO %s(playerId, name, strength, defense, agility, wisdom, hitpoints, appLink, statsLink)",
                 ExplorerRepository.TABLE_NAME
             ) +
             String.format(
-                "VALUES('%s','%s',%d,%d,%d,%d,%d)",
+                "VALUES('%s','%s',%d,%d,%d,%d,%d,'%s','%s')",
                 playerId,
                 name,
                 strength,
                 defense,
                 agility,
                 wisdom,
-                hitpoints
+                hitpoints,
+                appLink,
+                statsLink
             );
         ExplorerRepository.executeUpdate(sql);
     }
@@ -73,7 +77,9 @@ class ExplorerRepository
                         resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                         resultSet.getInt("defense"),
                         resultSet.getInt("agility"),
-                        resultSet.getInt("wisdom")
+                        resultSet.getInt("wisdom"),
+                        resultSet.getString("appLink"),
+                        resultSet.getString("statsLink")
                     );
                     explorers.add(explorer);
                 }
@@ -120,7 +126,9 @@ class ExplorerRepository
                         resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                         resultSet.getInt("defense"),
                         resultSet.getInt("agility"),
-                        resultSet.getInt("wisdom")
+                        resultSet.getInt("wisdom"),
+                        resultSet.getString("appLink"),
+                        resultSet.getString("statsLink")
                     );
                     explorers.add(explorer);
                 }
@@ -166,7 +174,9 @@ class ExplorerRepository
                     resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
                     resultSet.getInt("defense"),
                     resultSet.getInt("agility"),
-                    resultSet.getInt("wisdom")
+                    resultSet.getInt("wisdom"),
+                    resultSet.getString("appLink"),
+                    resultSet.getString("statsLink")
                 );
             }
         } catch (Exception e) {
@@ -203,10 +213,13 @@ class ExplorerRepository
                 return new Explorer(
                     resultSet.getString("name"),
                     player,
-                    resultSet.getInt("hitpoints"), resultSet.getInt("strength"),
+                    resultSet.getInt("hitpoints"),
+                    resultSet.getInt("strength"),
                     resultSet.getInt("defense"),
                     resultSet.getInt("agility"),
-                    resultSet.getInt("wisdom")
+                    resultSet.getInt("wisdom"),
+                    resultSet.getString("appLink"),
+                    resultSet.getString("statsLink")
                 );
             }
         } catch (Exception e) {
@@ -236,6 +249,8 @@ class ExplorerRepository
                      " agility   INT  NOT NULL, " +
                      " wisdom    INT  NOT NULL, " +
                      " hitpoints INT  NOT NULL, " +
+                     " appLink   TEXT NOT NULL, " +
+                     " statsLInk TEXT NOT NULL, " +
                      " PRIMARY KEY (name COLLATE NOCASE)" +
                      ")";
         ExplorerRepository.executeUpdate(sql);

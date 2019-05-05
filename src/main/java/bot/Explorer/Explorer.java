@@ -14,6 +14,8 @@ public class Explorer
     private int    agility;
     private int    wisdom;
     private int    hitpoints;
+    private String appLink;
+    private String statsLink;
 
     Explorer(
         String name,
@@ -22,7 +24,9 @@ public class Explorer
         int strength,
         int defense,
         int agility,
-        int wisdom
+        int wisdom,
+        String appLink,
+        String statsLink
     ) {
         Explorer.validateStats(name, hitpoints, strength, defense, agility, wisdom);
         this.owner = owner;
@@ -32,6 +36,8 @@ public class Explorer
         this.agility = agility;
         this.wisdom = wisdom;
         this.hitpoints = hitpoints;
+        this.appLink = appLink;
+        this.statsLink = statsLink;
     }
 
     public int getAgility() {

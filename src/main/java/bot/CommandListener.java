@@ -59,11 +59,20 @@ public class CommandListener extends ListenerAdapter {
                     case "endaction":
                         this.commandManager.endActionCommand(event);
                         break;
+                    case "endencounter":
+                        this.commandManager.endEncounterCommand(event);
+                        break;
                     case "endturn":
                         this.commandManager.endTurnCommand(event);
                         break;
                     case "heal":
                         this.commandManager.healCommand(event);
+                        break;
+                    case "healallhostiles":
+                        this.commandManager.healAllHostilesCommand(event);
+                        break;
+                    case "healallpcs":
+                        this.commandManager.healAllPcsCommand(event);
                         break;
                     case "hello":
                         this.commandManager.helloCommand(event);
@@ -73,6 +82,12 @@ public class CommandListener extends ListenerAdapter {
                         break;
                     case "hurt":
                         this.commandManager.hurtCommand(event);
+                        break;
+                    case "hurtallhostiles":
+                        this.commandManager.hurtAllHostilesCommand(event);
+                        break;
+                    case "hurtallpcs":
+                        this.commandManager.hurtAllPcsCommand(event);
                         break;
                     case "join":
                         this.commandManager.joinCommand(event);
