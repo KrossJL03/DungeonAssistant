@@ -6,13 +6,14 @@ import bot.Hostile.Hostile;
 import bot.Exception.*;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableManager;
+import bot.Player.Exception.PlayerNotFoundException;
 import bot.Player.Player;
 import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
-import bot.PlayerCharacter.Exception.PlayerCharacterNotFoundException;
-import bot.PlayerCharacter.PlayerCharacter;
+import bot.Explorer.Exception.ExplorerNotFoundException;
+import bot.Explorer.Explorer;
 import bot.Hostile.HostileRepository;
-import bot.PlayerCharacter.PlayerCharacterManager;
+import bot.Explorer.ExplorerManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,11 @@ public class CommandManager {
         Player   player      = PlayerRepository.getPlayer(event.getAuthor().getId());
         String[] splitInput  = event.getMessage().getContentRaw().split("\\s+");
         String   hostileName = splitInput[1];
+
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
+
         this.encounterManager.attackAction(player, hostileName);
     }
 
@@ -67,7 +73,7 @@ public class CommandManager {
         int    AGI  = Integer.parseInt(splitInput[6]);
         int    WIS  = Integer.parseInt(splitInput[7]);
 
-        PlayerCharacterManager.createPlayerCharacter(author.getId(), name, HP, STR, DEF, AGI, WIS);
+        ExplorerManager.createExplorer(author.getId(), name, HP, STR, DEF, AGI, WIS);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
         this.viewCharacters(event);
@@ -100,7 +106,7 @@ public class CommandManager {
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
         String         name       = splitInput[1];
 
-        PlayerCharacterManager.deletePlayerCharacter(author.getId(), name);
+        ExplorerManager.deleteExplorer(author.getId(), name);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been deleted!", name)).queue();
     }
@@ -117,6 +123,9 @@ public class CommandManager {
 
     void dodgeCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
         this.encounterManager.dodgeAction(player);
     }
 
@@ -125,6 +134,9 @@ public class CommandManager {
             this.encounterManager.dodgePassAction();
         } else {
             Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+            if (player == null) {
+                throw PlayerNotFoundException.createNotInDatabase();
+            }
             this.encounterManager.dodgePassActionHelp(player);
         }
     }
@@ -191,15 +203,15 @@ public class CommandManager {
         String         name       = splitInput[1];
 
         try {
-            PlayerCharacter playerCharacter = PlayerCharacterManager.getMyPC(owner.getId(), name);
-            this.encounterManager.joinEncounter(playerCharacter);
-        } catch (PlayerCharacterNotFoundException e) {
+            Explorer explorer = ExplorerManager.getMyExplorer(owner.getId(), name);
+            this.encounterManager.joinEncounter(explorer);
+        } catch (ExplorerNotFoundException e) {
             // todo create new logger
-            ArrayList<PlayerCharacter> ownersPCs = PlayerCharacterManager.getAllMyPCs(owner.getId());
-            if (!ownersPCs.isEmpty()) {
+            ArrayList<Explorer> ownersExplorers = ExplorerManager.getAllMyExplorers(owner.getId());
+            if (!ownersExplorers.isEmpty()) {
                 StringBuilder output = new StringBuilder();
                 output.append(String.format(
-                    "I don't think I know %s, but I do know these characters: %s", name, ownersPCs
+                    "I don't think I know %s, but I do know these characters: %s", name, ownersExplorers
                 ));
                 channel.sendMessage(output).queue();
             } else {
@@ -218,17 +230,23 @@ public class CommandManager {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             String   name       = splitInput[1];
-            this.encounterManager.removePlayerCharacter(name);
+            this.encounterManager.removeExplorer(name);
         }
     }
 
     void leaveCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
         this.encounterManager.leaveEncounter(player);
     }
 
     void lootCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
         this.encounterManager.lootAction(player);
     }
 
@@ -236,6 +254,11 @@ public class CommandManager {
         Player   player     = PlayerRepository.getPlayer(event.getAuthor().getId());
         String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
         String   name       = splitInput[1];
+
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
+
         this.encounterManager.protectAction(player, name);
     }
 
@@ -249,6 +272,11 @@ public class CommandManager {
 
     void rejoinCommand(MessageReceivedEvent event) {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
+
         this.encounterManager.rejoinEncounter(player);
     }
 
@@ -287,14 +315,14 @@ public class CommandManager {
     void viewAllCharacters(MessageReceivedEvent event) {
         RepositoryLogger.viewCharacters(
             event.getChannel(),
-            PlayerCharacterManager.getAllPCs()
+            ExplorerManager.getAllExplorers()
         );
     }
 
     void viewCharacters(MessageReceivedEvent event) {
         RepositoryLogger.viewCharactersWithStats(
             event.getChannel(),
-            PlayerCharacterManager.getAllMyPCs(event.getAuthor().getId())
+            ExplorerManager.getAllMyExplorers(event.getAuthor().getId())
         );
     }
 
@@ -331,7 +359,11 @@ public class CommandManager {
 
     //todo remove
     void pingDmItemUsed(MessageReceivedEvent event) {
-        this.encounterManager.pingDmItemUsed(PlayerRepository.getPlayer(event.getAuthor().getId()));
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        if (player == null) {
+            throw PlayerNotFoundException.createNotInDatabase();
+        }
+        this.encounterManager.pingDmItemUsed(player);
     }
 
     private Role getDungeonMaster(MessageReceivedEvent event) {

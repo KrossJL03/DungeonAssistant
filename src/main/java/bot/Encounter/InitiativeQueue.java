@@ -1,45 +1,89 @@
 package bot.Encounter;
 
-import bot.Encounter.EncounterData.PCEncounterData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-class InitiativeQueue {
+class InitiativeQueue
+{
 
-    private LinkedList<PCEncounterData> initiative;
+    private LinkedList<EncounteredExplorerInterface> initiative;
 
-    InitiativeQueue() {
+    /**
+     * InitiativeQueue constructor (empty)
+     */
+    InitiativeQueue()
+    {
         this.initiative = new LinkedList<>();
     }
 
-    InitiativeQueue(ArrayList<PCEncounterData> playerCharacters) {
+    /**
+     * InitiativeQueue constructor
+     *
+     * @param encounteredExplorers Encountered explorers
+     */
+    @NotNull InitiativeQueue(@NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers)
+    {
         this.initiative = new LinkedList<>();
-        this.initiative.addAll(playerCharacters);
+        this.initiative.addAll(encounteredExplorers);
     }
 
-    void add(PCEncounterData playerCharacter) {
-        this.initiative.add(playerCharacter);
+    /**
+     * Add encountered explorer
+     *
+     * @param encounteredExplorer Encountered explorer to add
+     */
+    void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    {
+        this.initiative.add(encounteredExplorer);
     }
 
-    boolean contains(PCEncounterData playerCharacter) {
-        return this.initiative.contains(playerCharacter);
+    /**
+     * Contains encountered explorer
+     *
+     * @param encounteredExplorer Encountered explorer to check for
+     *
+     * @return bool
+     */
+    boolean contains(EncounteredExplorerInterface encounteredExplorer)
+    {
+        return this.initiative.contains(encounteredExplorer);
     }
 
-    PCEncounterData getCurrentPlayerCharacter() {
+    /**
+     * Get current explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @Nullable EncounteredExplorerInterface getCurrentExplorer()
+    {
         return this.initiative.peek();
     }
 
-    PCEncounterData getNextPlayerCharacter() {
-        PCEncounterData nextPlayer = this.initiative.peek();
-        while (nextPlayer != null && (nextPlayer.isSlain() || !nextPlayer.isPresent() || !nextPlayer.hasActions())) {
+    /**
+     * Get next explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @Nullable EncounteredExplorerInterface getNextExplorer()
+    {
+        EncounteredExplorerInterface nextExplorer = this.initiative.peek();
+        while (nextExplorer != null && (nextExplorer.isSlain() || !nextExplorer.isPresent() || !nextExplorer.hasActions())) {
             this.initiative.pop();
-            nextPlayer = this.initiative.peek();
+            nextExplorer = this.initiative.peek();
         }
-        return nextPlayer;
+        return nextExplorer;
     }
 
-    void remove(PCEncounterData playerCharacter) {
-        this.initiative.remove(playerCharacter);
+    /**
+     * Remove explorer
+     *
+     * @param encounteredExplorer Encountered explorer to remove
+     */
+    void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    {
+        this.initiative.remove(encounteredExplorer);
     }
 }

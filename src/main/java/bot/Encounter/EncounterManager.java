@@ -1,367 +1,578 @@
 package bot.Encounter;
 
-import bot.Encounter.EncounterData.*;
+import bot.Encounter.EncounteredCreature.*;
 import bot.Encounter.Exception.*;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.EncounterLoggerContext;
 import bot.Hostile.HostileManager;
 import bot.Player.Player;
-import bot.PlayerCharacter.PlayerCharacter;
+import bot.Explorer.Explorer;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
-public class EncounterManager {
-
-    private Encounter              context;
+public class EncounterManager
+{
+    private Encounter              encounter;
     private EncounterLogger        logger;
     private EncounterLoggerContext loggerContext;
 
-    public EncounterManager(
-        Encounter context,
-        EncounterLogger logger,
-        EncounterLoggerContext loggerContext
-    ) {
-        this.context = context;
+    /**
+     * EncounterManager constructor
+     *
+     * @param encounter     Encounter
+     * @param logger        Encounter logger
+     * @param loggerContext Encounter logger encounter
+     */
+    public @NotNull EncounterManager(
+        @NotNull Encounter encounter,
+        @NotNull EncounterLogger logger,
+        @NotNull EncounterLoggerContext loggerContext
+    )
+    {
+        this.encounter = encounter;
         this.logger = logger;
-        this.loggerContext = loggerContext;
+        this.loggerContext = loggerContext; // todo move to logger only
     }
 
-    public void addHostile(String speciesName, String nickname) {
-        if (this.context.isOver()) {
+    /**
+     * Add hostile to encounter
+     *
+     * @param speciesName Hostile species name
+     * @param nickname    Hostile name
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void addHostile(@NotNull String speciesName, @NotNull String nickname) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        HostileEncounterData hostileData = this.context.addHostile(HostileManager.getHostile(speciesName), nickname);
-        this.logger.logAddedHostile(hostileData);
+        EncounteredHostileInterface hostileData = encounter.addHostile(
+            HostileManager.getHostile(speciesName),
+            nickname
+        );
+        logger.logAddedHostile(hostileData);
     }
 
-    public void attackAction(Player player, String hostileName) {
-        if (this.context.isOver()) {
+    /**
+     * Attack action
+     *
+     * @param player      Player
+     * @param hostileName Hostile name
+     *
+     * @throws EncounterPhaseException If not attack phase
+     */
+    public void attackAction(@NotNull Player player, @NotNull String hostileName) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (!this.context.isAttackPhase()) {
+        } else if (!encounter.isAttackPhase()) {
             throw EncounterPhaseException.createNotAttackPhase();
         }
-        PCEncounterData      playerCharacter = this.getPlayerCharacter(player);
-        HostileEncounterData hostile         = this.context.getHostile(hostileName);
+        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
+        EncounteredHostileInterface  encounteredHostile  = encounter.getHostile(hostileName);
 
-        AttackActionResult result = playerCharacter.attack(hostile);
-        this.logger.logAction(result);
+        AttackActionResultInterface result = encounteredExplorer.attack(encounteredHostile);
+        logger.logAction(result);
 
-        if (hostile.isSlain()) {
-            this.addKillToPlayerCharacters(hostile);
+        if (encounteredHostile.isSlain()) {
+            addKillToExplorers(encounteredHostile);
         }
-        this.endCurrentPlayerAction();
+        endCurrentPlayerAction();
     }
 
-    public void createEncounter(MessageChannel channel, Role dungeonMaster) {
-        this.context = new Encounter();
-        this.loggerContext.setChannel(channel);
-        this.loggerContext.setDungeonMasterMention(dungeonMaster);
-        this.logger.logCreateEncounter();
+    /**
+     * Create encounter
+     *
+     * @param channel       Encounter channel
+     * @param dungeonMaster Dungeon master role
+     */
+    public void createEncounter(@NotNull MessageChannel channel, @NotNull Role dungeonMaster)
+    {
+        encounter = new Encounter();
+        loggerContext.setChannel(channel);
+        loggerContext.setDungeonMasterMention(dungeonMaster);
+        logger.logCreateEncounter();
     }
 
-    public void dodgeAction(Player player) {
-        if (this.context.isOver()) {
+    /**
+     * Dodge action
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If not dodge phase
+     */
+    public void dodgeAction(@NotNull Player player) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (!this.context.isDodgePhase()) {
+        } else if (!encounter.isDodgePhase()) {
             throw EncounterPhaseException.createNotDodgePhase();
         }
 
-        PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
-        DodgeActionResult result          = playerCharacter.dodge(this.context.getActiveHostiles());
+        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
+        DodgeActionResultInterface   result              = encounteredExplorer.dodge(encounter.getActiveHostiles());
 
-        this.logger.logAction(result);
-        this.endCurrentPlayerAction();
+        logger.logAction(result);
+        endCurrentPlayerAction();
     }
 
-    public void dodgePassAction() {
-        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        this.logger.logActionDodgePass(playerCharacter);
-        playerCharacter.useAction();
-        this.endCurrentPlayerAction();
+    /**
+     * Dodge pass action
+     */
+    public void dodgePassAction()
+    {
+        EncounteredExplorerInterface encounteredExplorer = encounter.getCurrentExplorer();
+        logger.logActionDodgePass(encounteredExplorer);
+        encounteredExplorer.useAction();
+        endCurrentPlayerAction();
     }
 
-    public void dodgePassActionHelp(Player player) {
-        this.logger.pingDmDodgePass(player);
+    /**
+     * Request dodge pass action
+     *
+     * @param player Player
+     */
+    public void dodgePassActionHelp(@NotNull Player player)
+    {
+        logger.pingDmDodgePass(player);
     }
 
-    public void endCurrentPlayersAction() {
-        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        playerCharacter.useAction();
-        this.endCurrentPlayerAction();
+    /**
+     * End current player action
+     */
+    public void endCurrentPlayersAction()
+    {
+        // todo rename method
+        EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
+        currentExplorer.useAction();
+        endCurrentPlayerAction();
     }
 
-    public void endCurrentPlayersTurn() {
-        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        playerCharacter.useAllActions();
-        this.endCurrentPlayerAction();
+    /**
+     * End current player turn
+     */
+    public void endCurrentPlayersTurn()
+    {
+        // todo rename method
+        EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
+        currentExplorer.useAllActions();
+        endCurrentPlayerAction();
     }
 
-    public void heal(String name, int hitpoints) {
-        if (this.context.isOver()) {
+    /**
+     * Heal encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        EncounterDataInterface recipient = this.context.getEncounterData(name);
-        recipient.healPoints(hitpoints);
-        this.logger.logDungeonMasterHeal(
-            recipient.getName(),
+        EncounterCreatureInterface encounterCreature = encounter.getCreature(name);
+        encounterCreature.healPoints(hitpoints);
+        logger.logDungeonMasterHeal(
+            encounterCreature.getName(),
             hitpoints,
-            recipient.getCurrentHP(),
-            recipient.getMaxHP()
+            encounterCreature.getCurrentHP(),
+            encounterCreature.getMaxHP()
         );
     }
 
-    public void hurt(String name, int hitpoints) {
-        if (this.context.isOver()) {
+    /**
+     * Hurt encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        EncounterDataInterface recipient = this.context.getEncounterData(name);
-        recipient.hurt(hitpoints);
-        this.logger.logDungeonMasterHurt(
-            recipient.getName(),
+        EncounterCreatureInterface encounterCreature = encounter.getCreature(name);
+        encounterCreature.hurt(hitpoints);
+        logger.logDungeonMasterHurt(
+            encounterCreature.getName(),
             hitpoints,
-            recipient.getCurrentHP(),
-            recipient.getMaxHP()
+            encounterCreature.getCurrentHP(),
+            encounterCreature.getMaxHP()
         );
-        if (recipient.isSlain()) {
-            this.logger.logDungeonMasterSlay(recipient.getName());
-            if (recipient instanceof HostileEncounterData) {
-                this.addKillToPlayerCharacters((HostileEncounterData) recipient);
-                if (!this.context.hasActiveHostiles()) {
-                    this.startLootPhase();
+        if (encounterCreature.isSlain()) {
+            logger.logDungeonMasterSlay(encounterCreature.getName());
+            if (encounterCreature instanceof EncounteredHostile) {
+                addKillToExplorers((EncounteredHostile) encounterCreature);
+                if (!encounter.hasActiveHostiles()) {
+                    startLootPhase();
                 }
-            } else if (recipient instanceof PCEncounterData) {
-                if (this.context.isInitiativePhase() && recipient == this.context.getCurrentPlayerCharacter()) {
-                    this.endCurrentPlayerAction();
+            } else if (encounterCreature instanceof EncounteredExplorerInterface) {
+                if (encounter.isInitiativePhase() && encounterCreature == encounter.getCurrentExplorer()) {
+                    endCurrentPlayerAction();
                 } else {
-                    this.reviveIfFirstSlainPC((PCEncounterData) recipient);
+                    reviveIfFirstSlainExplorer((EncounteredExplorerInterface) encounterCreature);
                 }
             }
         }
     }
 
-    public void joinEncounter(PlayerCharacter playerCharacter) {
-        if (!this.context.isStarted()) {
+    /**
+     * Join encounter
+     *
+     * @param explorer Explorer
+     *
+     * @throws EncounterPhaseException If encounter is over or has not started
+     */
+    public void joinEncounter(@NotNull Explorer explorer) throws EncounterPhaseException
+    {
+        if (!encounter.isStarted()) {
             throw EncounterPhaseException.createNotStarted();
-        } else if (this.context.isOver()) {
+        } else if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData encounterData = new PCEncounterData(playerCharacter);
-        this.context.addCharacter(encounterData);
-        this.logger.logAddedExplorer(encounterData);
-        if (this.context.isFullDungeon()) {
-            this.logger.logDungeonIsFull();
+        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer);
+        encounter.addExplorer(encounteredExplorer);
+        logger.logAddedExplorer(encounteredExplorer);
+        if (encounter.isFullDungeon()) {
+            logger.logDungeonIsFull();
         }
     }
 
-    public void leaveEncounter(Player player) {
-        if (this.context.isOver()) {
+    /**
+     * Leave encounter
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void leaveEncounter(@NotNull Player player) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData currentPlayerCharacter;
+        EncounteredExplorerInterface currentExplorer;
         try {
-            currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
+            currentExplorer = encounter.getCurrentExplorer();
         } catch (NotInInitiativeException e) {
-            currentPlayerCharacter = null;
+            currentExplorer = null;
         }
-        PCEncounterData playerCharacter = this.context.playerHasLeft(player);
-        this.logger.logLeftEncounter(playerCharacter.getName());
-        if (playerCharacter == currentPlayerCharacter) {
-            this.endCurrentPlayerAction();
-        } else if (!this.context.hasActivePCs()) {
-            this.context.startEndPhase();
-            this.logger.logEndEncounter(
-                this.context.getAllPlayerCharacters(),
-                this.context.getAllHostiles(),
+        EncounteredExplorerInterface encounteredExplorer = encounter.playerHasLeft(player);
+        logger.logLeftEncounter(encounteredExplorer.getName());
+        if (encounteredExplorer == currentExplorer) {
+            endCurrentPlayerAction();
+        } else if (!encounter.hasActiveExplorers()) {
+            encounter.startEndPhase();
+            logger.logEndEncounter(
+                encounter.getAllExplorers(),
+                encounter.getAllHostiles(),
                 false
             );
         }
     }
 
-    public void lootAction(Player player) {
-        if (!this.context.isLootPhase()) {
+    /**
+     * Loot action
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If not loot phase
+     */
+    public void lootAction(@NotNull Player player) throws EncounterPhaseException
+    {
+        if (!encounter.isLootPhase()) {
             throw EncounterPhaseException.createNotLootPhase();
         }
-        PCEncounterData  playerCharacter = this.context.getPlayerCharacter(player);
-        LootActionResult actionResult    = playerCharacter.getLoot();
-        this.logger.logAction(actionResult);
+        EncounteredExplorerInterface encounteredExplorer = encounter.getExplorer(player);
+        LootActionResultInterface    actionResult        = encounteredExplorer.getLoot();
+        logger.logAction(actionResult);
     }
 
-    public void modifyStat(String name, String statName, int statMod) {
+    /**
+     * Modify stat
+     *
+     * @param name     Name of creature to modify stat for
+     * @param statName Name of stat to modify
+     * @param statMod  Mod to apply to stat
+     *
+     * @throws EncounterPhaseException If the encounter is over
+     */
+    public void modifyStat(@NotNull String name, @NotNull String statName, int statMod) throws EncounterPhaseException
+    {
         statName = statName.toLowerCase();
-        if (this.context.isOver()) {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-        playerCharacter.modifyStat(statName, statMod);
-        this.context.sortRoster();
-        this.logger.logDungeonMasterStatMod(
-            playerCharacter.getName(),
+        EncounteredExplorerInterface encounteredExplorer = encounter.getExplorer(name);
+        encounteredExplorer.modifyStat(statName, statMod);
+        encounter.sortRoster();
+        logger.logDungeonMasterStatMod(
+            encounteredExplorer.getName(),
             statName,
             statMod,
-            playerCharacter.getStat(statName)
+            encounteredExplorer.getStat(statName)
         );
     }
 
-    public void protectAction(Player player, String name) {
-        if (context.isOver()) {
+    /**
+     * Protect action
+     *
+     * @param player Owner of current explorer
+     * @param name   Name of explorer to protect
+     *
+     * @throws EncounterPhaseException If not dodge phase
+     */
+    public void protectAction(@NotNull Player player, @NotNull String name) throws EncounterPhaseException
+    {
+        if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (!context.isDodgePhase()) {
+        } else if (!encounter.isDodgePhase()) {
             throw EncounterPhaseException.createNotProtectPhase();
         }
 
-        PCEncounterData protectorCharacter = getPlayerCharacter(player);
-        PCEncounterData protectedCharacter = context.getPlayerCharacter(name);
+        EncounteredExplorerInterface protectorCharacter = getCurrentExplorer(player);
+        EncounteredExplorerInterface protectedCharacter = encounter.getExplorer(name);
 
-        ProtectActionResult actionResult = protectorCharacter.protect(
+        ProtectActionResultInterface actionResult = protectorCharacter.protect(
             protectedCharacter,
-            context.getActiveHostiles()
+            encounter.getActiveHostiles()
         );
 
         logger.logAction(actionResult);
         endCurrentPlayerAction();
     }
 
-    public void removeHostile(String name) {
-        if (this.context.isOver()) {
+    /**
+     * Remove hostile with given name
+     *
+     * @param name Name of hostile to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void removeHostile(@NotNull String name) throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        HostileEncounterData hostile = this.context.getHostile(name);
-        this.context.removeHostile(hostile);
+        EncounteredHostileInterface hostile = encounter.getHostile(name);
+        this.encounter.removeHostile(hostile);
         this.logger.logRemovedHostile(name);
     }
 
-    public void removePlayerCharacter(String name) {
-        if (this.context.isOver()) {
+    /**
+     * Remove explorer with given name
+     *
+     * @param name Name of explorer to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-        this.context.removePlayerCharacter(playerCharacter);
+        EncounteredExplorerInterface encounteredExplorer = this.encounter.getExplorer(name);
+        this.encounter.removeExplorer(encounteredExplorer);
         this.logger.logRemovedExplorer(name);
     }
 
-    public void rejoinEncounter(Player player) {
-        if (this.context.isOver()) {
+    /**
+     * Rejoin player
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void rejoinEncounter(@NotNull Player player) throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData playerCharacter = this.context.playerHasRejoined(player);
-        this.logger.logRejoinEncounter(playerCharacter.getName());
+        EncounteredExplorerInterface encounteredExplorer = this.encounter.playerHasRejoined(player);
+        this.logger.logRejoinEncounter(encounteredExplorer.getName());
     }
 
-    public void setMaxPlayerCount(int maxPlayerCount) {
-        if (this.context.isOver()) {
+    /**
+     * Set max player count
+     *
+     * @param maxPlayerCount Max player count
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        this.context.setMaxPlayerCount(maxPlayerCount);
+        this.encounter.setMaxPlayerCount(maxPlayerCount);
         this.logger.logSetMaxPlayers(maxPlayerCount);
     }
 
-    public void skipPlayerTurn() {
-        if (this.context.isOver()) {
+    /**
+     * Skip current player turn
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void skipPlayerTurn() throws EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        if (this.context.isAttackPhase()) {
-            this.logger.logActionAttackSkipped(playerCharacter.getName());
-            playerCharacter.useAllActions();
+        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
+        if (this.encounter.isAttackPhase()) {
+            this.logger.logActionAttackSkipped(currentExplorer.getName());
+            currentExplorer.useAllActions();
             this.endCurrentPlayerAction();
-        } else if (this.context.isDodgePhase()) {
-            this.dodgeActionSkipped(playerCharacter.getOwner());
+        } else if (this.encounter.isDodgePhase()) {
+            this.dodgeActionSkipped(currentExplorer.getOwner());
         }
     }
 
-    public void startAttackPhase() {
-        this.validateStartEncounterPhase();
-        this.context.startAttackPhase();
-        this.logger.logStartAttackPhase(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
-        this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
+    /**
+     * Start attack phase
+     */
+    public void startAttackPhase()
+    {
+        this.validateStartInitiativePhase();
+        this.encounter.startAttackPhase();
+        this.logger.logStartAttackPhase(this.encounter.getAllExplorers(), this.encounter.getAllHostiles());
+        this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
     }
 
-    public void startDodgePhase() {
-        this.validateStartEncounterPhase();
-        this.context.startDodgePhase();
-        for (HostileEncounterData hostile : this.context.getActiveHostiles()) {
-            hostile.attack();
+    /**
+     * Start dodge phase
+     */
+    public void startDodgePhase()
+    {
+        this.validateStartInitiativePhase();
+        this.encounter.startDodgePhase();
+        for (EncounteredHostileInterface encounteredHostile : this.encounter.getActiveHostiles()) {
+            encounteredHostile.attack();
         }
-        this.logger.logStartDodgePhase(this.context.getAllPlayerCharacters(), this.context.getActiveHostiles());
-        this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
+        this.logger.logStartDodgePhase(this.encounter.getAllExplorers(), this.encounter.getActiveHostiles());
+        this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
     }
 
-    public void startEncounter(MessageChannel channel, Role mentionRole) throws NoHostilesException {
-        if (this.context.isOver()) {
+    /**
+     * Start encounters
+     *
+     * @param channel     Encounter channel
+     * @param mentionRole Mention role
+     *
+     * @throws EncounterPhaseException If encounter is over or already started
+     * @throws MaxZeroPlayersException If no max player count has been set
+     * @throws NoHostilesException     If the encounter has no hostiles
+     */
+    public void startEncounter(@NotNull MessageChannel channel, @NotNull Role mentionRole)
+        throws EncounterPhaseException, MaxZeroPlayersException, NoHostilesException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (this.context.isStarted()) {
+        } else if (this.encounter.isStarted()) {
             throw EncounterPhaseException.createStartInProgressEncounter();
-        } else if (this.context.getMaxPlayerCount() == 0) {
+        } else if (this.encounter.getMaxPlayerCount() == 0) {
             throw new MaxZeroPlayersException();
-        } else if (!this.context.hasActiveHostiles()) {
+        } else if (!this.encounter.hasActiveHostiles()) {
             throw new NoHostilesException();
         }
         this.loggerContext.setChannel(channel);
-        this.context.startJoinPhase();
-        this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
+        this.encounter.startJoinPhase();
+        this.logger.logStartEncounter(mentionRole, this.encounter.getMaxPlayerCount());
     }
 
-    public void viewEncounterSummary() {
-        this.logger.logSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
+    /**
+     * View encounter summary
+     */
+    public void viewEncounterSummary()
+    {
+        this.logger.logSummary(this.encounter.getAllExplorers(), this.encounter.getAllHostiles());
     }
 
-    // todo remove once inventory is implemented
-    public void pingDmItemUsed(Player player) {
+    /**
+     * Request item use
+     *
+     * @param player Player
+     */
+    public void pingDmItemUsed(@NotNull Player player)
+    {
         this.logger.pingDmItemUsed(player);
     }
 
-    private void addKillToPlayerCharacters(HostileEncounterData hostile) {
-        for (PCEncounterData playerCharcter : this.context.getActivePlayerCharacters()) {
-            playerCharcter.addKill(hostile);
+    /**
+     * Add kill to explorers
+     *
+     * @param encounteredHostile Encountered hostile
+     */
+    private void addKillToExplorers(@NotNull EncounteredHostileInterface encounteredHostile)
+    {
+        for (EncounteredExplorerInterface encounteredExplorer : this.encounter.getActiveExplorers()) {
+            encounteredExplorer.addKill(encounteredHostile);
         }
     }
 
-    private void dodgeActionSkipped(Player player) {
-        if (!this.context.isDodgePhase()) {
+    /**
+     * Dodge action skipped
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If not dodge phase
+     */
+    private void dodgeActionSkipped(@NotNull Player player) throws EncounterPhaseException
+    {
+        if (!this.encounter.isDodgePhase()) {
             throw EncounterPhaseException.createNotDodgePhase();
         }
-        PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
-        DodgeActionResult result          = playerCharacter.failToDodge(this.context.getActiveHostiles());
+        EncounteredExplorerInterface encounteredExplorer = this.getCurrentExplorer(player);
+        DodgeActionResultInterface   result              = encounteredExplorer.failToDodge(this.encounter.getActiveHostiles());
 
         this.logger.logAction(result);
         this.endCurrentPlayerAction();
     }
 
-    private void endCurrentPlayerAction() {
-        PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
-        if (currentPlayerCharacter.isSlain()) {
-            this.reviveIfFirstSlainPC(currentPlayerCharacter);
+    /**
+     * End current player action
+     */
+    private void endCurrentPlayerAction()
+    {
+        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
+        if (currentExplorer.isSlain()) {
+            this.reviveIfFirstSlainExplorer(currentExplorer);
         }
-        if (!this.context.hasActiveHostiles()) {
+        if (!this.encounter.hasActiveHostiles()) {
             this.startLootPhase();
-        } else if (!this.context.hasActivePCs()) {
-            this.context.startEndPhase();
+        } else if (!this.encounter.hasActiveExplorers()) {
+            this.encounter.startEndPhase();
             this.logger.logEndEncounter(
-                this.context.getAllPlayerCharacters(),
-                this.context.getAllHostiles(),
+                this.encounter.getAllExplorers(),
+                this.encounter.getAllHostiles(),
                 false
             );
         } else {
-            if (currentPlayerCharacter.hasActions()) {
+            if (currentExplorer.hasActions()) {
                 this.logger.logActionsRemaining(
-                    currentPlayerCharacter.getName(),
-                    currentPlayerCharacter.getRemainingActions()
+                    currentExplorer.getName(),
+                    currentExplorer.getRemainingActions()
                 );
             } else {
                 try {
-                    this.logger.pingPlayerTurn(this.context.getNextPlayerCharacter());
-                } catch (EncounterDataNotFoundException e) {
-                    if (this.context.isAttackPhase()) {
-                        this.context.startRpPhase();
+                    this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
+                } catch (EncounteredCreatureNotFoundException e) {
+                    if (this.encounter.isAttackPhase()) {
+                        this.encounter.startRpPhase();
                         this.logger.logEndAttackPhase(
-                            this.context.getAllPlayerCharacters(),
-                            this.context.getAllHostiles()
+                            this.encounter.getAllExplorers(),
+                            this.encounter.getAllHostiles()
                         );
-                    } else if (this.context.isDodgePhase()) {
-                        this.context.startRpPhase();
+                    } else if (this.encounter.isDodgePhase()) {
+                        this.encounter.startRpPhase();
                         this.logger.logEndDodgePhase(
-                            this.context.getAllPlayerCharacters(),
-                            this.context.getAllHostiles()
+                            this.encounter.getAllExplorers(),
+                            this.encounter.getAllHostiles()
                         );
                     }
                 }
@@ -369,40 +580,67 @@ public class EncounterManager {
         }
     }
 
-    private PCEncounterData getPlayerCharacter(Player player) {
-        PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
-        if (!playerCharacter.isOwner(player)) {
+    /**
+     * Get explorer
+     *
+     * @param player Owner of explorer to retrieve
+     *
+     * @return EncounteredExplorerInterface
+     *
+     * @throws NotYourTurnException If not players turn
+     */
+    private @NotNull EncounteredExplorerInterface getCurrentExplorer(@NotNull Player player) throws NotYourTurnException
+    {
+        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
+        if (!currentExplorer.isOwner(player)) {
             throw new NotYourTurnException();
         }
-        return playerCharacter;
+        return currentExplorer;
     }
 
-    private void startLootPhase() {
-        this.context.startLootPhase();
-        for (PCEncounterData playerCharacter : this.context.getAlivePlayerCharacters()) {
-            playerCharacter.rollLoot();
+    /**
+     * Revive slain explorer if they are the first explorer to be slain
+     *
+     * @param encounteredExplorer Encountered explorer
+     */
+    private void reviveIfFirstSlainExplorer(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    {
+        if (encounteredExplorer.isSlain() && this.encounter.hasPhoenixDown()) {
+            this.encounter.usePhoenixDown();
+            int hitpoints = encounteredExplorer.healPercent((float) 0.5);
+            this.logger.logFirstDeathRevived(encounteredExplorer.getName(), hitpoints);
+        }
+    }
+
+    /**
+     * Start loot phase
+     */
+    private void startLootPhase()
+    {
+        this.encounter.startLootPhase();
+        for (EncounteredExplorerInterface encounteredExplorer : this.encounter.getAllExplorers()) {
+            encounteredExplorer.rollLoot();
         }
         this.logger.logEndEncounter(
-            this.context.getAllPlayerCharacters(),
-            this.context.getAllHostiles(),
+            this.encounter.getAllExplorers(),
+            this.encounter.getAllHostiles(),
             true
         );
     }
 
-    private void reviveIfFirstSlainPC(PCEncounterData playerCharacter) {
-        if (playerCharacter.isSlain() && this.context.hasPhoenixDown()) {
-            this.context.usePhoenixDown();
-            int hitpoints = playerCharacter.healPercent((float) 0.5);
-            this.logger.logFirstDeathRevived(playerCharacter.getName(), hitpoints);
-        }
-    }
-
-    private void validateStartEncounterPhase() {
-        if (this.context.isOver()) {
+    /**
+     * Validate start initiative phase
+     *
+     * @throws DungeonException        If no players have joined
+     * @throws EncounterPhaseException If encounter is over or encounter has not started
+     */
+    private void validateStartInitiativePhase() throws DungeonException, EncounterPhaseException
+    {
+        if (this.encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
-        } else if (!this.context.isStarted()) {
+        } else if (!this.encounter.isStarted()) {
             throw EncounterPhaseException.createNotStarted();
-        } else if (!this.context.havePlayersJoined()) {
+        } else if (!this.encounter.havePlayersJoined()) {
             throw DungeonException.createNoPlayersHaveJoined();
         }
     }

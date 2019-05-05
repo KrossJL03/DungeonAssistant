@@ -1,9 +1,9 @@
 package bot.Encounter.Logger.MessageBuilder;
 
-import bot.Encounter.EncounterData.EncounterDataInterface;
-import bot.Encounter.EncounterData.HostileEncounterData;
-import bot.Encounter.EncounterData.PCEncounterData;
-import bot.Encounter.EncounterData.Slayer;
+import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredCreature.Slayer;
+import bot.Encounter.EncounteredExplorerInterface;
+import bot.Encounter.EncounteredHostileInterface;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,12 +25,15 @@ public class SummaryMessageBuilder
     /**
      * Build summary message
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      *
      * @return String
      */
-    public @NotNull String buildSummary(ArrayList<PCEncounterData> explorers, ArrayList<HostileEncounterData> hostiles)
+    public @NotNull String buildSummary(
+        ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
     {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
@@ -41,9 +44,9 @@ public class SummaryMessageBuilder
         codeBlockLines.add("Hostiles");
         codeBlockLines.add(MessageConstants.LINE);
 
-        for (HostileEncounterData hostile : hostiles) {
-            codeBlockLines.add(getNameLine(hostile));
-            String healthBar = getHealthBarLine(hostile);
+        for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
+            codeBlockLines.add(getNameLine(encounteredHostile));
+            String healthBar = getHealthBarLine(encounteredHostile);
             if (!healthBar.isEmpty()) {
                 codeBlockLines.add(healthBar);
             }
@@ -53,9 +56,9 @@ public class SummaryMessageBuilder
         codeBlockLines.add("Explorers");
         codeBlockLines.add(MessageConstants.LINE);
 
-        for (PCEncounterData explorer : explorers) {
-            codeBlockLines.add(getNameLine(explorer));
-            String healthBar = getHealthBarLine(explorer);
+        for (EncounteredExplorerInterface encounteredExplorer : encounteredExplorers) {
+            codeBlockLines.add(getNameLine(encounteredExplorer));
+            String healthBar = getHealthBarLine(encounteredExplorer);
             if (!healthBar.isEmpty()) {
                 codeBlockLines.add(healthBar);
             }
@@ -74,7 +77,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getHealthBarLine(EncounterDataInterface creature)
+    private @NotNull String getHealthBarLine(EncounterCreatureInterface creature)
     {
         StringBuilder output    = new StringBuilder();
         int           currentHP = creature.getCurrentHP();
@@ -99,44 +102,44 @@ public class SummaryMessageBuilder
     /**
      * Get name line
      *
-     * @param hostile Hostile
+     * @param encounteredHostile Encountered hostile
      *
      * @return String
      */
-    private @NotNull String getNameLine(HostileEncounterData hostile)
+    private @NotNull String getNameLine(EncounteredHostileInterface encounteredHostile)
     {
-        if (hostile.isSlain()) {
-            Slayer slayer = hostile.getSlayer();
+        if (encounteredHostile.isSlain()) {
+            Slayer slayer = encounteredHostile.getSlayer();
             return formatter.makeGray(String.format(
                 "%s was slain %s",
-                hostile.getName(),
+                encounteredHostile.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
             ));
         } else {
-            return hostile.getName();
+            return encounteredHostile.getName();
         }
     }
 
     /**
      * Get name line
      *
-     * @param explorer Explorer
+     * @param encounteredExplorer Encountered explorer
      *
      * @return String
      */
-    private @NotNull String getNameLine(PCEncounterData explorer)
+    private @NotNull String getNameLine(EncounteredExplorerInterface encounteredExplorer)
     {
-        if (!explorer.isPresent()) {
-            return formatter.makeGray(String.format("%s has left", explorer.getName()));
-        } else if (explorer.isSlain()) {
-            Slayer slayer = explorer.getSlayer();
+        if (!encounteredExplorer.isPresent()) {
+            return formatter.makeGray(String.format("%s has left", encounteredExplorer.getName()));
+        } else if (encounteredExplorer.isSlain()) {
+            Slayer slayer = encounteredExplorer.getSlayer();
             return formatter.makeGray(String.format(
                 "%s was knocked out %s",
-                explorer.getName(),
+                encounteredExplorer.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
             ));
         } else {
-            return String.format("%s [%s]", explorer.getName(), explorer.getOwner().getName());
+            return String.format("%s [%s]", encounteredExplorer.getName(), encounteredExplorer.getOwner().getName());
         }
     }
 
@@ -147,7 +150,7 @@ public class SummaryMessageBuilder
      *
      * @return boolean
      */
-    private boolean isLowHealth(EncounterDataInterface creature)
+    private boolean isLowHealth(EncounterCreatureInterface creature)
     {
         return creature.getCurrentHP() < (creature.getMaxHP() / 4);
     }

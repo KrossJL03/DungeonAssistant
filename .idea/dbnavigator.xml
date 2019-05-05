@@ -30,8 +30,8 @@
       <console name="Database" type="STANDARD"><![CDATA[SELECT * FROM player;
 DELETE FROM player;
 
-SELECT * FROM playerCharacter;
-DELETE FROM playerCharacter;
+SELECT * FROM explorer;
+DELETE FROM explorer;
 
 SELECT * FROM hostile;
 DELETE FROM hostile;
@@ -41,9 +41,6 @@ DELETE FROM loot;
 
 SELECT * FROM consumable;
 DELETE FROM consumable;
-
-
-
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 

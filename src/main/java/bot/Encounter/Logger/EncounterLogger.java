@@ -1,12 +1,9 @@
 package bot.Encounter.Logger;
 
 import bot.CommandListener;
-import bot.Encounter.AttackActionResultInterface;
-import bot.Encounter.DodgeActionResultInterface;
-import bot.Encounter.EncounterData.*;
+import bot.Encounter.*;
+import bot.Encounter.EncounteredCreature.*;
 import bot.Encounter.Logger.MessageBuilder.*;
-import bot.Encounter.LootActionResultInterface;
-import bot.Encounter.ProtectActionResultInterface;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
 import org.jetbrains.annotations.NotNull;
@@ -90,7 +87,7 @@ public class EncounterLogger
      *
      * @param explorer Explorer that passed dodge action
      */
-    public void logActionDodgePass(@NotNull PCEncounterData explorer)
+    public void logActionDodgePass(@NotNull EncounteredExplorerInterface explorer)
     {
         sendMessage(
             "```ml" +
@@ -123,7 +120,7 @@ public class EncounterLogger
      *
      * @param hostile Hostile
      */
-    public void logAddedHostile(@NotNull HostileEncounterData hostile)
+    public void logAddedHostile(@NotNull EncounteredHostileInterface hostile)
     {
         sendMessage(
             String.format(
@@ -139,7 +136,7 @@ public class EncounterLogger
      *
      * @param explorer Explorer
      */
-    public void logAddedExplorer(@NotNull PCEncounterData explorer)
+    public void logAddedExplorer(@NotNull EncounteredExplorerInterface explorer)
     {
         sendMessage(
             String.format(
@@ -228,12 +225,12 @@ public class EncounterLogger
     /**
      * Log end of attack phase
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      */
     public void logEndAttackPhase(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
         sendMessage(
@@ -241,18 +238,18 @@ public class EncounterLogger
             EncounterLogger.NEWLINE +
             "You may take this time to RP amongst yourselves. The DODGE turn will begin shortly."
         );
-        logSummary(explorers, hostiles);
+        logSummary(encounteredExplorers, encounteredHostiles);
     }
 
     /**
      * Log end of dodge phase
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      */
     public void logEndDodgePhase(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
         sendMessage(
@@ -260,23 +257,23 @@ public class EncounterLogger
             EncounterLogger.NEWLINE +
             "You may take this time to RP amongst yourselves. The ATTACK turn will begin shortly."
         );
-        logSummary(explorers, hostiles);
+        logSummary(encounteredExplorers, encounteredHostiles);
     }
 
     /**
      * Log end of encounter
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
-     * @param win       Did the players win
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     * @param win                  Did the players win
      */
     public void logEndEncounter(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles,
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles,
         boolean win
     )
     {
-        logSummary(explorers, hostiles);
+        logSummary(encounteredExplorers, encounteredHostiles);
         sendMessage("***THE BATTLE IS OVER!!!***");
         if (win) {
             sendMessage(
@@ -343,7 +340,7 @@ public class EncounterLogger
      */
     public void logRemovedExplorer(@NotNull String name)
     {
-        sendMessage(String.format("PlayerCharacter %s has been removed", name));
+        sendMessage(String.format("Explorer %s has been removed", name));
     }
 
     /**
@@ -369,26 +366,26 @@ public class EncounterLogger
     /**
      * Log encounter summary
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      */
     public void logSummary(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
-        sendMessage(summaryMessageBuilder.buildSummary(explorers, hostiles));
+        sendMessage(summaryMessageBuilder.buildSummary(encounteredExplorers, encounteredHostiles));
     }
 
     /**
      * Log start attack phase
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      */
     public void logStartAttackPhase(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
         sendMessage(
@@ -400,18 +397,18 @@ public class EncounterLogger
                 CommandListener.COMMAND_KEY
             )
         );
-        logSummary(explorers, hostiles);
+        logSummary(encounteredExplorers, encounteredHostiles);
     }
 
     /**
      * Log start dodge phase
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
      */
     public void logStartDodgePhase(
-        @NotNull ArrayList<PCEncounterData> explorers,
-        @NotNull ArrayList<HostileEncounterData> hostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
         StringBuilder output      = new StringBuilder();
@@ -436,7 +433,7 @@ public class EncounterLogger
         output.append("\"dmg dice\"");
         output.append(EncounterLogger.NEWLINE);
         output.append(EncounterLogger.NEWLINE);
-        for (HostileEncounterData hostile : hostiles) {
+        for (EncounteredHostileInterface hostile : encounteredHostiles) {
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 output.append(String.format(
@@ -453,7 +450,7 @@ public class EncounterLogger
         output.append(String.format("combined attacks add up to %d dmg!!", totalDamage));
         output.append("```");
         sendMessage(output.toString());
-        logSummary(explorers, hostiles);
+        logSummary(encounteredExplorers, encounteredHostiles);
     }
 
     /**
@@ -522,7 +519,7 @@ public class EncounterLogger
      *
      * @param explorer Explorer
      */
-    public void pingPlayerTurn(@NotNull PCEncounterData explorer)
+    public void pingPlayerTurn(@NotNull EncounteredExplorerInterface explorer)
     {
         sendMessage(
             String.format(
@@ -540,7 +537,7 @@ public class EncounterLogger
      *
      * @return String
      */
-    private @NotNull String getExplorerPrintout(@NotNull PCEncounterData explorer)
+    private @NotNull String getExplorerPrintout(@NotNull EncounteredExplorerInterface explorer)
     {
         int    nameBuffer = (int) Math.floor(15 + explorer.getName().length() / 2);
         String output     = "";
@@ -582,7 +579,7 @@ public class EncounterLogger
      *
      * @return String
      */
-    private @NotNull String getHostilePrintout(@NotNull HostileEncounterData hostile)
+    private @NotNull String getHostilePrintout(@NotNull EncounteredHostileInterface hostile)
     {
         int    nameBuffer = (int) Math.floor(15 + hostile.getName().length() / 2);
         String output     = "";

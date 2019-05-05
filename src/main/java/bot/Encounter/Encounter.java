@@ -1,8 +1,6 @@
 package bot.Encounter;
 
-import bot.Encounter.EncounterData.EncounterDataInterface;
-import bot.Encounter.EncounterData.HostileEncounterData;
-import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.EncounteredCreature.EncounteredHostile;
 import bot.Encounter.Exception.*;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
@@ -11,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Encounter {
-
+public class Encounter
+{
     public static  String ATTACK_PHASE = "ATTACK";
     public static  String DODGE_PHASE  = "DODGE";
     public static  String LOOT_PHASE   = "LOOT";
@@ -21,252 +19,455 @@ public class Encounter {
     private static String JOIN_PHASE   = "JOIN";
     private static String RP_PHASE     = "RP";
 
-    private ArrayList<HostileEncounterData> hostiles;
-    private PCRoster                        pcRoster;
-    private InitiativeQueue                 initiative;
-    private String                          currentPhase;
-    private boolean                         hasPhoenixDown;
+    private ArrayList<EncounteredHostileInterface> hostiles;
+    private ExplorerRoster                         explorerRoster;
+    private InitiativeQueue                        initiative;
+    private String                                 currentPhase;
+    private boolean                                hasPhoenixDown;
 
-    public Encounter() {
+    /**
+     * Encounter constructor
+     */
+    public Encounter()
+    {
         this.currentPhase = Encounter.CREATE_PHASE;
         this.initiative = new InitiativeQueue();
         this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
-        this.pcRoster = new PCRoster();
+        this.explorerRoster = new ExplorerRoster();
     }
 
-    void addCharacter(PCEncounterData newPlayerCharacter) {
-        // todo start building PCEncounterData here
-        this.pcRoster.addPC(newPlayerCharacter);
+    /**
+     * Add explorer
+     *
+     * @param newExplorer New explorer
+     */
+    void addExplorer(@NotNull EncounteredExplorerInterface newExplorer)
+    {
+        // todo start building EncounteredExplorerInterface here
+        this.explorerRoster.addExplorer(newExplorer);
         if (this.isInitiativePhase()) {
-            this.initiative.add(newPlayerCharacter);
-            newPlayerCharacter.resetActions(this.isAttackPhase());
+            this.initiative.add(newExplorer);
+            newExplorer.resetActions(this.isAttackPhase());
         }
     }
 
-    HostileEncounterData addHostile(Hostile hostile, String nickname) {
-        String               capitalNickname = WordUtils.capitalizeFully(nickname);
-        HostileEncounterData newHostileData  = new HostileEncounterData(hostile, capitalNickname);
-        String               hostileSpecies  = hostile.getSpecies();
-        String               nicknameToLower = nickname.toLowerCase();
+    /**
+     * Add hostile
+     *
+     * @param hostile  Hostile
+     * @param nickname Nickname
+     *
+     * @return EncounteredHostileInterface
+     */
+    @NotNull EncounteredHostileInterface addHostile(@NotNull Hostile hostile, @NotNull String nickname)
+    {
+        String                      capitalNickname       = WordUtils.capitalizeFully(nickname);
+        EncounteredHostileInterface newEncounteredHostile = new EncounteredHostile(hostile, capitalNickname);
+        String                      hostileSpecies        = hostile.getSpecies();
+        String                      nicknameToLower       = nickname.toLowerCase();
         if (hostileSpecies.toLowerCase().equals(nicknameToLower)) {
             int speciesCount = 0;
-            for (HostileEncounterData hostileData : this.hostiles) {
-                if (hostileData.getSpecies().equals(hostileData.getSpecies())) {
-                    if (hostileData.getSpecies().equals(hostileData.getName())) {
-                        hostileData.setName(hostileData.getName() + "A");
+            for (EncounteredHostileInterface encounteredHostile : this.hostiles) {
+                if (encounteredHostile.getSpecies().equals(newEncounteredHostile.getSpecies())) {
+                    if (encounteredHostile.getSpecies().equals(newEncounteredHostile.getName())) {
+                        encounteredHostile.setName(encounteredHostile.getName() + "A");
                     }
                     speciesCount++;
                 }
             }
             if (speciesCount > 0) {
                 char letter = (char) (65 + speciesCount);
-                newHostileData = new HostileEncounterData(hostile, hostile.getSpecies() + letter);
+                newEncounteredHostile = new EncounteredHostile(hostile, hostile.getSpecies() + letter);
             }
         } else {
-            for (HostileEncounterData hostileData : this.hostiles) {
+            for (EncounteredHostileInterface hostileData : this.hostiles) {
                 if (hostileData.getName().toLowerCase().equals(nicknameToLower)) {
                     throw new HostileNicknameInUseException(nickname);
                 }
             }
         }
-        this.hostiles.add(newHostileData);
-        return newHostileData;
+        this.hostiles.add(newEncounteredHostile);
+        return newEncounteredHostile;
     }
 
-    ArrayList<HostileEncounterData> getActiveHostiles() {
-        ArrayList<HostileEncounterData> activeHostiles = new ArrayList<>();
-        for (HostileEncounterData hostile : this.hostiles) {
-            if (!hostile.isSlain()) {
-                activeHostiles.add(hostile);
+    /**
+     * Get active explorers
+     *
+     * @return ArrayList<EncounteredExplorerInterface>
+     */
+    @NotNull ArrayList<EncounteredExplorerInterface> getActiveExplorers()
+    {
+        return this.explorerRoster.getActiveExplorers();
+    }
+
+    /**
+     * Get active hostiles
+     *
+     * @return ArrayList<EncounteredHostileInterface>
+     */
+    @NotNull ArrayList<EncounteredHostileInterface> getActiveHostiles()
+    {
+        ArrayList<EncounteredHostileInterface> activeHostiles = new ArrayList<>();
+        for (EncounteredHostileInterface encounteredHostile : this.hostiles) {
+            if (!encounteredHostile.isSlain()) {
+                activeHostiles.add(encounteredHostile);
             }
         }
         return activeHostiles;
     }
 
-    ArrayList<PCEncounterData> getActivePlayerCharacters() {
-        return this.pcRoster.getActivePCs();
+    /**
+     * Get alive explorers
+     *
+     * @return ArrayList<EncounteredExplorerInterface>
+     */
+    @NotNull ArrayList<EncounteredExplorerInterface> getAliveExplorers()
+    {
+        return this.explorerRoster.getAliveExplores();
     }
 
-    @NotNull
-    ArrayList<PCEncounterData> getAlivePlayerCharacters() {
-        return this.pcRoster.getAlivePCs();
+    /**
+     * Get all explorers
+     *
+     * @return ArrayList<EncounteredHostileInterface>
+     */
+    @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
+    {
+        return this.explorerRoster.getAllExplorers();
     }
 
-    ArrayList<HostileEncounterData> getAllHostiles() {
-        return this.hostiles;
+    /**
+     * Get all hostiles
+     *
+     * @return ArrayList<EncounteredHostileInterface>
+     */
+    @NotNull ArrayList<EncounteredHostileInterface> getAllHostiles()
+    {
+        return new ArrayList<>(this.hostiles);
     }
 
-    ArrayList<PCEncounterData> getAllPlayerCharacters() {
-        return this.pcRoster.getAllPCs();
-    }
-
-    PCEncounterData getCurrentPlayerCharacter() {
+    /**
+     * Get current explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @NotNull EncounteredExplorerInterface getCurrentExplorer()
+    {
         if (!this.isInitiativePhase()) {
             throw new NotInInitiativeException();
         }
-        PCEncounterData currentPlayerCharacter = this.initiative.getCurrentPlayerCharacter();
-        if (currentPlayerCharacter == null) {
-            throw EncounterDataNotFoundException.createForCurrentPlayer();
+        EncounteredExplorerInterface currentExplorer = this.initiative.getCurrentExplorer();
+        if (currentExplorer == null) {
+            throw EncounteredCreatureNotFoundException.createForCurrentPlayer();
         }
-        return currentPlayerCharacter;
+        return currentExplorer;
     }
 
-    EncounterDataInterface getEncounterData(String name) {
-        ArrayList<EncounterDataInterface> allCreatures = new ArrayList<>();
-        allCreatures.addAll(this.pcRoster.getAllPCs());
+    /**
+     * Get creature
+     *
+     * @param name Name of creature to find
+     *
+     * @return EncounterCreatureInterface
+     *
+     * @throws EncounteredCreatureNotFoundException If creature with name not found
+     */
+    @NotNull EncounterCreatureInterface getCreature(@NotNull String name)
+    {
+        ArrayList<EncounterCreatureInterface> allCreatures = new ArrayList<>();
+        allCreatures.addAll(this.explorerRoster.getAllExplorers());
         allCreatures.addAll(this.hostiles);
-        for (EncounterDataInterface creature : allCreatures) {
+        for (EncounterCreatureInterface creature : allCreatures) {
             if (creature.isName(name)) {
                 return creature;
             }
         }
-        throw EncounterDataNotFoundException.createForEncounterData(name);
+        throw EncounteredCreatureNotFoundException.createForCreature(name);
     }
 
-    HostileEncounterData getHostile(String name) {
-        for (HostileEncounterData hostile : this.hostiles) {
-            if (hostile.isName(name)) {
-                if (hostile.isSlain()) {
-                    throw new HostileSlainException(hostile.getName(), hostile.getSlayer().getName());
+    /**
+     * Get explorer by name
+     *
+     * @param name Name of explorer to search for
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name)
+    {
+        return this.explorerRoster.getExplorer(name);
+    }
+
+    /**
+     * Get explorer by player
+     *
+     * @param player Owner of explorer to search for
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @NotNull EncounteredExplorerInterface getExplorer(@NotNull Player player)
+    {
+        return this.explorerRoster.getExplorer(player);
+    }
+
+    /**
+     * Get hostile
+     *
+     * @param name Name of hostile to find
+     *
+     * @return EncounteredHostileInterface
+     *
+     * @throws EncounteredCreatureNotFoundException If hostile with name not found
+     */
+    @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
+    {
+        for (EncounteredHostileInterface encounteredHostile : this.hostiles) {
+            if (encounteredHostile.isName(name)) {
+                if (encounteredHostile.isSlain()) {
+                    throw new HostileSlainException(
+                        encounteredHostile.getName(),
+                        encounteredHostile.getSlayer().getName()
+                    );
                 }
-                return hostile;
+                return encounteredHostile;
             }
         }
-        throw EncounterDataNotFoundException.createForHostile(name);
+        throw EncounteredCreatureNotFoundException.createForHostile(name);
     }
 
-    int getMaxPlayerCount() {
-        return this.pcRoster.getMaxPlayerCount();
+    /**
+     * Get max player count
+     *
+     * @return int
+     */
+    int getMaxPlayerCount()
+    {
+        return this.explorerRoster.getMaxPlayerCount();
     }
 
-    PCEncounterData getNextPlayerCharacter() {
+    /**
+     * Get next explorer
+     *
+     * @return EncounteredExplorerInterface
+     *
+     * @throws EncounteredCreatureNotFoundException When next explorer does not exist
+     */
+    @NotNull EncounteredExplorerInterface getNextExplorer()
+    {
         if (!this.isInitiativePhase()) {
             throw new NotInInitiativeException();
         }
-        PCEncounterData nextPlayerCharacter = this.initiative.getNextPlayerCharacter();
-        if (nextPlayerCharacter == null) {
-            throw EncounterDataNotFoundException.createForNextPlayer();
+        EncounteredExplorerInterface nextExplorer = this.initiative.getNextExplorer();
+        if (nextExplorer == null) {
+            throw EncounteredCreatureNotFoundException.createForNextPlayer();
         }
-        return nextPlayerCharacter;
+        return nextExplorer;
     }
 
-    PCEncounterData getPlayerCharacter(String name) {
-        return this.pcRoster.getPC(name);
+    /**
+     * Has active explorers
+     *
+     * @return boolean
+     */
+    boolean hasActiveExplorers()
+    {
+        return this.explorerRoster.hasActiveExplorers();
     }
 
-    PCEncounterData getPlayerCharacter(Player player) {
-        return this.pcRoster.getPC(player);
-    }
-
-    boolean hasActiveHostiles() {
+    /**
+     * Has active hostiles
+     *
+     * @return boolean
+     */
+    boolean hasActiveHostiles()
+    {
         return this.getActiveHostiles().size() > 0;
     }
 
-    boolean hasActivePCs() {
-        return this.pcRoster.hasActivePCs();
-    }
-
-    boolean hasPhoenixDown() {
+    /**
+     * Has phoenix down
+     *
+     * @return boolean
+     */
+    boolean hasPhoenixDown()
+    {
         return this.hasPhoenixDown;
     }
 
-    boolean havePlayersJoined() {
-        return !this.isJoinPhase() || this.pcRoster.hasActivePCs();
+    /**
+     * Have players joined
+     *
+     * @return boolean
+     */
+    boolean havePlayersJoined()
+    {
+        return !this.isJoinPhase() || this.explorerRoster.hasActiveExplorers();
     }
 
-    boolean isAttackPhase() {
+    /**
+     * Is attack phase
+     *
+     * @return boolean
+     */
+    boolean isAttackPhase()
+    {
         return this.currentPhase.equals(Encounter.ATTACK_PHASE);
     }
 
-    boolean isDodgePhase() {
+    /**
+     * Is dodge phase
+     *
+     * @return boolean
+     */
+    boolean isDodgePhase()
+    {
         return this.currentPhase.equals(Encounter.DODGE_PHASE);
     }
 
-    boolean isFullDungeon() {
-        return this.pcRoster.isFull();
+    /**
+     * Is dungeon full
+     *
+     * @return boolean
+     */
+    boolean isFullDungeon()
+    {
+        return this.explorerRoster.isFull();
     }
 
-    boolean isInEncounter(String name) {
-        if (this.pcRoster.containsPC(name)) {
-            return true;
-        }
-        for (HostileEncounterData hostile : this.hostiles) {
-            if (hostile.isName(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    boolean isInitiativePhase() {
+    /**
+     * Is initiative phase
+     *
+     * @return boolean
+     */
+    boolean isInitiativePhase()
+    {
         return this.isAttackPhase() || this.isDodgePhase();
     }
 
-    boolean isLootPhase() {
+    /**
+     * Is loot phase
+     *
+     * @return boolean
+     */
+    boolean isLootPhase()
+    {
         return this.currentPhase.equals(Encounter.LOOT_PHASE);
     }
 
-    boolean isOver() {
+    /**
+     * Is encounter over
+     *
+     * @return boolean
+     */
+    boolean isOver()
+    {
         return this.isLootPhase() || this.isEndPhase();
     }
 
-    boolean isPhase(String phase) {
-        return this.currentPhase.equals(phase);
-    }
-
-    boolean isStarted() {
+    /**
+     * Has encounter started
+     *
+     * @return boolean
+     */
+    boolean isStarted()
+    {
         return !this.currentPhase.equals(Encounter.CREATE_PHASE);
     }
 
-    PCEncounterData playerHasLeft(Player player) {
-        return this.pcRoster.playerHasLeft(player);
+    /**
+     * Player has left
+     *
+     * @param player Player
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @NotNull EncounteredExplorerInterface playerHasLeft(@NotNull Player player)
+    {
+        return this.explorerRoster.playerHasLeft(player);
     }
 
-    PCEncounterData playerHasRejoined(Player player) {
-        return this.pcRoster.playerHasRejoined(player);
+    /**
+     * Player has rejoined
+     *
+     * @param player Player
+     *
+     * @return EncounteredExplorerInterface
+     */
+    @NotNull EncounteredExplorerInterface playerHasRejoined(@NotNull Player player)
+    {
+        return this.explorerRoster.playerHasRejoined(player);
     }
 
-    void setMaxPlayerCount(int maxPlayerCount) {
-        this.pcRoster.setMaxPlayerCount(maxPlayerCount);
+    /**
+     * Set max player count
+     *
+     * @param maxPlayerCount Max amount of players allowed for this encounter
+     */
+    void setMaxPlayerCount(int maxPlayerCount)
+    {
+        this.explorerRoster.setMaxPlayerCount(maxPlayerCount);
     }
 
-    void sortRoster() {
-        this.pcRoster.sort();
+    /**
+     * Sort roster
+     */
+    void sortRoster()
+    {
+        this.explorerRoster.sort();
     }
 
-    void startAttackPhase() {
+    /**
+     * Start attack phase
+     */
+    void startAttackPhase()
+    {
         if (this.isAttackPhase()) {
             throw new StartCurrentPhaseException(Encounter.ATTACK_PHASE);
         }
-        for (PCEncounterData playerCharacter : this.pcRoster.getActivePCs()) {
-            playerCharacter.resetActions(true);
+        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster.getActiveExplorers()) {
+            encounteredExplorer.resetActions(true);
         }
         this.currentPhase = Encounter.ATTACK_PHASE;
-        this.initiative = new InitiativeQueue(this.getAllPlayerCharacters());
+        this.initiative = new InitiativeQueue(this.getAllExplorers());
     }
 
-    void startDodgePhase() {
+    /**
+     * Start dodge phase
+     */
+    void startDodgePhase()
+    {
         if (this.isDodgePhase()) {
             throw new StartCurrentPhaseException(Encounter.DODGE_PHASE);
         }
-        for (PCEncounterData playerCharacter : this.pcRoster.getActivePCs()) {
-            playerCharacter.resetActions(false);
+        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster.getActiveExplorers()) {
+            encounteredExplorer.resetActions(false);
         }
         this.currentPhase = Encounter.DODGE_PHASE;
-        this.initiative = new InitiativeQueue(this.getAllPlayerCharacters());
+        this.initiative = new InitiativeQueue(this.getAllExplorers());
     }
 
-    void startEndPhase() {
+    /**
+     * Start end phase
+     */
+    void startEndPhase()
+    {
         this.currentPhase = Encounter.END_PHASE;
         this.initiative = new InitiativeQueue();
     }
 
-    void startJoinPhase() {
+    /**
+     * Start join phase
+     */
+    void startJoinPhase()
+    {
         this.currentPhase = Encounter.JOIN_PHASE;
     }
 
-    void startLootPhase() {
+    /**
+     * Start loot phase
+     */
+    void startLootPhase()
+    {
         if (this.isLootPhase()) {
             throw new StartCurrentPhaseException(Encounter.LOOT_PHASE);
         }
@@ -274,34 +475,66 @@ public class Encounter {
         this.initiative = new InitiativeQueue();
     }
 
-    void startRpPhase() {
+    /**
+     * Start RP phase
+     */
+    void startRpPhase()
+    {
         this.currentPhase = Encounter.RP_PHASE;
         this.initiative = new InitiativeQueue();
     }
 
-    void removeHostile(HostileEncounterData hostile) {
-        if (!this.hostiles.contains(hostile)) {
-            throw EncounterDataNotFoundException.createForHostile(hostile.getName());
+    /**
+     * Remove encountered explorer from encounter
+     *
+     * @param encounteredExplorer Encountered explorer to remove
+     */
+    void removeExplorer(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    {
+        this.explorerRoster.remove(encounteredExplorer);
+        if (this.initiative.contains(encounteredExplorer)) {
+            this.initiative.remove(encounteredExplorer);
         }
-        this.hostiles.remove(hostile);
     }
 
-    void removePlayerCharacter(PCEncounterData playerCharacter) {
-        this.pcRoster.remove(playerCharacter);
-        if (this.initiative.contains(playerCharacter)) {
-            this.initiative.remove(playerCharacter);
+    /**
+     * Remove encountered hostile from encounter
+     *
+     * @param encounteredHostile Encountered hostile to remove
+     */
+    void removeHostile(@NotNull EncounteredHostileInterface encounteredHostile)
+    {
+        if (!this.hostiles.contains(encounteredHostile)) {
+            throw EncounteredCreatureNotFoundException.createForHostile(encounteredHostile.getName());
         }
+        this.hostiles.remove(encounteredHostile);
     }
 
-    void usePhoenixDown() {
+    /**
+     * Use phoenix down
+     */
+    void usePhoenixDown()
+    {
         this.hasPhoenixDown = false;
     }
 
-    private boolean isEndPhase() {
+    /**
+     * Is end phase
+     *
+     * @return bool
+     */
+    private boolean isEndPhase()
+    {
         return this.currentPhase.equals(Encounter.END_PHASE);
     }
 
-    private boolean isJoinPhase() {
+    /**
+     * Is join phase
+     *
+     * @return bool
+     */
+    private boolean isJoinPhase()
+    {
         return this.currentPhase.equals(Encounter.JOIN_PHASE);
     }
 }

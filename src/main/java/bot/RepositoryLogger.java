@@ -4,7 +4,7 @@ import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Item.ItemAbstract;
-import bot.PlayerCharacter.PlayerCharacter;
+import bot.Explorer.Explorer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -18,7 +18,7 @@ class RepositoryLogger {
     private static int    EMBED_COLOR = 0x62c4f9;
     private static String NEWLINE     = System.getProperty("line.separator");
 
-    static void viewCharacters(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
+    static void viewCharacters(MessageChannel channel, ArrayList<Explorer> explorers) {
         StringBuilder output = new StringBuilder();
         output.append("```md");
         output.append(RepositoryLogger.NEWLINE);
@@ -30,7 +30,7 @@ class RepositoryLogger {
         output.append(RepositoryLogger.NEWLINE);
         output.append("---------------------------------------");
         output.append(RepositoryLogger.NEWLINE);
-        for (PlayerCharacter character : playerCharacters) {
+        for (Explorer character : explorers) {
             output.append(String.format("%-15s < %s >", character.getName(), character.getOwner().getName()));
             output.append(RepositoryLogger.NEWLINE);
         }
@@ -38,7 +38,7 @@ class RepositoryLogger {
         RepositoryLogger.logMessage(channel, output.toString());
     }
 
-    static void viewCharactersWithStats(MessageChannel channel, ArrayList<PlayerCharacter> playerCharacters) {
+    static void viewCharactersWithStats(MessageChannel channel, ArrayList<Explorer> explorers) {
         StringBuilder output = new StringBuilder();
         output.append("```md");
         output.append(RepositoryLogger.NEWLINE);
@@ -50,7 +50,7 @@ class RepositoryLogger {
         output.append(RepositoryLogger.NEWLINE);
         output.append("---------------------------------------");
         output.append(RepositoryLogger.NEWLINE);
-        for (PlayerCharacter character : playerCharacters) {
+        for (Explorer character : explorers) {
             output.append(
                 String.format(
                     "%-15s < %3d %2d %3d %3d %3d  >",

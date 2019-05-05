@@ -1,6 +1,6 @@
 package bot;
 
-import bot.Encounter.Exception.PCEncounterDataException;
+import bot.Encounter.Exception.EncounterExplorerException;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public class Constant {
             case Constant.STAT_WISDOM:
                 return MAX_WISDOM;
             default:
-                throw PCEncounterDataException.invalidStatName(statName);
+                throw EncounterExplorerException.invalidStatName(statName);
         }
     }
 
@@ -56,7 +56,7 @@ public class Constant {
             case Constant.STAT_WISDOM:
                 return MIN_WISDOM;
             default:
-                throw PCEncounterDataException.invalidStatName(statName);
+                throw EncounterExplorerException.invalidStatName(statName);
         }
     }
 
