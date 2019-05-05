@@ -33,7 +33,7 @@ public class EncounterLoggerContext {
     /**
      * Set channel
      *
-     * @param channel Message channel
+     * @param channel MessageBuilder channel
      */
     public void setChannel(MessageChannel channel) {
         this.channel = channel;

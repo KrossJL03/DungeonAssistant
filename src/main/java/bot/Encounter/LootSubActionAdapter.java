@@ -1,7 +1,7 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounterData.LootRoll;
-import bot.Encounter.Logger.Message.LootSubActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.LootSubActionDataInterface;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 

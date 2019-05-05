@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 interface CodeBlockFormatter {
     // todo use or remove

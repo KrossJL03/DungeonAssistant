@@ -1,8 +1,9 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 class MessageConstants {
 
     static String BREAK   = "break";
+    static String LINE    = "------------------------------------";
     static String NEWLINE = System.getProperty("line.separator");
 
     static String CODE_BRACKET      = "```";

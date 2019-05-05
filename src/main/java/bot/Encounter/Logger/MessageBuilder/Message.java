@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +9,7 @@ class Message {
     private ArrayList<MessageBlockInterface> blocks;
 
     /**
-     * Message constructor
+     * MessageBuilder constructor
      *
      * @param messages Messages
      */

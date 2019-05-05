@@ -3,7 +3,7 @@ package bot.Encounter;
 import bot.Encounter.EncounterData.ProtectActionResult;
 import bot.Encounter.EncounterData.Slayer;
 import bot.Encounter.Logger.Mention;
-import bot.Encounter.Logger.Message.ProtectActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.ProtectActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class ProtectActionAdapter implements ProtectActionDataInterface {

@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,8 +12,8 @@ class CodeBlock implements MessageBlockInterface {
     /**
      * CodeBlock constructor
      *
-     * @param lines        Message lines
-     * @param messageStyle Message style
+     * @param lines        MessageBuilder lines
+     * @param messageStyle MessageBuilder style
      */
     CodeBlock(@NotNull ArrayList<String> lines, @NotNull CodeBlockStyle messageStyle) {
         this.lines = lines;

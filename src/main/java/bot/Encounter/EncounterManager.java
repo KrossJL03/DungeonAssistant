@@ -44,7 +44,7 @@ public class EncounterManager {
         HostileEncounterData hostile         = this.context.getHostile(hostileName);
 
         AttackActionResult result = playerCharacter.attack(hostile);
-        this.logger.logAttackAction(new AttackActionAdapter(result));
+        this.logger.logAction(new AttackActionAdapter(result));
 
         if (hostile.isSlain()) {
             this.addKillToPlayerCharacters(hostile);
@@ -69,7 +69,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.dodge(this.context.getActiveHostiles());
 
-        this.logger.logDodgeAction(new DodgeActionAdapter(result, false));
+        this.logger.logAction(new DodgeActionAdapter(result, false));
 
         this.endCurrentPlayerAction();
     }
@@ -148,7 +148,7 @@ public class EncounterManager {
         }
         PCEncounterData encounterData = new PCEncounterData(playerCharacter);
         this.context.addCharacter(encounterData);
-        this.logger.logAddedPlayerCharacter(encounterData);
+        this.logger.logAddedExplorer(encounterData);
         if (this.context.isFullDungeon()) {
             this.logger.logDungeonIsFull();
         }
@@ -184,7 +184,7 @@ public class EncounterManager {
         }
         PCEncounterData  playerCharacter = this.context.getPlayerCharacter(player);
         LootActionResult actionResult    = playerCharacter.getLoot();
-        this.logger.logLootAction(new LootActionAdapter(actionResult));
+        this.logger.logAction(new LootActionAdapter(actionResult));
     }
 
     public void modifyStat(String name, String statName, int statMod) {
@@ -218,7 +218,7 @@ public class EncounterManager {
             context.getActiveHostiles()
         );
 
-        logger.logActionProtect(new ProtectActionAdapter(actionResult));
+        logger.logAction(new ProtectActionAdapter(actionResult));
         endCurrentPlayerAction();
     }
 
@@ -237,7 +237,7 @@ public class EncounterManager {
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
         this.context.removePlayerCharacter(playerCharacter);
-        this.logger.logRemovedPlayerCharacter(name);
+        this.logger.logRemovedExplorer(name);
     }
 
     public void rejoinEncounter(Player player) {
@@ -262,7 +262,7 @@ public class EncounterManager {
         }
         PCEncounterData playerCharacter = this.context.getCurrentPlayerCharacter();
         if (this.context.isAttackPhase()) {
-            this.logger.logAttackActionSkipped(playerCharacter.getName());
+            this.logger.logActionAttackSkipped(playerCharacter.getName());
             playerCharacter.useAllActions();
             this.endCurrentPlayerAction();
         } else if (this.context.isDodgePhase()) {
@@ -303,7 +303,7 @@ public class EncounterManager {
     }
 
     public void viewEncounterSummary() {
-        this.logger.logEncounterSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
+        this.logger.logSummary(this.context.getAllPlayerCharacters(), this.context.getAllHostiles());
     }
 
     // todo remove once inventory is implemented
@@ -324,7 +324,7 @@ public class EncounterManager {
         PCEncounterData   playerCharacter = this.getPlayerCharacter(player);
         DodgeActionResult result          = playerCharacter.failToDodge(this.context.getActiveHostiles());
 
-        this.logger.logDodgeAction(new DodgeActionAdapter(result, true));
+        this.logger.logAction(new DodgeActionAdapter(result, true));
 
         this.endCurrentPlayerAction();
     }

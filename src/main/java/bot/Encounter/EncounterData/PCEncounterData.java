@@ -290,7 +290,7 @@ public class PCEncounterData implements EncounterDataInterface {
     }
 
     public boolean isSlain() {
-        return this.slayer.exists();
+        return currentHp < 1;
     }
 
     public void leave() {

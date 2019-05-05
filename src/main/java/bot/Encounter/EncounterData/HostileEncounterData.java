@@ -89,6 +89,10 @@ public class HostileEncounterData implements EncounterDataInterface {
         }
     }
 
+    public boolean isActive() {
+        return !this.isSlain();
+    }
+
     public boolean isName(String name) {
         return this.name.toLowerCase().equals(name.toLowerCase());
     }

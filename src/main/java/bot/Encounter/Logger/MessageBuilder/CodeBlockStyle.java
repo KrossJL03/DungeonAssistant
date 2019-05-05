@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +18,13 @@ class CodeBlockStyle {
      */
     private CodeBlockStyle(@NotNull String style) {
         this.style = style;
+    }
+
+    /**
+     * DIFF CodeBlockStyle factory method
+     */
+    static CodeBlockStyle buildDiffStyle() {
+        return new CodeBlockStyle(STYLE_DIFF);
     }
 
     /**

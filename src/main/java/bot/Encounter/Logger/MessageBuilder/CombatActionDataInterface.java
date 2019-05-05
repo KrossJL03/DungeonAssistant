@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import bot.Encounter.EncounterData.Slayer;
 import org.jetbrains.annotations.NotNull;

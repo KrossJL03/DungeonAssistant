@@ -2,7 +2,7 @@ package bot.Encounter;
 
 import bot.Encounter.EncounterData.AttackActionResult;
 import bot.Encounter.EncounterData.Slayer;
-import bot.Encounter.Logger.Message.AttackActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.AttackActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class AttackActionAdapter implements AttackActionDataInterface {

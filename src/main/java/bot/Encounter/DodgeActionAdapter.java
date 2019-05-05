@@ -3,8 +3,8 @@ package bot.Encounter;
 import bot.Encounter.EncounterData.DodgeActionResult;
 import bot.Encounter.EncounterData.DodgeResult;
 import bot.Encounter.EncounterData.Slayer;
-import bot.Encounter.Logger.Message.DodgeActionDataInterface;
-import bot.Encounter.Logger.Message.DodgeSubActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.DodgeActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.DodgeSubActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

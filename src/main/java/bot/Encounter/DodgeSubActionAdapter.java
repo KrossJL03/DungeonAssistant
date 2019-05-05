@@ -1,7 +1,7 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounterData.DodgeResult;
-import bot.Encounter.Logger.Message.DodgeSubActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.DodgeSubActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class DodgeSubActionAdapter implements DodgeSubActionDataInterface {

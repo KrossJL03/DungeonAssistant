@@ -4,8 +4,8 @@ import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.LootActionResult;
 import bot.Encounter.EncounterData.LootRoll;
 import bot.Encounter.Logger.Mention;
-import bot.Encounter.Logger.Message.LootActionDataInterface;
-import bot.Encounter.Logger.Message.LootSubActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.LootActionDataInterface;
+import bot.Encounter.Logger.MessageBuilder.LootSubActionDataInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

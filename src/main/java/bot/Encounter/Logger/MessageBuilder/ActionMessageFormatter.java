@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -37,14 +37,14 @@ class ActionMessageFormatter implements CodeBlockFormatter {
     }
 
     /**
-     * Format text to be grey
+     * Format text to be gray
      *
      * @param text Text to format
      *
      * @return String
      */
     @NotNull
-    String makeGrey(@NotNull String text) {
+    String makeGray(@NotNull String text) {
         return String.format("(* %s *)", text);
     }
 

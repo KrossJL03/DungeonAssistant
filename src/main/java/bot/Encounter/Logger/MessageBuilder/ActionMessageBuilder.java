@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot.Encounter.Logger.MessageBuilder;
 
 import bot.Encounter.Logger.Mention;
 import bot.Hostile.Loot;
@@ -13,8 +13,7 @@ public class ActionMessageBuilder {
     /**
      * Action MessageBuilder constructor
      */
-    @NotNull
-    public ActionMessageBuilder() {
+    public @NotNull ActionMessageBuilder() {
         this.formatter = new ActionMessageFormatter();
     }
 
@@ -26,8 +25,7 @@ public class ActionMessageBuilder {
      *
      * @return String
      */
-    @NotNull
-    public String buildAttackActionMessage(@NotNull AttackActionDataInterface actionData, Mention dmMention) {
+    public @NotNull String buildActionMessage(@NotNull AttackActionDataInterface actionData, Mention dmMention) {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                textBlockLines = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
@@ -57,11 +55,12 @@ public class ActionMessageBuilder {
             }
         }
 
+        codeBlockLines.add(MessageConstants.BREAK);
+
         if (actionData.isFail()) {
             codeBlockLines.add(String.format("well... that's %s", formatter.makeRed("unfortunate")));
             textBlockLines.add(String.format("Sit tight while me and %s discuss your fate", dmMention.getValue()));
         } else {
-            codeBlockLines.add(MessageConstants.BREAK);
             if (actionData.getDamageDealt() > 0) {
                 codeBlockLines.add(getDamageDealtLine(actionData, false));
             }
@@ -82,8 +81,7 @@ public class ActionMessageBuilder {
      *
      * @return String
      */
-    @NotNull
-    public String buildDodgeActionMessage(@NotNull DodgeActionDataInterface actionData) {
+    public @NotNull String buildActionMessage(@NotNull DodgeActionDataInterface actionData) {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
 
@@ -106,7 +104,7 @@ public class ActionMessageBuilder {
                 "d%d %s %s",
                 actionData.getDodgeDie(),
                 formatter.makeCyan("dodge dice"),
-                formatter.makeGrey(String.format("success = %d", actionData.getMinSucessDodgeRoll()))
+                formatter.makeGray(String.format("success = %d", actionData.getMinSucessDodgeRoll()))
             ));
             codeBlockLines.add(MessageConstants.BREAK);
             for (DodgeSubActionDataInterface subActionData : actionData.getSubActionData()) {
@@ -136,8 +134,7 @@ public class ActionMessageBuilder {
      *
      * @return String
      */
-    @NotNull
-    public String buildLootActionMessage(LootActionDataInterface actionData) {
+    public @NotNull String buildActionMessage(LootActionDataInterface actionData) {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                textBlockLines = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
@@ -190,7 +187,14 @@ public class ActionMessageBuilder {
         return message.getPrintout();
     }
 
-    public String buildProtectActionMessage(ProtectActionDataInterface actionData) {
+    /**
+     * Build message from protect action result
+     *
+     * @param actionData Protect action result
+     *
+     * @return String
+     */
+    public @NotNull String buildActionMessage(ProtectActionDataInterface actionData) {
         ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
         ArrayList<String>                textBlockLines = new ArrayList<>();
         ArrayList<String>                codeBlockLines = new ArrayList<>();
@@ -276,7 +280,7 @@ public class ActionMessageBuilder {
             output.append(String.format(
                 "%s! %s",
                 formatter.makeYellow("DODGED"),
-                formatter.makeGrey(String.format("no dmg from %s", actionData.getAttackerName()))
+                formatter.makeGray(String.format("no dmg from %s", actionData.getAttackerName()))
             ));
         } else {
             output.append(String.format(
@@ -321,7 +325,7 @@ public class ActionMessageBuilder {
         output.append(String.format("%2d %s ", actionData.getLootRoll(), MessageConstants.DOUBLE_ARROW));
 
         if (loot.getItem() == null || loot.getItem().equals("null")) {
-            output.append(formatter.makeGrey(String.format("nothing from %s", actionData.getKillName())));
+            output.append(formatter.makeGray(String.format("nothing from %s", actionData.getKillName())));
         } else {
             output.append(String.format(
                 "x%d %s from %s",
