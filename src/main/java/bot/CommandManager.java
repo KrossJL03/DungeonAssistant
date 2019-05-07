@@ -75,7 +75,7 @@ public class CommandManager {
         String appLink   = splitInput[8];
         String statsLink = splitInput[9];
 
-        PlayerCharacterManager.createExplorer(author.getId(), name, HP, STR, DEF, AGI, WIS, appLink, statsLink);
+        ExplorerManager.createExplorer(author.getId(), name, HP, STR, DEF, AGI, WIS, appLink, statsLink);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been saved!", name)).queue();
         this.viewCharacters(event);
@@ -180,19 +180,19 @@ public class CommandManager {
         }
     }
 
+    void healAllExplorersCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.healAllExplorers(hitpoints);
+        }
+    }
+
     void healAllHostilesCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             int      hitpoints  = Integer.parseInt(splitInput[1]);
             this.encounterManager.healAllHostiles(hitpoints);
-        }
-    }
-
-    void healAllPcsCommand(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            int      hitpoints  = Integer.parseInt(splitInput[1]);
-            this.encounterManager.healAllPcs(hitpoints);
         }
     }
 
@@ -220,19 +220,19 @@ public class CommandManager {
         }
     }
 
+    void hurtAllExplorersCommand(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            int      hitpoints  = Integer.parseInt(splitInput[1]);
+            this.encounterManager.hurtAllExplorers(hitpoints);
+        }
+    }
+
     void hurtAllHostilesCommand(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             int      hitpoints  = Integer.parseInt(splitInput[1]);
             this.encounterManager.hurtAllHostiles(hitpoints);
-        }
-    }
-
-    void hurtAllPcsCommand(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            int      hitpoints  = Integer.parseInt(splitInput[1]);
-            this.encounterManager.hurtAllPcs(hitpoints);
         }
     }
 

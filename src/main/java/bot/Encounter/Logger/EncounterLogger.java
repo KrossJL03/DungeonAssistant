@@ -261,37 +261,63 @@ public class EncounterLogger
     }
 
     /**
-     * Log end of encounter
+     * Log end of encounter (forced)
      *
      * @param encounteredExplorers Encountered explorers
      * @param encounteredHostiles  Encountered hostiles
-     * @param win                  Did the players win
      */
-    public void logEndEncounter(
+    public void logEndEncounterForced(
         @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles,
-        boolean win
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
         logSummary(encounteredExplorers, encounteredHostiles);
         sendMessage("***THE BATTLE IS OVER!!!***");
-        if (win) {
-            sendMessage(
-                "Great work everyone! You did it!" +
-                EncounterLogger.NEWLINE +
-                EncounterLogger.NEWLINE +
-                "**LOOT TURN!**" +
-                EncounterLogger.NEWLINE +
-                String.format(
-                    "Please use `%sloot` to harvest materials from the hostiles.",
-                    CommandListener.COMMAND_KEY
-                ) +
-                EncounterLogger.NEWLINE +
-                "There is no turn order and if you are unable to roll now you may do so later."
-            );
-        } else {
-            sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
-        }
+        sendMessage("Game over everyone, the DM commands it! Thanks for playing!");
+    }
+
+    /**
+     * Log end of encounter (lose)
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    public void logEndEncounterLose(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        logSummary(encounteredExplorers, encounteredHostiles);
+        sendMessage("***THE BATTLE IS OVER!!!***");
+        sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
+    }
+
+    /**
+     * Log end of encounter (win)
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    public void logEndEncounterWin(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        logSummary(encounteredExplorers, encounteredHostiles);
+        sendMessage("***THE BATTLE IS OVER!!!***");
+        sendMessage(
+            "Great work everyone! You did it!" +
+            EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
+            "**LOOT TURN!**" +
+            EncounterLogger.NEWLINE +
+            String.format(
+                "Please use `%sloot` to harvest materials from the hostiles.",
+                CommandListener.COMMAND_KEY
+            ) +
+            EncounterLogger.NEWLINE +
+            "There is no turn order and if you are unable to roll now you may do so later."
+        );
     }
 
     /**

@@ -6,7 +6,6 @@ import bot.Player.Exception.OutOfBoundsStatExecption;
 
 public class Explorer
 {
-
     private String name;
     private Player owner;
     private int    strength;
