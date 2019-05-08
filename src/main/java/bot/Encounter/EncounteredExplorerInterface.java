@@ -1,5 +1,6 @@
 package bot.Encounter;
 
+import bot.Encounter.EncounteredCreature.EncounteredExplorerException;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,8 +12,10 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * Add kill
      *
      * @param encounteredHostile Encountered hostile
+     *
+     * @throws EncounteredExplorerException If explorer was not active for kill
      */
-    void addKill(@NotNull EncounteredHostileInterface encounteredHostile);
+    void addKill(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounteredExplorerException;
 
     /**
      * Attack a target
@@ -101,8 +104,10 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * Get stat
      *
      * @return int
+     *
+     * @throws EncounteredExplorerException If stat name is invalid
      */
-    int getStat(String statName);
+    int getStat(String statName) throws EncounteredExplorerException;
 
     /**
      * Get strength
@@ -143,8 +148,10 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
 
     /**
      * Leave the encounter
+     *
+     * @throws EncounteredExplorerException If explorer has already left
      */
-    void leave();
+    void leave() throws EncounteredExplorerException;
 
     /**
      * Modify stat
@@ -161,16 +168,23 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * @param encounteredHostiles Encountered hostiles to protect against
      *
      * @return ProtectActionResult
+     *
+     * @throws EncounteredExplorerException If explorer does not have a protect action available
+     *                                      If explorer attempts to protect themselves
+     *                                      If recipient is slain
+     *                                      If recipient has no actions
      */
     @NotNull ProtectActionResultInterface protect(
         @NotNull EncounteredExplorerInterface recipient,
         @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    );
+    ) throws EncounteredExplorerException;
 
     /**
      * Rejoin encounter
+     *
+     * @throws EncounteredExplorerException If explorer is already present
      */
-    void rejoin();
+    void rejoin() throws EncounteredExplorerException;
 
     /**
      * Reset actions

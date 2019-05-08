@@ -1,7 +1,6 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.EncounteredHostile;
-import bot.Encounter.Exception.*;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
 import org.apache.commons.text.WordUtils;
@@ -59,14 +58,18 @@ public class Encounter
      * @param nickname Nickname
      *
      * @return EncounteredHostileInterface
+     *
+     * @throws HostileRosterException If nickname is in use
      */
     @NotNull EncounteredHostileInterface addHostile(@NotNull Hostile hostile, @NotNull String nickname)
+        throws HostileRosterException
     {
         String                      capitalNickname       = WordUtils.capitalizeFully(nickname);
         EncounteredHostileInterface newEncounteredHostile = new EncounteredHostile(hostile, capitalNickname);
         String                      hostileSpecies        = hostile.getSpecies();
         String                      nicknameToLower       = nickname.toLowerCase();
         if (hostileSpecies.toLowerCase().equals(nicknameToLower)) {
+            // todo clean up
             int speciesCount = 0;
             for (EncounteredHostileInterface encounteredHostile : this.hostiles) {
                 if (encounteredHostile.getSpecies().equals(newEncounteredHostile.getSpecies())) {
@@ -83,7 +86,7 @@ public class Encounter
         } else {
             for (EncounteredHostileInterface hostileData : this.hostiles) {
                 if (hostileData.getName().toLowerCase().equals(nicknameToLower)) {
-                    throw new HostileNicknameInUseException(nickname);
+                    throw HostileRosterException.createNicknameInUse(nickname);
                 }
             }
         }
@@ -151,13 +154,16 @@ public class Encounter
      * Get current explorer
      *
      * @return EncounteredExplorerInterface
+     *
+     * @throws EncounterPhaseException              If not in initiative phase
+     * @throws EncounteredCreatureNotFoundException If creature not found
      */
     @NotNull EncounteredExplorerInterface getCurrentExplorer()
     {
-        if (!this.isInitiativePhase()) {
-            throw new NotInInitiativeException();
+        if (!isInitiativePhase()) {
+            throw EncounterPhaseException.createNotInitiativePhase();
         }
-        EncounteredExplorerInterface currentExplorer = this.initiative.getCurrentExplorer();
+        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
         if (currentExplorer == null) {
             throw EncounteredCreatureNotFoundException.createForCurrentPlayer();
         }
@@ -218,13 +224,14 @@ public class Encounter
      * @return EncounteredHostileInterface
      *
      * @throws EncounteredCreatureNotFoundException If hostile with name not found
+     * @throws HostileRosterException               If hostile is slain
      */
-    @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
+    @NotNull EncounteredHostileInterface getHostile(@NotNull String name) throws HostileRosterException
     {
         for (EncounteredHostileInterface encounteredHostile : this.hostiles) {
             if (encounteredHostile.isName(name)) {
                 if (encounteredHostile.isSlain()) {
-                    throw new HostileSlainException(
+                    throw HostileRosterException.createIsSlain(
                         encounteredHostile.getName(),
                         encounteredHostile.getSlayer().getName()
                     );
@@ -250,12 +257,13 @@ public class Encounter
      *
      * @return EncounteredExplorerInterface
      *
+     * @throws EncounterPhaseException              If not in initiative phase
      * @throws EncounteredCreatureNotFoundException When next explorer does not exist
      */
     @NotNull EncounteredExplorerInterface getNextExplorer()
     {
         if (!this.isInitiativePhase()) {
-            throw new NotInInitiativeException();
+            throw EncounterPhaseException.createNotInitiativePhase();
         }
         EncounteredExplorerInterface nextExplorer = this.initiative.getNextExplorer();
         if (nextExplorer == null) {
@@ -418,11 +426,13 @@ public class Encounter
 
     /**
      * Start attack phase
+     *
+     * @throws EncounterPhaseException If attack phase is in progress
      */
-    void startAttackPhase()
+    void startAttackPhase() throws EncounterPhaseException
     {
         if (this.isAttackPhase()) {
-            throw new StartCurrentPhaseException(Encounter.ATTACK_PHASE);
+            throw EncounterPhaseException.createStartCurrentPhase(Encounter.ATTACK_PHASE);
         }
         for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster.getActiveExplorers()) {
             encounteredExplorer.resetActions(true);
@@ -433,11 +443,13 @@ public class Encounter
 
     /**
      * Start dodge phase
+     *
+     * @throws EncounterPhaseException If dodge phase is in progress
      */
-    void startDodgePhase()
+    void startDodgePhase() throws EncounterPhaseException
     {
         if (this.isDodgePhase()) {
-            throw new StartCurrentPhaseException(Encounter.DODGE_PHASE);
+            throw EncounterPhaseException.createStartCurrentPhase(Encounter.DODGE_PHASE);
         }
         for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster.getActiveExplorers()) {
             encounteredExplorer.resetActions(false);
@@ -457,19 +469,35 @@ public class Encounter
 
     /**
      * Start join phase
+     *
+     * @throws EncounterPhaseException If encounter is over
+     *                                 If encounter has already started
+     *                                 If max players has not beet set
+     *                                 If hostiles have not been added
      */
-    void startJoinPhase()
+    void startJoinPhase() throws EncounterPhaseException
     {
+        if (isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        } else if (isStarted()) {
+            throw EncounterPhaseException.createStartInProgressEncounter();
+        } else if (getMaxPlayerCount() == 0) {
+            throw EncounterPhaseException.createStartWithoutMaxPlayers();
+        } else if (!hasActiveHostiles()) {
+            throw EncounterPhaseException.createStartWithoutHostiles();
+        }
         this.currentPhase = Encounter.JOIN_PHASE;
     }
 
     /**
      * Start loot phase
+     *
+     * @throws EncounterPhaseException If loot phase is in progress
      */
-    void startLootPhase()
+    void startLootPhase() throws EncounterPhaseException
     {
         if (this.isLootPhase()) {
-            throw new StartCurrentPhaseException(Encounter.LOOT_PHASE);
+            throw EncounterPhaseException.createStartCurrentPhase(Encounter.LOOT_PHASE);
         }
         this.currentPhase = Encounter.LOOT_PHASE;
         this.initiative = new InitiativeQueue();

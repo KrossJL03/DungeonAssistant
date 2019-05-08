@@ -1,6 +1,5 @@
 package bot.Encounter;
 
-import bot.Encounter.Exception.*;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,23 +21,24 @@ class ExplorerRoster
 
     /**
      * Add EncounteredExplorerInterface to the explorerRoster
+     * todo consider building EncounteredExplorerInterface in roster
      *
      * @param newExplorer Explorer to add
      *
-     * @throws ExplorerRosterException    If max player count has been reached
-     * @throws MaxZeroPlayersException    If no max player count has been set
-     * @throws MultipleExplorersException If player already has explorer in the encounter
+     * @throws ExplorerRosterException If no max player count has been set
+     *                                 If player already has explorer in the encounter
+     *                                 If max player count has been reached
      */
-    void addExplorer(@NotNull EncounteredExplorerInterface newExplorer)
-        throws ExplorerRosterException, MaxZeroPlayersException, MultipleExplorersException
+    void addExplorer(@NotNull EncounteredExplorerInterface newExplorer) throws ExplorerRosterException
     {
-        // todo consider building EncounteredExplorerInterface in roster
+        if (this.isMaxPlayerCountSet()) {
+            throw ExplorerRosterException.createMaxPlayersNotSet();
+        }
+
         Player player = newExplorer.getOwner();
         if (this.containsPlayer(player)) {
             EncounteredExplorerInterface character = this.getExplorer(player);
-            throw new MultipleExplorersException(player, character.getName());
-        } else if (!this.isMaxPlayerCountSet()) {
-            throw new MaxZeroPlayersException();
+            throw ExplorerRosterException.createMultipleExplorers(player, character.getName());
         } else if (this.isFull()) {
             // this error is thrown last because multiple explorers exception takes precedence
             throw ExplorerRosterException.createFullRoster(player);
@@ -182,14 +182,14 @@ class ExplorerRoster
      *
      * @return EncounteredExplorerInterface
      *
-     * @throws ExplorerPresentException If encountered explorer has already left
+     * @throws ExplorerRosterException If encountered explorer has already left
      */
-    @NotNull EncounteredExplorerInterface playerHasLeft(@NotNull Player player) throws ExplorerPresentException
+    @NotNull EncounteredExplorerInterface playerHasLeft(@NotNull Player player) throws ExplorerRosterException
     {
         // todo rename method
         EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);
         if (!encounteredExplorer.isPresent()) {
-            throw ExplorerPresentException.createHasAleadyLeft(player);
+            throw ExplorerRosterException.createHasAleadyLeft(player);
         }
         encounteredExplorer.leave();
         return encounteredExplorer;
@@ -202,16 +202,14 @@ class ExplorerRoster
      *
      * @return EncounteredExplorerInterface
      *
-     * @throws ExplorerPresentException If encountered explorer is already present
-     * @throws ExplorerRosterException  If roster is full
+     * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    @NotNull EncounteredExplorerInterface playerHasRejoined(@NotNull Player player)
-        throws ExplorerPresentException, ExplorerRosterException
+    @NotNull EncounteredExplorerInterface playerHasRejoined(@NotNull Player player) throws ExplorerRosterException
     {
         // todo rename method
         EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);
         if (encounteredExplorer.isPresent()) {
-            throw ExplorerPresentException.createCannotRejoinIfPresent(player);
+            throw ExplorerRosterException.createCannotRejoinIfPresent(player);
         } else if (this.isFull()) {
             // this error is thrown last because already present message takes precedence
             throw ExplorerRosterException.createFullRoster(player);
@@ -249,7 +247,7 @@ class ExplorerRoster
         }
         int presentPlayerCount = this.getPresentPlayerCount();
         if (maxPlayerCount < presentPlayerCount) {
-            throw ExplorerRosterException.createNewMaxPlayerCountGreaterThanCurrentPlayerCount(
+            throw ExplorerRosterException.createNewPlayerMaxLessThanCurrentPlayerCount(
                 maxPlayerCount,
                 presentPlayerCount
             );

@@ -3,7 +3,6 @@ package bot.Encounter;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import bot.Encounter.Exception.*;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +27,7 @@ class ExplorerRosterTest
         ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
 
         // max count is not set /////////////////////////
-        assertThrows(MaxZeroPlayersException.class, () -> explorerRoster.addExplorer(explorer1));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer1));
         assertEquals(expectedList, explorerRoster.getAllExplorers());
         /////////////////////////////////////////////////
 
@@ -69,12 +68,12 @@ class ExplorerRosterTest
 
         // add the same explorer twice ////////////////////////
         explorerRoster.setMaxPlayerCount(5);
-        assertThrows(MultipleExplorersException.class, () -> explorerRoster.addExplorer(explorer1));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer1));
         assertEquals(expectedList, explorerRoster.getAllExplorers());
         /////////////////////////////////////////////////
 
         // add the same explore twice ////////////////////////
-        assertThrows(MultipleExplorersException.class, () -> explorerRoster.addExplorer(explorer5));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer5));
         assertEquals(expectedList, explorerRoster.getAllExplorers());
         /////////////////////////////////////////////////
     }
@@ -238,7 +237,7 @@ class ExplorerRosterTest
         // player attempts to leave that was not present //
         explorerRoster.addExplorer(explorer);
         when(explorer.isPresent()).thenReturn(false);
-        assertThrows(ExplorerPresentException.class, () -> explorerRoster.playerHasLeft(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.playerHasLeft(p));
         ///////////////////////////////////////////////////
 
         // player attempts to leave that was present //
@@ -266,7 +265,7 @@ class ExplorerRosterTest
         // player attempts to rejoin that was present //
         explorerRoster.addExplorer(explorer1);
         when(explorer1.isPresent()).thenReturn(true);
-        assertThrows(ExplorerPresentException.class, () -> explorerRoster.playerHasRejoined(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.playerHasRejoined(p));
         ////////////////////////////////////////////////
 
         // player attempts to rejoin when roster is full //

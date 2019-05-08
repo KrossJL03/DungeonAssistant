@@ -1,10 +1,12 @@
 package bot;
 
-import bot.Encounter.Exception.EncounterExplorerException;
+import bot.Encounter.EncounteredCreature.EncounteredExplorerException;
 
 import java.util.ArrayList;
 
 public class Constant {
+
+    // todo rename and move to EncounteredCreature folder, or refactor how stats are changed
 
     public static final int MAX_AGILITY  = 20;
     public static final int MAX_DEFENSE  = 20;
@@ -39,7 +41,7 @@ public class Constant {
             case Constant.STAT_WISDOM:
                 return MAX_WISDOM;
             default:
-                throw EncounterExplorerException.invalidStatName(statName);
+                throw EncounteredExplorerException.invalidStatName(statName);
         }
     }
 
@@ -56,7 +58,7 @@ public class Constant {
             case Constant.STAT_WISDOM:
                 return MIN_WISDOM;
             default:
-                throw EncounterExplorerException.invalidStatName(statName);
+                throw EncounteredExplorerException.invalidStatName(statName);
         }
     }
 

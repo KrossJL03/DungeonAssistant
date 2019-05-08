@@ -1,7 +1,6 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.*;
-import bot.Encounter.Exception.*;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.EncounterLoggerContext;
 import bot.Explorer.Explorer;
@@ -314,12 +313,12 @@ public class EncounterManager
         if (encounter.isOver()) {
             throw EncounterPhaseException.createEndPhase();
         }
-        EncounteredExplorerInterface currentExplorer;
-        try {
+
+        EncounteredExplorerInterface currentExplorer = null;
+        if (encounter.isInitiativePhase()) {
             currentExplorer = encounter.getCurrentExplorer();
-        } catch (NotInInitiativeException e) {
-            currentExplorer = null;
         }
+
         EncounteredExplorerInterface encounteredExplorer = encounter.playerHasLeft(player);
         logger.logLeftEncounter(encounteredExplorer.getName());
         if (encounteredExplorer == currentExplorer) {
@@ -524,25 +523,11 @@ public class EncounterManager
      *
      * @param channel     Encounter channel
      * @param mentionRole Mention role
-     *
-     * @throws EncounterPhaseException If encounter is over or already started
-     * @throws MaxZeroPlayersException If no max player count has been set
-     * @throws NoHostilesException     If the encounter has no hostiles
      */
     public void startEncounter(@NotNull MessageChannel channel, @NotNull Role mentionRole)
-        throws EncounterPhaseException, MaxZeroPlayersException, NoHostilesException
     {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        } else if (this.encounter.isStarted()) {
-            throw EncounterPhaseException.createStartInProgressEncounter();
-        } else if (this.encounter.getMaxPlayerCount() == 0) {
-            throw new MaxZeroPlayersException();
-        } else if (!this.encounter.hasActiveHostiles()) {
-            throw new NoHostilesException();
-        }
-        this.loggerContext.setChannel(channel);
         this.encounter.startJoinPhase();
+        this.loggerContext.setChannel(channel);
         this.logger.logStartEncounter(mentionRole, this.encounter.getMaxPlayerCount());
     }
 
@@ -650,7 +635,7 @@ public class EncounterManager
     {
         EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
         if (!currentExplorer.isOwner(player)) {
-            throw new NotYourTurnException();
+            throw NotYourTurnException.createNotYourTurn();
         }
         return currentExplorer;
     }

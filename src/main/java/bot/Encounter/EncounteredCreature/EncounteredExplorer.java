@@ -1,11 +1,12 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.*;
-import bot.Encounter.Exception.EncounterExplorerException;
-import bot.Encounter.Exception.ExplorerSlainException;
-import bot.Encounter.Exception.ExplorerUnableToProtectException;
-import bot.Encounter.Exception.ProtectedExplorerException;
+import bot.Encounter.DodgeResultInterface;
+import bot.Encounter.LootRollInterface;
+import bot.Encounter.ProtectActionResultInterface;
+import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredExplorerInterface;
+import bot.Encounter.EncounteredHostileInterface;
 import bot.Player.Player;
 import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
@@ -60,12 +61,11 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void addKill(@NotNull EncounteredHostileInterface encounteredHostile)
+    public void addKill(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounteredExplorerException
     {
-        if (this.isSlain()) {
-            throw ExplorerSlainException.createFailedToAddKill(
+        if (!this.isActive()) {
+            throw EncounteredExplorerException.createFailedToAddKill(
                 this.name,
-                this.slayer.getName(),
                 encounteredHostile.getName()
             );
         }
@@ -294,7 +294,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int getStat(String statName)
+    public int getStat(String statName) throws EncounteredExplorerException
     {
         switch (statName) {
             case Constant.STAT_AGILITY:
@@ -308,7 +308,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             case Constant.STAT_WISDOM:
                 return this.wisdom;
             default:
-                throw EncounterExplorerException.invalidStatName(statName);
+                throw EncounteredExplorerException.invalidStatName(statName);
         }
     }
 
@@ -440,8 +440,11 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void leave()
+    public void leave() throws EncounteredExplorerException
     {
+        if (!isPresent()) {
+            throw EncounteredExplorerException.createHasAleadyLeft(owner);
+        }
         this.useAllActions();
         this.isPresent = false;
     }
@@ -453,7 +456,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void modifyStat(@NotNull String statName, int statBoost)
     {
         if (!this.isStatModifiable(statName, statBoost)) {
-            throw EncounterExplorerException.createStatOutOfBounds(this.name, statName);
+            throw EncounteredExplorerException.createStatOutOfBounds(this.name, statName);
         }
         switch (statName) {
             case Constant.STAT_AGILITY:
@@ -478,7 +481,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
                 this.wisdom += statBoost;
                 return;
             default:
-                throw EncounterExplorerException.invalidStatName(statName);
+                throw EncounteredExplorerException.invalidStatName(statName);
         }
     }
 
@@ -489,16 +492,16 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public @NotNull ProtectActionResultInterface protect(
         @NotNull EncounteredExplorerInterface recipient,
         @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
+    ) throws EncounteredExplorerException
     {
-        if (!this.hasProtect) {
-            throw ExplorerUnableToProtectException.createProtectAlreadyUsed();
-        } else if (this.equals(recipient)) {
-            throw ProtectedExplorerException.createProtectYourself();
+        if (!hasProtect) {
+            throw EncounteredExplorerException.createProtectAlreadyUsed();
+        } else if (equals(recipient)) {
+            throw EncounteredExplorerException.createProtectYourself();
         } else if (recipient.isSlain()) {
-            throw ProtectedExplorerException.createIsSlain(recipient.getName());
+            throw EncounteredExplorerException.createProtectSlainExplorer(recipient.getName());
         } else if (!recipient.hasActions()) {
-            throw ProtectedExplorerException.createTurnHasPassed(recipient.getName());
+            throw EncounteredExplorerException.createProtectActionlessExplorer(recipient.getName());
         }
 
         int damageDealt    = 0;
@@ -530,8 +533,11 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void rejoin()
+    public void rejoin() throws EncounteredExplorerException
     {
+        if (isPresent()) {
+            throw EncounteredExplorerException.createCannotRejoinIfPresent(owner);
+        }
         this.isPresent = true;
     }
 
@@ -560,7 +566,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void rollLoot()
     {
         ArrayList<EncounteredHostileInterface> finalBlows = new ArrayList<>();
-        ArrayList<LootRollInterface>  lootRolls  = new ArrayList<>();
+        ArrayList<LootRollInterface>           lootRolls  = new ArrayList<>();
         for (EncounteredHostileInterface hostile : this.kills) {
             int roll = (int) Math.floor(Math.random() * LOOT_DIE) + 1;
             lootRolls.add(new LootRoll(roll, hostile.getName(), hostile.getLoot(roll)));
@@ -647,12 +653,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * Is stat modifiable
      *
      * @return boolean
+     *
+     * @throws EncounteredExplorerException If stat name is not valid
      */
-    private boolean isStatModifiable(String statName, int boost)
+    private boolean isStatModifiable(String statName, int boost) throws EncounteredExplorerException
     {
         statName = statName.toLowerCase();
         if (!Constant.isStatName(statName)) {
-            throw EncounterExplorerException.invalidStatName(statName);
+            throw EncounteredExplorerException.invalidStatName(statName);
         }
         int newStat = statName.equals(Constant.STAT_MAX_HP)
                       ? this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)
