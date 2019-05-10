@@ -87,21 +87,6 @@ public class CommandManager {
         }
     }
 
-    void createHostile(MessageReceivedEvent event) {
-        if (this.isAdmin(event)) {
-            MessageChannel channel     = event.getChannel();
-            String[]       splitInput  = event.getMessage().getContentRaw().split("\\s+");
-            String         species     = splitInput[1];
-            int            dangerLevel = Integer.parseInt(splitInput[2]);
-            int            hitpoints   = Integer.parseInt(splitInput[3]);
-            int            attackDice  = Integer.parseInt(splitInput[4]);
-
-            HostileManager.createHostile(species, dangerLevel, hitpoints, attackDice);
-            // todo move to RepositoryLogger
-            channel.sendMessage(String.format("%s record has been saved!", species)).queue();
-        }
-    }
-
     void deleteCharacterCommand(MessageReceivedEvent event) {
         MessageChannel channel    = event.getChannel();
         User           author     = event.getAuthor();
@@ -111,16 +96,6 @@ public class CommandManager {
         ExplorerManager.deleteExplorer(author.getId(), name);
         // todo move to RepositoryLogger
         channel.sendMessage(String.format("%s record has been deleted!", name)).queue();
-    }
-
-    void deleteHostile(MessageReceivedEvent event) {
-        MessageChannel channel    = event.getChannel();
-        String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
-        String         species    = splitInput[1];
-
-        HostileRepository.deleteHostileIfExists(species);
-        // todo move to RepositoryLogger
-        channel.sendMessage(String.format("%s record has been deleted!", species)).queue();
     }
 
     void dodgeCommand(MessageReceivedEvent event) {

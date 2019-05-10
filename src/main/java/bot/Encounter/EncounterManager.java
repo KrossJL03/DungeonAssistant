@@ -2,7 +2,7 @@ package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.*;
 import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.Logger.EncounterLoggerContext;
+import bot.Encounter.Logger.Mention;
 import bot.Explorer.Explorer;
 import bot.Hostile.HostileManager;
 import bot.Player.Player;
@@ -14,24 +14,20 @@ public class EncounterManager
 {
     private Encounter              encounter;
     private EncounterLogger        logger;
-    private EncounterLoggerContext loggerContext;
 
     /**
      * EncounterManager constructor
      *
-     * @param encounter     Encounter
-     * @param logger        Encounter logger
-     * @param loggerContext Encounter logger encounter
+     * @param encounter Encounter
+     * @param logger    Encounter logger
      */
     public @NotNull EncounterManager(
         @NotNull Encounter encounter,
-        @NotNull EncounterLogger logger,
-        @NotNull EncounterLoggerContext loggerContext
+        @NotNull EncounterLogger logger
     )
     {
         this.encounter = encounter;
         this.logger = logger;
-        this.loggerContext = loggerContext; // todo move to logger only
     }
 
     /**
@@ -90,8 +86,8 @@ public class EncounterManager
     public void createEncounter(@NotNull MessageChannel channel, @NotNull Role dungeonMaster)
     {
         encounter = new Encounter();
-        loggerContext.setChannel(channel);
-        loggerContext.setDungeonMasterMention(dungeonMaster);
+        logger.setChannel(channel);
+        logger.setDmMention(new Mention(dungeonMaster.getId()));
         logger.logCreateEncounter();
     }
 
@@ -526,9 +522,10 @@ public class EncounterManager
      */
     public void startEncounter(@NotNull MessageChannel channel, @NotNull Role mentionRole)
     {
-        this.encounter.startJoinPhase();
-        this.loggerContext.setChannel(channel);
-        this.logger.logStartEncounter(mentionRole, this.encounter.getMaxPlayerCount());
+        encounter.startJoinPhase();
+        logger.setChannel(channel);
+        logger.setEveryoneMention(new Mention(mentionRole.getId()));
+        logger.logStartEncounter(this.encounter.getMaxPlayerCount());
     }
 
     /**

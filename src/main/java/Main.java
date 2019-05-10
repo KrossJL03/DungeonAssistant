@@ -2,23 +2,23 @@ import bot.*;
 
 import bot.Encounter.Encounter;
 import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.Logger.EncounterLoggerContext;
 import bot.Encounter.EncounterManager;
+import bot.Encounter.Logger.MessageBuilder.ActionMessageBuilder;
+import bot.Encounter.Logger.MessageBuilder.SummaryMessageBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
-public class Main {
-    public static void main(String[] arguments) throws Exception {
+public class Main
+{
+    public static void main(String[] arguments) throws Exception
+    {
 
-        Encounter              encounterContext       = new Encounter();
-        EncounterLoggerContext encounterLoggerContext = new EncounterLoggerContext();
-
-        EncounterLogger encounterLogger = new EncounterLogger(encounterLoggerContext);
+        Encounter encounter = new Encounter();
+        EncounterLogger encounterLogger = new EncounterLogger(new ActionMessageBuilder(), new SummaryMessageBuilder());
 
         EncounterManager encountermanager = new EncounterManager(
-            encounterContext,
-            encounterLogger,
-            encounterLoggerContext
+            encounter,
+            encounterLogger
         );
 
         CommandManager  commandManager  = new CommandManager(encountermanager);

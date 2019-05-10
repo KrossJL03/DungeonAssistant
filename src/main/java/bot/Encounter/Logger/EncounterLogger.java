@@ -2,10 +2,9 @@ package bot.Encounter.Logger;
 
 import bot.CommandListener;
 import bot.Encounter.*;
-import bot.Encounter.EncounteredCreature.*;
 import bot.Encounter.Logger.MessageBuilder.*;
 import bot.Player.Player;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -16,20 +15,22 @@ public class EncounterLogger
     private static String NEWLINE      = System.getProperty("line.separator");
     private static String DOUBLE_ARROW = "»";
 
-    private ActionMessageBuilder   actionMessageBuilder;
-    private SummaryMessageBuilder  summaryMessageBuilder;
-    private EncounterLoggerContext context;
+    private ActionMessageBuilder  actionMessageBuilder;
+    private SummaryMessageBuilder summaryMessageBuilder;
+    private MessageChannel        channel;
+    private Mention               dmMention;
+    private Mention               everyoneMention;
 
     /**
      * EncounterLogger constructor
-     *
-     * @param context Encounter logger context
      */
-    public @NotNull EncounterLogger(@NotNull EncounterLoggerContext context)
+    public @NotNull EncounterLogger(
+        @NotNull ActionMessageBuilder actionMessageBuilder,
+        @NotNull SummaryMessageBuilder summaryMessageBuilder
+    )
     {
-        this.context = context;
-        this.actionMessageBuilder = new ActionMessageBuilder();
-        this.summaryMessageBuilder = new SummaryMessageBuilder();
+        this.actionMessageBuilder = actionMessageBuilder;
+        this.summaryMessageBuilder = summaryMessageBuilder;
     }
 
     /**
@@ -39,7 +40,7 @@ public class EncounterLogger
      */
     public void logAction(@NotNull AttackActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(result, context.getDungeonMasterMention()));
+        sendMessage(actionMessageBuilder.buildActionMessage(result, dmMention));
     }
 
     /**
@@ -483,13 +484,12 @@ public class EncounterLogger
     /**
      * Log start encounter
      *
-     * @param mentionRole Role to mention players
      * @param maxPlayers  Max number of players
      */
-    public void logStartEncounter(@NotNull Role mentionRole, int maxPlayers)
+    public void logStartEncounter(int maxPlayers)
     {
         sendMessage(
-            mentionRole.getAsMention() +
+            everyoneMention.getValue() +
             EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
@@ -519,7 +519,7 @@ public class EncounterLogger
         sendMessage(
             String.format(
                 "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
-                context.getDungeonMasterMention(),
+                dmMention.getValue(),
                 (new Mention(player.getUserId())).getValue()
             )
         );
@@ -535,7 +535,7 @@ public class EncounterLogger
         sendMessage(
             String.format(
                 "%s, %s has used an item. Could you tell me what to do?",
-                context.getDungeonMasterMention(),
+                dmMention.getValue(),
                 (new Mention(player.getUserId())).getValue()
             )
         );
@@ -555,6 +555,36 @@ public class EncounterLogger
                 explorer.getName()
             )
         );
+    }
+
+    /**
+     * Set logger channel
+     *
+     * @param channel Channel
+     */
+    public void setChannel(@NotNull MessageChannel channel)
+    {
+        this.channel = channel;
+    }
+
+    /**
+     * Set dungeon master mention
+     *
+     * @param dmMention Dungeon master mention
+     */
+    public void setDmMention(@NotNull Mention dmMention)
+    {
+        this.dmMention = dmMention;
+    }
+
+    /**
+     * Set everyone mention
+     *
+     * @param everyoneMention Everyone mention
+     */
+    public void setEveryoneMention(@NotNull Mention everyoneMention)
+    {
+        this.everyoneMention = everyoneMention;
     }
 
     /**
@@ -631,6 +661,6 @@ public class EncounterLogger
      */
     private void sendMessage(@NotNull String message)
     {
-        context.getChannel().sendMessage(message).queue();
+        channel.sendMessage(message).queue();
     }
 }
