@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter.Logger;
 
 import bot.CustomExceptionInterface;
 
@@ -14,13 +14,11 @@ class LoggerException extends RuntimeException implements CustomExceptionInterfa
     }
 
     /**
-     * Factory method for no loot exception
-     *
-     * @param explorerName Name of explorer that is missing loot
+     * Factory method for action not set exception
      *
      * @return LoggerException
      */
-    static LoggerException createNoLoot(String explorerName) {
-        return new LoggerException(String.format("I can't seem to find %s's loot... That's a problem", explorerName));
+    static LoggerException createActionNotSet() {
+        return new LoggerException("I don't know how to log that action");
     }
 }

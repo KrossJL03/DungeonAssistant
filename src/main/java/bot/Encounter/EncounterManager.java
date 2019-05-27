@@ -1,6 +1,5 @@
 package bot.Encounter;
 
-import bot.Encounter.EncounteredCreature.*;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Mention;
 import bot.Explorer.Explorer;
@@ -12,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class EncounterManager
 {
-    private Encounter              encounter;
-    private EncounterLogger        logger;
+    private Encounter       encounter;
+    private EncounterLogger logger;
 
     /**
      * EncounterManager constructor
@@ -40,14 +39,7 @@ public class EncounterManager
      */
     public void addHostile(@NotNull String speciesName, @NotNull String nickname) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredHostileInterface hostileData = encounter.addHostile(
-            HostileManager.getHostile(speciesName),
-            nickname
-        );
-        logger.logAddedHostile(hostileData);
+        encounter.addHostile(HostileManager.getHostile(speciesName), nickname);
     }
 
     /**
@@ -60,21 +52,7 @@ public class EncounterManager
      */
     public void attackAction(@NotNull Player player, @NotNull String hostileName) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        } else if (!encounter.isAttackPhase()) {
-            throw EncounterPhaseException.createNotAttackPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
-        EncounteredHostileInterface  encounteredHostile  = encounter.getHostile(hostileName);
-
-        AttackActionResultInterface result = encounteredExplorer.attack(encounteredHostile);
-        logger.logAction(result);
-
-        if (encounteredHostile.isSlain()) {
-            addKillToExplorers(encounteredHostile);
-        }
-        endCurrentPlayerAction();
+        encounter.attackAction(player, hostileName);
     }
 
     /**
@@ -85,9 +63,10 @@ public class EncounterManager
      */
     public void createEncounter(@NotNull MessageChannel channel, @NotNull Role dungeonMaster)
     {
-        encounter = new Encounter();
         logger.setChannel(channel);
-        logger.setDmMention(new Mention(dungeonMaster.getId()));
+        logger.setDmMention(Mention.createForRole(dungeonMaster.getId()));
+        encounter = new Encounter();
+        encounter.setListener(new ActionListener(logger));
         logger.logCreateEncounter();
     }
 
@@ -100,17 +79,7 @@ public class EncounterManager
      */
     public void dodgeAction(@NotNull Player player) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        } else if (!encounter.isDodgePhase()) {
-            throw EncounterPhaseException.createNotDodgePhase();
-        }
-
-        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
-        DodgeActionResultInterface   result              = encounteredExplorer.dodge(encounter.getActiveHostiles());
-
-        logger.logAction(result);
-        endCurrentPlayerAction();
+        encounter.dodgeAction(player);
     }
 
     /**
@@ -118,10 +87,7 @@ public class EncounterManager
      */
     public void dodgePassAction()
     {
-        EncounteredExplorerInterface encounteredExplorer = encounter.getCurrentExplorer();
-        logger.logActionDodgePass(encounteredExplorer);
-        encounteredExplorer.useAction();
-        endCurrentPlayerAction();
+        encounter.dodgePassAction();
     }
 
     /**
@@ -139,10 +105,7 @@ public class EncounterManager
      */
     public void endCurrentPlayersAction()
     {
-        // todo rename method
-        EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
-        currentExplorer.useAction();
-        endCurrentPlayerAction();
+        encounter.useCurrentExplorerAction();
     }
 
     /**
@@ -150,10 +113,7 @@ public class EncounterManager
      */
     public void endCurrentPlayersTurn()
     {
-        // todo rename method
-        EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
-        currentExplorer.useAllActions();
-        endCurrentPlayerAction();
+        encounter.useAllCurrentExplorerActions();
     }
 
     /**
@@ -161,8 +121,7 @@ public class EncounterManager
      */
     public void endEncounter()
     {
-        encounter.startEndPhase();
-        logger.logEndEncounterForced(encounter.getAllExplorers(), encounter.getAllHostiles());
+        encounter.startEndPhaseForced();
     }
 
     /**
@@ -175,17 +134,7 @@ public class EncounterManager
      */
     public void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounterCreatureInterface encounterCreature = encounter.getCreature(name);
-        encounterCreature.healPoints(hitpoints);
-        logger.logDungeonMasterHeal(
-            encounterCreature.getName(),
-            hitpoints,
-            encounterCreature.getCurrentHP(),
-            encounterCreature.getMaxHP()
-        );
+        encounter.heal(name, hitpoints);
     }
 
     /**
@@ -195,11 +144,8 @@ public class EncounterManager
      */
     public void healAllExplorers(int hitpoints)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : encounter.getActiveExplorers()) {
-            heal(encounteredExplorer.getName(), hitpoints);
-        }
+        encounter.healAllExplorers(hitpoints);
     }
-
 
     /**
      * Heal all active hostiles by a given amount
@@ -208,9 +154,7 @@ public class EncounterManager
      */
     public void healAllHostiles(int hitpoints)
     {
-        for (EncounteredHostileInterface encounteredHostile : encounter.getActiveHostiles()) {
-            this.heal(encounteredHostile.getName(), hitpoints);
-        }
+        encounter.healAllHostiles(hitpoints);
     }
 
     /**
@@ -223,32 +167,7 @@ public class EncounterManager
      */
     public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounterCreatureInterface encounterCreature = encounter.getCreature(name);
-        encounterCreature.hurt(hitpoints);
-        logger.logDungeonMasterHurt(
-            encounterCreature.getName(),
-            hitpoints,
-            encounterCreature.getCurrentHP(),
-            encounterCreature.getMaxHP()
-        );
-        if (encounterCreature.isSlain()) {
-            logger.logDungeonMasterSlay(encounterCreature.getName());
-            if (encounterCreature instanceof EncounteredHostile) {
-                addKillToExplorers((EncounteredHostile) encounterCreature);
-                if (!encounter.hasActiveHostiles()) {
-                    startLootPhase();
-                }
-            } else if (encounterCreature instanceof EncounteredExplorerInterface) {
-                if (encounter.isInitiativePhase() && encounterCreature == encounter.getCurrentExplorer()) {
-                    endCurrentPlayerAction();
-                } else {
-                    reviveIfFirstSlainExplorer((EncounteredExplorerInterface) encounterCreature);
-                }
-            }
-        }
+        encounter.hurt(name, hitpoints);
     }
 
     /**
@@ -258,9 +177,7 @@ public class EncounterManager
      */
     public void hurtAllExplorers(int hitpoints)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : encounter.getActiveExplorers()) {
-            this.hurt(encounteredExplorer.getName(), hitpoints);
-        }
+        encounter.hurtAllExplorers(hitpoints);
     }
 
     /**
@@ -270,9 +187,7 @@ public class EncounterManager
      */
     public void hurtAllHostiles(int hitpoints)
     {
-        for (EncounteredHostileInterface encounteredHostile : encounter.getActiveHostiles()) {
-            this.hurt(encounteredHostile.getName(), hitpoints);
-        }
+        encounter.hurtAllHostiles(hitpoints);
     }
 
     /**
@@ -284,17 +199,7 @@ public class EncounterManager
      */
     public void joinEncounter(@NotNull Explorer explorer) throws EncounterPhaseException
     {
-        if (!encounter.isStarted()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer);
-        encounter.addExplorer(encounteredExplorer);
-        logger.logAddedExplorer(encounteredExplorer);
-        if (encounter.isFullDungeon()) {
-            logger.logDungeonIsFull();
-        }
+        encounter.join(explorer);
     }
 
     /**
@@ -306,23 +211,7 @@ public class EncounterManager
      */
     public void leaveEncounter(@NotNull Player player) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-
-        EncounteredExplorerInterface currentExplorer = null;
-        if (encounter.isInitiativePhase()) {
-            currentExplorer = encounter.getCurrentExplorer();
-        }
-
-        EncounteredExplorerInterface encounteredExplorer = encounter.playerHasLeft(player);
-        logger.logLeftEncounter(encounteredExplorer.getName());
-        if (encounteredExplorer == currentExplorer) {
-            endCurrentPlayerAction();
-        } else if (!encounter.hasActiveExplorers()) {
-            encounter.startEndPhase();
-            logger.logEndEncounterLose(encounter.getAllExplorers(), encounter.getAllHostiles());
-        }
+        encounter.leave(player);
     }
 
     /**
@@ -334,12 +223,7 @@ public class EncounterManager
      */
     public void lootAction(@NotNull Player player) throws EncounterPhaseException
     {
-        if (!encounter.isLootPhase()) {
-            throw EncounterPhaseException.createNotLootPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = encounter.getExplorer(player);
-        LootActionResultInterface    actionResult        = encounteredExplorer.getLoot();
-        logger.logAction(actionResult);
+        encounter.lootAction(player);
     }
 
     /**
@@ -348,24 +232,10 @@ public class EncounterManager
      * @param name     Name of creature to modify stat for
      * @param statName Name of stat to modify
      * @param statMod  Mod to apply to stat
-     *
-     * @throws EncounterPhaseException If the encounter is over
      */
-    public void modifyStat(@NotNull String name, @NotNull String statName, int statMod) throws EncounterPhaseException
+    public void modifyStat(@NotNull String name, @NotNull String statName, int statMod)
     {
-        statName = statName.toLowerCase();
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = encounter.getExplorer(name);
-        encounteredExplorer.modifyStat(statName, statMod);
-        encounter.sortRoster();
-        logger.logDungeonMasterStatMod(
-            encounteredExplorer.getName(),
-            statName,
-            statMod,
-            encounteredExplorer.getStat(statName)
-        );
+        encounter.modifyStat(name, statName, statMod);
     }
 
     /**
@@ -378,63 +248,7 @@ public class EncounterManager
      */
     public void protectAction(@NotNull Player player, @NotNull String name) throws EncounterPhaseException
     {
-        if (encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        } else if (!encounter.isDodgePhase()) {
-            throw EncounterPhaseException.createNotProtectPhase();
-        }
-
-        EncounteredExplorerInterface protectorCharacter = getCurrentExplorer(player);
-        EncounteredExplorerInterface protectedCharacter = encounter.getExplorer(name);
-
-        ProtectActionResultInterface actionResult = protectorCharacter.protect(
-            protectedCharacter,
-            encounter.getActiveHostiles()
-        );
-
-        logger.logAction(actionResult);
-        endCurrentPlayerAction();
-    }
-
-    /**
-     * Remove hostile with given name
-     *
-     * @param name Name of hostile to remove
-     *
-     * @throws EncounterPhaseException If encounter is over
-     */
-    public void removeHostile(@NotNull String name) throws EncounterPhaseException
-    {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredHostileInterface hostile = encounter.getHostile(name);
-        this.encounter.removeHostile(hostile);
-        this.logger.logRemovedHostile(name);
-    }
-
-    /**
-     * Remove explorer with given name
-     *
-     * @param name Name of explorer to remove
-     *
-     * @throws EncounterPhaseException If encounter is over
-     */
-    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
-    {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = this.encounter.getExplorer(name);
-        if (encounter.isInitiativePhase()) {
-            EncounteredExplorerInterface currentExplorer = encounter.getCurrentExplorer();
-            if (currentExplorer.isName(name)) {
-                currentExplorer.useAllActions();
-                endCurrentPlayerAction();
-            }
-        }
-        encounter.removeExplorer(encounteredExplorer);
-        logger.logRemovedExplorer(name);
+        encounter.protectAction(player, name);
     }
 
     /**
@@ -446,11 +260,31 @@ public class EncounterManager
      */
     public void rejoinEncounter(@NotNull Player player) throws EncounterPhaseException
     {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = this.encounter.playerHasRejoined(player);
-        this.logger.logRejoinEncounter(encounteredExplorer.getName());
+        encounter.rejoin(player);
+    }
+
+    /**
+     * Remove hostile with given name
+     *
+     * @param name Name of hostile to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void removeHostile(@NotNull String name) throws EncounterPhaseException
+    {
+        encounter.removeHostile(name);
+    }
+
+    /**
+     * Remove explorer with given name
+     *
+     * @param name Name of explorer to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
+    {
+        encounter.removeExplorer(name);
     }
 
     /**
@@ -462,11 +296,7 @@ public class EncounterManager
      */
     public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
     {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        this.encounter.setMaxPlayerCount(maxPlayerCount);
-        this.logger.logSetMaxPlayers(maxPlayerCount);
+        encounter.setMaxPlayerCount(maxPlayerCount);
     }
 
     /**
@@ -476,17 +306,7 @@ public class EncounterManager
      */
     public void skipPlayerTurn() throws EncounterPhaseException
     {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
-        if (this.encounter.isAttackPhase()) {
-            this.logger.logActionAttackSkipped(currentExplorer.getName());
-            currentExplorer.useAllActions();
-            this.endCurrentPlayerAction();
-        } else if (this.encounter.isDodgePhase()) {
-            this.dodgeActionSkipped(currentExplorer.getOwner());
-        }
+        encounter.skipCurrentPlayerTurn();
     }
 
     /**
@@ -494,10 +314,7 @@ public class EncounterManager
      */
     public void startAttackPhase()
     {
-        this.validateStartInitiativePhase();
-        this.encounter.startAttackPhase();
-        this.logger.logStartAttackPhase(this.encounter.getAllExplorers(), this.encounter.getAllHostiles());
-        this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
+        encounter.startAttackPhase();
     }
 
     /**
@@ -505,13 +322,7 @@ public class EncounterManager
      */
     public void startDodgePhase()
     {
-        this.validateStartInitiativePhase();
-        this.encounter.startDodgePhase();
-        for (EncounteredHostileInterface encounteredHostile : this.encounter.getActiveHostiles()) {
-            encounteredHostile.attack();
-        }
-        this.logger.logStartDodgePhase(this.encounter.getAllExplorers(), this.encounter.getActiveHostiles());
-        this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
+        encounter.startDodgePhase();
     }
 
     /**
@@ -522,10 +333,10 @@ public class EncounterManager
      */
     public void startEncounter(@NotNull MessageChannel channel, @NotNull Role mentionRole)
     {
-        encounter.startJoinPhase();
         logger.setChannel(channel);
-        logger.setEveryoneMention(new Mention(mentionRole.getId()));
-        logger.logStartEncounter(this.encounter.getMaxPlayerCount());
+        logger.setEveryoneMention(Mention.createForRole(mentionRole.getId()));
+        encounter.setListener(new ActionListener(logger));
+        encounter.startJoinPhase();
     }
 
     /**
@@ -533,7 +344,7 @@ public class EncounterManager
      */
     public void viewEncounterSummary()
     {
-        this.logger.logSummary(this.encounter.getAllExplorers(), this.encounter.getAllHostiles());
+        logger.logSummary(encounter.getAllExplorers(), encounter.getAllHostiles());
     }
 
     /**
@@ -543,140 +354,7 @@ public class EncounterManager
      */
     public void pingDmItemUsed(@NotNull Player player)
     {
-        this.logger.pingDmItemUsed(player);
+        logger.pingDmItemUsed(player);
     }
 
-    /**
-     * Add kill to explorers
-     *
-     * @param encounteredHostile Encountered hostile
-     */
-    private void addKillToExplorers(@NotNull EncounteredHostileInterface encounteredHostile)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : this.encounter.getActiveExplorers()) {
-            encounteredExplorer.addKill(encounteredHostile);
-        }
-    }
-
-    /**
-     * Dodge action skipped
-     *
-     * @param player Player
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     */
-    private void dodgeActionSkipped(@NotNull Player player) throws EncounterPhaseException
-    {
-        if (!this.encounter.isDodgePhase()) {
-            throw EncounterPhaseException.createNotDodgePhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = this.getCurrentExplorer(player);
-        DodgeActionResultInterface   result              = encounteredExplorer.failToDodge(this.encounter.getActiveHostiles());
-
-        this.logger.logAction(result);
-        this.endCurrentPlayerAction();
-    }
-
-    /**
-     * End current player action
-     */
-    private void endCurrentPlayerAction()
-    {
-        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
-        if (currentExplorer.isSlain()) {
-            reviveIfFirstSlainExplorer(currentExplorer);
-        }
-        if (!encounter.hasActiveHostiles()) {
-            startLootPhase();
-        } else if (!encounter.hasActiveExplorers()) {
-            encounter.startEndPhase();
-            logger.logEndEncounterLose(encounter.getAllExplorers(), encounter.getAllHostiles());
-        } else {
-            if (currentExplorer.hasActions()) {
-                this.logger.logActionsRemaining(
-                    currentExplorer.getName(),
-                    currentExplorer.getRemainingActions()
-                );
-            } else {
-                try {
-                    this.logger.pingPlayerTurn(this.encounter.getNextExplorer());
-                } catch (EncounteredCreatureNotFoundException e) {
-                    if (this.encounter.isAttackPhase()) {
-                        this.encounter.startRpPhase();
-                        this.logger.logEndAttackPhase(
-                            this.encounter.getAllExplorers(),
-                            this.encounter.getAllHostiles()
-                        );
-                    } else if (this.encounter.isDodgePhase()) {
-                        this.encounter.startRpPhase();
-                        this.logger.logEndDodgePhase(
-                            this.encounter.getAllExplorers(),
-                            this.encounter.getAllHostiles()
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Get explorer
-     *
-     * @param player Owner of explorer to retrieve
-     *
-     * @return EncounteredExplorerInterface
-     *
-     * @throws NotYourTurnException If not players turn
-     */
-    private @NotNull EncounteredExplorerInterface getCurrentExplorer(@NotNull Player player) throws NotYourTurnException
-    {
-        EncounteredExplorerInterface currentExplorer = this.encounter.getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-        return currentExplorer;
-    }
-
-    /**
-     * Revive slain explorer if they are the first explorer to be slain
-     *
-     * @param encounteredExplorer Encountered explorer
-     */
-    private void reviveIfFirstSlainExplorer(@NotNull EncounteredExplorerInterface encounteredExplorer)
-    {
-        if (encounteredExplorer.isSlain() && this.encounter.hasPhoenixDown()) {
-            this.encounter.usePhoenixDown();
-            int hitpoints = encounteredExplorer.healPercent((float) 0.5);
-            this.logger.logFirstDeathRevived(encounteredExplorer.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * Start loot phase
-     */
-    private void startLootPhase()
-    {
-        encounter.startLootPhase();
-        for (EncounteredExplorerInterface encounteredExplorer : encounter.getAllExplorers()) {
-            encounteredExplorer.rollLoot();
-        }
-        logger.logEndEncounterWin(encounter.getAllExplorers(), encounter.getAllHostiles());
-    }
-
-    /**
-     * Validate start initiative phase
-     *
-     * @throws DungeonException        If no players have joined
-     * @throws EncounterPhaseException If encounter is over or encounter has not started
-     */
-    private void validateStartInitiativePhase() throws DungeonException, EncounterPhaseException
-    {
-        if (this.encounter.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        } else if (!this.encounter.isStarted()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (!this.encounter.havePlayersJoined()) {
-            throw DungeonException.createNoPlayersHaveJoined();
-        }
-    }
 }

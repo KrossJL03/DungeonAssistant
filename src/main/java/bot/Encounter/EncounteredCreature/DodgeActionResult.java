@@ -27,7 +27,7 @@ public class DodgeActionResult implements DodgeActionResultInterface
      * @param targetSlayer    Target slayer
      * @param isForcedFail    Was this action a forced fail
      */
-    DodgeActionResult(
+    @NotNull DodgeActionResult(
         @NotNull String targetName,
         @NotNull ArrayList<DodgeResultInterface> dodgeResults,
         int targetDodgeDie,

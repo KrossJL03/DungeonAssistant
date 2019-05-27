@@ -1,6 +1,6 @@
 package bot.Encounter.EncounteredCreature;
 
-import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.EncounterCreatureInterface;
 import bot.Encounter.Logger.Mention;
 import bot.Encounter.LootActionResultInterface;
 import bot.Encounter.LootRollInterface;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class LootActionResult implements LootActionResultInterface
 {
-    private ArrayList<EncounteredHostileInterface> finalBlows;
+    private ArrayList<EncounterCreatureInterface> finalBlows;
     private ArrayList<LootRollInterface>           lootRolls;
     private Player                                 owner;
     private String                                 name;
@@ -48,7 +48,7 @@ public class LootActionResult implements LootActionResultInterface
         @NotNull String name,
         @NotNull Player owner,
         @NotNull ArrayList<LootRollInterface> lootRolls,
-        @NotNull ArrayList<EncounteredHostileInterface> kills,
+        @NotNull ArrayList<EncounterCreatureInterface> kills,
         int lootDie,
         int finalBlowBonus
     )
@@ -78,8 +78,8 @@ public class LootActionResult implements LootActionResultInterface
     public @NotNull ArrayList<String> getFinalBlowNames()
     {
         ArrayList<String> finalBlowNames = new ArrayList<>();
-        for (EncounteredHostileInterface hostile : finalBlows) {
-            finalBlowNames.add(hostile.getName());
+        for (EncounterCreatureInterface finalBlow : finalBlows) {
+            finalBlowNames.add(finalBlow.getName());
         }
         return finalBlowNames;
     }
@@ -117,7 +117,7 @@ public class LootActionResult implements LootActionResultInterface
     @Override
     public @NotNull Mention getMention()
     {
-        return new Mention(owner.getUserId());
+        return Mention.createForPlayer(owner.getUserId());
     }
 
     /**

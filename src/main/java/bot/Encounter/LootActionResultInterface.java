@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public interface LootActionResultInterface
+public interface LootActionResultInterface extends ActionResultInterface
 {
 
     /**

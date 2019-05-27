@@ -1,12 +1,8 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.DodgeResultInterface;
-import bot.Encounter.LootRollInterface;
-import bot.Encounter.ProtectActionResultInterface;
-import bot.Encounter.EncounterCreatureInterface;
-import bot.Encounter.EncounteredExplorerInterface;
-import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.*;
+import bot.Hostile.Loot;
 import bot.Player.Player;
 import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
@@ -18,20 +14,20 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private static int FINAL_BLOW_BONUS = 300;
     private static int LOOT_DIE         = 10;
 
-    private Player                                 owner;
-    private Slayer                                 slayer;
-    private ArrayList<EncounteredHostileInterface> kills;
-    private LootActionResult                       loot;
-    private String                                 name;
-    private int                                    agility;
-    private int                                    currentActions;
-    private int                                    currentHp;
-    private int                                    defense;
-    private int                                    maxHp;
-    private int                                    strength;
-    private int                                    wisdom;
-    private boolean                                hasProtect;
-    private boolean                                isPresent;
+    private Player                                owner;
+    private Slayer                                slayer;
+    private ArrayList<EncounterCreatureInterface> kills;
+    private LootActionResult                      loot;
+    private String                                name;
+    private int                                   agility;
+    private int                                   currentActions;
+    private int                                   currentHp;
+    private int                                   defense;
+    private int                                   maxHp;
+    private int                                   strength;
+    private int                                   wisdom;
+    private boolean                               hasProtect;
+    private boolean                               isPresent;
 
     /**
      * EncounteredExplorerInterface constructor
@@ -61,15 +57,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void addKill(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounteredExplorerException
+    public void addKill(@NotNull EncounterCreatureInterface kill) throws EncounteredExplorerException
     {
-        if (!this.isActive()) {
-            throw EncounteredExplorerException.createFailedToAddKill(
-                this.name,
-                encounteredHostile.getName()
-            );
+        if (!isActive()) {
+            throw EncounteredExplorerException.createFailedToAddKill(name, kill.getName());
         }
-        this.kills.add(encounteredHostile);
+        kills.add(kill);
     }
 
     /**
@@ -77,22 +70,27 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     @Override
     public @NotNull AttackActionResult attack(@NotNull EncounterCreatureInterface target)
+        throws EncounteredExplorerException
     {
-        HitRoll hitRoll    = this.rollToHit();
+        if (!hasActions()) {
+            throw EncounteredExplorerException.createHasNoActions(name);
+        }
+
+        HitRoll hitRoll    = rollToHit();
         int     damageRoll = 0;
 
         if (hitRoll.isHit()) {
-            damageRoll = hitRoll.isCrit() ? this.getCritDamage() : this.rollDamage();
+            damageRoll = hitRoll.isCrit() ? getCritDamage() : rollDamage();
             target.takeDamage(this, damageRoll);
         }
 
-        this.useAction();
+        useAction();
 
         return new AttackActionResult(
-            this.name,
+            name,
             target.getName(),
             hitRoll,
-            this.getAttackDice(),
+            getAttackDice(),
             damageRoll,
             target.getCurrentHP(),
             target.getMaxHP(),
@@ -106,14 +104,18 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull DodgeActionResult dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
     {
+        if (!hasActions()) {
+            throw EncounteredExplorerException.createHasNoActions(name);
+        }
+
         ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int       damageResisted    = 0;
             int       hostileDamageRoll = encounteredHostile.getAttackRoll();
-            DodgeRoll dodgeRoll         = this.rollToDodge();
+            DodgeRoll dodgeRoll         = rollToDodge();
 
             if (dodgeRoll.isFail()) {
-                damageResisted = hostileDamageRoll - this.takeDamage(encounteredHostile, hostileDamageRoll);
+                damageResisted = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
             }
 
             DodgeResult result = new DodgeResult(
@@ -126,15 +128,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
-        this.useAction();
+        useAllActions();
 
         return new DodgeActionResult(
-            this.name,
+            name,
             dodgeResults,
-            this.getDodgeDice(),
-            this.currentHp,
-            this.maxHp,
-            this.slayer,
+            getDodgeDice(),
+            currentHp,
+            maxHp,
+            slayer,
             false
         );
     }
@@ -145,10 +147,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull DodgeActionResult failToDodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
     {
+        if (!hasActions()) {
+            throw EncounteredExplorerException.createHasNoActions(name);
+        }
+
         ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
-            int damageResisted    = hostileDamageRoll - this.takeDamage(encounteredHostile, hostileDamageRoll);
+            int damageResisted    = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
 
             DodgeResult result = new DodgeResult(
                 encounteredHostile.getName(),
@@ -160,15 +166,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
-        this.useAllActions();
+        useAllActions();
 
         return new DodgeActionResult(
-            this.name,
+            name,
             dodgeResults,
-            this.getDodgeDice(),
-            this.currentHp,
-            this.maxHp,
-            this.slayer,
+            getDodgeDice(),
+            currentHp,
+            maxHp,
+            slayer,
             true
         );
     }
@@ -179,7 +185,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getAgility()
     {
-        return this.agility;
+        return agility;
     }
 
     /**
@@ -188,7 +194,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getAttackDice()
     {
-        return this.strength + 10;
+        return strength + 10;
     }
 
     /**
@@ -197,7 +203,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getCurrentHP()
     {
-        return this.currentHp;
+        return currentHp;
     }
 
     /**
@@ -206,7 +212,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getDefense()
     {
-        return this.defense;
+        return defense;
     }
 
     /**
@@ -215,7 +221,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getDodgeDice()
     {
-        return ((int) Math.floor(this.agility / 2)) + 10;
+        return ((int) Math.floor(agility / 2)) + 10;
     }
 
     /**
@@ -224,7 +230,17 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull LootActionResult getLoot()
     {
-        return this.loot;
+        return loot;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull Loot getLoot(int roll)
+    {
+        //todo
+        return new Loot(roll, "Bloody fur patch", 1);
     }
 
     /**
@@ -233,7 +249,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getMaxActions()
     {
-        return (int) Math.floor(this.agility / 10) + 1;
+        return (int) Math.floor(agility / 10) + 1;
     }
 
     /**
@@ -242,7 +258,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getMaxHP()
     {
-        return this.maxHp;
+        return maxHp;
     }
 
     /**
@@ -251,7 +267,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int getMinCrit()
     {
-        return 20 - ((int) Math.floor(this.wisdom / 4));
+        return 20 - ((int) Math.floor(wisdom / 4));
     }
 
     /**
@@ -294,28 +310,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int getStat(String statName) throws EncounteredExplorerException
-    {
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                return this.agility;
-            case Constant.STAT_DEFENSE:
-                return this.defense;
-            case Constant.STAT_MAX_HP:
-                return this.maxHp;
-            case Constant.STAT_STRENGTH:
-                return this.strength;
-            case Constant.STAT_WISDOM:
-                return this.wisdom;
-            default:
-                throw EncounteredExplorerException.invalidStatName(statName);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int getStrength()
     {
         return this.strength;
@@ -343,18 +337,22 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPoints(int hitpoints)
+    public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
-        if (this.isSlain()) {
-            this.slayer = null;
+        if (isSlain()) {
+            slayer = null;
         }
-        if (this.currentHp + hitpoints > this.getMaxHP()) {
-            hitpoints = this.getMaxHP() - this.currentHp;
-            this.currentHp = this.getMaxHP();
+
+        int healedHp;
+        if (currentHp + hitpoints > maxHp) {
+            healedHp = maxHp - currentHp;
+            currentHp = maxHp;
         } else {
-            this.currentHp += hitpoints;
+            healedHp = hitpoints;
+            currentHp += hitpoints;
         }
-        return hitpoints;
+
+        return new HealActionResult(name, healedHp, currentHp, maxHp);
     }
 
     /**
@@ -363,16 +361,18 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int healPercent(float percent)
     {
-        if (this.isSlain()) {
-            this.slayer = null;
+        if (isSlain()) {
+            slayer = null;
         }
-        int hitpointsHealed = (int) Math.floor(this.getMaxHP() * percent);
-        if (this.currentHp + hitpointsHealed > this.getMaxHP()) {
-            hitpointsHealed = this.getMaxHP() - this.currentHp;
-            this.currentHp = this.getMaxHP();
+
+        int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
+        if (currentHp + hitpointsHealed > getMaxHP()) {
+            hitpointsHealed = getMaxHP() - currentHp;
+            currentHp = getMaxHP();
         } else {
-            this.currentHp += hitpointsHealed;
+            currentHp += hitpointsHealed;
         }
+
         return hitpointsHealed;
     }
 
@@ -380,15 +380,18 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int hurt(int hitpoints)
+    public @NotNull HurtActionResultInterface hurt(int hitpoints)
     {
-        if (this.currentHp - hitpoints < 0) {
-            hitpoints = this.currentHp - hitpoints;
-            this.currentHp = 0;
+        int hurtHp;
+        if (currentHp - hitpoints < 0) {
+            hurtHp = currentHp - hitpoints;
+            currentHp = 0;
         } else {
-            this.currentHp -= hitpoints;
+            hurtHp = hitpoints;
+            currentHp -= hitpoints;
         }
-        return hitpoints;
+
+        return new HurtActionResult(name, hurtHp, currentHp, maxHp);
     }
 
     /**
@@ -397,7 +400,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public boolean isActive()
     {
-        return !this.isSlain() && this.isPresent();
+        return !isSlain() && isPresent();
     }
 
     /**
@@ -415,7 +418,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public boolean isOwner(@NotNull Player player)
     {
-        return this.owner.isSamePlayer(player);
+        return owner.isSamePlayer(player);
     }
 
     /**
@@ -424,7 +427,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public boolean isPresent()
     {
-        return this.isPresent;
+        return isPresent;
     }
 
     /**
@@ -445,44 +448,36 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         if (!isPresent()) {
             throw EncounteredExplorerException.createHasAleadyLeft(owner);
         }
-        this.useAllActions();
-        this.isPresent = false;
+        useAllActions();
+        isPresent = false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void modifyStat(@NotNull String statName, int statBoost)
+    public @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier)
     {
-        if (!this.isStatModifiable(statName, statBoost)) {
-            throw EncounteredExplorerException.createStatOutOfBounds(this.name, statName);
+        statName = statName.toLowerCase();
+        int statValue = getStat(statName);
+        int moddedStatValue = statName.equals(Constant.STAT_MAX_HP)
+                              ? statValue + (statModifier * Constant.HP_STAT_MULTIPLIER)
+                              : statValue + statModifier;
+
+        if (moddedStatValue > Constant.getStatMax(statName) || moddedStatValue < Constant.getStatMin(statName)) {
+            throw EncounteredExplorerException.createStatOutOfBounds(name, statName);
         }
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                this.agility += statBoost;
-                return;
-            case Constant.STAT_DEFENSE:
-                this.defense += statBoost;
-                return;
-            case Constant.STAT_MAX_HP:
-                this.maxHp += statBoost;
-                this.currentHp += statBoost;
-                if (this.currentHp > this.maxHp) {
-                    this.currentHp = this.maxHp;
-                } else if (this.currentHp < Constant.MIN_MAX_HP) {
-                    this.currentHp = Constant.MIN_MAX_HP;
-                }
-                return;
-            case Constant.STAT_STRENGTH:
-                this.strength += statBoost;
-                return;
-            case Constant.STAT_WISDOM:
-                this.wisdom += statBoost;
-                return;
-            default:
-                throw EncounteredExplorerException.invalidStatName(statName);
+
+        if (statName.equals(Constant.STAT_MAX_HP)) {
+            currentHp += statModifier;
+            if (currentHp > maxHp) {
+                currentHp = maxHp;
+            } else if (currentHp < Constant.MIN_MAX_HP) {
+                currentHp = Constant.MIN_MAX_HP;
+            }
         }
+
+        return new ModifyStatActionResult(name, statName, statModifier, statValue);
     }
 
     /**
@@ -494,7 +489,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     ) throws EncounteredExplorerException
     {
-        if (!hasProtect) {
+        if (!hasActions()) {
+            throw EncounteredExplorerException.createHasNoActions(name);
+        } else if (!hasProtect) {
             throw EncounteredExplorerException.createProtectAlreadyUsed();
         } else if (equals(recipient)) {
             throw EncounteredExplorerException.createProtectYourself();
@@ -508,13 +505,13 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         int damageResisted = 0;
 
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
-            int damage = this.takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
+            int damage = takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
             damageDealt += damage;
             damageResisted += encounteredHostile.getAttackRoll() - damage;
         }
 
-        this.useAction();
-        this.useProtect();
+        useAllActions();
+        useProtect();
         recipient.useAllActions();
 
         return new ProtectActionResult(
@@ -545,9 +542,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void resetActions(boolean setToMax)
+    public void resetActions()
     {
-        this.currentActions = setToMax ? this.getMaxActions() : 1;
+        this.currentActions = getMaxActions();
     }
 
     /**
@@ -565,18 +562,18 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public void rollLoot()
     {
-        ArrayList<EncounteredHostileInterface> finalBlows = new ArrayList<>();
-        ArrayList<LootRollInterface>           lootRolls  = new ArrayList<>();
-        for (EncounteredHostileInterface hostile : this.kills) {
+        ArrayList<EncounterCreatureInterface> finalBlows = new ArrayList<>();
+        ArrayList<LootRollInterface>          lootRolls  = new ArrayList<>();
+        for (EncounterCreatureInterface kill : kills) {
             int roll = (int) Math.floor(Math.random() * LOOT_DIE) + 1;
-            lootRolls.add(new LootRoll(roll, hostile.getName(), hostile.getLoot(roll)));
-            if (hostile.getSlayer().isSlayer(this)) {
-                finalBlows.add(hostile);
+            lootRolls.add(new LootRoll(roll, kill.getName(), kill.getLoot(roll)));
+            if (kill.getSlayer().isSlayer(this)) {
+                finalBlows.add(kill);
             }
         }
-        this.loot = new LootActionResult(
-            this.name,
-            this.owner,
+        loot = new LootActionResult(
+            name,
+            owner,
             lootRolls,
             finalBlows,
             LOOT_DIE,
@@ -650,23 +647,30 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     /**
-     * Is stat modifiable
+     * Get stat
      *
-     * @return boolean
+     * @param statName Name of stat
      *
-     * @throws EncounteredExplorerException If stat name is not valid
+     * @return int
+     *
+     * @throws EncounteredExplorerException If stat name is invalid
      */
-    private boolean isStatModifiable(String statName, int boost) throws EncounteredExplorerException
+    private int getStat(String statName) throws EncounteredExplorerException
     {
-        statName = statName.toLowerCase();
-        if (!Constant.isStatName(statName)) {
-            throw EncounteredExplorerException.invalidStatName(statName);
+        switch (statName) {
+            case Constant.STAT_AGILITY:
+                return agility;
+            case Constant.STAT_DEFENSE:
+                return defense;
+            case Constant.STAT_MAX_HP:
+                return maxHp;
+            case Constant.STAT_STRENGTH:
+                return strength;
+            case Constant.STAT_WISDOM:
+                return wisdom;
+            default:
+                throw EncounteredExplorerException.invalidStatName(statName);
         }
-        int newStat = statName.equals(Constant.STAT_MAX_HP)
-                      ? this.maxHp + (boost * Constant.HP_STAT_MULTIPLIER)
-                      : this.getStat(statName) + boost;
-
-        return !(newStat > Constant.getStatMax(statName) || newStat < Constant.getStatMin(statName));
     }
 
     /**

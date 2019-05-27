@@ -3,7 +3,7 @@ package bot.Encounter;
 import bot.Encounter.EncounteredCreature.Slayer;
 import org.jetbrains.annotations.NotNull;
 
-public interface CombatActionResultInterface
+public interface CombatActionResultInterface extends ActionResultInterface
 {
     /**
      * Get damage dealt to target

@@ -34,43 +34,96 @@ public class EncounterLogger
     }
 
     /**
-     * Log attack result
+     * Log action result
      *
      * @param result Action result
      */
-    public void logAction(@NotNull AttackActionResultInterface result)
+    public void logAction(@NotNull ActionResultInterface result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(result, dmMention));
+        // todo cleanup
+        if (result instanceof AttackActionResultInterface) {
+            sendMessage(actionMessageBuilder.buildActionMessage(((AttackActionResultInterface) result), dmMention));
+        } else if (result instanceof DodgeActionResultInterface) {
+            sendMessage(actionMessageBuilder.buildActionMessage((DodgeActionResultInterface) result));
+        } else if (result instanceof HealActionResultInterface) {
+            sendMessage(String.format(
+                "%s heals %d points! [%d/%d]",
+                ((HealActionResultInterface) result).getName(),
+                ((HealActionResultInterface) result).getHealedHp(),
+                ((HealActionResultInterface) result).getCurrentHp(),
+                ((HealActionResultInterface) result).getMaxHp()
+            ));
+        } else if (result instanceof HurtActionResultInterface) {
+            sendMessage(String.format(
+                "%s takes %d dmg! [%d/%d]",
+                ((HurtActionResultInterface) result).getName(),
+                ((HurtActionResultInterface) result).getHealedHp(),
+                ((HurtActionResultInterface) result).getCurrentHp(),
+                ((HurtActionResultInterface) result).getMaxHp()
+            ));
+            if (((HurtActionResultInterface) result).isSlain()) {
+                sendMessage(String.format("%s was slain", ((HurtActionResultInterface) result).getName()));
+            }
+        } else if (result instanceof JoinActionResultInterface) {
+            EncounteredExplorerInterface encounteredExplorer = ((JoinActionResultInterface) result).getExplorer();
+            sendMessage(
+                String.format(
+                    "%s: %s has been added! %s",
+                    (Mention.createForPlayer(encounteredExplorer.getOwner().getUserId())).getValue(),
+                    encounteredExplorer.getName(),
+                    getExplorerPrintout(encounteredExplorer)
+                )
+            );
+            if (((JoinActionResultInterface) result).isRosterFull()) {
+                sendMessage("***THE ROSTER IS NOW FULL!***");
+            }
+        } else if (result instanceof LootActionResultInterface) {
+            sendMessage(actionMessageBuilder.buildActionMessage(((LootActionResultInterface) result)));
+        } else if (result instanceof ModifyStatActionResultInterface) {
+            sendMessage(
+                String.format(
+                    "%s's %s has gone %s by %d, making it %d!",
+                    ((ModifyStatActionResultInterface) result).getCreatureName(),
+                    ((ModifyStatActionResultInterface) result).getStatName(),
+                    ((ModifyStatActionResultInterface) result).getStatMod() > 0 ? "up" : "down",
+                    ((ModifyStatActionResultInterface) result).getStatMod(),
+                    ((ModifyStatActionResultInterface) result).getStatValue()
+                )
+            );
+        } else if (result instanceof ProtectActionResultInterface) {
+            sendMessage(actionMessageBuilder.buildActionMessage(((ProtectActionResultInterface) result)));
+        } else {
+            throw LoggerException.createActionNotSet();
+        }
     }
 
     /**
-     * Log dodge result
+     * Log phase change
      *
-     * @param result Action result
+     * @param result Phase change result
      */
-    public void logAction(@NotNull DodgeActionResultInterface result)
+    public void logPhaseChange(PhaseChangeResult result)
     {
-        sendMessage(actionMessageBuilder.buildActionMessage(result));
-    }
-
-    /**
-     * Log loot result
-     *
-     * @param result Action result
-     */
-    public void logAction(@NotNull LootActionResultInterface result)
-    {
-        sendMessage(actionMessageBuilder.buildActionMessage(result));
-    }
-
-    /**
-     * Log protect result
-     *
-     * @param result Action result
-     */
-    public void logAction(@NotNull ProtectActionResultInterface result)
-    {
-        sendMessage(actionMessageBuilder.buildActionMessage(result));
+        // todo move to PhaseChangeMessageBuilder
+        if (result.getNextPhase().isLootPhase()) {
+            logEndEncounterWin(result.getExplorers(), result.getHostiles());
+        } else if (result.getNextPhase().isEndPhase()) {
+            logEndEncounterLose(result.getExplorers(), result.getHostiles());
+            // todo?
+//            logEndEncounterForced(result.getExplorers(), result.getHostiles());
+        } else if (result.getNextPhase().isJoinPhase()) {
+            logStartEncounter(result.getMaxPlayerCount());
+        } else if (result.getNextPhase().isAttackPhase()) {
+            logStartAttackPhase(result.getExplorers(), result.getHostiles());
+        } else if (result.getNextPhase().isDodgePhase()) {
+            logStartDodgePhase(result.getExplorers(), result.getHostiles());
+        } else if (result.getNextPhase().isRpPhase()) {
+            if (result.getPreviousPhase().isAttackPhase()) {
+                logEndAttackPhase(result.getExplorers(), result.getHostiles());
+            } else if (result.getPreviousPhase().isDodgePhase()) {
+                logEndDodgePhase(result.getExplorers(), result.getHostiles());
+            }
+        }
     }
 
     /**
@@ -86,19 +139,21 @@ public class EncounterLogger
     /**
      * Log dodged action passed
      *
-     * @param explorer Explorer that passed dodge action
+     * @param name      Name of explorer
+     * @param currentHp Current hp of explorer
+     * @param maxHp     Max hp of explorer
      */
-    public void logActionDodgePass(@NotNull EncounteredExplorerInterface explorer)
+    public void logActionDodgePass(@NotNull String name, int currentHp, int maxHp)
     {
         sendMessage(
             "```ml" +
             EncounterLogger.NEWLINE +
-            String.format("%s successfully Dodges all attacks!", explorer.getName()) +
+            String.format("%s successfully Dodges all attacks!", name) +
             EncounterLogger.NEWLINE +
             EncounterLogger.NEWLINE +
-            String.format("%s takes 0 dmg total!", explorer.getName()) +
+            String.format("%s takes 0 dmg total!", name) +
             EncounterLogger.NEWLINE +
-            String.format("%d/%d health remaining", explorer.getCurrentHP(), explorer.getMaxHP()) +
+            String.format("%d/%d health remaining", currentHp, maxHp) +
             "```"
         );
     }
@@ -133,94 +188,11 @@ public class EncounterLogger
     }
 
     /**
-     * Log added explorer
-     *
-     * @param explorer Explorer
-     */
-    public void logAddedExplorer(@NotNull EncounteredExplorerInterface explorer)
-    {
-        sendMessage(
-            String.format(
-                "%s: %s has been added! %s",
-                (new Mention(explorer.getOwner().getUserId())).getValue(),
-                explorer.getName(),
-                getExplorerPrintout(explorer)
-            )
-        );
-    }
-
-    /**
      * Log create encounter
      */
     public void logCreateEncounter()
     {
         sendMessage("Encounter creation has started!");
-    }
-
-    /**
-     * Log dungeon is full
-     */
-    public void logDungeonIsFull()
-    {
-        sendMessage("***THE DUNGEON IS NOW FULL!***");
-    }
-
-    /**
-     * Log dungeon master heal
-     *
-     * @param name      Name of the creature that was healed
-     * @param hitpoints Number of hitpoints healed
-     * @param currentHP Current HP of the creature
-     * @param maxHP     Max HP of the creature
-     */
-    public void logDungeonMasterHeal(@NotNull String name, int hitpoints, int currentHP, int maxHP)
-    {
-        sendMessage(String.format("%s heals %d points! [%d/%d]", name, hitpoints, currentHP, maxHP));
-    }
-
-    /**
-     * Log dungeon master hurt
-     *
-     * @param name      Name of the creature that were hurt
-     * @param hitpoints Number of hitpoints hurt
-     * @param currentHP Current HP of the creature
-     * @param maxHP     Max HP of the creature
-     */
-    public void logDungeonMasterHurt(@NotNull String name, int hitpoints, int currentHP, int maxHP)
-    {
-        sendMessage(String.format("%s takes %d dmg! [%d/%d]", name, hitpoints, currentHP, maxHP));
-    }
-
-    /**
-     * Log dungeon master stat modification
-     *
-     * @param name         Name of the creature with modified stats
-     * @param statName     Name of modified stat
-     * @param statMod      Amount that was changed
-     * @param newStatTotal New stat total
-     */
-    public void logDungeonMasterStatMod(@NotNull String name, String statName, int statMod, int newStatTotal)
-    {
-        sendMessage(
-            String.format(
-                "%s's %s has gone %s by %d, making it %d!",
-                name,
-                statName,
-                statMod > 0 ? "up" : "down",
-                statMod,
-                newStatTotal
-            )
-        );
-    }
-
-    /**
-     * Log dungeon master slay
-     *
-     * @param name Name of slain creature
-     */
-    public void logDungeonMasterSlay(@NotNull String name)
-    {
-        sendMessage(String.format("%s was slain", name));
     }
 
     /**
@@ -484,13 +456,13 @@ public class EncounterLogger
     /**
      * Log start encounter
      *
-     * @param maxPlayers  Max number of players
+     * @param maxPlayers Max number of players
      */
     public void logStartEncounter(int maxPlayers)
     {
         sendMessage(
-            everyoneMention.getValue() +
-            EncounterLogger.NEWLINE +
+//            everyoneMention.getValue() +
+//            EncounterLogger.NEWLINE +
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
             String.format(
@@ -520,7 +492,7 @@ public class EncounterLogger
             String.format(
                 "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
                 dmMention.getValue(),
-                (new Mention(player.getUserId())).getValue()
+                (Mention.createForPlayer(player.getUserId())).getValue()
             )
         );
     }
@@ -536,7 +508,7 @@ public class EncounterLogger
             String.format(
                 "%s, %s has used an item. Could you tell me what to do?",
                 dmMention.getValue(),
-                (new Mention(player.getUserId())).getValue()
+                (Mention.createForPlayer(player.getUserId())).getValue()
             )
         );
     }
@@ -551,7 +523,7 @@ public class EncounterLogger
         sendMessage(
             String.format(
                 "%s, it's %s's turn!",
-                (new Mention(explorer.getOwner().getUserId())).getValue(),
+                (Mention.createForPlayer(explorer.getOwner().getUserId())).getValue(),
                 explorer.getName()
             )
         );

@@ -231,18 +231,18 @@ class ExplorerRosterTest
         explorerRoster.setMaxPlayerCount(3);
 
         // player attempts to leave that was not in the roster //
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.playerHasLeft(p));
+        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.leave(p));
         /////////////////////////////////////////////////////////
 
         // player attempts to leave that was not present //
         explorerRoster.addExplorer(explorer);
         when(explorer.isPresent()).thenReturn(false);
-        assertThrows(ExplorerRosterException.class, () -> explorerRoster.playerHasLeft(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.leave(p));
         ///////////////////////////////////////////////////
 
         // player attempts to leave that was present //
         when(explorer.isPresent()).thenReturn(true);
-        explorerRoster.playerHasLeft(p);
+        explorerRoster.leave(p);
         verify(explorer, times(1)).leave();
         ///////////////////////////////////////////////
     }
@@ -259,25 +259,25 @@ class ExplorerRosterTest
         explorerRoster.setMaxPlayerCount(1);
 
         // player attempts to rejoin that was not in the roster //
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.playerHasRejoined(p));
+        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.rejoin(p));
         //////////////////////////////////////////////////////////
 
         // player attempts to rejoin that was present //
         explorerRoster.addExplorer(explorer1);
         when(explorer1.isPresent()).thenReturn(true);
-        assertThrows(ExplorerRosterException.class, () -> explorerRoster.playerHasRejoined(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.rejoin(p));
         ////////////////////////////////////////////////
 
         // player attempts to rejoin when roster is full //
         when(explorer1.isPresent()).thenReturn(false);
         explorerRoster.addExplorer(explorer2);
         when(explorer2.isPresent()).thenReturn(true);
-        assertThrows(ExplorerRosterException.class, () -> explorerRoster.playerHasRejoined(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.rejoin(p));
         ///////////////////////////////////////////////////
 
         // player attempts to rejoin //
         when(explorer2.isPresent()).thenReturn(false);
-        explorerRoster.playerHasRejoined(p);
+        explorerRoster.rejoin(p);
         verify(explorer1, times(1)).rejoin();
         ///////////////////////////////////////////////
     }

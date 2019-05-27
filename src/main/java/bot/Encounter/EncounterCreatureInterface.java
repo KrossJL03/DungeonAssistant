@@ -1,6 +1,7 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.Slayer;
+import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
 public interface EncounterCreatureInterface
@@ -18,6 +19,15 @@ public interface EncounterCreatureInterface
      * @return int
      */
     int getCurrentHP();
+
+    /**
+     * Get loot
+     *
+     * @param roll Loot roll
+     *
+     * @return Loot
+     */
+    @NotNull Loot getLoot(int roll);
 
     /**
      * Get max hitpoints
@@ -68,9 +78,9 @@ public interface EncounterCreatureInterface
      *
      * @param hitpoints Hitpoints to heal
      *
-     * @return int Hitpoints healed
+     * @return HealActionResultInterface
      */
-    int healPoints(int hitpoints);
+    @NotNull HealActionResultInterface healPoints(int hitpoints);
 
     /**
      * Heal by percent
@@ -86,9 +96,9 @@ public interface EncounterCreatureInterface
      *
      * @param hitpoints Hitpoints to hurt
      *
-     * @return int Hitpoints hurt
+     * @return HurtActionResultInterface
      */
-    int hurt(int hitpoints);
+    @NotNull HurtActionResultInterface hurt(int hitpoints);
 
     /**
      * Roll damage

@@ -7,7 +7,7 @@ class NotYourTurnException extends RuntimeException implements EncounterExceptio
     // todo rename or move
 
     /**
-     * DungeonException constructor
+     * NotYourTurnException constructor
      *
      * @param message Message
      */
@@ -19,7 +19,7 @@ class NotYourTurnException extends RuntimeException implements EncounterExceptio
     /**
      * Factory method for "no players have joined"
      *
-     * @return DungeonException
+     * @return NotYourTurnException
      */
     static @NotNull NotYourTurnException createNotYourTurn()
     {

@@ -1,5 +1,8 @@
 package bot.Encounter.Logger;
 
+import bot.Player.Player;
+import net.dv8tion.jda.core.entities.Role;
+
 public class Mention {
 
     private String value;
@@ -7,10 +10,28 @@ public class Mention {
     /**
      * Mention constructor
      *
-     * @param userId User id
+     * @param value Mention as string
      */
-    public Mention(String userId) {
-        this.value = String.format("<@%s>", userId);
+    private Mention(String value) {
+        this.value = value;
+    }
+
+    /**
+     * Factory method for player
+     *
+     * @param userId Player user id
+     */
+    public static Mention createForPlayer(String userId) {
+        return new Mention(String.format("<@%s>", userId));
+    }
+
+    /**
+     * Factory method for role
+     *
+     * @param id Role id
+     */
+    public static Mention createForRole(String id) {
+        return new Mention(String.format("<@&%s>", id));
     }
 
     /**

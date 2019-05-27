@@ -76,7 +76,7 @@ public class ProtectActionResult implements ProtectActionResultInterface
      */
     @Override
     public @NotNull Mention getProtectedOwnerMention() {
-        return new Mention(protectedOwnerId);
+        return Mention.createForPlayer(protectedOwnerId);
     }
 
     /**

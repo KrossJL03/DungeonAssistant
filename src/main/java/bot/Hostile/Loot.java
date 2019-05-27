@@ -7,7 +7,7 @@ public class Loot{
     private int diceRoll;
     private int quantity;
 
-    Loot(int diceRoll, String item, int quantity) {
+    public Loot(int diceRoll, String item, int quantity) {
         this.diceRoll = diceRoll;
         this.item = item;
         this.quantity = quantity;

@@ -18,11 +18,11 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     }
 
     /**
-     * Factory method for "end phase"
+     * Factory method for "final phase"
      *
      * @return EncounterPhaseException
      */
-    static @NotNull EncounterPhaseException createEndPhase()
+    static @NotNull EncounterPhaseException createFinalPhase()
     {
         return new EncounterPhaseException(
             String.format(
@@ -43,7 +43,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sattack` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                Encounter.ATTACK_PHASE
+                EncounterPhase.ATTACK_PHASE
             )
         );
     }
@@ -59,7 +59,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sdodge` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                Encounter.DODGE_PHASE
+                EncounterPhase.DODGE_PHASE
             )
         );
     }
@@ -86,7 +86,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sloot` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                Encounter.LOOT_PHASE
+                EncounterPhase.LOOT_PHASE
             )
         );
     }
@@ -102,7 +102,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sprotect` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                Encounter.DODGE_PHASE
+                EncounterPhase.DODGE_PHASE
             )
         );
     }

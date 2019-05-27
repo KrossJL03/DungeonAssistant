@@ -1,7 +1,6 @@
 package bot.Encounter;
 
 import bot.Hostile.Hostile;
-import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
 public interface EncounteredHostileInterface extends EncounterCreatureInterface
@@ -24,15 +23,6 @@ public interface EncounteredHostileInterface extends EncounterCreatureInterface
      * @return Hostile
      */
     @NotNull Hostile getHostile();
-
-    /**
-     * Get loot
-     *
-     * @param roll Loot roll
-     *
-     * @return Loot
-     */
-    @NotNull Loot getLoot(int roll);
 
     /**
      * Get species

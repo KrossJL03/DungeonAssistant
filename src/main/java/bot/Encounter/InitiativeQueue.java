@@ -8,15 +8,14 @@ import java.util.LinkedList;
 
 class InitiativeQueue
 {
-
-    private LinkedList<EncounteredExplorerInterface> initiative;
+    private LinkedList<EncounteredExplorerInterface> queue;
 
     /**
      * InitiativeQueue constructor (empty)
      */
-    InitiativeQueue()
+    @NotNull InitiativeQueue()
     {
-        this.initiative = new LinkedList<>();
+        queue = new LinkedList<>();
     }
 
     /**
@@ -26,8 +25,8 @@ class InitiativeQueue
      */
     @NotNull InitiativeQueue(@NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers)
     {
-        this.initiative = new LinkedList<>();
-        this.initiative.addAll(encounteredExplorers);
+        queue = new LinkedList<>();
+        queue.addAll(encounteredExplorers);
     }
 
     /**
@@ -37,43 +36,42 @@ class InitiativeQueue
      */
     void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
-        this.initiative.add(encounteredExplorer);
-    }
-
-    /**
-     * Contains encountered explorer
-     *
-     * @param encounteredExplorer Encountered explorer to check for
-     *
-     * @return bool
-     */
-    boolean contains(EncounteredExplorerInterface encounteredExplorer)
-    {
-        return this.initiative.contains(encounteredExplorer);
+        queue.add(encounteredExplorer);
     }
 
     /**
      * Get current explorer
      *
      * @return EncounteredExplorerInterface
+     *
+     * @throws InitiativeQueueException If the queue is empty
      */
-    @Nullable EncounteredExplorerInterface getCurrentExplorer()
+    @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeQueueException
     {
-        return this.initiative.peek();
+        if (queue.isEmpty()) {
+            throw InitiativeQueueException.createEmptyQueue();
+        }
+        return queue.peek();
     }
 
     /**
      * Get next explorer
      *
      * @return EncounteredExplorerInterface
+     *
+     * @throws InitiativeQueueException If no next explorer exists
      */
-    @Nullable EncounteredExplorerInterface getNextExplorer()
+    @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeQueueException
     {
-        EncounteredExplorerInterface nextExplorer = this.initiative.peek();
-        while (nextExplorer != null && (nextExplorer.isSlain() || !nextExplorer.isPresent() || !nextExplorer.hasActions())) {
-            this.initiative.pop();
-            nextExplorer = this.initiative.peek();
-        }
+        EncounteredExplorerInterface nextExplorer;
+        do {
+            queue.pop();
+            nextExplorer = queue.peek();
+            if (nextExplorer == null) {
+                throw InitiativeQueueException.createEmptyQueue();
+            }
+        } while (!nextExplorer.isActive() || !nextExplorer.hasActions());
+
         return nextExplorer;
     }
 
@@ -84,6 +82,6 @@ class InitiativeQueue
      */
     void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
-        this.initiative.remove(encounteredExplorer);
+        queue.remove(encounteredExplorer);
     }
 }

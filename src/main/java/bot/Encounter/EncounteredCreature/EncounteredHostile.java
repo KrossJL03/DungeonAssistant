@@ -2,6 +2,8 @@ package bot.Encounter.EncounteredCreature;
 
 import bot.Encounter.EncounterCreatureInterface;
 import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.HealActionResultInterface;
+import bot.Encounter.HurtActionResultInterface;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
@@ -123,18 +125,22 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPoints(int hitpoints)
+    public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        int healedHp;
+        if (currentHp + hitpoints > getMaxHP()) {
+            healedHp = getMaxHP() - currentHp;
+            currentHp = getMaxHP();
+        } else {
+            healedHp = hitpoints;
+            currentHp += hitpoints;
+        }
+
         if (isSlain()) {
             slayer = null;
         }
-        if (currentHp + hitpoints > getMaxHP()) {
-            hitpoints = getMaxHP() - currentHp;
-            currentHp = getMaxHP();
-        } else {
-            currentHp += hitpoints;
-        }
-        return hitpoints;
+
+        return new HealActionResult(name, healedHp, currentHp, getMaxHP());
     }
 
     /**
@@ -160,15 +166,18 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int hurt(int hitpoints)
+    public @NotNull HurtActionResultInterface hurt(int hitpoints)
     {
+        int hurtHp;
         if (this.currentHp - hitpoints < 0) {
-            hitpoints = this.currentHp - hitpoints;
-            this.currentHp = 0;
+            hurtHp = currentHp - hitpoints;
+            currentHp = 0;
         } else {
-            this.currentHp -= hitpoints;
+            hurtHp = hitpoints;
+            currentHp -= hitpoints;
         }
-        return hitpoints;
+
+        return new HurtActionResult(name, hurtHp, currentHp, getMaxHP());
     }
 
     /**

@@ -31,20 +31,20 @@ class ExplorerRoster
      */
     void addExplorer(@NotNull EncounteredExplorerInterface newExplorer) throws ExplorerRosterException
     {
-        if (this.isMaxPlayerCountSet()) {
+        if (!isMaxPlayerCountSet()) {
             throw ExplorerRosterException.createMaxPlayersNotSet();
         }
 
         Player player = newExplorer.getOwner();
-        if (this.containsPlayer(player)) {
-            EncounteredExplorerInterface character = this.getExplorer(player);
+        if (containsPlayer(player)) {
+            EncounteredExplorerInterface character = getExplorer(player);
             throw ExplorerRosterException.createMultipleExplorers(player, character.getName());
-        } else if (this.isFull()) {
+        } else if (isFull()) {
             // this error is thrown last because multiple explorers exception takes precedence
             throw ExplorerRosterException.createFullRoster(player);
         }
-        this.explorerRoster.add(newExplorer);
-        this.sort();
+        explorerRoster.add(newExplorer);
+        sort();
     }
 
     /**
@@ -103,7 +103,7 @@ class ExplorerRoster
      */
     @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
     {
-        return new ArrayList<>(this.explorerRoster);
+        return new ArrayList<>(explorerRoster);
     }
 
     /**
@@ -117,7 +117,7 @@ class ExplorerRoster
      */
     @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name) throws EncounteredCreatureNotFoundException
     {
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
+        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster) {
             if (encounteredExplorer.isName(name)) {
                 return encounteredExplorer;
             }
@@ -152,7 +152,17 @@ class ExplorerRoster
      */
     int getMaxPlayerCount()
     {
-        return this.maxPlayerCount;
+        return maxPlayerCount;
+    }
+
+    /**
+     * Get amount of slots still available for new players
+     *
+     * @return int
+     */
+    int getOpenSlotCount()
+    {
+        return maxPlayerCount - getPresentPlayerCount();
     }
 
     /**
@@ -172,7 +182,7 @@ class ExplorerRoster
      */
     boolean isFull()
     {
-        return this.getPresentPlayerCount() >= this.maxPlayerCount;
+        return getPresentPlayerCount() >= maxPlayerCount;
     }
 
     /**
@@ -184,10 +194,10 @@ class ExplorerRoster
      *
      * @throws ExplorerRosterException If encountered explorer has already left
      */
-    @NotNull EncounteredExplorerInterface playerHasLeft(@NotNull Player player) throws ExplorerRosterException
+    @NotNull EncounteredExplorerInterface leave(@NotNull Player player) throws ExplorerRosterException
     {
         // todo rename method
-        EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);
+        EncounteredExplorerInterface encounteredExplorer = getExplorer(player);
         if (!encounteredExplorer.isPresent()) {
             throw ExplorerRosterException.createHasAleadyLeft(player);
         }
@@ -204,7 +214,7 @@ class ExplorerRoster
      *
      * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    @NotNull EncounteredExplorerInterface playerHasRejoined(@NotNull Player player) throws ExplorerRosterException
+    @NotNull EncounteredExplorerInterface rejoin(@NotNull Player player) throws ExplorerRosterException
     {
         // todo rename method
         EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);

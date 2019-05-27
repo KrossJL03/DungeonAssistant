@@ -29,7 +29,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
         return new ExplorerRosterException(
             String.format(
                 "%s You are currently active in this encounter. There is not need to `%srejoin`.",
-                (new Mention(player.getUserId())).getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
             )
         );
@@ -47,7 +47,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
         return new ExplorerRosterException(
             String.format(
                 "Uh oh, looks like the dungeon is full. Sorry %s.",
-                (new Mention(player.getUserId()).getValue())
+                (Mention.createForPlayer(player.getUserId())).getValue()
             )
         );
     }
@@ -64,7 +64,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
         return new ExplorerRosterException(
             String.format(
                 "%s You have already left. You can't leave again unless you `%srejoin` first",
-                (new Mention(player.getUserId())).getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
             )
         );
@@ -107,7 +107,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
             String.format(
                 "%s, you have already joined this encounter with %s. " +
                 "If you'd like to switch please talk to the DungeonMaster",
-                (new Mention(player.getUserId())).getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue(),
                 name
             )
         );

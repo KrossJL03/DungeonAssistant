@@ -35,7 +35,8 @@ public class AttackActionResult implements AttackActionResultInterface
         int targetCurrentHp,
         int targetMaxHp,
         @NotNull Slayer targetSlayer
-    ) {
+    )
+    {
         this.attackerName = attackerName;
         this.damageDie = damageDie;
         this.damageRoll = damageRoll;
@@ -50,7 +51,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getAttackerName() {
+    public @NotNull String getAttackerName()
+    {
         return attackerName;
     }
 
@@ -58,7 +60,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDamageDealt() {
+    public int getDamageDealt()
+    {
         return damageRoll; // todo update for PVP
     }
 
@@ -66,7 +69,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDamageDie() {
+    public int getDamageDie()
+    {
         return damageDie;
     }
 
@@ -83,7 +87,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDamageRoll() {
+    public int getDamageRoll()
+    {
         return damageRoll;
     }
 
@@ -91,7 +96,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getHitRoll() {
+    public int getHitRoll()
+    {
         return hitRoll.getRoll();
     }
 
@@ -99,7 +105,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getHitTypeString() {
+    public @NotNull String getHitTypeString()
+    {
         return isHit() ? (isCrit() ? "crit" : "hit") : (isFail() ? "fail" : "miss");
     }
 
@@ -107,7 +114,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getTargetCurrentHp() {
+    public int getTargetCurrentHp()
+    {
         return targetCurrentHp;
     }
 
@@ -115,7 +123,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getTargetMaxHp() {
+    public int getTargetMaxHp()
+    {
         return targetMaxHp;
     }
 
@@ -123,7 +132,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getTargetName() {
+    public @NotNull String getTargetName()
+    {
         return targetName;
     }
 
@@ -131,7 +141,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Slayer getTargetSlayer() {
+    public @NotNull Slayer getTargetSlayer()
+    {
         return targetSlayer;
     }
 
@@ -139,7 +150,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isCrit() {
+    public boolean isCrit()
+    {
         return hitRoll.isCrit();
     }
 
@@ -147,7 +159,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isFail() {
+    public boolean isFail()
+    {
         return hitRoll.isFail();
     }
 
@@ -155,7 +168,8 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isHit() {
+    public boolean isHit()
+    {
         return hitRoll.isHit();
     }
 

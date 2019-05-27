@@ -11,11 +11,11 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
     /**
      * Add kill
      *
-     * @param encounteredHostile Encountered hostile
+     * @param encounterCreature Encountered creature
      *
      * @throws EncounteredExplorerException If explorer was not active for kill
      */
-    void addKill(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounteredExplorerException;
+    void addKill(@NotNull EncounterCreatureInterface encounterCreature) throws EncounteredExplorerException;
 
     /**
      * Attack a target
@@ -23,8 +23,11 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * @param target Encountered creature that is being targeted by the attack
      *
      * @return AttackActionResultInterface
+     *
+     * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull AttackActionResultInterface attack(@NotNull EncounterCreatureInterface target);
+    @NotNull AttackActionResultInterface attack(@NotNull EncounterCreatureInterface target)
+        throws EncounteredExplorerException;
 
     /**
      * Dodge encountered hostile attacks
@@ -32,8 +35,11 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * @param encounteredHostiles Encountered hostiles to dodge
      *
      * @return DodgeActionResultInterface
+     *
+     * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull DodgeActionResultInterface dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles);
+    @NotNull DodgeActionResultInterface dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+        throws EncounteredExplorerException;
 
     /**
      * Automatically fail to dodge encountered hostile attacks
@@ -41,8 +47,11 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      * @param encounteredHostiles Encountered hostiles to dodge
      *
      * @return DodgeActionResultInterface
+     *
+     * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull DodgeActionResultInterface failToDodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles);
+    @NotNull DodgeActionResultInterface failToDodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+        throws EncounteredExplorerException;
 
     /**
      * Get agility
@@ -101,15 +110,6 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
     int getRemainingActions();
 
     /**
-     * Get stat
-     *
-     * @return int
-     *
-     * @throws EncounteredExplorerException If stat name is invalid
-     */
-    int getStat(String statName) throws EncounteredExplorerException;
-
-    /**
      * Get strength
      *
      * @return int
@@ -156,10 +156,10 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
     /**
      * Modify stat
      *
-     * @param statName  Name of stat to modify
-     * @param statBoost Amount to boost stat by
+     * @param statName     Name of stat to modify
+     * @param statModifier Modifier to apply to stat
      */
-    void modifyStat(@NotNull String statName, int statBoost);
+    @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier);
 
     /**
      * Protect recipient from encountered hostile attacks
@@ -169,7 +169,8 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      *
      * @return ProtectActionResult
      *
-     * @throws EncounteredExplorerException If explorer does not have a protect action available
+     * @throws EncounteredExplorerException If explorer has no actions
+     *                                      If explorer does not have a protect action available
      *                                      If explorer attempts to protect themselves
      *                                      If recipient is slain
      *                                      If recipient has no actions
@@ -188,10 +189,8 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
 
     /**
      * Reset actions
-     *
-     * @param setToMax Reset to max action count
      */
-    void resetActions(boolean setToMax);
+    void resetActions();
 
     /**
      * Roll loot

@@ -44,7 +44,7 @@ public class EncounteredExplorerException extends RuntimeException implements En
         return new EncounteredExplorerException(
             String.format(
                 "%s You are currently active in this encounter. There is not need to `%srejoin`.",
-                (new Mention(player.getUserId())).getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
             )
         );
@@ -80,10 +80,22 @@ public class EncounteredExplorerException extends RuntimeException implements En
         return new EncounteredExplorerException(
             String.format(
                 "%s You have already left. You can't leave again unless you `%srejoin` first",
-                (new Mention(player.getUserId())).getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
             )
         );
+    }
+
+    /**
+     * Factory method for "has no actions"
+     *
+     * @param name Name fo explorer with no actions
+     *
+     * @return EncounteredExplorerException
+     */
+    static @NotNull EncounteredExplorerException createHasNoActions(@NotNull String name)
+    {
+        return new EncounteredExplorerException(String.format("Looks like %s doesn't have any actions left", name));
     }
 
     /**

@@ -63,7 +63,7 @@ public class ActionMessageBuilder
 
         if (result.isFail()) {
             codeBlockLines.add(String.format("well... that's %s", formatter.makeRed("unfortunate")));
-            textBlockLines.add(String.format("Sit tight while me and %s discuss your fate", dmMention.getValue()));
+            textBlockLines.add(String.format("Sucks to be you! Look out for the %s at the end of the round...", dmMention.getValue()));
         } else {
             if (result.getDamageDealt() > 0) {
                 codeBlockLines.add(getDamageDealtLine(result, false));
@@ -148,7 +148,7 @@ public class ActionMessageBuilder
         textBlockLines.add(actionData.getMention().getValue());
 
         if (actionData.noLoot()) {
-            throw LoggerException.createNoLoot(actionData.getName());
+            throw MessageBuilderException.createNoLoot(actionData.getName());
         }
 
         codeBlockLines.add(String.format(

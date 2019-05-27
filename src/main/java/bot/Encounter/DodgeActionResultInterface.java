@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 public interface DodgeActionResultInterface extends CombatActionResultInterface
 {
-
     /**
      * Get number of attacks
      *
@@ -19,8 +18,7 @@ public interface DodgeActionResultInterface extends CombatActionResultInterface
      *
      * @return ArrayList<DodgeResultInterface>
      */
-    @NotNull
-    ArrayList<DodgeResultInterface> getDodgeResults();
+    @NotNull ArrayList<DodgeResultInterface> getDodgeResults();
 
     /**
      * Get minimum roll needed for a successful dodge
