@@ -1,27 +1,24 @@
 import bot.*;
 
-import bot.Encounter.Encounter;
-import bot.Encounter.EncounterLogger;
-import bot.Encounter.EncounterLoggerContext;
-import bot.Encounter.EncounterManager;
+import bot.Encounter.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
-public class Main {
-    public static void main(String[] arguments) throws Exception {
-
-        Encounter              encounterContext       = new Encounter();
+public class Main
+{
+    public static void main(String[] arguments) throws Exception
+    {
+        EncounterHolder        encounterHolder        = new EncounterHolder();
         EncounterLoggerContext encounterLoggerContext = new EncounterLoggerContext();
-
-        EncounterLogger encounterLogger = new EncounterLogger(encounterLoggerContext);
+        EncounterLogger        encounterLogger        = new EncounterLogger(encounterLoggerContext);
 
         EncounterManager encountermanager = new EncounterManager(
-            encounterContext,
+            encounterHolder,
             encounterLogger,
             encounterLoggerContext
         );
 
-        CommandManager  commandManager  = new CommandManager(encountermanager);
+        CommandManager  commandManager  = new CommandManager(encountermanager, encounterHolder);
         CommandListener commandListener = new CommandListener(commandManager);
 
         Main.populateTestData();
@@ -30,6 +27,7 @@ public class Main {
         api.addEventListener(commandListener);
     }
 
-    private static void populateTestData() {
+    private static void populateTestData()
+    {
     }
 }

@@ -1,5 +1,6 @@
 package bot;
 
+import bot.Encounter.EncounterHolder;
 import bot.Encounter.EncounterManager;
 import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
@@ -17,14 +18,22 @@ import bot.PlayerCharacter.PlayerCharacterManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import bot.Repository.RepositoryException;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandManager {
-
+/**
+ * Class to parse commands and feed input to specified managers
+ */
+public class CommandManager
+{
+    private EncounterHolder  encounterHolder;
     private EncounterManager encounterManager;
 
-    public CommandManager(EncounterManager encounterManager) {
+    public CommandManager(@NotNull EncounterManager encounterManager, @NotNull EncounterHolder encounterHolder)
+    {
+        this.encounterHolder = encounterHolder;
         this.encounterManager = encounterManager;
     }
 
@@ -55,7 +64,12 @@ public class CommandManager {
     }
 
     // todo move to RepositoryManager
-    void createCharacterCommand(MessageReceivedEvent event) {
+    void createCharacterCommand(MessageReceivedEvent event)
+    {
+        if (encounterHolder.hasActiveEncounter()) {
+            throw RepositoryException.createCommandLocked();
+        }
+
         MessageChannel channel    = event.getChannel();
         User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");

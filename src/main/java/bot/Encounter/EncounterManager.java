@@ -12,21 +12,24 @@ import bot.Player.Player;
 import bot.PlayerCharacter.PlayerCharacter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class EncounterManager {
 
     private Encounter              context;
+    private EncounterHolder        holder;
     private EncounterLogger        logger;
     private EncounterLoggerContext loggerContext;
 
     public EncounterManager(
-        Encounter context,
+        @NotNull EncounterHolder holder,
         EncounterLogger logger,
         EncounterLoggerContext loggerContext
     ) {
-        this.context = context;
+        this.context = new Encounter();
+        this.holder = holder;
         this.logger = logger;
         this.loggerContext = loggerContext;
     }
@@ -71,7 +74,8 @@ public class EncounterManager {
     }
 
     public void createEncounter(MessageChannel channel, Role dungeonMaster) {
-        this.context = new Encounter();
+        holder.createHostileEncounter();
+        this.context = holder.getHostileEncounter();
         this.loggerContext.setChannel(channel);
         this.loggerContext.setDungeonMaster(dungeonMaster);
         this.logger.logCreateEncounter();

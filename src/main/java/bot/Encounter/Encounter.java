@@ -9,7 +9,7 @@ import bot.Player.Player;
 
 import java.util.*;
 
-public class Encounter {
+public class Encounter implements EncounterInterface {
 
     public static  String ATTACK_PHASE = "ATTACK";
     public static  String DODGE_PHASE  = "DODGE";
@@ -31,6 +31,16 @@ public class Encounter {
         this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
         this.pcRoster = new PCRoster();
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
+    }
+
+    @Override
+    public boolean isOver() {
+        return this.isLootPhase() || this.isEndPhase();
     }
 
     void addCharacter(PCEncounterData newPlayerCharacter) {
@@ -197,10 +207,6 @@ public class Encounter {
 
     boolean isLootPhase() {
         return this.currentPhase.equals(Encounter.LOOT_PHASE);
-    }
-
-    boolean isOver() {
-        return this.isLootPhase() || this.isEndPhase();
     }
 
     boolean isPhase(String phase) {
