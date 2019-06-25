@@ -135,6 +135,16 @@ public class PCEncounterData implements Comparable<PCEncounterData>, EncounterDa
         }
     }
 
+    /**
+     * Get stat points
+     *
+     * @return int
+     */
+    public int getStatPoints()
+    {
+        return strength + defense + agility + wisdom + ((maxHp - Constant.MIN_MAX_HP)/Constant.HP_STAT_MULTIPLIER);
+    }
+
     public int getStrength() {
         return this.strength;
     }

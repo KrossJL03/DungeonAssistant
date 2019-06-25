@@ -4,13 +4,16 @@ import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.EncounterDataNotFoundException;
 import bot.Encounter.Exception.MultiplePlayerCharactersException;
 import bot.Encounter.Exception.PlayerCharacterPresentException;
+import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 class PCRoster {
 
     private ArrayList<PCEncounterData> roster;
+    private Tier                       tier;
     private int                        absentPlayerCount;
     private int                        maxPlayerCount;
 
@@ -21,6 +24,7 @@ class PCRoster {
         this.absentPlayerCount = 0;
         this.maxPlayerCount = 0;
         this.roster = new ArrayList<>();
+        this.tier = Tier.createDefault();
     }
 
     /**
@@ -32,6 +36,9 @@ class PCRoster {
         Player player = newPlayerCharacter.getOwner();
         if (this.isRosterFull()) {
             throw RosterException.createFullRoster(player);
+        }
+        if (!tier.fits(newPlayerCharacter)) {
+            throw RosterException.createDoesNotFitTier(newPlayerCharacter, tier);
         }
         for (PCEncounterData character : this.roster) {
             if (character.isOwner(player.getUserId())) {
@@ -110,6 +117,15 @@ class PCRoster {
 
     int getMaxPlayerCount() {
         return this.maxPlayerCount;
+    }
+
+    /**
+     * Get tier
+     *
+     * @return Tier
+     */
+    @NotNull Tier getTier() {
+        return tier;
     }
 
     /**
@@ -199,6 +215,15 @@ class PCRoster {
      */
     void setMaxPlayerCount(int maxPlayerCount) {
         this.maxPlayerCount = maxPlayerCount;
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     */
+    void setTier(@NotNull Tier tier) {
+        this.tier = tier;
     }
 
     void sortRoster() {

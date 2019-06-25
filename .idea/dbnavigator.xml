@@ -32,26 +32,25 @@
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
       <console name="Database" type="STANDARD"><![CDATA[SELECT * FROM player;
-DELETE FROM player;
+--DELETE FROM player;
 
 SELECT * FROM playerCharacter;
-DELETE FROM playerCharacter;
+--DELETE FROM playerCharacter;
 
 SELECT * FROM hostile;
-DELETE FROM hostile;
+--DELETE FROM hostile;
 
 SELECT * FROM loot;
-DELETE FROM loot;
+--DELETE FROM loot;
 
 SELECT * FROM consumable;
-DELETE FROM consumable;
+--DELETE FROM consumable;
+
+SELECT * FROM tier;
+--DELETE * FROM tier;
 
 ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
-
-
-DROP TABLE playerCharacter;
-
-
+--DROP TABLE playerCharacter;
 
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';

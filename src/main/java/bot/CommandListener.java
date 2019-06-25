@@ -128,6 +128,9 @@ public class CommandListener extends ListenerAdapter {
 //                    case "use":
 //                        this.commandManager.useItemCommand(event);
 //                        break;
+                    case "tier":
+                        commandManager.setTierCommand(event);
+                        break;
                     case "view":
                         this.processViewCommand(event);
                         break;

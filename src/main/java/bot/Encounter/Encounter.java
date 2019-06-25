@@ -4,8 +4,10 @@ import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.*;
+import bot.Encounter.Tier.Tier;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -161,6 +163,15 @@ public class Encounter implements EncounterInterface {
         return this.pcRoster.getPC(player);
     }
 
+    /**
+     * Get tier
+     *
+     * @return Tier
+     */
+    @NotNull Tier getTier() {
+        return pcRoster.getTier();
+    }
+
     boolean hasActiveHostiles() {
         return this.getActiveHostiles().size() > 0;
     }
@@ -231,6 +242,20 @@ public class Encounter implements EncounterInterface {
 
     void setMaxPlayerCount(int maxPlayerCount) {
         this.pcRoster.setMaxPlayerCount(maxPlayerCount);
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull Tier tier) throws EncounterPhaseException {
+        if (!currentPhase.equals(Encounter.CREATE_PHASE)) {
+            throw EncounterPhaseException.createSetTierAfterCreatePhase();
+        }
+        pcRoster.setTier(tier);
     }
 
     void sortRoster() {

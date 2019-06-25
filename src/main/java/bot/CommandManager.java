@@ -2,6 +2,8 @@ package bot;
 
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.EncounterManager;
+import bot.Encounter.Tier.Tier;
+import bot.Encounter.Tier.TierRegistry;
 import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
 import bot.Exception.*;
@@ -311,6 +313,20 @@ public class CommandManager
             String[] splitInput     = event.getMessage().getContentRaw().split("\\s+");
             int      maxPlayerCount = Integer.parseInt(splitInput[1]);
             this.encounterManager.setMaxPlayerCount(maxPlayerCount);
+        }
+    }
+
+    /**
+     * Set tier command
+     *
+     * @param event Message event
+     */
+    void setTierCommand(@NotNull MessageReceivedEvent event) {
+        if (isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   tierName   = splitInput[1];
+            Tier tier           = TierRegistry.getTier(tierName);
+            encounterManager.setTier(tier);
         }
     }
 

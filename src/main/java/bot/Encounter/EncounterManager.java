@@ -5,6 +5,7 @@ import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.*;
+import bot.Encounter.Tier.Tier;
 import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Item.Consumable.Exception.MissingRecipientException;
@@ -361,6 +362,16 @@ public class EncounterManager {
         this.logger.logSetMaxPlayers(maxPlayerCount);
     }
 
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     */
+    public void setTier(Tier tier) {
+        context.setTier(tier);
+        logger.logSetTier(tier);
+    }
+
     public void skipPlayerTurn() {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
@@ -404,7 +415,7 @@ public class EncounterManager {
         }
         this.loggerContext.setChannel(channel);
         this.context.startJoinPhase();
-        this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount());
+        this.logger.logStartEncounter(mentionRole, this.context.getMaxPlayerCount(), this.context.getTier());
     }
 
     /**

@@ -5,10 +5,12 @@ import bot.Encounter.EncounterData.EncounterDataInterface;
 import bot.Encounter.EncounterData.HostileEncounterData;
 import bot.Encounter.EncounterData.PCEncounterData;
 import bot.Encounter.Exception.ItemRecipientException;
+import bot.Encounter.Tier.Tier;
 import bot.Hostile.Loot;
 import bot.Item.Consumable.ConsumableItem;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -400,7 +402,7 @@ public class EncounterLogger {
         this.logEncounterSummary(playerCharacters, hostiles);
     }
 
-    void logStartEncounter(Role mentionRole, int maxPlayers) {
+    void logStartEncounter(Role mentionRole, int maxPlayers, Tier tier) {
         this.logMessage(
             // todo uncomment after testing
             mentionRole.getAsMention() +
@@ -409,18 +411,21 @@ public class EncounterLogger {
             "**BATTLE TIME!**" +
             EncounterLogger.NEWLINE +
             String.format(
-                "To bring a character to battle, use `%sjoin [CharacterName]`.",
+                "To bring an explorer in to battle, use `%sjoin [CharacterName]`.",
                 CommandListener.COMMAND_KEY
             ) +
+            EncounterLogger.NEWLINE +
+            "You may join a battle at any time before the batle has ended and as long as there are slots open!" +
+            EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
+            String.format("This dungeon has a max capacity of **%d** players. ", maxPlayers) +
             EncounterLogger.NEWLINE +
             String.format(
-                "Make sure your character has already been registered using the `%screate character`.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            "You may join a battle at any time for as long as it's running, and as long as there are slots open!" +
-            EncounterLogger.NEWLINE +
-            String.format("This dungeon has a max capacity of **%d** players. ", maxPlayers)
+                "Tier is set to **%s**! All explorers must have a stat point total between **%d** and **%d**",
+                tier.getName(),
+                tier.getMinStatPointTotal(),
+                tier.getMaxStatPointTotal()
+            )
         );
     }
 
@@ -670,6 +675,21 @@ public class EncounterLogger {
             String.format("%d/%d health remaining", playerCharacter.getCurrentHP(), playerCharacter.getMaxHP()) +
             "```"
         );
+    }
+
+    /**
+     * Tier has been set
+     *
+     * @param tier Tier
+     */
+    void logSetTier(@NotNull Tier tier)
+    {
+        logMessage(String.format(
+            "%s tier has been set! [Stat Point Range: %d - %d]",
+            tier.getName(),
+            tier.getMinStatPointTotal(),
+            tier.getMaxStatPointTotal()
+        ));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@ package bot.Encounter.Exception;
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
 import bot.Encounter.Encounter;
+import org.jetbrains.annotations.NotNull;
 
 public class EncounterPhaseException extends RuntimeException implements CustomExceptionInterface {
 
@@ -77,4 +78,12 @@ public class EncounterPhaseException extends RuntimeException implements CustomE
         return new EncounterPhaseException("Hold your Capra! This encounter is already in progress.");
     }
 
+    /**
+     * Factory method for "set tier after create phase"
+     *
+     * @return EncounterPhaseException
+     */
+    public static @NotNull EncounterPhaseException createSetTierAfterCreatePhase() {
+        return new EncounterPhaseException("Tier must be set before the encounter has started");
+    }
 }
