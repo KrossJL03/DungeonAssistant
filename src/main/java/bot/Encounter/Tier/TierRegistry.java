@@ -40,8 +40,8 @@ public class TierRegistry
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
                 String resultName        = resultSet.getString("name");
-                int    minStatPointTotal = resultSet.getInt("minStatPointTotal");
-                int    maxStatPointTotal = resultSet.getInt("maxStatPointTotal");
+                int    minStatPointTotal = resultSet.getInt("min_stat_point_total");
+                int    maxStatPointTotal = resultSet.getInt("max_stat_point_total");
                 return new Tier(resultName, minStatPointTotal, maxStatPointTotal);
             }
         } catch (Exception e) {

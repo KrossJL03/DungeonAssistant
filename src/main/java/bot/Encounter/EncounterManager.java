@@ -230,6 +230,35 @@ public class EncounterManager {
         }
     }
 
+    /**
+     * Kick
+     *
+     * @param name Explorer name
+     */
+    public void kick(@NotNull String name) {
+        if (context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
+        PCEncounterData playerCharacter = context.getPlayerCharacter(name);
+        boolean endCurrentPlayerAction = false;
+        if (context.isInitiativePhase()) {
+            PCEncounterData currentPlayerCharacter = context.getCurrentPlayerCharacter();
+            endCurrentPlayerAction = currentPlayerCharacter.isName(name);
+        }
+        context.kickPlayer(playerCharacter);
+        logger.logKickedPlayer(playerCharacter.getOwner());
+        if (!this.context.hasActivePCs()) {
+            this.context.startEndPhase();
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                -1
+            );
+        } else if (endCurrentPlayerAction) {
+            logger.pingPlayerTurn(context.getCurrentPlayerCharacter());
+        }
+    }
+
     public void leaveEncounter(Player player) {
         if (this.context.isOver()) {
             throw EncounterPhaseException.createEndPhase();
@@ -335,15 +364,23 @@ public class EncounterManager {
             throw EncounterPhaseException.createEndPhase();
         }
         PCEncounterData playerCharacter = this.context.getPlayerCharacter(name);
-        if (this.context.isInitiativePhase()) {
-            PCEncounterData currentPlayerCharacter = this.context.getCurrentPlayerCharacter();
-            if (currentPlayerCharacter.isName(name)) {
-                currentPlayerCharacter.useAllActions();
-                this.endCurrentPlayerAction();
-            }
+        boolean endCurrentPlayerAction  = false;
+        if (context.isInitiativePhase()) {
+            PCEncounterData currentPlayerCharacter = context.getCurrentPlayerCharacter();
+            endCurrentPlayerAction = currentPlayerCharacter.isName(name);
         }
-        this.context.removePlayerCharacter(playerCharacter);
-        this.logger.logRemovedPlayerCharacter(name);
+        context.removePlayerCharacter(playerCharacter);
+        logger.logRemovedPlayerCharacter(name);
+        if (endCurrentPlayerAction) {
+            endCurrentPlayerAction();
+        } else if (!this.context.hasActivePCs()) {
+            this.context.startEndPhase();
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                -1
+            );
+        }
     }
 
     public void rejoinEncounter(Player player) {

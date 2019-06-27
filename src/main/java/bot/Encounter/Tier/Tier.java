@@ -56,7 +56,7 @@ public class Tier implements TierInterface
     public boolean fits(@NotNull PCEncounterData encounteredExplorer)
     {
         int statPoints = encounteredExplorer.getStatPoints();
-        return statPoints > minStatPointTotal && statPoints < maxStatPointTotal;
+        return statPoints >= minStatPointTotal && statPoints <= maxStatPointTotal;
     }
 
     /**

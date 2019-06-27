@@ -232,6 +232,13 @@ public class Encounter implements EncounterInterface {
         return !this.currentPhase.equals(Encounter.CREATE_PHASE);
     }
 
+    void kickPlayer(PCEncounterData playerCharacter) {
+        pcRoster.kick(playerCharacter);
+        if (initiative.contains(playerCharacter)) {
+            initiative.remove(playerCharacter);
+        }
+    }
+
     PCEncounterData playerHasLeft(Player player) {
         return this.pcRoster.playerHasLeft(player);
     }

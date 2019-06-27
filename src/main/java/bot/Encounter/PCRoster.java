@@ -13,6 +13,7 @@ import java.util.ArrayList;
 class PCRoster {
 
     private ArrayList<PCEncounterData> roster;
+    private ArrayList<Player>          kickedPlayers;
     private Tier                       tier;
     private int                        absentPlayerCount;
     private int                        maxPlayerCount;
@@ -22,6 +23,7 @@ class PCRoster {
      */
     PCRoster() {
         this.absentPlayerCount = 0;
+        this.kickedPlayers = new ArrayList<>();
         this.maxPlayerCount = 0;
         this.roster = new ArrayList<>();
         this.tier = Tier.createDefault();
@@ -34,12 +36,15 @@ class PCRoster {
      */
     void addPC(PCEncounterData newPlayerCharacter) {
         Player player = newPlayerCharacter.getOwner();
-        if (this.isRosterFull()) {
+
+        if (kickedPlayers.contains(player)) {
+            throw RosterException.createKickedPlayerReturns(player);
+        } else if (this.isRosterFull()) {
             throw RosterException.createFullRoster(player);
-        }
-        if (!tier.fits(newPlayerCharacter)) {
+        } else if (!tier.fits(newPlayerCharacter)) {
             throw RosterException.createDoesNotFitTier(newPlayerCharacter, tier);
         }
+
         for (PCEncounterData character : this.roster) {
             if (character.isOwner(player.getUserId())) {
                 throw new MultiplePlayerCharactersException(player, character.getName());
@@ -158,6 +163,19 @@ class PCRoster {
     }
 
     /**
+     * Kick Player with given PCEncounterData
+     *
+     * @param playerCharacter PCEncounterData
+     */
+    void kick(PCEncounterData playerCharacter) {
+        if (!roster.contains(playerCharacter)) {
+            throw EncounterDataNotFoundException.createForPlayerCharacter(playerCharacter.getName());
+        }
+        roster.remove(playerCharacter);
+        kickedPlayers.add(playerCharacter.getOwner());
+    }
+
+    /**
      * Marks Player's PCEncounterData as "left"
      *
      * @param player Player
@@ -183,6 +201,11 @@ class PCRoster {
      * @return PCEncounterData
      */
     PCEncounterData playerHasRejoined(Player player) {
+
+        if (kickedPlayers.contains(player)) {
+            throw RosterException.createKickedPlayerReturns(player);
+        }
+
         PCEncounterData playerCharacter = this.getPC(player);
         if (playerCharacter == null) {
             throw EncounterDataNotFoundException.createForPlayerCharacter(player);

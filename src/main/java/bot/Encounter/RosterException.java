@@ -39,4 +39,17 @@ class RosterException extends RuntimeException implements CustomExceptionInterfa
             String.format("Uh oh, looks like the dungeon is full. Sorry %s.", player.getAsMention())
         );
     }
+
+    /**
+     * Factory for "kicked player returns"
+     *
+     * @param player Kicked player
+     *
+     * @return RosterException
+     */
+    static @NotNull RosterException createKickedPlayerReturns(@NotNull Player player){
+        return new RosterException(
+            String.format("Sorry %s, you were kicked. Try again next time.", player.getAsMention())
+        );
+    }
 }

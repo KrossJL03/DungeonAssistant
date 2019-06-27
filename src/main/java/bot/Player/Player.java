@@ -1,5 +1,7 @@
 package bot.Player;
 
+import org.jetbrains.annotations.Nullable;
+
 public class Player {
 
     private String userId;
@@ -10,6 +12,18 @@ public class Player {
         this.userId = userId;
         this.name = name;
         this.cumulus = cumulus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(@Nullable Object o)
+    {
+        if (o instanceof Player) {
+            return ((Player) o).getUserId().equals(userId);
+        }
+        return super.equals(o);
     }
 
     public String getAsMention() {

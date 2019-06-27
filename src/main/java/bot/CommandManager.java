@@ -274,7 +274,7 @@ public class CommandManager
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             String   name       = splitInput[1];
-            this.encounterManager.removePlayerCharacter(name);
+            this.encounterManager.kick(name);
         }
     }
 
@@ -293,6 +293,14 @@ public class CommandManager
         String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
         String   name       = splitInput[1];
         this.encounterManager.protectAction(player, name);
+    }
+
+    void removeExplorer(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   name       = splitInput[1];
+            this.encounterManager.removePlayerCharacter(name);
+        }
     }
 
     void removeHostile(MessageReceivedEvent event) {

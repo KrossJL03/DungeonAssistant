@@ -692,6 +692,16 @@ public class EncounterLogger {
         ));
     }
 
+    /**
+     * Log kicked player
+     *
+     * @param player Kicked player
+     */
+    void logKickedPlayer(@NotNull Player player)
+    {
+        logMessage(String.format("%s has been kicked and may not rejoin the battle.", player.getAsMention()));
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private String getHealthBar(EncounterDataInterface creature) {
