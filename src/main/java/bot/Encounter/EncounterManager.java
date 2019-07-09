@@ -3,6 +3,7 @@ package bot.Encounter;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Mention;
 import bot.Explorer.Explorer;
+import bot.Encounter.Tier.Tier;
 import bot.Hostile.HostileManager;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class EncounterManager
 {
     private Encounter       encounter;
+    private EncounterHolder holder;
     private EncounterLogger logger;
 
     /**
@@ -21,11 +23,12 @@ public class EncounterManager
      * @param logger    Encounter logger
      */
     public @NotNull EncounterManager(
-        @NotNull Encounter encounter,
+        @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger
     )
     {
-        this.encounter = encounter;
+        this.encounter = new Encounter();
+        this.holder = holder;
         this.logger = logger;
     }
 
@@ -65,7 +68,8 @@ public class EncounterManager
     {
         logger.setChannel(channel);
         logger.setDmMention(Mention.createForRole(dungeonMaster.getId()));
-        encounter = new Encounter();
+        holder.createHostileEncounter();
+        encounter = holder.getHostileEncounter();
         encounter.setListener(new ActionListener(logger));
         logger.logCreateEncounter();
     }
@@ -80,6 +84,33 @@ public class EncounterManager
     public void dodgeAction(@NotNull Player player) throws EncounterPhaseException
     {
         encounter.dodgeAction(player);
+    /**
+     * Kick
+     *
+     * @param name Explorer name
+     */
+    public void kick(@NotNull String name) {
+        if (context.isOver()) {
+            throw EncounterPhaseException.createEndPhase();
+        }
+        PCEncounterData playerCharacter = context.getPlayerCharacter(name);
+        boolean endCurrentPlayerAction = false;
+        if (context.isInitiativePhase()) {
+            PCEncounterData currentPlayerCharacter = context.getCurrentPlayerCharacter();
+            endCurrentPlayerAction = currentPlayerCharacter.isName(name);
+        }
+        context.kickPlayer(playerCharacter);
+        logger.logKickedPlayer(playerCharacter.getOwner());
+        if (!this.context.hasActivePCs()) {
+            this.context.startEndPhase();
+            this.logger.logEndEncounter(
+                this.context.getAllPlayerCharacters(),
+                this.context.getAllHostiles(),
+                -1
+            );
+        } else if (endCurrentPlayerAction) {
+            logger.pingPlayerTurn(context.getCurrentPlayerCharacter());
+        }
     }
 
     /**
@@ -297,6 +328,16 @@ public class EncounterManager
     public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
     {
         encounter.setMaxPlayerCount(maxPlayerCount);
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     */
+    public void setTier(Tier tier) {
+        context.setTier(tier);
+        logger.logSetTier(tier);
     }
 
     /**

@@ -244,7 +244,7 @@ class PrivateLogger {
                 CommandListener.COMMAND_KEY,
                 "kick",
                 "[Name]",
-                "Forcibly remove a character from an encounter. " +
+                "Forcibly remove a player from an encounter. " +
                 "The rejoin command cannot be used by the player to return."
             ));
             output.append(PrivateLogger.NEWLINE);
@@ -254,6 +254,14 @@ class PrivateLogger {
                 "maxPlayers",
                 "[PlayerCount]",
                 "Set number of players permitted"
+            ));
+            output.append(PrivateLogger.NEWLINE);
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "removePc",
+                "[Name]",
+                "Remove a character from an encounter. The player may rejoin with a new character."
             ));
             output.append(PrivateLogger.NEWLINE);
             output.append(String.format(
@@ -295,6 +303,14 @@ class PrivateLogger {
                 "[CharacterName] [StatName] [StatDrop]",
                 "Reduce a characters stat by the drop amount for the current encounter"
             ));
+            output.append(String.format(
+                "   %s%-16s %-16s %s",
+                CommandListener.COMMAND_KEY,
+                "tier",
+                "[Name]",
+                "Set tier"
+            ));
+            output.append(PrivateLogger.NEWLINE);
             output.append("```");
             PrivateLogger.sendPrivateMessage(user, output.toString());
             output = new StringBuilder();

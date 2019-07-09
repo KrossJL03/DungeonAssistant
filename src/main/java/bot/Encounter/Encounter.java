@@ -3,6 +3,8 @@ package bot.Encounter;
 import bot.Encounter.EncounteredCreature.EncounteredExplorer;
 import bot.Encounter.EncounteredCreature.EncounteredHostile;
 import bot.Explorer.Explorer;
+import bot.Encounter.Exception.*;
+import bot.Encounter.Tier.Tier;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
 import org.apache.commons.text.WordUtils;
@@ -10,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Encounter
+public class Encounter implements EncounterInterface
 {
     private ActionListener                         listener;
     private ArrayList<EncounteredHostileInterface> hostiles;
@@ -29,6 +31,16 @@ public class Encounter
         this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
         this.explorerRoster = new ExplorerRoster();
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
+    }
+
+    @Override
+    public boolean isOver() {
+        return this.isLootPhase() || this.isEndPhase();
     }
 
     /**
@@ -313,6 +325,18 @@ public class Encounter
     }
 
     /**
+     * Kick player
+     *
+     * @param EncounteredExplorerInterface explorer
+     */
+    void kickPlayer(@NotNull EncounteredExplorerInterface explorer) {
+        explorerRoster.kick(explorer);
+        if (initiative.contains(explorer)) {
+            initiative.remove(explorer);
+        }
+    }
+
+    /**
      * Player is leaving
      *
      * @param player Player
@@ -485,6 +509,20 @@ public class Encounter
 
         explorerRoster.setMaxPlayerCount(maxPlayerCount);
         listener.onSetMaxPlayers(maxPlayerCount);
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull Tier tier) throws EncounterPhaseException {
+        if (!currentPhase.equals(Encounter.CREATE_PHASE)) {
+            throw EncounterPhaseException.createSetTierAfterCreatePhase();
+        }
+        pcRoster.setTier(tier);
     }
 
     /**

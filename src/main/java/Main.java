@@ -12,16 +12,14 @@ public class Main
 {
     public static void main(String[] arguments) throws Exception
     {
-
-        Encounter encounter = new Encounter();
-        EncounterLogger encounterLogger = new EncounterLogger(new ActionMessageBuilder(), new SummaryMessageBuilder());
-
+        EncounterHolder  encounterHolder  = new EncounterHolder();
+        EncounterLogger  encounterLogger  = new EncounterLogger(new ActionMessageBuilder(), new SummaryMessageBuilder());
         EncounterManager encountermanager = new EncounterManager(
-            encounter,
+            encounterHolder,
             encounterLogger
         );
 
-        CommandManager  commandManager  = new CommandManager(encountermanager);
+        CommandManager  commandManager  = new CommandManager(encountermanager, encounterHolder);
         CommandListener commandListener = new CommandListener(commandManager);
 
         JDA api = new JDABuilder(MyProperties.token).build();

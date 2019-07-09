@@ -33,6 +33,9 @@
 SELECT * FROM explorer;
 --DELETE FROM explorer;
 
+SELECT * FROM playerCharacter;
+--DELETE FROM playerCharacter;
+
 SELECT * FROM hostile;
 --DELETE FROM hostile;
 
@@ -41,6 +44,13 @@ SELECT * FROM loot;
 
 SELECT * FROM consumable;
 --DELETE FROM consumable;
+
+SELECT * FROM tier;
+--DELETE * FROM tier;
+
+ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
+--DROP TABLE playerCharacter;
+
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 

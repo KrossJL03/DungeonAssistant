@@ -1,6 +1,9 @@
 package bot;
 
+import bot.Encounter.EncounterHolder;
 import bot.Encounter.EncounterManager;
+import bot.Encounter.Tier.Tier;
+import bot.Encounter.Tier.TierRegistry;
 import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
 import bot.Exception.*;
@@ -18,14 +21,22 @@ import bot.Explorer.ExplorerManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import bot.Repository.RepositoryException;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
-public class CommandManager {
-
+/**
+ * Class to parse commands and feed input to specified managers
+ */
+public class CommandManager
+{
+    private EncounterHolder  encounterHolder;
     private EncounterManager encounterManager;
 
-    public CommandManager(EncounterManager encounterManager) {
+    public CommandManager(@NotNull EncounterManager encounterManager, @NotNull EncounterHolder encounterHolder)
+    {
+        this.encounterHolder = encounterHolder;
         this.encounterManager = encounterManager;
     }
 
@@ -61,7 +72,12 @@ public class CommandManager {
     }
 
     // todo move to RepositoryManager
-    void createCharacterCommand(MessageReceivedEvent event) {
+    void createCharacterCommand(MessageReceivedEvent event)
+    {
+        if (encounterHolder.hasActiveEncounter()) {
+            throw RepositoryException.createCommandLocked();
+        }
+
         MessageChannel channel    = event.getChannel();
         User           author     = event.getAuthor();
         String[]       splitInput = event.getMessage().getContentRaw().split("\\s+");
@@ -245,7 +261,7 @@ public class CommandManager {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             String   name       = splitInput[1];
-            this.encounterManager.removeExplorer(name);
+            this.encounterManager.kick(name);
         }
     }
 
@@ -277,6 +293,14 @@ public class CommandManager {
         this.encounterManager.protectAction(player, name);
     }
 
+    void removeExplorer(MessageReceivedEvent event) {
+        if (this.isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   name       = splitInput[1];
+            this.encounterManager.removePlayerCharacter(name);
+        }
+    }
+
     void removeHostile(MessageReceivedEvent event) {
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
@@ -300,6 +324,20 @@ public class CommandManager {
             String[] splitInput     = event.getMessage().getContentRaw().split("\\s+");
             int      maxPlayerCount = Integer.parseInt(splitInput[1]);
             this.encounterManager.setMaxPlayerCount(maxPlayerCount);
+        }
+    }
+
+    /**
+     * Set tier command
+     *
+     * @param event Message event
+     */
+    void setTierCommand(@NotNull MessageReceivedEvent event) {
+        if (isAdmin(event)) {
+            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String   tierName   = splitInput[1];
+            Tier tier           = TierRegistry.getTier(tierName);
+            encounterManager.setTier(tier);
         }
     }
 

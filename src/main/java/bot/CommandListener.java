@@ -110,6 +110,9 @@ public class CommandListener extends ListenerAdapter {
                     case "rejoin":
                         this.commandManager.rejoinCommand(event);
                         break;
+                    case "removepc":
+                        this.commandManager.removeExplorer(event);
+                        break;
                     case "removehostile":
                         this.commandManager.removeHostile(event);
                         break;
@@ -125,6 +128,9 @@ public class CommandListener extends ListenerAdapter {
                     case "statdrop":
                         this.commandManager.dropStatCommand(event);
                         return;
+                    case "tier":
+                        commandManager.setTierCommand(event);
+                        break;
                     case "view":
                         this.processViewCommand(event);
                         break;
