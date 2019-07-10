@@ -310,6 +310,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
+    public int getStatPoints()
+    {
+        return strength + defense + agility + wisdom + ((maxHp - Constant.MIN_MAX_HP)/Constant.HP_STAT_MULTIPLIER);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getStrength()
     {
         return this.strength;

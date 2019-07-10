@@ -1,6 +1,5 @@
 package bot.Encounter;
 
-import bot.Encounter.EncounterData.PCEncounterData;
 import org.jetbrains.annotations.NotNull;
 
 public interface TierInterface
@@ -12,7 +11,7 @@ public interface TierInterface
      *
      * @return boolean
      */
-    boolean fits(@NotNull PCEncounterData encounteredExplorer);
+    boolean fits(@NotNull EncounteredExplorerInterface encounteredExplorer);
 
     /**
      * Get max stat points

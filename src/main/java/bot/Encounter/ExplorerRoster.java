@@ -1,5 +1,6 @@
 package bot.Encounter;
 
+import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 class ExplorerRoster
 {
     private ArrayList<EncounteredExplorerInterface> explorerRoster;
+    private ArrayList<Player>                       kickedPlayers;
+    private Tier                                    tier;
     private int                                     maxPlayerCount;
 
     /**
@@ -15,8 +18,10 @@ class ExplorerRoster
      */
     ExplorerRoster()
     {
-        this.maxPlayerCount = 0;
         this.explorerRoster = new ArrayList<>();
+        this.kickedPlayers = new ArrayList<>();
+        this.maxPlayerCount = 0;
+        this.tier = Tier.createDefault();
     }
 
     /**
@@ -26,8 +31,10 @@ class ExplorerRoster
      * @param newExplorer Explorer to add
      *
      * @throws ExplorerRosterException If no max player count has been set
+     *                                 If player has been kicked
      *                                 If player already has explorer in the encounter
      *                                 If max player count has been reached
+     *                                 If explorer does not fit tier
      */
     void addExplorer(@NotNull EncounteredExplorerInterface newExplorer) throws ExplorerRosterException
     {
@@ -36,12 +43,17 @@ class ExplorerRoster
         }
 
         Player player = newExplorer.getOwner();
-        if (containsPlayer(player)) {
+
+        // exceptions ordered by precedence
+        if (kickedPlayers.contains(player)) {
+            throw ExplorerRosterException.createKickedPlayerReturns(player);
+        } else if (containsPlayer(player)) {
             EncounteredExplorerInterface character = getExplorer(player);
             throw ExplorerRosterException.createMultipleExplorers(player, character.getName());
         } else if (isFull()) {
-            // this error is thrown last because multiple explorers exception takes precedence
             throw ExplorerRosterException.createFullRoster(player);
+        } else if (!tier.fits(newExplorer)) {
+            throw ExplorerRosterException.createDoesNotFitTier(newExplorer, tier);
         }
         explorerRoster.add(newExplorer);
         sort();
@@ -166,6 +178,16 @@ class ExplorerRoster
     }
 
     /**
+     * Get tier
+     *
+     * @return Tier
+     */
+    @NotNull Tier getTier()
+    {
+        return tier;
+    }
+
+    /**
      * Does this roster have active explorers
      *
      * @return bool
@@ -183,6 +205,20 @@ class ExplorerRoster
     boolean isFull()
     {
         return getPresentPlayerCount() >= maxPlayerCount;
+    }
+
+    /**
+     * Kick Player with given encountered explorer
+     *
+     * @param encounteredExplorer Encountered explorer to kick
+     */
+    void kick(EncounteredExplorerInterface encounteredExplorer)
+    {
+        if (!explorerRoster.contains(encounteredExplorer)) {
+            throw EncounteredCreatureNotFoundException.createForExplorer(encounteredExplorer.getName());
+        }
+        explorerRoster.remove(encounteredExplorer);
+        kickedPlayers.add(encounteredExplorer.getOwner());
     }
 
     /**
@@ -217,6 +253,10 @@ class ExplorerRoster
     @NotNull EncounteredExplorerInterface rejoin(@NotNull Player player) throws ExplorerRosterException
     {
         // todo rename method
+        if (kickedPlayers.contains(player)) {
+            throw ExplorerRosterException.createKickedPlayerReturns(player);
+        }
+
         EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);
         if (encounteredExplorer.isPresent()) {
             throw ExplorerRosterException.createCannotRejoinIfPresent(player);
@@ -237,7 +277,7 @@ class ExplorerRoster
      */
     void remove(@NotNull EncounteredExplorerInterface encounteredExplorer) throws EncounteredCreatureNotFoundException
     {
-        if (!this.containsExplorer(encounteredExplorer.getName())) {
+        if (!containsExplorer(encounteredExplorer.getName())) {
             throw EncounteredCreatureNotFoundException.createForExplorer(encounteredExplorer.getName());
         }
         this.explorerRoster.remove(encounteredExplorer);
@@ -263,6 +303,16 @@ class ExplorerRoster
             );
         }
         this.maxPlayerCount = maxPlayerCount;
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     */
+    void setTier(@NotNull Tier tier)
+    {
+        this.tier = tier;
     }
 
     /**

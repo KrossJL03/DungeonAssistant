@@ -3,7 +3,6 @@ package bot.Encounter;
 import bot.Encounter.EncounteredCreature.EncounteredExplorer;
 import bot.Encounter.EncounteredCreature.EncounteredHostile;
 import bot.Explorer.Explorer;
-import bot.Encounter.Exception.*;
 import bot.Encounter.Tier.Tier;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
@@ -33,14 +32,20 @@ public class Encounter implements EncounterInterface
         this.explorerRoster = new ExplorerRoster();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isNull() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOver() {
-        return this.isLootPhase() || this.isEndPhase();
+        return currentPhase.isFinalPhase();
     }
 
     /**
@@ -325,16 +330,22 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Kick player
+     * Kick
      *
-     * @param EncounteredExplorerInterface explorer
+     * @param name Explorer name
      */
-    void kickPlayer(@NotNull EncounteredExplorerInterface explorer) {
-        explorerRoster.kick(explorer);
-        if (initiative.contains(explorer)) {
-            initiative.remove(explorer);
+    void kick(@NotNull String name) {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
         }
+
+        EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(name);
+        explorerRoster.kick(encounteredExplorer);
+        encounteredExplorer.useAllActions();
+        listener.onKick(encounteredExplorer.getOwner());
+        handleEndOfAction();
     }
+
 
     /**
      * Player is leaving
@@ -460,7 +471,7 @@ public class Encounter implements EncounterInterface
 
         EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(name);
         explorerRoster.remove(encounteredExplorer);
-        initiative.remove(encounteredExplorer);
+        encounteredExplorer.useAllActions();
 
         listener.onRemoveExplorer(encounteredExplorer.getName());
         handleEndOfAction();
@@ -519,10 +530,11 @@ public class Encounter implements EncounterInterface
      * @throws EncounterPhaseException If not create phase
      */
     void setTier(@NotNull Tier tier) throws EncounterPhaseException {
-        if (!currentPhase.equals(Encounter.CREATE_PHASE)) {
+        if (!currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createSetTierAfterCreatePhase();
         }
-        pcRoster.setTier(tier);
+        explorerRoster.setTier(tier);
+        listener.onSetTier(tier);
     }
 
     /**
@@ -807,6 +819,7 @@ public class Encounter implements EncounterInterface
         PhaseChangeResult result = new PhaseChangeResult(
             currentPhase,
             previousPhase,
+            explorerRoster.getTier(),
             explorerRoster.getAllExplorers(),
             getAllHostiles(),
             explorerRoster.getMaxPlayerCount(),

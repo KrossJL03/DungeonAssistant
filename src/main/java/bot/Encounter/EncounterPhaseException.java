@@ -118,6 +118,15 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     }
 
     /**
+     * Factory method for "set tier after create phase"
+     *
+     * @return EncounterPhaseException
+     */
+    static @NotNull EncounterPhaseException createSetTierAfterCreatePhase() {
+        return new EncounterPhaseException("Tier must be set before the encounter has started");
+    }
+
+    /**
      * Factory method for "start in progress encounter"
      *
      * @return EncounterPhaseException

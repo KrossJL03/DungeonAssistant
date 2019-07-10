@@ -3,6 +3,7 @@ package bot.Encounter.Logger;
 import bot.CommandListener;
 import bot.Encounter.*;
 import bot.Encounter.Logger.MessageBuilder.*;
+import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -112,7 +113,7 @@ public class EncounterLogger
             // todo?
 //            logEndEncounterForced(result.getExplorers(), result.getHostiles());
         } else if (result.getNextPhase().isJoinPhase()) {
-            logStartEncounter(result.getMaxPlayerCount());
+            logStartEncounter(result.getMaxPlayerCount(), result.getTier());
         } else if (result.getNextPhase().isAttackPhase()) {
             logStartAttackPhase(result.getExplorers(), result.getHostiles());
         } else if (result.getNextPhase().isDodgePhase()) {
@@ -196,44 +197,6 @@ public class EncounterLogger
     }
 
     /**
-     * Log end of attack phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logEndAttackPhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**ATTACK TURN IS OVER!**" +
-            EncounterLogger.NEWLINE +
-            "You may take this time to RP amongst yourselves. The DODGE turn will begin shortly."
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log end of dodge phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logEndDodgePhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**DODGE TURN IS OVER!**" +
-            EncounterLogger.NEWLINE +
-            "You may take this time to RP amongst yourselves. The ATTACK turn will begin shortly."
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
      * Log end of encounter (forced)
      *
      * @param encounteredExplorers Encountered explorers
@@ -247,50 +210,6 @@ public class EncounterLogger
         logSummary(encounteredExplorers, encounteredHostiles);
         sendMessage("***THE BATTLE IS OVER!!!***");
         sendMessage("Game over everyone, the DM commands it! Thanks for playing!");
-    }
-
-    /**
-     * Log end of encounter (lose)
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logEndEncounterLose(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        logSummary(encounteredExplorers, encounteredHostiles);
-        sendMessage("***THE BATTLE IS OVER!!!***");
-        sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
-    }
-
-    /**
-     * Log end of encounter (win)
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logEndEncounterWin(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        logSummary(encounteredExplorers, encounteredHostiles);
-        sendMessage("***THE BATTLE IS OVER!!!***");
-        sendMessage(
-            "Great work everyone! You did it!" +
-            EncounterLogger.NEWLINE +
-            EncounterLogger.NEWLINE +
-            "**LOOT TURN!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Please use `%sloot` to harvest materials from the hostiles.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            "There is no turn order and if you are unable to roll now you may do so later."
-        );
     }
 
     /**
@@ -310,6 +229,19 @@ public class EncounterLogger
             String.format("%s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
             "```"
         );
+    }
+
+    /**
+     * Log kicked player
+     *
+     * @param player Kicked player
+     */
+    public void logKickedPlayer(@NotNull Player player)
+    {
+        sendMessage(String.format(
+            "%s has been kicked and may not rejoin the battle.",
+            (Mention.createForPlayer(player.getUserId())).getValue()
+        ));
     }
 
 
@@ -364,6 +296,21 @@ public class EncounterLogger
     }
 
     /**
+     * Tier has been set
+     *
+     * @param tier Tier
+     */
+    public void logSetTier(@NotNull Tier tier)
+    {
+        sendMessage(String.format(
+            "%s tier has been set! [Stat Point Range: %d - %d]",
+            tier.getName(),
+            tier.getMinStatPointTotal(),
+            tier.getMaxStatPointTotal()
+        ));
+    }
+
+    /**
      * Log encounter summary
      *
      * @param encounteredExplorers Encountered explorers
@@ -375,110 +322,6 @@ public class EncounterLogger
     )
     {
         sendMessage(summaryMessageBuilder.buildSummary(encounteredExplorers, encounteredHostiles));
-    }
-
-    /**
-     * Log start attack phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logStartAttackPhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**ATTACK TURN!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Please use `%sattack [HostileName]` to attack. Ex: `%sattack Stanley`",
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY
-            )
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log start dodge phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logStartDodgePhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        StringBuilder output      = new StringBuilder();
-        int           totalDamage = 0;
-        output.append("**DODGE TURN!**");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(
-            String.format(
-                "Please `%sdodge` to try to avoid the attack, " +
-                "or `%sprotect [CharacterName]` to sacrifice yourself to save someone else. " +
-                "Ex: `%sprotect Cocoa`",
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY
-            )
-        );
-        output.append(EncounterLogger.NEWLINE);
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append("'Hostiles' attack the party!");
-        output.append(EncounterLogger.NEWLINE);
-        output.append("\"dmg dice\"");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        for (EncounteredHostileInterface hostile : encounteredHostiles) {
-            if (!hostile.isSlain()) {
-                totalDamage += hostile.getAttackRoll();
-                output.append(String.format(
-                    "d%d %s %2d dmg from '%s'!",
-                    hostile.getAttackDice(),
-                    EncounterLogger.DOUBLE_ARROW,
-                    hostile.getAttackRoll(),
-                    hostile.getName()
-                ));
-                output.append(EncounterLogger.NEWLINE);
-            }
-        }
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("combined attacks add up to %d dmg!!", totalDamage));
-        output.append("```");
-        sendMessage(output.toString());
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log start encounter
-     *
-     * @param maxPlayers Max number of players
-     */
-    public void logStartEncounter(int maxPlayers)
-    {
-        sendMessage(
-//            everyoneMention.getValue() +
-//            EncounterLogger.NEWLINE +
-            "**BATTLE TIME!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "To bring a character to battle, use `%sjoin [CharacterName]`.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Make sure your character has already been registered using the `%screate character`.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            "You may join a battle at any time for as long as it's running, and as long as there are slots open!" +
-            EncounterLogger.NEWLINE +
-            String.format("This dungeon has a max capacity of **%d** players. ", maxPlayers)
-        );
     }
 
     /**
@@ -624,6 +467,196 @@ public class EncounterLogger
         output += EncounterLogger.NEWLINE;
         output += "```";
         return output;
+    }
+
+    /**
+     * Log end of attack phase
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logEndAttackPhase(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        sendMessage(
+            "**ATTACK TURN IS OVER!**" +
+            EncounterLogger.NEWLINE +
+            "You may take this time to RP amongst yourselves. The DODGE turn will begin shortly."
+        );
+        logSummary(encounteredExplorers, encounteredHostiles);
+    }
+
+    /**
+     * Log end of dodge phase
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logEndDodgePhase(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        sendMessage(
+            "**DODGE TURN IS OVER!**" +
+            EncounterLogger.NEWLINE +
+            "You may take this time to RP amongst yourselves. The ATTACK turn will begin shortly."
+        );
+        logSummary(encounteredExplorers, encounteredHostiles);
+    }
+
+    /**
+     * Log end of encounter (lose)
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logEndEncounterLose(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        logSummary(encounteredExplorers, encounteredHostiles);
+        sendMessage("***THE BATTLE IS OVER!!!***");
+        sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
+    }
+
+    /**
+     * Log end of encounter (win)
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logEndEncounterWin(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        logSummary(encounteredExplorers, encounteredHostiles);
+        sendMessage("***THE BATTLE IS OVER!!!***");
+        sendMessage(
+            "Great work everyone! You did it!" +
+            EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
+            "**LOOT TURN!**" +
+            EncounterLogger.NEWLINE +
+            String.format(
+                "Please use `%sloot` to harvest materials from the hostiles.",
+                CommandListener.COMMAND_KEY
+            ) +
+            EncounterLogger.NEWLINE +
+            "There is no turn order and if you are unable to roll now you may do so later."
+        );
+    }
+
+    /**
+     * Log start attack phase
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logStartAttackPhase(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        sendMessage(
+            "**ATTACK TURN!**" +
+            EncounterLogger.NEWLINE +
+            String.format(
+                "Please use `%sattack [HostileName]` to attack. Ex: `%sattack Stanley`",
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY
+            )
+        );
+        logSummary(encounteredExplorers, encounteredHostiles);
+    }
+
+    /**
+     * Log start dodge phase
+     *
+     * @param encounteredExplorers Encountered explorers
+     * @param encounteredHostiles  Encountered hostiles
+     */
+    private void logStartDodgePhase(
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    )
+    {
+        StringBuilder output      = new StringBuilder();
+        int           totalDamage = 0;
+        output.append("**DODGE TURN!**");
+        output.append(EncounterLogger.NEWLINE);
+        output.append(
+            String.format(
+                "Please `%sdodge` to try to avoid the attack, " +
+                "or `%sprotect [CharacterName]` to sacrifice yourself to save someone else. " +
+                "Ex: `%sprotect Cocoa`",
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY,
+                CommandListener.COMMAND_KEY
+            )
+        );
+        output.append(EncounterLogger.NEWLINE);
+        output.append("```ml");
+        output.append(EncounterLogger.NEWLINE);
+        output.append("'Hostiles' attack the party!");
+        output.append(EncounterLogger.NEWLINE);
+        output.append("\"dmg dice\"");
+        output.append(EncounterLogger.NEWLINE);
+        output.append(EncounterLogger.NEWLINE);
+        for (EncounteredHostileInterface hostile : encounteredHostiles) {
+            if (!hostile.isSlain()) {
+                totalDamage += hostile.getAttackRoll();
+                output.append(String.format(
+                    "d%d %s %2d dmg from '%s'!",
+                    hostile.getAttackDice(),
+                    EncounterLogger.DOUBLE_ARROW,
+                    hostile.getAttackRoll(),
+                    hostile.getName()
+                ));
+                output.append(EncounterLogger.NEWLINE);
+            }
+        }
+        output.append(EncounterLogger.NEWLINE);
+        output.append(String.format("combined attacks add up to %d dmg!!", totalDamage));
+        output.append("```");
+        sendMessage(output.toString());
+        logSummary(encounteredExplorers, encounteredHostiles);
+    }
+
+    /**
+     * Log start encounter
+     *
+     * @param maxPlayers Max number of players
+     * @param tier       Tier
+     */
+    private void logStartEncounter(int maxPlayers, Tier tier)
+    {
+        sendMessage(
+//            everyoneMention.getValue() +
+//            EncounterLogger.NEWLINE +
+            "**BATTLE TIME!**" +
+            EncounterLogger.NEWLINE +
+            String.format(
+                "To bring an explorer in to battle, use `%sjoin [CharacterName]`.",
+                CommandListener.COMMAND_KEY
+            ) +
+            EncounterLogger.NEWLINE +
+            "You may join a battle at any time before the batle has ended and as long as there are slots open!" +
+            EncounterLogger.NEWLINE +
+            EncounterLogger.NEWLINE +
+            String.format("This dungeon has a max capacity of **%d** players. ", maxPlayers) +
+            EncounterLogger.NEWLINE +
+            String.format(
+                "Tier is set to **%s**! All explorers must have a stat point total between **%d** and **%d**",
+                tier.getName(),
+                tier.getMinStatPointTotal(),
+                tier.getMaxStatPointTotal()
+            )
+        );
     }
 
     /**

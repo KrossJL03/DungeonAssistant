@@ -47,8 +47,10 @@ SELECT * FROM consumable;
 
 SELECT * FROM tier;
 --DELETE * FROM tier;
+--DROP TABLE tier;
 
-ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
+SELECT * FROM playerCharacter;
+--ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
 --DROP TABLE playerCharacter;
 
 
@@ -57,13 +59,21 @@ SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 SELECT h.rowid, h.*, l.* 
 FROM hostile h 
 INNER JOIN loot l ON l.hostile_id = h.rowid 
-WHERE lower(h.species) = 'hootaloo';]]></console>
+WHERE lower(h.species) = 'hootaloo';
+
+SELECT name, (strength + defense + agility + wisdom + (hitpoints/10) - 5) as rank
+FROM "playerCharacter";
+
+SELECT p.name, pc.name, pc.appLink
+FROM playerCharacter pc
+INNER JOIN player p on p.userId = pc.playerId;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.tier" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.player" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.explorer" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.loot" active-filter-id="" />

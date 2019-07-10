@@ -19,8 +19,8 @@ public class EncounterManager
     /**
      * EncounterManager constructor
      *
-     * @param encounter Encounter
-     * @param logger    Encounter logger
+     * @param holder Encounter holder
+     * @param logger Encounter logger
      */
     public @NotNull EncounterManager(
         @NotNull EncounterHolder holder,
@@ -84,33 +84,15 @@ public class EncounterManager
     public void dodgeAction(@NotNull Player player) throws EncounterPhaseException
     {
         encounter.dodgeAction(player);
+    }
+
     /**
      * Kick
      *
      * @param name Explorer name
      */
     public void kick(@NotNull String name) {
-        if (context.isOver()) {
-            throw EncounterPhaseException.createEndPhase();
-        }
-        PCEncounterData playerCharacter = context.getPlayerCharacter(name);
-        boolean endCurrentPlayerAction = false;
-        if (context.isInitiativePhase()) {
-            PCEncounterData currentPlayerCharacter = context.getCurrentPlayerCharacter();
-            endCurrentPlayerAction = currentPlayerCharacter.isName(name);
-        }
-        context.kickPlayer(playerCharacter);
-        logger.logKickedPlayer(playerCharacter.getOwner());
-        if (!this.context.hasActivePCs()) {
-            this.context.startEndPhase();
-            this.logger.logEndEncounter(
-                this.context.getAllPlayerCharacters(),
-                this.context.getAllHostiles(),
-                -1
-            );
-        } else if (endCurrentPlayerAction) {
-            logger.pingPlayerTurn(context.getCurrentPlayerCharacter());
-        }
+        encounter.kick(name);
     }
 
     /**
@@ -336,8 +318,7 @@ public class EncounterManager
      * @param tier Tier
      */
     public void setTier(Tier tier) {
-        context.setTier(tier);
-        logger.logSetTier(tier);
+        encounter.setTier(tier);
     }
 
     /**

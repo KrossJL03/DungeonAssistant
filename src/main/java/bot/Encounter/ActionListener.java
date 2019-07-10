@@ -1,6 +1,8 @@
 package bot.Encounter;
 
 import bot.Encounter.Logger.EncounterLogger;
+import bot.Encounter.Tier.Tier;
+import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 class ActionListener
@@ -71,6 +73,16 @@ class ActionListener
     }
 
     /**
+     * Log on kick
+     *
+     * @param owner Kicked player
+     */
+    void onKick(Player owner)
+    {
+        logger.logKickedPlayer(owner);
+    }
+
+    /**
      * Log on leave
      *
      * @param name Name of explorer that left
@@ -138,6 +150,16 @@ class ActionListener
     void onSetMaxPlayers(int maxPlayerCount)
     {
         logger.logSetMaxPlayers(maxPlayerCount);
+    }
+
+    /**
+     * Log on set tier
+     *
+     * @param tier Tier
+     */
+    void onSetTier(Tier tier)
+    {
+        logger.logSetTier(tier);
     }
 
     /**

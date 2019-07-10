@@ -297,7 +297,7 @@ public class CommandManager
         if (this.isAdmin(event)) {
             String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
             String   name       = splitInput[1];
-            this.encounterManager.removePlayerCharacter(name);
+            this.encounterManager.removeExplorer(name);
         }
     }
 

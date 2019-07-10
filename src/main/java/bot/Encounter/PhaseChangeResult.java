@@ -1,5 +1,6 @@
 package bot.Encounter;
 
+import bot.Encounter.Tier.Tier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     private ArrayList<EncounteredHostileInterface>  encounteredHostile;
     private EncounterPhase                          nextPhase;
     private EncounterPhase                          previousPhase;
+    private Tier                                    tier;
     private int                                     currentPlayerCount;
     private int                                     maxPlayerCount;
 
@@ -18,6 +20,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
      *
      * @param nextPhase            Next phase
      * @param previousPhase        Previous phase
+     * @param tier                 Tier
      * @param encounteredExplorers Encountered explorers
      * @param encounteredHostile   Encountered hostiles
      * @param maxPlayerCount       Max player count
@@ -26,6 +29,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     PhaseChangeResult(
         EncounterPhase nextPhase,
         EncounterPhase previousPhase,
+        Tier tier,
         ArrayList<EncounteredExplorerInterface> encounteredExplorers,
         ArrayList<EncounteredHostileInterface> encounteredHostile,
         int maxPlayerCount,
@@ -38,6 +42,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
         this.maxPlayerCount = maxPlayerCount;
         this.nextPhase = nextPhase;
         this.previousPhase = previousPhase;
+        this.tier = tier;
     }
 
     /**
@@ -95,5 +100,15 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     public @NotNull EncounterPhase getPreviousPhase()
     {
         return previousPhase;
+    }
+
+    /**
+     * Get tier
+     *
+     * @return EncounterPhase
+     */
+    public @NotNull Tier getTier()
+    {
+        return tier;
     }
 }

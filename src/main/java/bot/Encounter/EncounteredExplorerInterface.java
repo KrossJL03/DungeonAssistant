@@ -110,6 +110,13 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
     int getRemainingActions();
 
     /**
+     * Get stat points
+     *
+     * @return int
+     */
+    int getStatPoints();
+
+    /**
      * Get strength
      *
      * @return int

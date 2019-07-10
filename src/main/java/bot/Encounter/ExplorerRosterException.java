@@ -2,6 +2,7 @@ package bot.Encounter;
 
 import bot.CommandListener;
 import bot.Encounter.Logger.Mention;
+import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,30 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
                 "%s You are currently active in this encounter. There is not need to `%srejoin`.",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
+            )
+        );
+    }
+
+    /**
+     * Factory method for "does not fit tier"
+     *
+     * @param encounteredExplorer Encountered explorer
+     * @param tier                Tier
+     *
+     * @return RosterException
+     */
+    static @NotNull ExplorerRosterException createDoesNotFitTier(
+        @NotNull EncounteredExplorerInterface encounteredExplorer,
+        @NotNull Tier tier
+    )
+    {
+        Player owner = encounteredExplorer.getOwner();
+        return new ExplorerRosterException(
+            String.format(
+                "%s, %s does not fit the %s tier.",
+                (Mention.createForPlayer(owner.getUserId())).getValue(),
+                encounteredExplorer.getName(),
+                tier.getName()
             )
         );
     }
@@ -66,6 +91,23 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
                 "%s You have already left. You can't leave again unless you `%srejoin` first",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
                 CommandListener.COMMAND_KEY
+            )
+        );
+    }
+
+    /**
+     * Factory for "kicked player returns"
+     *
+     * @param player Kicked player
+     *
+     * @return RosterException
+     */
+    static @NotNull ExplorerRosterException createKickedPlayerReturns(@NotNull Player player)
+    {
+        return new ExplorerRosterException(
+            String.format(
+                "Sorry %s, you were kicked. Try again next time.",
+                (Mention.createForPlayer(player.getUserId())).getValue()
             )
         );
     }

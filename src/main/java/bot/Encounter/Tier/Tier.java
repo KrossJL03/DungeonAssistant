@@ -1,6 +1,6 @@
 package bot.Encounter.Tier;
 
-import bot.Encounter.EncounterData.PCEncounterData;
+import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.TierInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +53,7 @@ public class Tier implements TierInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean fits(@NotNull PCEncounterData encounteredExplorer)
+    public boolean fits(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
         int statPoints = encounteredExplorer.getStatPoints();
         return statPoints >= minStatPointTotal && statPoints <= maxStatPointTotal;
