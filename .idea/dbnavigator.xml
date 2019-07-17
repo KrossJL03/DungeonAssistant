@@ -65,6 +65,7 @@ WHERE lower(h.species) = 'hootaloo';]]></console>
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.tier" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.player" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.explorer" active-filter-id="" />
     <filter-list connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13" dataset="main.loot" active-filter-id="" />
