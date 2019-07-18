@@ -2,12 +2,10 @@ package bot;
 
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.EncounterManager;
-import bot.Encounter.Tier.Tier;
 import bot.Encounter.Tier.TierRegistry;
+import bot.Encounter.TierInterface;
 import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Hostile.Hostile;
-import bot.Exception.*;
-import bot.Hostile.HostileManager;
 import bot.Item.Consumable.ConsumableManager;
 import bot.Player.Exception.PlayerNotFoundException;
 import bot.Player.Player;
@@ -334,9 +332,9 @@ public class CommandManager
      */
     void setTierCommand(@NotNull MessageReceivedEvent event) {
         if (isAdmin(event)) {
-            String[] splitInput = event.getMessage().getContentRaw().split("\\s+");
-            String   tierName   = splitInput[1];
-            Tier tier           = TierRegistry.getTier(tierName);
+            String[]      splitInput = event.getMessage().getContentRaw().split("\\s+");
+            String        tierName   = splitInput[1];
+            TierInterface tier       = TierRegistry.getTier(tierName);
             encounterManager.setTier(tier);
         }
     }

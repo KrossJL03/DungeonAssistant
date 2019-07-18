@@ -1,6 +1,5 @@
 package bot.Encounter;
 
-import bot.Encounter.Tier.Tier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -9,9 +8,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
 {
     private ArrayList<EncounteredExplorerInterface> encounteredExplorers;
     private ArrayList<EncounteredHostileInterface>  encounteredHostile;
-    private EncounterPhase                          nextPhase;
-    private EncounterPhase                          previousPhase;
-    private Tier                                    tier;
+    private EncounterPhaseInterface                 nextPhase;
+    private EncounterPhaseInterface                 previousPhase;
+    private TierInterface                           tier;
     private int                                     currentPlayerCount;
     private int                                     maxPlayerCount;
 
@@ -27,9 +26,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
      * @param currentPlayerCount   Current player count
      */
     PhaseChangeResult(
-        EncounterPhase nextPhase,
-        EncounterPhase previousPhase,
-        Tier tier,
+        EncounterPhaseInterface nextPhase,
+        EncounterPhaseInterface previousPhase,
+        TierInterface tier,
         ArrayList<EncounteredExplorerInterface> encounteredExplorers,
         ArrayList<EncounteredHostileInterface> encounteredHostile,
         int maxPlayerCount,
@@ -85,9 +84,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     /**
      * Get next phase
      *
-     * @return EncounterPhase
+     * @return Phase
      */
-    public @NotNull EncounterPhase getNextPhase()
+    public @NotNull EncounterPhaseInterface getNextPhase()
     {
         return nextPhase;
     }
@@ -95,9 +94,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     /**
      * Get previous phase
      *
-     * @return EncounterPhase
+     * @return Phase
      */
-    public @NotNull EncounterPhase getPreviousPhase()
+    public @NotNull EncounterPhaseInterface getPreviousPhase()
     {
         return previousPhase;
     }
@@ -105,9 +104,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     /**
      * Get tier
      *
-     * @return EncounterPhase
+     * @return Phase
      */
-    public @NotNull Tier getTier()
+    public @NotNull TierInterface getTier()
     {
         return tier;
     }

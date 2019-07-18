@@ -1,5 +1,6 @@
 package bot.Encounter.Tier;
 
+import bot.Encounter.TierInterface;
 import bot.Repository.RepositoryPaths;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +67,7 @@ public class TierRegistry
      *
      * @param tier Tier
      */
-    static void addTier(@NotNull Tier tier)
+    static void addTier(@NotNull TierInterface tier)
     {
         String sql = String.format(
             "INSERT INTO %s(name, min_stat_point_total, max_stat_point_total) VALUES('%s',%d,%d)",

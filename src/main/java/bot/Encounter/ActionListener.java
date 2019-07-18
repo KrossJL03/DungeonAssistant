@@ -1,7 +1,6 @@
 package bot.Encounter;
 
 import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -157,7 +156,7 @@ class ActionListener
      *
      * @param tier Tier
      */
-    void onSetTier(Tier tier)
+    void onSetTier(TierInterface tier)
     {
         logger.logSetTier(tier);
     }

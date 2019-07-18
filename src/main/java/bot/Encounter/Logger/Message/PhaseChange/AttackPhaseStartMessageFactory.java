@@ -1,0 +1,55 @@
+package bot.Encounter.Logger.Message.PhaseChange;
+
+import bot.CommandListener;
+import bot.Encounter.EncounterPhaseInterface;
+import bot.Encounter.Logger.Message.*;
+import bot.Encounter.PhaseChangeResult;
+import org.jetbrains.annotations.NotNull;
+
+public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+{
+    private TextBlockFormatter textFormatter;
+
+    /**
+     * PhaseChangeMessageBuilder constructor
+     */
+    @NotNull AttackPhaseStartMessageFactory()
+    {
+        this.textFormatter = new TextBlockFormatter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(
+        @NotNull EncounterPhaseInterface previousPhase,
+        @NotNull EncounterPhaseInterface nextPhase
+    )
+    {
+        return nextPhase.isAttackPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result)
+    {
+        PhaseChangeMessage message = new PhaseChangeMessage();
+
+        message.add(textFormatter.makeBold("ATTACK TURN!"));
+        message.add(String.format(
+            "Please use %s to attack. Ex: %s",
+            textFormatter.makeCode(String.format("%sattack [HostileName]", CommandListener.COMMAND_KEY)),
+            textFormatter.makeCode(String.format("%sattack Stanley", CommandListener.COMMAND_KEY))
+        ));
+        message.add(String.format(
+            "To use items use %s and the DM will be pinged to help out. Ex: %s",
+            textFormatter.makeCode("rp!use"),
+            textFormatter.makeCode("rp!use BreadLoaf")
+        ));
+
+        return message;
+    }
+}

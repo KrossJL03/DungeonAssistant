@@ -2,8 +2,8 @@ package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.EncounteredExplorer;
 import bot.Encounter.EncounteredCreature.EncounteredHostile;
+import bot.Encounter.Phase.EncounterPhaseFactory;
 import bot.Explorer.Explorer;
-import bot.Encounter.Tier.Tier;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
 import org.apache.commons.text.WordUtils;
@@ -17,7 +17,7 @@ public class Encounter implements EncounterInterface
     private ArrayList<EncounteredHostileInterface> hostiles;
     private ExplorerRoster                         explorerRoster;
     private InitiativeQueue                        initiative;
-    private EncounterPhase                         currentPhase;
+    private EncounterPhaseInterface                currentPhase;
     private boolean                                hasPhoenixDown;
 
     /**
@@ -25,7 +25,7 @@ public class Encounter implements EncounterInterface
      */
     public Encounter()
     {
-        this.currentPhase = EncounterPhase.createCreatePhase();
+        this.currentPhase = EncounterPhaseFactory.createCreatePhase();
         this.initiative = new InitiativeQueue();
         this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
@@ -36,7 +36,8 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isNull() {
+    public boolean isNull()
+    {
         return false;
     }
 
@@ -44,7 +45,8 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isOver() {
+    public boolean isOver()
+    {
         return currentPhase.isFinalPhase();
     }
 
@@ -334,7 +336,8 @@ public class Encounter implements EncounterInterface
      *
      * @param name Explorer name
      */
-    void kick(@NotNull String name) {
+    void kick(@NotNull String name)
+    {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
         }
@@ -529,7 +532,8 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounterPhaseException If not create phase
      */
-    void setTier(@NotNull Tier tier) throws EncounterPhaseException {
+    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
+    {
         if (!currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createSetTierAfterCreatePhase();
         }
@@ -586,8 +590,8 @@ public class Encounter implements EncounterInterface
             encounteredExplorer.resetActions();
         }
 
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createAttackPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createAttackPhase();
         initiative = new InitiativeQueue(getAllExplorers());
         notifyListenerOfPhaseChange(previousPhase);
     }
@@ -620,8 +624,8 @@ public class Encounter implements EncounterInterface
             encounteredHostile.attack();
         }
 
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createDodgePhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createDodgePhase();
         initiative = new InitiativeQueue(getAllExplorers());
         notifyListenerOfPhaseChange(previousPhase);
     }
@@ -637,8 +641,8 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createNotStarted();
         }
 
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createEndPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createEndPhase();
         initiative = new InitiativeQueue();
         notifyListenerOfPhaseChange(previousPhase);
     }
@@ -665,8 +669,8 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
         }
 
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createJoinPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createJoinPhase();
         initiative = new InitiativeQueue();
         notifyListenerOfPhaseChange(previousPhase);
     }
@@ -814,7 +818,7 @@ public class Encounter implements EncounterInterface
      *
      * @param previousPhase Previous phase
      */
-    private void notifyListenerOfPhaseChange(EncounterPhase previousPhase)
+    private void notifyListenerOfPhaseChange(EncounterPhaseInterface previousPhase)
     {
         PhaseChangeResult result = new PhaseChangeResult(
             currentPhase,
@@ -838,8 +842,8 @@ public class Encounter implements EncounterInterface
      */
     private void startEndPhase()
     {
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createEndPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createEndPhase();
         initiative = new InitiativeQueue();
         notifyListenerOfPhaseChange(previousPhase);
     }
@@ -855,8 +859,8 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
         }
 
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createLootPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createLootPhase();
         initiative = new InitiativeQueue();
 
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
@@ -871,8 +875,8 @@ public class Encounter implements EncounterInterface
      */
     private void startRpPhase()
     {
-        EncounterPhase previousPhase = currentPhase;
-        currentPhase = EncounterPhase.createRpPhase();
+        EncounterPhaseInterface previousPhase = currentPhase;
+        currentPhase = EncounterPhaseFactory.createRpPhase();
         initiative = new InitiativeQueue();
         notifyListenerOfPhaseChange(previousPhase);
     }

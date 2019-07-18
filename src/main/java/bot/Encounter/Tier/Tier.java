@@ -4,11 +4,8 @@ import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.TierInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class Tier implements TierInterface
+class Tier implements TierInterface
 {
-    private static int STAT_POINT_TOTAL_MINIMUM = 0;
-    private static int STAT_POINT_TOTAL_MAXIMUM = 100;
-
     private String name;
     private int    maxStatPointTotal;
     private int    minStatPointTotal;
@@ -37,16 +34,6 @@ public class Tier implements TierInterface
         this.maxStatPointTotal = maxStatPointTotal;
         this.minStatPointTotal = minStatPointTotal;
         this.name = name;
-    }
-
-    /**
-     * Factory method for default tier
-     *
-     * @return Tier
-     */
-    public static @NotNull Tier createDefault()
-    {
-        return new Tier("All", STAT_POINT_TOTAL_MINIMUM, STAT_POINT_TOTAL_MAXIMUM);
     }
 
     /**

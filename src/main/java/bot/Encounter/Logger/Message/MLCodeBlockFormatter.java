@@ -1,27 +1,17 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter.Logger.Message;
 
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
-class ActionMessageFormatter implements CodeBlockFormatter {
-
-    private CodeBlockStyle style;
-
+public class MLCodeBlockFormatter implements CodeBlockFormatter
+{
     /**
-     * ActionMessageFormatter constructor
+     * {@inheritDoc}
      */
-    ActionMessageFormatter() {
-        this.style = CodeBlockStyle.buildMlStyle();
-    }
-
-    /**
-     * Get style
-     *
-     * @return CodeBlockStyle
-     */
-    @NotNull
-    CodeBlockStyle getStyle() {
-        return this.style;
+    @Override
+    public @NotNull String getStyle()
+    {
+        return "ml";
     }
 
     /**
@@ -31,8 +21,8 @@ class ActionMessageFormatter implements CodeBlockFormatter {
      *
      * @return String
      */
-    @NotNull
-    String makeCyan(@NotNull String text) {
+    public @NotNull String makeCyan(@NotNull String text)
+    {
         return String.format("\"%s\"", text);
     }
 
@@ -43,8 +33,8 @@ class ActionMessageFormatter implements CodeBlockFormatter {
      *
      * @return String
      */
-    @NotNull
-    String makeGray(@NotNull String text) {
+    public @NotNull String makeGray(@NotNull String text)
+    {
         return String.format("(* %s *)", text);
     }
 
@@ -55,8 +45,8 @@ class ActionMessageFormatter implements CodeBlockFormatter {
      *
      * @return String
      */
-    @NotNull
-    String makeRed(@NotNull String text) {
+    public @NotNull String makeRed(@NotNull String text)
+    {
         return String.format("\'%s\'", text).replace(" ", "\' \'");
     }
 
@@ -67,8 +57,8 @@ class ActionMessageFormatter implements CodeBlockFormatter {
      *
      * @return String
      */
-    @NotNull
-    String makeYellow(@NotNull String text) {
+    public @NotNull String makeYellow(@NotNull String text)
+    {
         return WordUtils.capitalizeFully(text);
     }
 }

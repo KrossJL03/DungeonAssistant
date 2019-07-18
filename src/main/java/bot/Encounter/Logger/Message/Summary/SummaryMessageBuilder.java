@@ -1,9 +1,10 @@
-package bot.Encounter.Logger.MessageBuilder;
+package bot.Encounter.Logger.Message.Summary;
 
 import bot.Encounter.EncounterCreatureInterface;
 import bot.Encounter.EncounteredCreature.Slayer;
 import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.Logger.Message.*;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,14 +13,14 @@ import java.util.ArrayList;
 public class SummaryMessageBuilder
 {
 
-    private SummaryMessageFormatter formatter;
+    private DiffCodeBlockFormatter codeFormatter;
 
     /**
-     * Action MessageBuilder constructor
+     * SummaryMessageBuilder constructor
      */
     public @NotNull SummaryMessageBuilder()
     {
-        this.formatter = new SummaryMessageFormatter();
+        this.codeFormatter = new DiffCodeBlockFormatter();
     }
 
     /**
@@ -31,43 +32,41 @@ public class SummaryMessageBuilder
      * @return String
      */
     public @NotNull String buildSummary(
-        ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        ArrayList<EncounteredHostileInterface> encounteredHostiles
+        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
+        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     )
     {
-        ArrayList<MessageBlockInterface> blocks         = new ArrayList<>();
-        ArrayList<String>                codeBlockLines = new ArrayList<>();
+        SummaryMessage message = new SummaryMessage();
 
-        codeBlockLines.add(WordUtils.capitalize("ENCOUNTER SUMMARY"));
-        codeBlockLines.add(MessageConstants.BREAK);
-        codeBlockLines.add(MessageConstants.LINE);
-        codeBlockLines.add("Hostiles");
-        codeBlockLines.add(MessageConstants.LINE);
+        message.startCodeBlock(codeFormatter.getStyle());
+        message.add(WordUtils.capitalize("ENCOUNTER SUMMARY"));
+        message.addBreak();
+        message.addLine();
+        message.add("Hostiles");
+        message.addLine();
 
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
-            codeBlockLines.add(getNameLine(encounteredHostile));
+            message.add(getNameLine(encounteredHostile));
             String healthBar = getHealthBarLine(encounteredHostile);
             if (!healthBar.isEmpty()) {
-                codeBlockLines.add(healthBar);
+                message.add(healthBar);
             }
         }
 
-        codeBlockLines.add(MessageConstants.LINE);
-        codeBlockLines.add("Explorers");
-        codeBlockLines.add(MessageConstants.LINE);
+        message.addLine();
+        message.add("Explorers");
+        message.addLine();
 
         for (EncounteredExplorerInterface encounteredExplorer : encounteredExplorers) {
-            codeBlockLines.add(getNameLine(encounteredExplorer));
+            message.add(getNameLine(encounteredExplorer));
             String healthBar = getHealthBarLine(encounteredExplorer);
             if (!healthBar.isEmpty()) {
-                codeBlockLines.add(healthBar);
+                message.add(healthBar);
             }
         }
+        message.endCodeBlock();
 
-        blocks.add(new CodeBlock(codeBlockLines, formatter.getStyle()));
-
-        Message message = new Message(blocks);
-        return message.getPrintout();
+        return message.getAsString();
     }
 
     /**
@@ -91,12 +90,14 @@ public class SummaryMessageBuilder
         int healthBlocks      = (int) Math.ceil(maxHP / 10) + 1;
         int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP) / 10);
         int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
-        output.append(this.repeatString(MessageConstants.FULL_HEALTH_ICON, fullHealthBlocks));
+        output.append(this.repeatString(SummaryMessage.FULL_HEALTH_ICON, fullHealthBlocks));
         if (emptyHealthBlocks > 0) {
-            output.append(this.repeatString(MessageConstants.EMPTY_HEALTH_ICON, emptyHealthBlocks));
+            output.append(this.repeatString(SummaryMessage.EMPTY_HEALTH_ICON, emptyHealthBlocks));
         }
 
-        return isLowHealth(creature) ? formatter.makeRed(output.toString()) : formatter.makeGreen(output.toString());
+        return isLowHealth(creature)
+               ? codeFormatter.makeRed(output.toString())
+               : codeFormatter.makeGreen(output.toString());
     }
 
     /**
@@ -110,7 +111,7 @@ public class SummaryMessageBuilder
     {
         if (encounteredHostile.isSlain()) {
             Slayer slayer = encounteredHostile.getSlayer();
-            return formatter.makeGray(String.format(
+            return codeFormatter.makeGray(String.format(
                 "%s was slain %s",
                 encounteredHostile.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
@@ -130,10 +131,10 @@ public class SummaryMessageBuilder
     private @NotNull String getNameLine(EncounteredExplorerInterface encounteredExplorer)
     {
         if (!encounteredExplorer.isPresent()) {
-            return formatter.makeGray(String.format("%s has left", encounteredExplorer.getName()));
+            return codeFormatter.makeGray(String.format("%s has left", encounteredExplorer.getName()));
         } else if (encounteredExplorer.isSlain()) {
             Slayer slayer = encounteredExplorer.getSlayer();
-            return formatter.makeGray(String.format(
+            return codeFormatter.makeGray(String.format(
                 "%s was knocked out %s",
                 encounteredExplorer.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""

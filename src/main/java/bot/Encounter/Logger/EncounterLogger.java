@@ -1,9 +1,10 @@
 package bot.Encounter.Logger;
 
-import bot.CommandListener;
 import bot.Encounter.*;
-import bot.Encounter.Logger.MessageBuilder.*;
-import bot.Encounter.Tier.Tier;
+import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
+import bot.Encounter.Logger.Message.MessageInterface;
+import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
+import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -12,25 +13,30 @@ import java.util.ArrayList;
 
 public class EncounterLogger
 {
-
     private static String NEWLINE      = System.getProperty("line.separator");
-    private static String DOUBLE_ARROW = "»";
 
-    private ActionMessageBuilder  actionMessageBuilder;
-    private SummaryMessageBuilder summaryMessageBuilder;
-    private MessageChannel        channel;
-    private Mention               dmMention;
-    private Mention               everyoneMention;
+    private ActionMessageBuilder      actionMessageBuilder;
+    private PhaseChangeMessageBuilder phaseChangeMessageBuilder;
+    private SummaryMessageBuilder     summaryMessageBuilder;
+    private MessageChannel            channel;
+    private Mention                   dmMention;
+    private Mention                   everyoneMention;
 
     /**
      * EncounterLogger constructor
+     *
+     * @param actionMessageBuilder      Action message builder
+     * @param phaseChangeMessageBuilder Phase change message builder
+     * @param summaryMessageBuilder     Summary message builder
      */
     public @NotNull EncounterLogger(
         @NotNull ActionMessageBuilder actionMessageBuilder,
+        @NotNull PhaseChangeMessageBuilder phaseChangeMessageBuilder,
         @NotNull SummaryMessageBuilder summaryMessageBuilder
     )
     {
         this.actionMessageBuilder = actionMessageBuilder;
+        this.phaseChangeMessageBuilder = phaseChangeMessageBuilder;
         this.summaryMessageBuilder = summaryMessageBuilder;
     }
 
@@ -41,61 +47,7 @@ public class EncounterLogger
      */
     public void logAction(@NotNull ActionResultInterface result)
     {
-        // todo cleanup
-        if (result instanceof AttackActionResultInterface) {
-            sendMessage(actionMessageBuilder.buildActionMessage(((AttackActionResultInterface) result), dmMention));
-        } else if (result instanceof DodgeActionResultInterface) {
-            sendMessage(actionMessageBuilder.buildActionMessage((DodgeActionResultInterface) result));
-        } else if (result instanceof HealActionResultInterface) {
-            sendMessage(String.format(
-                "%s heals %d points! [%d/%d]",
-                ((HealActionResultInterface) result).getName(),
-                ((HealActionResultInterface) result).getHealedHp(),
-                ((HealActionResultInterface) result).getCurrentHp(),
-                ((HealActionResultInterface) result).getMaxHp()
-            ));
-        } else if (result instanceof HurtActionResultInterface) {
-            sendMessage(String.format(
-                "%s takes %d dmg! [%d/%d]",
-                ((HurtActionResultInterface) result).getName(),
-                ((HurtActionResultInterface) result).getHealedHp(),
-                ((HurtActionResultInterface) result).getCurrentHp(),
-                ((HurtActionResultInterface) result).getMaxHp()
-            ));
-            if (((HurtActionResultInterface) result).isSlain()) {
-                sendMessage(String.format("%s was slain", ((HurtActionResultInterface) result).getName()));
-            }
-        } else if (result instanceof JoinActionResultInterface) {
-            EncounteredExplorerInterface encounteredExplorer = ((JoinActionResultInterface) result).getExplorer();
-            sendMessage(
-                String.format(
-                    "%s: %s has been added! %s",
-                    (Mention.createForPlayer(encounteredExplorer.getOwner().getUserId())).getValue(),
-                    encounteredExplorer.getName(),
-                    getExplorerPrintout(encounteredExplorer)
-                )
-            );
-            if (((JoinActionResultInterface) result).isRosterFull()) {
-                sendMessage("***THE ROSTER IS NOW FULL!***");
-            }
-        } else if (result instanceof LootActionResultInterface) {
-            sendMessage(actionMessageBuilder.buildActionMessage(((LootActionResultInterface) result)));
-        } else if (result instanceof ModifyStatActionResultInterface) {
-            sendMessage(
-                String.format(
-                    "%s's %s has gone %s by %d, making it %d!",
-                    ((ModifyStatActionResultInterface) result).getCreatureName(),
-                    ((ModifyStatActionResultInterface) result).getStatName(),
-                    ((ModifyStatActionResultInterface) result).getStatMod() > 0 ? "up" : "down",
-                    ((ModifyStatActionResultInterface) result).getStatMod(),
-                    ((ModifyStatActionResultInterface) result).getStatValue()
-                )
-            );
-        } else if (result instanceof ProtectActionResultInterface) {
-            sendMessage(actionMessageBuilder.buildActionMessage(((ProtectActionResultInterface) result)));
-        } else {
-            throw LoggerException.createActionNotSet();
-        }
+        sendMessage(actionMessageBuilder.buildActionMessage(result, dmMention));
     }
 
     /**
@@ -105,26 +57,8 @@ public class EncounterLogger
      */
     public void logPhaseChange(PhaseChangeResult result)
     {
-        // todo move to PhaseChangeMessageBuilder
-        if (result.getNextPhase().isLootPhase()) {
-            logEndEncounterWin(result.getExplorers(), result.getHostiles());
-        } else if (result.getNextPhase().isEndPhase()) {
-            logEndEncounterLose(result.getExplorers(), result.getHostiles());
-            // todo?
-//            logEndEncounterForced(result.getExplorers(), result.getHostiles());
-        } else if (result.getNextPhase().isJoinPhase()) {
-            logStartEncounter(result.getMaxPlayerCount(), result.getTier());
-        } else if (result.getNextPhase().isAttackPhase()) {
-            logStartAttackPhase(result.getExplorers(), result.getHostiles());
-        } else if (result.getNextPhase().isDodgePhase()) {
-            logStartDodgePhase(result.getExplorers(), result.getHostiles());
-        } else if (result.getNextPhase().isRpPhase()) {
-            if (result.getPreviousPhase().isAttackPhase()) {
-                logEndAttackPhase(result.getExplorers(), result.getHostiles());
-            } else if (result.getPreviousPhase().isDodgePhase()) {
-                logEndDodgePhase(result.getExplorers(), result.getHostiles());
-            }
-        }
+        sendMessage(phaseChangeMessageBuilder.buildPhaseChangeMessage(result));
+        logSummary(result.getExplorers(), result.getHostiles());
     }
 
     /**
@@ -194,22 +128,6 @@ public class EncounterLogger
     public void logCreateEncounter()
     {
         sendMessage("Encounter creation has started!");
-    }
-
-    /**
-     * Log end of encounter (forced)
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    public void logEndEncounterForced(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        logSummary(encounteredExplorers, encounteredHostiles);
-        sendMessage("***THE BATTLE IS OVER!!!***");
-        sendMessage("Game over everyone, the DM commands it! Thanks for playing!");
     }
 
     /**
@@ -300,7 +218,7 @@ public class EncounterLogger
      *
      * @param tier Tier
      */
-    public void logSetTier(@NotNull Tier tier)
+    public void logSetTier(@NotNull TierInterface tier)
     {
         sendMessage(String.format(
             "%s tier has been set! [Stat Point Range: %d - %d]",
@@ -403,48 +321,6 @@ public class EncounterLogger
     }
 
     /**
-     * Get explorer printout
-     *
-     * @param explorer Explorer
-     *
-     * @return String
-     */
-    private @NotNull String getExplorerPrintout(@NotNull EncounteredExplorerInterface explorer)
-    {
-        int    nameBuffer = (int) Math.floor(15 + explorer.getName().length() / 2);
-        String output     = "";
-        output += "```md";
-        output += EncounterLogger.NEWLINE;
-        output += nameBuffer < 29 ?
-                  String.format("%" + nameBuffer + "s", explorer.getName()) :
-                  explorer.getName();
-        output += EncounterLogger.NEWLINE;
-        output += "=============================";
-        output += EncounterLogger.NEWLINE;
-        output += "  HP | STR | DEF | AGI | WIS ";
-        output += EncounterLogger.NEWLINE;
-        output += String.format(
-            "%4s | %2s  | %2s  | %2s  | %2s",
-            explorer.getMaxHP(),
-            explorer.getStrength(),
-            explorer.getDefense(),
-            explorer.getAgility(),
-            explorer.getWisdom()
-        );
-        output += EncounterLogger.NEWLINE;
-        output += "=============================";
-        output += EncounterLogger.NEWLINE;
-        output += String.format("ATK Dice:  %2d  ", explorer.getAttackDice());
-        output += String.format("Min Crit:   %2d", explorer.getMinCrit());
-        output += EncounterLogger.NEWLINE;
-        output += String.format("DOD Dice:  %2d  ", explorer.getDodgeDice());
-        output += String.format("# of Turns: %2d", explorer.getMaxActions());
-        output += EncounterLogger.NEWLINE;
-        output += "```";
-        return output;
-    }
-
-    /**
      * Get hostile printout
      *
      * @param hostile Hostile
@@ -467,196 +343,6 @@ public class EncounterLogger
         output += EncounterLogger.NEWLINE;
         output += "```";
         return output;
-    }
-
-    /**
-     * Log end of attack phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logEndAttackPhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**ATTACK TURN IS OVER!**" +
-            EncounterLogger.NEWLINE +
-            "You may take this time to RP amongst yourselves. The DODGE turn will begin shortly."
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log end of dodge phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logEndDodgePhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**DODGE TURN IS OVER!**" +
-            EncounterLogger.NEWLINE +
-            "You may take this time to RP amongst yourselves. The ATTACK turn will begin shortly."
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log end of encounter (lose)
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logEndEncounterLose(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        logSummary(encounteredExplorers, encounteredHostiles);
-        sendMessage("***THE BATTLE IS OVER!!!***");
-        sendMessage("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
-    }
-
-    /**
-     * Log end of encounter (win)
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logEndEncounterWin(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        logSummary(encounteredExplorers, encounteredHostiles);
-        sendMessage("***THE BATTLE IS OVER!!!***");
-        sendMessage(
-            "Great work everyone! You did it!" +
-            EncounterLogger.NEWLINE +
-            EncounterLogger.NEWLINE +
-            "**LOOT TURN!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Please use `%sloot` to harvest materials from the hostiles.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            "There is no turn order and if you are unable to roll now you may do so later."
-        );
-    }
-
-    /**
-     * Log start attack phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logStartAttackPhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        sendMessage(
-            "**ATTACK TURN!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Please use `%sattack [HostileName]` to attack. Ex: `%sattack Stanley`",
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY
-            )
-        );
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log start dodge phase
-     *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
-     */
-    private void logStartDodgePhase(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
-    {
-        StringBuilder output      = new StringBuilder();
-        int           totalDamage = 0;
-        output.append("**DODGE TURN!**");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(
-            String.format(
-                "Please `%sdodge` to try to avoid the attack, " +
-                "or `%sprotect [CharacterName]` to sacrifice yourself to save someone else. " +
-                "Ex: `%sprotect Cocoa`",
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY,
-                CommandListener.COMMAND_KEY
-            )
-        );
-        output.append(EncounterLogger.NEWLINE);
-        output.append("```ml");
-        output.append(EncounterLogger.NEWLINE);
-        output.append("'Hostiles' attack the party!");
-        output.append(EncounterLogger.NEWLINE);
-        output.append("\"dmg dice\"");
-        output.append(EncounterLogger.NEWLINE);
-        output.append(EncounterLogger.NEWLINE);
-        for (EncounteredHostileInterface hostile : encounteredHostiles) {
-            if (!hostile.isSlain()) {
-                totalDamage += hostile.getAttackRoll();
-                output.append(String.format(
-                    "d%d %s %2d dmg from '%s'!",
-                    hostile.getAttackDice(),
-                    EncounterLogger.DOUBLE_ARROW,
-                    hostile.getAttackRoll(),
-                    hostile.getName()
-                ));
-                output.append(EncounterLogger.NEWLINE);
-            }
-        }
-        output.append(EncounterLogger.NEWLINE);
-        output.append(String.format("combined attacks add up to %d dmg!!", totalDamage));
-        output.append("```");
-        sendMessage(output.toString());
-        logSummary(encounteredExplorers, encounteredHostiles);
-    }
-
-    /**
-     * Log start encounter
-     *
-     * @param maxPlayers Max number of players
-     * @param tier       Tier
-     */
-    private void logStartEncounter(int maxPlayers, Tier tier)
-    {
-        sendMessage(
-//            everyoneMention.getValue() +
-//            EncounterLogger.NEWLINE +
-            "**BATTLE TIME!**" +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "To bring an explorer in to battle, use `%sjoin [CharacterName]`.",
-                CommandListener.COMMAND_KEY
-            ) +
-            EncounterLogger.NEWLINE +
-            "You may join a battle at any time before the batle has ended and as long as there are slots open!" +
-            EncounterLogger.NEWLINE +
-            EncounterLogger.NEWLINE +
-            String.format("This dungeon has a max capacity of **%d** players. ", maxPlayers) +
-            EncounterLogger.NEWLINE +
-            String.format(
-                "Tier is set to **%s**! All explorers must have a stat point total between **%d** and **%d**",
-                tier.getName(),
-                tier.getMinStatPointTotal(),
-                tier.getMaxStatPointTotal()
-            )
-        );
     }
 
     /**

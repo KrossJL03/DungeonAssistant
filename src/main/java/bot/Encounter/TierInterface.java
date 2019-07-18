@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface TierInterface
 {
+    int STAT_POINT_TOTAL_MINIMUM = 0;
+    int STAT_POINT_TOTAL_MAXIMUM = 100;
+
     /**
      * Does given encountered explorer fit this tier
      *

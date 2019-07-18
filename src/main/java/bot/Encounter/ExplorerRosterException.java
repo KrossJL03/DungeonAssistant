@@ -2,7 +2,6 @@ package bot.Encounter;
 
 import bot.CommandListener;
 import bot.Encounter.Logger.Mention;
-import bot.Encounter.Tier.Tier;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
      */
     static @NotNull ExplorerRosterException createDoesNotFitTier(
         @NotNull EncounteredExplorerInterface encounteredExplorer,
-        @NotNull Tier tier
+        @NotNull TierInterface tier
     )
     {
         Player owner = encounteredExplorer.getOwner();

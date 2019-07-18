@@ -3,7 +3,6 @@ package bot.Encounter;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Mention;
 import bot.Explorer.Explorer;
-import bot.Encounter.Tier.Tier;
 import bot.Hostile.HostileManager;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -317,7 +316,7 @@ public class EncounterManager
      *
      * @param tier Tier
      */
-    public void setTier(Tier tier) {
+    public void setTier(TierInterface tier) {
         encounter.setTier(tier);
     }
 

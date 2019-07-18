@@ -1,12 +1,10 @@
 package bot.Encounter;
 
 import bot.CommandListener;
-import bot.CustomExceptionInterface;
 import org.jetbrains.annotations.NotNull;
 
 class EncounterPhaseException extends RuntimeException implements EncounterExceptionInterface
 {
-
     /**
      * EncounterPhaseException constructor
      *
@@ -43,7 +41,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sattack` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterPhase.ATTACK_PHASE
+                EncounterPhaseInterface.ATTACK_PHASE
             )
         );
     }
@@ -59,7 +57,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sdodge` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterPhase.DODGE_PHASE
+                EncounterPhaseInterface.DODGE_PHASE
             )
         );
     }
@@ -86,7 +84,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sloot` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterPhase.LOOT_PHASE
+                EncounterPhaseInterface.LOOT_PHASE
             )
         );
     }
@@ -102,7 +100,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
             String.format(
                 "You can only `%sprotect` during the %s turn",
                 CommandListener.COMMAND_KEY,
-                EncounterPhase.DODGE_PHASE
+                EncounterPhaseInterface.DODGE_PHASE
             )
         );
     }

@@ -1,6 +1,6 @@
 package bot.Encounter;
 
-import bot.Encounter.Tier.Tier;
+import bot.Encounter.Tier.DefaultTier;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +10,7 @@ class ExplorerRoster
 {
     private ArrayList<EncounteredExplorerInterface> explorerRoster;
     private ArrayList<Player>                       kickedPlayers;
-    private Tier                                    tier;
+    private TierInterface                           tier;
     private int                                     maxPlayerCount;
 
     /**
@@ -21,7 +21,7 @@ class ExplorerRoster
         this.explorerRoster = new ArrayList<>();
         this.kickedPlayers = new ArrayList<>();
         this.maxPlayerCount = 0;
-        this.tier = Tier.createDefault();
+        this.tier = new DefaultTier();
     }
 
     /**
@@ -180,9 +180,9 @@ class ExplorerRoster
     /**
      * Get tier
      *
-     * @return Tier
+     * @return TierInterface
      */
-    @NotNull Tier getTier()
+    @NotNull TierInterface getTier()
     {
         return tier;
     }
@@ -310,7 +310,7 @@ class ExplorerRoster
      *
      * @param tier Tier
      */
-    void setTier(@NotNull Tier tier)
+    void setTier(@NotNull TierInterface tier)
     {
         this.tier = tier;
     }
