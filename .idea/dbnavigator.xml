@@ -58,7 +58,11 @@ SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 SELECT h.rowid, h.*, l.* 
 FROM hostile h 
 INNER JOIN loot l ON l.hostile_id = h.rowid 
-WHERE lower(h.species) = 'hootaloo';]]></console>
+WHERE lower(h.species) = 'hootaloo';
+
+SELECT name, (strength + wisdom + agility + defense + (hitpoints/10) - 5) as statPoints
+FROM "playerCharacter"
+ORDER BY statPoints desc;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
