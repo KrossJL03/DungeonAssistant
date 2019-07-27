@@ -23,15 +23,16 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
+        <schema name="main" object-types="column, table, view" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
       <console name="Database" type="STANDARD"><![CDATA[SELECT * FROM player;
 --DELETE FROM player;
-
-SELECT * FROM explorer;
---DELETE FROM explorer;
 
 SELECT * FROM playerCharacter;
 --DELETE FROM playerCharacter;
@@ -47,10 +48,8 @@ SELECT * FROM consumable;
 
 SELECT * FROM tier;
 --DELETE * FROM tier;
---DROP TABLE tier;
 
-SELECT * FROM playerCharacter;
---ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
+ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
 --DROP TABLE playerCharacter;
 
 
@@ -61,12 +60,9 @@ FROM hostile h
 INNER JOIN loot l ON l.hostile_id = h.rowid 
 WHERE lower(h.species) = 'hootaloo';
 
-SELECT name, (strength + defense + agility + wisdom + (hitpoints/10) - 5) as rank
-FROM "playerCharacter";
-
-SELECT p.name, pc.name, pc.appLink
-FROM playerCharacter pc
-INNER JOIN player p on p.userId = pc.playerId;]]></console>
+SELECT name, (strength + wisdom + agility + defense + (hitpoints/10) - 5) as statPoints
+FROM "playerCharacter"
+ORDER BY statPoints desc;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
