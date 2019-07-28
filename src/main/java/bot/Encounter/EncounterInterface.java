@@ -1,8 +1,58 @@
 package bot.Encounter;
 
+import bot.Explorer.Explorer;
+import bot.Player.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+
 public interface EncounterInterface
 {
-    // todo create Abstract Encounter
+    /**
+     * Attack action
+     *
+     * @param player      Player
+     * @param hostileName Hostile name
+     *
+     * @throws EncounterPhaseException If not attack phase
+     * @throws NotYourTurnException    If it is not the player's turn
+     */
+    void attackAction(@NotNull Player player, @NotNull String hostileName)
+        throws EncounterPhaseException, NotYourTurnException;
+
+    /**
+     * Get all explorers
+     *
+     * @return ArrayList<EncounteredHostileInterface>
+     */
+    @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers();
+
+    /**
+     * Get string value representing the type of encounter
+     *
+     * @return String
+     */
+    @NotNull String getEncounterType();
+
+    /**
+     * Heal encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException;
+
+    /**
+     * Hurt encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException;
 
     /**
      * Is this a null encounter
@@ -17,4 +67,119 @@ public interface EncounterInterface
      * @return boolean
      */
     boolean isOver();
+
+    /**
+     * Join encounter
+     *
+     * @param explorer Explorer
+     *
+     * @throws EncounterPhaseException If encounter is over or has not started
+     */
+    void join(@NotNull Explorer explorer) throws EncounterPhaseException;
+
+    /**
+     * Kick
+     *
+     * @param name Explorer name
+     */
+    void kick(@NotNull String name);
+
+    /**
+     * Leave encounter
+     *
+     * @param player Player
+     */
+    void leave(@NotNull Player player);
+
+    /**
+     * Modify stat
+     *
+     * @param name         Name of creature to modify stat for
+     * @param statName     Name of stat to modify
+     * @param statModifier Modifier to apply to stat
+     *
+     * @throws EncounterPhaseException If the encounter is over
+     */
+    void modifyStat(
+        @NotNull String name,
+        @NotNull String statName,
+        int statModifier
+    ) throws EncounterPhaseException;
+
+    /**
+     * Player is rejoining
+     *
+     * @param player Player
+     */
+    void rejoin(@NotNull Player player);
+
+    /**
+     * Remove encountered explorer from encounter
+     *
+     * @param name Name of explorer
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    void removeExplorer(@NotNull String name) throws EncounterPhaseException;
+
+    /**
+     * Set max player count
+     *
+     * @param maxPlayerCount Max amount of players allowed for this encounter
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException;
+
+    /**
+     * Skip current player turn
+     *
+     * @throws EncounterPhaseException If encounter is over
+     *                                 If not in initiative
+     */
+    void skipCurrentPlayerTurn() throws EncounterPhaseException;
+
+    /**
+     * Start attack phase
+     *
+     * @throws EncounterException      If no players have joined
+     * @throws EncounterPhaseException If the encounter is over
+     *                                 If the encounter has not started
+     *                                 If attack phase is in progress
+     */
+    void startAttackPhase() throws EncounterPhaseException;
+
+    /**
+     * Start end phase on command
+     */
+    void startEndPhaseForced();
+
+    /**
+     * Start join phase
+     *
+     * @throws EncounterPhaseException If encounter is over
+     *                                 If encounter has already started
+     *                                 If max players has not beet set
+     *                                 If hostiles have not been added
+     */
+    void startJoinPhase() throws EncounterPhaseException;
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
+
+    /**
+     * Use all current explorer actions
+     */
+    void useAllCurrentExplorerActions();
+
+    /**
+     * Use current explorer action
+     */
+    void useCurrentExplorerAction();
 }

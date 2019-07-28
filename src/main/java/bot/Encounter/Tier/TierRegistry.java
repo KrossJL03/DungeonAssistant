@@ -1,7 +1,7 @@
 package bot.Encounter.Tier;
 
 import bot.Encounter.TierInterface;
-import bot.Repository.RepositoryPaths;
+import bot.Registry.RegistryPaths;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -36,7 +36,7 @@ public class TierRegistry
         Statement  statement  = null;
 
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -103,7 +103,7 @@ public class TierRegistry
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {

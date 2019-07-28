@@ -7,6 +7,9 @@ class PrivateLogger {
     private static String NEWLINE = System.getProperty("line.separator");
 
     static void showHelpPage(User user, boolean isAdmin) {
+
+        // todo for new Command workflow create separate ?help pages. Keep similar format.
+
         StringBuilder output = new StringBuilder();
 
         output.append("**DUNGEON ASSISTANT COMMANDS:**");

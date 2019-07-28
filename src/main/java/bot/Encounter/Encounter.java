@@ -22,32 +22,19 @@ public class Encounter implements EncounterInterface
 
     /**
      * Encounter constructor
+     *
+     * @param listener Action listener
      */
-    public Encounter()
+    public Encounter(ActionListener listener)
     {
         this.currentPhase = EncounterPhaseFactory.createCreatePhase();
+        this.explorerRoster = new ExplorerRoster();
         this.initiative = new InitiativeQueue();
         this.hasPhoenixDown = true;
         this.hostiles = new ArrayList<>();
-        this.explorerRoster = new ExplorerRoster();
-    }
+        this.listener = listener;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isNull()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isOver()
-    {
-        return currentPhase.isFinalPhase();
+        listener.onCreateEncounter();
     }
 
     /**
@@ -56,10 +43,12 @@ public class Encounter implements EncounterInterface
      * @param hostile  Hostile
      * @param nickname Nickname
      *
+     * @return EncounteredHostileInterface
+     *
      * @throws EncounterPhaseException If encounter is over
      * @throws HostileRosterException  If nickname is in use
      */
-    void addHostile(@NotNull Hostile hostile, @NotNull String nickname)
+    public @NotNull EncounteredHostileInterface addHostile(@NotNull Hostile hostile, @NotNull String nickname)
         throws EncounterPhaseException, HostileRosterException
     {
         if (currentPhase.isFinalPhase()) {
@@ -93,19 +82,14 @@ public class Encounter implements EncounterInterface
             }
         }
         hostiles.add(newEncounteredHostile);
-        listener.onAddHostile(newEncounteredHostile);
+        return newEncounteredHostile;
     }
 
     /**
-     * Attack action
-     *
-     * @param player      Player
-     * @param hostileName Hostile name
-     *
-     * @throws EncounterPhaseException If not attack phase
-     * @throws NotYourTurnException    If it is not the player's turn
+     * {@inheritDoc}
      */
-    void attackAction(@NotNull Player player, @NotNull String hostileName)
+    @Override
+    public void attackAction(@NotNull Player player, @NotNull String hostileName)
         throws EncounterPhaseException, NotYourTurnException
     {
         if (currentPhase.isFinalPhase()) {
@@ -138,7 +122,7 @@ public class Encounter implements EncounterInterface
      * @throws EncounterPhaseException If not dodge phase
      * @throws NotYourTurnException    If it is not the player's turn
      */
-    void dodgeAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
+    public void dodgeAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -167,7 +151,7 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounterPhaseException If not dodge phase
      */
-    void dodgePassAction() throws EncounterPhaseException
+    public void dodgePassAction() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -186,11 +170,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Get all explorers
-     *
-     * @return ArrayList<EncounteredHostileInterface>
+     * {@inheritDoc}
      */
-    @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
+    @Override
+    public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
     {
         return explorerRoster.getAllExplorers();
     }
@@ -200,20 +183,25 @@ public class Encounter implements EncounterInterface
      *
      * @return ArrayList<EncounteredHostileInterface>
      */
-    @NotNull ArrayList<EncounteredHostileInterface> getAllHostiles()
+    public @NotNull ArrayList<EncounteredHostileInterface> getAllHostiles()
     {
         return new ArrayList<>(hostiles);
     }
 
     /**
-     * Heal encountered creature with given name by given amount of hitpoints
-     *
-     * @param name      Encountered creature name
-     * @param hitpoints Hitpoints
-     *
-     * @throws EncounterPhaseException If encounter is over
+     * {@inheritDoc}
      */
-    void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    @Override
+    public @NotNull String getEncounterType()
+    {
+        return "hostile";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -230,7 +218,7 @@ public class Encounter implements EncounterInterface
      *
      * @param hitpoints Hitpoints to heal
      */
-    void healAllExplorers(int hitpoints)
+    public void healAllExplorers(int hitpoints)
     {
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
             heal(encounteredExplorer.getName(), hitpoints);
@@ -242,7 +230,7 @@ public class Encounter implements EncounterInterface
      *
      * @param hitpoints Hitpoints to heal
      */
-    void healAllHostiles(int hitpoints)
+    public void healAllHostiles(int hitpoints)
     {
         for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
             this.heal(encounteredHostile.getName(), hitpoints);
@@ -250,14 +238,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Hurt encountered creature with given name by given amount of hitpoints
-     *
-     * @param name      Encountered creature name
-     * @param hitpoints Hitpoints
-     *
-     * @throws EncounterPhaseException If encounter is over
+     * {@inheritDoc}
      */
-    void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    @Override
+    public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -286,7 +270,7 @@ public class Encounter implements EncounterInterface
      *
      * @param hitpoints Hitpoints to hurt
      */
-    void hurtAllExplorers(int hitpoints)
+    public void hurtAllExplorers(int hitpoints)
     {
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
             hurt(encounteredExplorer.getName(), hitpoints);
@@ -298,7 +282,7 @@ public class Encounter implements EncounterInterface
      *
      * @param hitpoints Hitpoints to hurt
      */
-    void hurtAllHostiles(int hitpoints)
+    public void hurtAllHostiles(int hitpoints)
     {
         for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
             hurt(encounteredHostile.getName(), hitpoints);
@@ -306,13 +290,28 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Join encounter
-     *
-     * @param explorer Explorer
-     *
-     * @throws EncounterPhaseException If encounter is over or has not started
+     * {@inheritDoc}
      */
-    void join(@NotNull Explorer explorer) throws EncounterPhaseException
+    @Override
+    public boolean isNull()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isOver()
+    {
+        return currentPhase.isFinalPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void join(@NotNull Explorer explorer) throws EncounterPhaseException
     {
         if (currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createNotStarted();
@@ -332,11 +331,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Kick
-     *
-     * @param name Explorer name
+     * {@inheritDoc}
      */
-    void kick(@NotNull String name)
+    @Override
+    public void kick(@NotNull String name)
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -351,11 +349,10 @@ public class Encounter implements EncounterInterface
 
 
     /**
-     * Player is leaving
-     *
-     * @param player Player
+     * {@inheritDoc}
      */
-    void leave(@NotNull Player player)
+    @Override
+    public void leave(@NotNull Player player)
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -373,7 +370,7 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounterPhaseException If not loot phase
      */
-    void lootAction(@NotNull Player player) throws EncounterPhaseException
+    public void lootAction(@NotNull Player player) throws EncounterPhaseException
     {
         if (!currentPhase.isLootPhase()) {
             throw EncounterPhaseException.createNotLootPhase();
@@ -385,20 +382,14 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Modify stat
-     *
-     * @param name         Name of creature to modify stat for
-     * @param statName     Name of stat to modify
-     * @param statModifier Modifier to apply to stat
-     *
-     * @throws EncounterPhaseException If the encounter is over
+     * {@inheritDoc}
      */
-    void modifyStat(
+    @Override
+    public void modifyStat(
         @NotNull String name,
         @NotNull String statName,
         int statModifier
-    )
-        throws EncounterPhaseException
+    ) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -418,7 +409,7 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounterPhaseException If not dodge phase
      */
-    void protectAction(@NotNull Player player, @NotNull String name)
+    public void protectAction(@NotNull Player player, @NotNull String name)
         throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
@@ -447,11 +438,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Player is rejoining
-     *
-     * @param player Player
+     * {@inheritDoc}
      */
-    void rejoin(@NotNull Player player)
+    @Override
+    public void rejoin(@NotNull Player player)
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -462,11 +452,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Remove encountered explorer from encounter
-     *
-     * @param name Name of explorer
+     * {@inheritDoc}
      */
-    void removeExplorer(@NotNull String name)
+    @Override
+    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -487,7 +476,7 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounterPhaseException If encounter is over
      */
-    void removeHostile(@NotNull String hostileName) throws EncounterPhaseException
+    public void removeHostile(@NotNull String hostileName) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -501,21 +490,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Set listener
-     *
-     * @param listener Listener
+     * {@inheritDoc}
      */
-    void setListener(ActionListener listener)
-    {
-        this.listener = listener;
-    }
-
-    /**
-     * Set max player count
-     *
-     * @param maxPlayerCount Max amount of players allowed for this encounter
-     */
-    void setMaxPlayerCount(int maxPlayerCount)
+    @Override
+    public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -526,13 +504,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Set tier
-     *
-     * @param tier Tier
-     *
-     * @throws EncounterPhaseException If not create phase
+     * {@inheritDoc}
      */
-    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
+    @Override
+    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
     {
         if (!currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createSetTierAfterCreatePhase();
@@ -542,11 +517,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Skip current player turn
-     *
-     * @throws EncounterPhaseException If encounter is over
+     * {@inheritDoc}
      */
-    void skipCurrentPlayerTurn() throws EncounterPhaseException
+    @Override
+    public void skipCurrentPlayerTurn() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -567,14 +541,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Start attack phase
-     *
-     * @throws EncounterException      If no players have joined
-     * @throws EncounterPhaseException If the encounter is over
-     *                                 If the encounter has not started
-     *                                 If attack phase is in progress
+     * {@inheritDoc}
      */
-    void startAttackPhase() throws EncounterPhaseException
+    @Override
+    public void startAttackPhase() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -604,7 +574,7 @@ public class Encounter implements EncounterInterface
      *                                 If the encounter has not started
      *                                 If dodge phase is in progress
      */
-    void startDodgePhase() throws EncounterPhaseException
+    public void startDodgePhase() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -631,9 +601,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Start end phase
+     * {@inheritDoc}
      */
-    void startEndPhaseForced()
+    @Override
+    public void startEndPhaseForced()
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -648,14 +619,10 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Start join phase
-     *
-     * @throws EncounterPhaseException If encounter is over
-     *                                 If encounter has already started
-     *                                 If max players has not beet set
-     *                                 If hostiles have not been added
+     * {@inheritDoc}
      */
-    void startJoinPhase() throws EncounterPhaseException
+    @Override
+    public void startJoinPhase() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -676,18 +643,20 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Use all current explorer actions
+     * {@inheritDoc}
      */
-    void useAllCurrentExplorerActions()
+    @Override
+    public void useAllCurrentExplorerActions()
     {
         EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
         encounteredExplorer.useAllActions();
     }
 
     /**
-     * Use current explorer action
+     * {@inheritDoc}
      */
-    void useCurrentExplorerAction()
+    @Override
+    public void useCurrentExplorerAction()
     {
         EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
         encounteredExplorer.useAction();

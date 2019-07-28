@@ -60,6 +60,14 @@ class ActionListener
     }
 
     /**
+     * Log created encounter
+     */
+    void onCreateEncounter()
+    {
+        logger.logCreateEncounter();
+    }
+
+    /**
      * Log dodge pass action when action occurs
      *
      * @param name      Name of explorer

@@ -1,6 +1,7 @@
 package bot.Hostile;
 
-import bot.Repository.RepositoryPaths;
+import bot.Hostile.Exception.HostileNotFoundException;
+import bot.Registry.RegistryPaths;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,12 +27,7 @@ public class HostileRepository {
         HostileRepository.executeUpdate(sql);
     }
 
-    public static void deleteHostileIfExists(String species) {
-        String sql = String.format("DELETE FROM %s WHERE species = '%s'", HostileRepository.TABLE_NAME, species);
-        HostileRepository.executeUpdate(sql);
-    }
-
-    public static ArrayList<Hashtable<String, String>> getAllHostiles() {
+    public static ArrayList<Hashtable<String, String>> getInfoForAllHostiles() {
         Connection                           connection   = null;
         Statement                            statement    = null;
         ArrayList<Hashtable<String, String>> hostileInfos = new ArrayList<>();
@@ -40,7 +36,7 @@ public class HostileRepository {
             HostileRepository.TABLE_NAME
         );
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -70,7 +66,7 @@ public class HostileRepository {
         return hostileInfos;
     }
 
-    public static Hostile getHostile(String species) {
+    public static Hostile getHostile(String species) throws HostileNotFoundException {
         String sql = String.format(
             "SELECT h.rowid, h.*, l.* " +
             "FROM %s h " +
@@ -86,7 +82,7 @@ public class HostileRepository {
         HashMap<Integer, Loot> lootList   = HostileRepository.getBlankLootList();
 
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -119,7 +115,8 @@ public class HostileRepository {
                 System.out.println("Failed to close");
             }
         }
-        return null;
+
+        throw HostileNotFoundException.createNotInDatabase(species);
     }
 
     static int getHostileId(String species) {
@@ -134,7 +131,7 @@ public class HostileRepository {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet.getInt("rowid");
@@ -182,7 +179,7 @@ public class HostileRepository {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             return statement.executeQuery(sql);
         } catch (Exception e) {
@@ -206,7 +203,7 @@ public class HostileRepository {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {

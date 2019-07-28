@@ -4,6 +4,7 @@ import bot.Player.Player;
 import bot.Explorer.Exception.ExplorerNotFoundException;
 import bot.Player.PlayerManager;
 import bot.Explorer.Exception.NotYourExplorerException;
+import bot.Player.PlayerRepository;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class ExplorerManager
     )
     {
         PlayerManager.ensurePlayerExist(userId);
-        Player   owner    = PlayerManager.getPlayer(userId);
+        Player   owner    = PlayerRepository.getPlayer(userId);
         Explorer explorer = ExplorerRepository.getExplorer(name);
         if (explorer != null && !explorer.isOwner(owner)) {
             throw NotYourExplorerException.createForNameTaken(
@@ -64,7 +65,12 @@ public class ExplorerManager
     {
         Explorer explorer = ExplorerRepository.getMyExplorer(playerId, name);
         if (explorer == null) {
-            throw ExplorerNotFoundException.createNotInDatabase(name);
+            ArrayList<Explorer> alternativeExplorers = ExplorerManager.getAllMyExplorers(playerId);
+            if (!alternativeExplorers.isEmpty()) {
+                throw ExplorerNotFoundException.createNotInDatabaseWithAlternatives(name, alternativeExplorers);
+            } else {
+                throw ExplorerNotFoundException.createNotInDatabase(name);
+            }
         }
         return explorer;
     }

@@ -25,6 +25,16 @@ class EncounterException extends RuntimeException implements EncounterExceptionI
     }
 
     /**
+     * Factory method for "null encounter"
+     *
+     * @return EncounterException
+     */
+    static @NotNull EncounterException createNullEncounter()
+    {
+        return new EncounterException("There is no encounter.");
+    }
+
+    /**
      * Factory method for "revive non-slain explorer"
      *
      * @param name Name of explorer

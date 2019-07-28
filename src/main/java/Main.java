@@ -1,33 +1,30 @@
-import bot.CommandListener;
-import bot.CommandManager;
-import bot.Encounter.EncounterHolder;
-import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.EncounterManager;
-import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
-import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
-import bot.MyProperties;
+import bot.*;
+import bot.Encounter.Command.EncounterCommandFactory;
+import bot.Registry.Record.Command.RecordCommandFactory;
+import bot.Registry.Review.Command.ReviewCommandFactory;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+
+import java.util.ArrayList;
 
 public class Main
 {
     public static void main(String[] arguments) throws Exception
     {
-        EncounterHolder encounterHolder = new EncounterHolder();
-        EncounterLogger encounterLogger = new EncounterLogger(
-            new ActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
-            new SummaryMessageBuilder()
-        );
+        ArrayList<CommandFactoryInterface> commandFactories   = new ArrayList<>();
+        ArrayList<CommandInterface>        commands           = new ArrayList<>();
+        ArrayList<CommandInterface>        additionalCommands = new ArrayList<>();
 
-        EncounterManager encountermanager = new EncounterManager(
-            encounterHolder,
-            encounterLogger
-        );
+        commandFactories.add(new EncounterCommandFactory());
+        commandFactories.add(new RecordCommandFactory());
+        commandFactories.add(new ReviewCommandFactory());
 
-        CommandManager  commandManager  = new CommandManager(encountermanager, encounterHolder);
-        CommandListener commandListener = new CommandListener(commandManager);
+        for (CommandFactoryInterface commandFactory : commandFactories) {
+            commands.addAll(commandFactory.createCommands());
+            additionalCommands.addAll(commandFactory.createAdditionalCommands());
+        }
+
+        CommandListener commandListener = new CommandListener(commands, additionalCommands);
 
         JDA api = new JDABuilder(MyProperties.token).build();
         api.addEventListener(commandListener);

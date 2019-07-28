@@ -1,19 +1,24 @@
 package bot.Encounter;
 
+import bot.Encounter.Logger.EncounterLogger;
 import org.jetbrains.annotations.NotNull;
 
 public class EncounterHolder
 {
     private EncounterInterface encounter;
+    private EncounterLogger    logger;
     private Encounter          hostileEncounter; // todo remove
 
     /**
      * EncounterHolder constructor
+     *
+     * @param logger Encounter logger
      */
-    public EncounterHolder()
+    public EncounterHolder(EncounterLogger logger)
     {
-        encounter = new NullEncounter();
-        hostileEncounter = new Encounter();
+        this.encounter = new NullEncounter();
+        this.hostileEncounter = new Encounter(new ActionListener(logger));
+        this.logger = logger;
     }
 
     /**
@@ -39,21 +44,10 @@ public class EncounterHolder
     /**
      * Create hostile encounter
      */
-    void createHostileEncounter()
+    public void createHostileEncounter()
     {
-        Encounter newEncounter = new Encounter();
+        Encounter newEncounter = new Encounter(new ActionListener(logger));
         encounter = newEncounter;
         hostileEncounter = newEncounter;
-    }
-
-    /**
-     * Get hostile encounter
-     *
-     * @return EncounterInterface
-     */
-    @NotNull Encounter getHostileEncounter()
-    {
-        // todo remove method
-        return hostileEncounter;
     }
 }

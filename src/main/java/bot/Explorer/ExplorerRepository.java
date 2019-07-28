@@ -2,8 +2,8 @@ package bot.Explorer;
 
 import bot.Player.Player;
 import bot.Player.PlayerRepository;
-import bot.Repository.RepositoryException;
-import bot.Repository.RepositoryPaths;
+import bot.Registry.RegistryException;
+import bot.Registry.RegistryPaths;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -62,10 +62,10 @@ class ExplorerRepository
         );
         Connection          connection = null;
         Statement           statement  = null;
-        RepositoryException exception  = null;
+        RegistryException   exception  = null;
         ArrayList<Explorer> explorers  = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -95,7 +95,7 @@ class ExplorerRepository
                     connection.close();
                 }
             } catch (Throwable e) {
-                exception = RepositoryException.createFailedToCloseConnection();
+                exception = RegistryException.createFailedToCloseConnection();
             }
         }
         if (exception != null) {
@@ -111,10 +111,10 @@ class ExplorerRepository
         );
         Connection          connection = null;
         Statement           statement  = null;
-        RepositoryException exception  = null;
+        RegistryException   exception  = null;
         ArrayList<Explorer> explorers  = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -144,7 +144,7 @@ class ExplorerRepository
                     connection.close();
                 }
             } catch (Throwable e) {
-                exception = RepositoryException.createFailedToCloseConnection();
+                exception = RegistryException.createFailedToCloseConnection();
             }
         }
         if (exception != null) {
@@ -163,7 +163,7 @@ class ExplorerRepository
             name.toLowerCase()
         );
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -205,7 +205,7 @@ class ExplorerRepository
             name.toLowerCase()
         );
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -257,15 +257,15 @@ class ExplorerRepository
     }
 
     private static void executeUpdate(String sql) {
-        Connection          connection = null;
-        Statement           statement  = null;
-        RepositoryException exception  = null;
+        Connection        connection = null;
+        Statement         statement  = null;
+        RegistryException exception  = null;
         try {
-            connection = DriverManager.getConnection(RepositoryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Throwable e) {
-            exception = RepositoryException.createFailedToUpdate();
+            exception = RegistryException.createFailedToUpdate();
         } finally {
             try {
                 if (statement != null) {
@@ -275,7 +275,7 @@ class ExplorerRepository
                     connection.close();
                 }
             } catch (Throwable e) {
-                exception = RepositoryException.createFailedToCloseConnection();
+                exception = RegistryException.createFailedToCloseConnection();
             }
         }
         if (exception != null) {
