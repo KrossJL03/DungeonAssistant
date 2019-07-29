@@ -4,6 +4,7 @@ import bot.CommandParameter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,14 +13,20 @@ import java.util.ArrayList;
 public class ProtectCommand extends EncounterCommand
 {
     /**
-     * AttackCommand constructor
+     * ProtectCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    ProtectCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    ProtectCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "protect",

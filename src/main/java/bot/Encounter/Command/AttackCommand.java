@@ -4,6 +4,7 @@ import bot.Encounter.EncounterHolder;
 import bot.CommandParameter;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +15,18 @@ public class AttackCommand extends EncounterCommand
     /**
      * AttackCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    AttackCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    AttackCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "attack",

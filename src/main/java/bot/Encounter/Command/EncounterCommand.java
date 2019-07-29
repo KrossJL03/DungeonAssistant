@@ -6,6 +6,7 @@ import bot.Encounter.EncounterHolder;
 import bot.CommandParameter;
 import bot.Encounter.EncounterInterface;
 import bot.Encounter.Logger.EncounterLogger;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -15,21 +16,23 @@ import java.util.List;
 
 abstract class EncounterCommand extends Command
 {
-    private EncounterHolder             holder;
-    private EncounterLogger             logger;
-    private boolean                     isDmExclusive;
+    private EncounterHolder holder;
+    private EncounterLogger logger;
+    private boolean         isDmExclusive;
 
     /**
      * EncounterCommand constructor
      *
-     * @param holder        Encounter holder
-     * @param logger        Encounter Logger
-     * @param commandName   Command name
-     * @param parameters    Parameters
-     * @param description   Command description
-     * @param isDmExclusive Is command only usable by dungeon masters
+     * @param processManager Processed manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter Logger
+     * @param commandName    Command name
+     * @param parameters     Parameters
+     * @param description    Command description
+     * @param isDmExclusive  Is command only usable by dungeon masters
      */
     protected EncounterCommand(
+        @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
         @NotNull String commandName,
@@ -38,7 +41,7 @@ abstract class EncounterCommand extends Command
         boolean isDmExclusive
     )
     {
-        super(commandName, parameters, description);
+        super(processManager, commandName, parameters, description);
         this.holder = holder;
         this.isDmExclusive = isDmExclusive;
         this.logger = logger;

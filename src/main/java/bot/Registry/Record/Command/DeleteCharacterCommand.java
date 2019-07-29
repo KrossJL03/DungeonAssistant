@@ -2,6 +2,7 @@ package bot.Registry.Record.Command;
 
 import bot.CommandParameter;
 import bot.Explorer.ExplorerManager;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -14,11 +15,13 @@ public class DeleteCharacterCommand extends RecordCommand
     /**
      * DeleteCharacterCommand constructor
      *
-     * @param logger       Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    DeleteCharacterCommand(@NotNull RegistryLogger logger)
+    DeleteCharacterCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "delete explorer",
             new ArrayList<CommandParameter>()

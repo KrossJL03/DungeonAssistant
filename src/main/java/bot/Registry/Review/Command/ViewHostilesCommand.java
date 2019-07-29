@@ -1,6 +1,7 @@
 package bot.Registry.Review.Command;
 
 import bot.Hostile.HostileRepository;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -10,13 +11,15 @@ import java.util.ArrayList;
 public class ViewHostilesCommand extends ReviewCommand
 {
     /**
-     * ViewExplorersCommand constructor
+     * ViewHostilesCommand constructor
      *
-     * @param logger Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    ViewHostilesCommand(@NotNull RegistryLogger logger)
+    ViewHostilesCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "view hostiles",
             new ArrayList<>(),

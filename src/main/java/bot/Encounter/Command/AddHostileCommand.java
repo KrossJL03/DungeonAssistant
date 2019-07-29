@@ -6,6 +6,7 @@ import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileManager;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,14 +15,20 @@ import java.util.ArrayList;
 public class AddHostileCommand extends EncounterCommand
 {
     /**
-     * AttackCommand constructor
+     * AddHostileCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    AddHostileCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    AddHostileCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "addHostile",

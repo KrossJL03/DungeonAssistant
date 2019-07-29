@@ -293,18 +293,18 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isNull()
+    public boolean isLockingDatabase()
     {
-        return false;
+        return !currentPhase.isFinalPhase();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isOver()
+    public boolean isNull()
     {
-        return currentPhase.isFinalPhase();
+        return false;
     }
 
     /**

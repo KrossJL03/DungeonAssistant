@@ -4,6 +4,7 @@ import bot.CommandParameter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +15,18 @@ public class UseItemCommand extends EncounterCommand
     /**
      * UseItemCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    UseItemCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    UseItemCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "rp!use",

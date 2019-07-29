@@ -3,6 +3,7 @@ package bot.Registry.Review.Command;
 import bot.CommandParameter;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -12,13 +13,15 @@ import java.util.ArrayList;
 public class ViewHostileLootCommand extends ReviewCommand
 {
     /**
-     * ViewExplorersCommand constructor
+     * ViewHostileLootCommand constructor
      *
-     * @param logger Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    ViewHostileLootCommand(@NotNull RegistryLogger logger)
+    ViewHostileLootCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "view loot",
             new ArrayList<CommandParameter>()

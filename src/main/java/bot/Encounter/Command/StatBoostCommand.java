@@ -3,6 +3,7 @@ package bot.Encounter.Command;
 import bot.CommandParameter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,12 +14,18 @@ public class StatBoostCommand extends EncounterCommand
     /**
      * StatBoostCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    StatBoostCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    StatBoostCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "statBoost",

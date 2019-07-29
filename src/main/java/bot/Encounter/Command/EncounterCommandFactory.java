@@ -4,15 +4,35 @@ import bot.CommandFactoryInterface;
 import bot.CommandInterface;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
-import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
+import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class EncounterCommandFactory implements CommandFactoryInterface
 {
+    private EncounterHolder holder;
+    private EncounterLogger logger;
+    private ProcessManager  processManager;
+
+    /**
+     * EncounterCommandFactory constructor.
+     *
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
+     */
+    public EncounterCommandFactory(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
+    {
+        this.holder = holder;
+        this.logger = logger;
+        this.processManager = processManager;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -20,41 +40,36 @@ public class EncounterCommandFactory implements CommandFactoryInterface
     public @NotNull ArrayList<CommandInterface> createCommands()
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
-        EncounterLogger logger = new EncounterLogger(
-            new ActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
-            new SummaryMessageBuilder()
-        );
-        EncounterHolder holder = new EncounterHolder(logger);
 
-        commands.add(new AddHostileCommand(holder, logger));
-        commands.add(new AttackCommand(holder, logger));
-        commands.add(new CreateHostileEncounterCommand(holder, logger));
-        commands.add(new DodgeCommand(holder, logger));
-        commands.add(new DodgePassCommand(holder, logger));
-        commands.add(new DodgePassHelpCommand(holder, logger));
-        commands.add(new EndActionCommand(holder, logger));
-        commands.add(new EndEncounterCommand(holder, logger));
-        commands.add(new EndTurnCommand(holder, logger));
-        commands.add(new HealCommand(holder, logger));
-        commands.add(new HurtCommand(holder, logger));
-        commands.add(new JoinCommand(holder, logger));
-        commands.add(new KickCommand(holder, logger));
-        commands.add(new LeaveCommand(holder, logger));
-        commands.add(new LootCommand(holder, logger));
-        commands.add(new ProtectCommand(holder, logger));
-        commands.add(new RejoinCommand(holder, logger));
-        commands.add(new RemoveExplorerCommand(holder, logger));
-        commands.add(new RemoveHostileCommand(holder, logger));
-        commands.add(new SetMaxPlayerCountCommand(holder, logger));
-        commands.add(new SetTierCommand(holder, logger));
-        commands.add(new SkipCommand(holder, logger));
-        commands.add(new StartAttackPhaseCommand(holder, logger));
-        commands.add(new StartDodgePhaseCommand(holder, logger));
-        commands.add(new StartEncounterCommand(holder, logger));
-        commands.add(new StatBoostCommand(holder, logger));
-        commands.add(new StatDropCommand(holder, logger));
-        commands.add(new ViewSummaryCommand(holder, logger));
+        commands.add(new AddHostileCommand(processManager, holder, logger));
+        commands.add(new AttackCommand(processManager, holder, logger));
+        commands.add(new CreateHostileEncounterCommand(processManager, holder, logger));
+        commands.add(new DodgeCommand(processManager, holder, logger));
+        commands.add(new DodgePassCommand(processManager, holder, logger));
+        commands.add(new DodgePassHelpCommand(processManager, holder, logger));
+        commands.add(new EndActionCommand(processManager, holder, logger));
+        commands.add(new EndEncounterCommand(processManager, holder, logger));
+        commands.add(new EndTurnCommand(processManager, holder, logger));
+        commands.add(new HealCommand(processManager, holder, logger));
+        commands.add(new HelpCommand(processManager, holder, logger));
+        commands.add(new HurtCommand(processManager, holder, logger));
+        commands.add(new JoinCommand(processManager, holder, logger));
+        commands.add(new KickCommand(processManager, holder, logger));
+        commands.add(new LeaveCommand(processManager, holder, logger));
+        commands.add(new LootCommand(processManager, holder, logger));
+        commands.add(new ProtectCommand(processManager, holder, logger));
+        commands.add(new RejoinCommand(processManager, holder, logger));
+        commands.add(new RemoveExplorerCommand(processManager, holder, logger));
+        commands.add(new RemoveHostileCommand(processManager, holder, logger));
+        commands.add(new SetMaxPlayerCountCommand(processManager, holder, logger));
+        commands.add(new SetTierCommand(processManager, holder, logger));
+        commands.add(new SkipCommand(processManager, holder, logger));
+        commands.add(new StartAttackPhaseCommand(processManager, holder, logger));
+        commands.add(new StartDodgePhaseCommand(processManager, holder, logger));
+        commands.add(new StartEncounterCommand(processManager, holder, logger));
+        commands.add(new StatBoostCommand(processManager, holder, logger));
+        commands.add(new StatDropCommand(processManager, holder, logger));
+        commands.add(new ViewSummaryCommand(processManager, holder, logger));
 
         return commands;
     }
@@ -66,14 +81,8 @@ public class EncounterCommandFactory implements CommandFactoryInterface
     public @NotNull ArrayList<CommandInterface> createAdditionalCommands()
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
-        EncounterLogger logger = new EncounterLogger(
-            new ActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
-            new SummaryMessageBuilder()
-        );
-        EncounterHolder holder = new EncounterHolder(logger);
 
-        commands.add(new UseItemCommand(holder, logger));
+        commands.add(new UseItemCommand(processManager, holder, logger));
 
         return commands;
     }

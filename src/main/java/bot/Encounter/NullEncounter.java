@@ -62,18 +62,18 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isNull()
+    public boolean isLockingDatabase()
     {
-        return true;
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isOver()
+    public boolean isNull()
     {
-        throw EncounterException.createNullEncounter();
+        return true;
     }
 
     /**

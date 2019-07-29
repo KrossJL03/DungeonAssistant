@@ -1,6 +1,7 @@
 package bot.Registry.Review.Command;
 
 import bot.CommandParameter;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -12,11 +13,13 @@ public class HelpCommand extends ReviewCommand
     /**
      * HelpCommand constructor
      *
-     * @param logger Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    HelpCommand(@NotNull RegistryLogger logger)
+    HelpCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "create explorer",
             new ArrayList<CommandParameter>()

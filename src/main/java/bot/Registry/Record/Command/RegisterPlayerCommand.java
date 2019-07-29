@@ -1,6 +1,7 @@
 package bot.Registry.Record.Command;
 
 import bot.Player.PlayerManager;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -13,11 +14,13 @@ public class RegisterPlayerCommand extends RecordCommand
     /**
      * RegisterPlayerCommand constructor
      *
-     * @param logger       Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    RegisterPlayerCommand(@NotNull RegistryLogger logger)
+    RegisterPlayerCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "hello",
             new ArrayList<>(),

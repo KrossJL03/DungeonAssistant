@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public abstract class Command implements CommandInterface
 {
+    private ProcessManager              processManager;
     private ArrayList<CommandParameter> parameters;
     private String                      commandName;
     private String                      description;
@@ -16,11 +17,13 @@ public abstract class Command implements CommandInterface
     /**
      * Command constructor
      *
-     * @param commandName   Command name
-     * @param parameters    Parameters
-     * @param description   Command description
+     * @param processManager Process manager
+     * @param commandName    Command name
+     * @param parameters     Parameters
+     * @param description    Command description
      */
     protected Command(
+        @NotNull ProcessManager processManager,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
         @NotNull String description
@@ -29,6 +32,7 @@ public abstract class Command implements CommandInterface
         this.commandName = commandName;
         this.description = description;
         this.parameters = parameters;
+        this.processManager = processManager;
     }
 
     /**
@@ -65,6 +69,16 @@ public abstract class Command implements CommandInterface
     public boolean isCommandName(@NotNull String name)
     {
         return commandName.toLowerCase().equals(name.toLowerCase());
+    }
+
+    /**
+     * Add process to manager
+     *
+     * @param process Process
+     */
+    final protected void addProcessToManager(@NotNull ProcessInterface process)
+    {
+        processManager.addProcess(process);
     }
 
     /**
@@ -113,6 +127,26 @@ public abstract class Command implements CommandInterface
     }
 
     /**
+     * Is database locked
+     *
+     * @return boolean
+     */
+    final protected boolean isDatabaseLocked()
+    {
+        return processManager.isDatabaseLocked();
+    }
+
+    /**
+     * Remove process to manager
+     *
+     * @param process Process
+     */
+    final protected void removeProcessToManager(@NotNull ProcessInterface process)
+    {
+        processManager.removeProcess(process);
+    }
+
+    /**
      * Get required parameter count
      *
      * @return int
@@ -120,7 +154,7 @@ public abstract class Command implements CommandInterface
     private int getRequiredParameterCount()
     {
         int requiredParameterCount = 0;
-        for(CommandParameter parameter : parameters) {
+        for (CommandParameter parameter : parameters) {
             if (parameter.isRequired()) {
                 requiredParameterCount++;
             }

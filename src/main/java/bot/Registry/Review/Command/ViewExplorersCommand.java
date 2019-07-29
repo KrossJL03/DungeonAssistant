@@ -3,6 +3,7 @@ package bot.Registry.Review.Command;
 import bot.CommandParameter;
 import bot.Explorer.ExplorerManager;
 import bot.Player.PlayerRepository;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -15,11 +16,13 @@ public class ViewExplorersCommand extends ReviewCommand
     /**
      * ViewExplorersCommand constructor
      *
-     * @param logger Logger
+     * @param processManager Process manager
+     * @param logger         Logger
      */
-    ViewExplorersCommand(@NotNull RegistryLogger logger)
+    ViewExplorersCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
+            processManager,
             logger,
             "view explorers",
             new ArrayList<CommandParameter>()

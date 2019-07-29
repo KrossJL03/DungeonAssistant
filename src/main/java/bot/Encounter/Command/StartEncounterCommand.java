@@ -3,6 +3,7 @@ package bot.Encounter.Command;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Mention;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,17 +11,21 @@ import java.util.ArrayList;
 
 public class StartEncounterCommand extends EncounterCommand
 {
-    private EncounterHolder holder;
-
     /**
      * StartEncounterCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    StartEncounterCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    StartEncounterCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "start",
@@ -28,7 +33,6 @@ public class StartEncounterCommand extends EncounterCommand
             "Start the encounter.",
             true
         );
-        this.holder = holder;
     }
 
     /**

@@ -1,13 +1,14 @@
 package bot.Encounter;
 
 import bot.Encounter.Logger.EncounterLogger;
+import bot.Encounter.Logger.Mention;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class EncounterHolder
 {
     private EncounterInterface encounter;
     private EncounterLogger    logger;
-    private Encounter          hostileEncounter; // todo remove
 
     /**
      * EncounterHolder constructor
@@ -17,7 +18,6 @@ public class EncounterHolder
     public EncounterHolder(EncounterLogger logger)
     {
         this.encounter = new NullEncounter();
-        this.hostileEncounter = new Encounter(new ActionListener(logger));
         this.logger = logger;
     }
 
@@ -32,22 +32,18 @@ public class EncounterHolder
     }
 
     /**
-     * Is an active encounter currently in progress
-     *
-     * @return bool
-     */
-    public boolean hasActiveEncounter()
-    {
-        return !encounter.isNull() && !encounter.isOver();
-    }
-
-    /**
      * Create hostile encounter
+     *
+     * @param channel Channel to set for logger
+     * @param dmId    Dungeon master id
      */
-    public void createHostileEncounter()
+    public void createHostileEncounter(
+        @NotNull MessageChannel channel,
+        @NotNull String dmId
+    )
     {
-        Encounter newEncounter = new Encounter(new ActionListener(logger));
-        encounter = newEncounter;
-        hostileEncounter = newEncounter;
+        logger.setChannel(channel);
+        logger.setDmMention(Mention.createForRole(dmId));
+        encounter = new Encounter(new ActionListener(logger));
     }
 }

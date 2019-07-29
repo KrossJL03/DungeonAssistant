@@ -3,6 +3,7 @@ package bot.Encounter.Command;
 import bot.CommandParameter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,12 +14,18 @@ public class KickCommand extends EncounterCommand
     /**
      * KickCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    KickCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    KickCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "kick",
@@ -40,7 +47,7 @@ public class KickCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[] parameters   = getParametersFromEvent(event);
+        String[] parameters = getParametersFromEvent(event);
         String   explorerName = parameters[0];
 
         getEncounter().kick(explorerName);

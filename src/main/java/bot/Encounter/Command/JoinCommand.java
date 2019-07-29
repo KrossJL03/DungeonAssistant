@@ -6,6 +6,7 @@ import bot.Encounter.Logger.EncounterLogger;
 import bot.Explorer.Explorer;
 import bot.Explorer.ExplorerManager;
 import bot.Player.Player;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +17,18 @@ public class JoinCommand extends EncounterCommand
     /**
      * JoinCommand constructor
      *
-     * @param holder Encounter holder
-     * @param logger Encounter logger
+     * @param processManager Process manager
+     * @param holder         Encounter holder
+     * @param logger         Encounter logger
      */
-    JoinCommand(@NotNull EncounterHolder holder, @NotNull EncounterLogger logger)
+    JoinCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull EncounterHolder holder,
+        @NotNull EncounterLogger logger
+    )
     {
         super(
+            processManager,
             holder,
             logger,
             "join",

@@ -2,11 +2,12 @@ package bot.Encounter;
 
 import bot.Explorer.Explorer;
 import bot.Player.Player;
+import bot.ProcessInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public interface EncounterInterface
+public interface EncounterInterface extends ProcessInterface
 {
     /**
      * Attack action
@@ -60,13 +61,6 @@ public interface EncounterInterface
      * @return boolean
      */
     boolean isNull();
-
-    /**
-     * Is encounter over
-     *
-     * @return boolean
-     */
-    boolean isOver();
 
     /**
      * Join encounter

@@ -2,6 +2,7 @@ package bot.Registry.Review.Command;
 
 import bot.Command;
 import bot.CommandParameter;
+import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,21 +13,23 @@ abstract class ReviewCommand extends Command
     private RegistryLogger logger;
 
     /**
-     * RecordCommand constructor
+     * ReviewCommand constructor
      *
-     * @param logger      Registry logger
-     * @param commandName Command name
-     * @param parameters  Parameters
-     * @param description Command description
+     * @param processManager Process manager
+     * @param logger         Registry logger
+     * @param commandName    Command name
+     * @param parameters     Parameters
+     * @param description    Command description
      */
     protected ReviewCommand(
+        @NotNull ProcessManager processManager,
         @NotNull RegistryLogger logger,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
         @NotNull String description
     )
     {
-        super(commandName, parameters, description);
+        super(processManager, commandName, parameters, description);
         this.logger = logger;
     }
 
