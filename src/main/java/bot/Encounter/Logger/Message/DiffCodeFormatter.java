@@ -1,9 +1,9 @@
 package bot.Encounter.Logger.Message;
 
-import bot.CodeFormatter;
+import bot.CodeFormatterInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class DiffCodeFormatter implements CodeFormatter
+public class DiffCodeFormatter implements CodeFormatterInterface
 {
     /**
      * {@inheritDoc}

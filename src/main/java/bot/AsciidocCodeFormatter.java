@@ -2,7 +2,7 @@ package bot;
 
 import org.jetbrains.annotations.NotNull;
 
-public class IniCodeFormatter implements CodeFormatterInterface
+public class AsciidocCodeFormatter implements CodeFormatterInterface
 {
     /**
      * {@inheritDoc}
@@ -10,7 +10,7 @@ public class IniCodeFormatter implements CodeFormatterInterface
     @Override
     public @NotNull String getStyle()
     {
-        return "ini";
+        return "asciidoc";
     }
 
     /**
@@ -20,20 +20,20 @@ public class IniCodeFormatter implements CodeFormatterInterface
      *
      * @return String
      */
-    @NotNull String makeBlue(@NotNull String text)
+    public @NotNull String makeBlue(@NotNull String text)
     {
-        return String.format("[%s]", text);
+        return String.format("= %s =", text);
     }
 
     /**
-     * Format text to be grey
+     * Format text to be orange
      *
      * @param text Text to format
      *
      * @return String
      */
-    public @NotNull String makeGrey(@NotNull String text)
+    public @NotNull String makeOrange(@NotNull String text)
     {
-        return String.format("; %s", text);
+        return String.format("[%s]", text);
     }
 }

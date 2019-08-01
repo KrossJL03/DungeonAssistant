@@ -15,12 +15,12 @@ public abstract class Command implements CommandInterface
     private String                      description;
 
     /**
-     * Command constructor
+     * HelpCommand constructor
      *
      * @param processManager Process manager
-     * @param commandName    Command name
+     * @param commandName    HelpCommand name
      * @param parameters     Parameters
-     * @param description    Command description
+     * @param description    HelpCommand description
      */
     protected Command(
         @NotNull ProcessManager processManager,
@@ -66,9 +66,9 @@ public abstract class Command implements CommandInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isCommandName(@NotNull String name)
+    public boolean isCommand(@NotNull String commandString)
     {
-        return commandName.toLowerCase().equals(name.toLowerCase());
+        return commandString.toLowerCase().startsWith(commandName.toLowerCase());
     }
 
     /**

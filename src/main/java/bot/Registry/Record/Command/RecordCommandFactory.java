@@ -45,7 +45,7 @@ public class RecordCommandFactory implements CommandFactoryInterface
         commands.add(new DeleteCharacterCommand(processManager, registryLogger));
         commands.add(new RegisterPlayerCommand(processManager, registryLogger));
 
-        commands.add(new HelpCommand(processManager, privateLogger, commands));
+        commands.add(new HelpRecordCommand(processManager, privateLogger, commands));
 
         return commands;
     }

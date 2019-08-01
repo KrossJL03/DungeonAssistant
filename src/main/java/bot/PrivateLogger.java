@@ -32,7 +32,9 @@ public class PrivateLogger
         ArrayList<CommandInterface> memberCommands
     )
     {
-        sendPrivateMessage(user, helpMessageBuilder.buildAdminHelpMessage(adminCommands, memberCommands));
+        sendPrivateMessage(user, helpMessageBuilder.buildDescriptionMessage());
+        sendPrivateMessage(user, helpMessageBuilder.buildAdminCommandsMessage(adminCommands));
+        sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(memberCommands));
     }
 
     /**
@@ -43,7 +45,8 @@ public class PrivateLogger
      */
     public void logMemberHelpPage(User user, ArrayList<CommandInterface> commands)
     {
-        sendPrivateMessage(user, helpMessageBuilder.buildMemberHelpMessage(commands));
+        sendPrivateMessage(user, helpMessageBuilder.buildDescriptionMessage());
+        sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(commands));
     }
 
     /**

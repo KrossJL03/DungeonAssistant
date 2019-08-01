@@ -3,7 +3,7 @@ package bot.Registry;
 import bot.CommandFactoryInterface;
 import bot.PrivateLogger;
 import bot.ProcessManager;
-import bot.Registry.Logger.Message.Help.HelpMessageBuilder;
+import bot.Registry.Logger.Message.Help.HelpRegistryMessageBuilder;
 import bot.Registry.Record.Command.RecordCommandFactory;
 import bot.Registry.Review.Command.ReviewCommandFactory;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class RegistryServiceProvider
     public RegistryServiceProvider(@NotNull ProcessManager processManager)
     {
         this.logger = new RegistryLogger();
-        this.privateLogger = new PrivateLogger(new HelpMessageBuilder());
+        this.privateLogger = new PrivateLogger(new HelpRegistryMessageBuilder());
         this.processManager = processManager;
     }
 

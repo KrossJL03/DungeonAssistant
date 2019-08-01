@@ -36,11 +36,11 @@ public interface CommandInterface
     void handle(@NotNull MessageReceivedEvent event);
 
     /**
-     * Is this the name of the command
+     * Is this the command in string form
      *
-     * @param name Command name
+     * @param commandString Command string
      *
      * @return boolean
      */
-    boolean isCommandName(@NotNull String name);
+    boolean isCommand(@NotNull String commandString);
 }

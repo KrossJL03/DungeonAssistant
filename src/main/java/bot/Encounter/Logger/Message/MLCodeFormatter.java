@@ -1,10 +1,10 @@
 package bot.Encounter.Logger.Message;
 
-import bot.CodeFormatter;
+import bot.CodeFormatterInterface;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class MLCodeFormatter implements CodeFormatter
+public class MLCodeFormatter implements CodeFormatterInterface
 {
     /**
      * {@inheritDoc}

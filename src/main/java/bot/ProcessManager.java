@@ -11,7 +11,7 @@ public class ProcessManager
     /**
      * ProcessManager constructor.
      */
-    ProcessManager()
+    public ProcessManager()
     {
         this.processes = new ArrayList<>();
     }

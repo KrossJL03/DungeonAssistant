@@ -1,27 +1,24 @@
 package bot.Registry.Record.Command;
 
-import bot.Command;
-import bot.CommandInterface;
-import bot.PrivateLogger;
-import bot.ProcessManager;
+import bot.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class HelpCommand extends Command
+public class HelpRecordCommand extends Command implements HelpCommandInterface
 {
     private PrivateLogger               privateLogger;
     private ArrayList<CommandInterface> commands;
 
     /**
-     * HelpCommand constructor.
+     * HelpRecordCommand constructor.
      *
      * @param processManager Process manager
      * @param privateLogger  Private logger
      * @param commands       Commands
      */
-    HelpCommand(
+    HelpRecordCommand(
         @NotNull ProcessManager processManager,
         @NotNull PrivateLogger privateLogger,
         @NotNull ArrayList<CommandInterface> commands

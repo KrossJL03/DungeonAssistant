@@ -1,16 +1,17 @@
-package bot.Registry.Logger.Message.Help;
+package bot;
 
 import bot.Encounter.Logger.Message.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class HelpMessage implements MessageInterface
+public class Message implements MessageInterface
 {
     private StringBuilder stringBuilder;
 
     /**
-     * HelpMessage constructor.
+     * Message constructor.
      */
-    @NotNull HelpMessage() {
+    public @NotNull Message()
+    {
         this.stringBuilder = new StringBuilder();
     }
 
@@ -19,7 +20,8 @@ public class HelpMessage implements MessageInterface
      *
      * @param line Line
      */
-    void add(@NotNull String line) {
+    public void add(@NotNull String line)
+    {
         stringBuilder.append(line);
         stringBuilder.append(NEWLINE);
     }
@@ -27,14 +29,16 @@ public class HelpMessage implements MessageInterface
     /**
      * Add break
      */
-    void addBreak() {
+    void addBreak()
+    {
         stringBuilder.append(NEWLINE);
     }
 
     /**
      * Add new line
      */
-    void addLine() {
+    void addLine()
+    {
         stringBuilder.append(LINE);
         stringBuilder.append(NEWLINE);
     }
@@ -42,19 +46,9 @@ public class HelpMessage implements MessageInterface
     /**
      * End code block
      */
-    void endCodeBlock() {
+    public void endCodeBlock()
+    {
         stringBuilder.append(CODE_BRACKET);
-        stringBuilder.append(NEWLINE);
-    }
-
-    /**
-     * Start code block
-     *
-     * @param codeStyle Code style
-     */
-    void startCodeBlock(@NotNull String codeStyle) {
-        stringBuilder.append(CODE_BRACKET);
-        stringBuilder.append(codeStyle);
         stringBuilder.append(NEWLINE);
     }
 
@@ -65,5 +59,17 @@ public class HelpMessage implements MessageInterface
     public @NotNull String getAsString()
     {
         return stringBuilder.toString();
+    }
+
+    /**
+     * Start code block
+     *
+     * @param codeStyle Code style
+     */
+    public void startCodeBlock(@NotNull String codeStyle)
+    {
+        stringBuilder.append(CODE_BRACKET);
+        stringBuilder.append(codeStyle);
+        stringBuilder.append(NEWLINE);
     }
 }

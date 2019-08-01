@@ -5,7 +5,7 @@ import bot.Encounter.Command.EncounterCommandFactory;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.Help.HelpMessageBuilder;
+import bot.Encounter.Logger.Message.Help.HelpEncounterMessageBuilder;
 import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.PrivateLogger;
@@ -34,7 +34,7 @@ public class EncounterServiceProvider
             new SummaryMessageBuilder()
         );
         this.encounterHolder = new EncounterHolder(encounterLogger);
-        this.privateLogger = new PrivateLogger(new HelpMessageBuilder());
+        this.privateLogger = new PrivateLogger(new HelpEncounterMessageBuilder());
         this.processManager = processManager;
     }
 

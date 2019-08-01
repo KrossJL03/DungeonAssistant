@@ -57,11 +57,10 @@ public class CommandListener extends ListenerAdapter
 
         try {
             if (input.startsWith(CommandListener.COMMAND_KEY)) {
-                String[] splitArray  = input.split("\\s+");
-                String   commandName = splitArray[0].substring(1).toLowerCase();
+                String commandString = input.substring(1).toLowerCase();
 
                 for (CommandInterface command : commands) {
-                    if (command.isCommandName(commandName)) {
+                    if (command.isCommand(commandString)) {
                         command.handle(event);
                         return;
                     }
@@ -72,7 +71,7 @@ public class CommandListener extends ListenerAdapter
                 String[] splitArray  = input.split("\\s+");
                 String   commandName = splitArray[0].toLowerCase();
                 for (CommandInterface command : additionalCommands) {
-                    if (command.isCommandName(commandName)) {
+                    if (command.isCommand(commandName)) {
                         command.handle(event);
                         return;
                     }

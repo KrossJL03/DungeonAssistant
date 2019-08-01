@@ -37,6 +37,7 @@ public class ReviewCommandFactory implements CommandFactoryInterface
         this.processManager = processManager;
         this.registryLogger = registryLogger;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -51,7 +52,7 @@ public class ReviewCommandFactory implements CommandFactoryInterface
         commands.add(new ViewItemCommand(processManager, registryLogger));
         commands.add(new ViewItemsCommand(processManager, registryLogger));
 
-        commands.add(new HelpCommand(processManager, privateLogger, commands));
+        commands.add(new HelpReviewCommand(processManager, privateLogger, commands));
 
         return commands;
     }

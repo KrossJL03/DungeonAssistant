@@ -2,7 +2,7 @@ package bot;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface CodeFormatter
+public interface CodeFormatterInterface
 {
     /**
      * Get style

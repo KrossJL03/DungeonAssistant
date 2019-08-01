@@ -36,9 +36,9 @@ public class StatDropCommand extends EncounterCommand
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("ExplorerName", true));
+                    add(new CommandParameter("Name", true));
                     add(new CommandParameter("StatName", true));
-                    add(new CommandParameter("DropAmount", true));
+                    add(new CommandParameter("Amount", true));
                 }
             },
             "Temporarily decrease an explorer's stat by the boost amount for the duration of the encounter.",

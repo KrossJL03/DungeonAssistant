@@ -18,7 +18,7 @@ public class CommandException extends RuntimeException implements EncounterExcep
     /**
      * Factory method for "missing parameters"
      *
-     * @param formattedCommand Command with parameters
+     * @param formattedCommand HelpCommand with parameters
      *
      * @return CommandException
      */

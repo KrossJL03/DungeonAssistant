@@ -53,6 +53,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
 
         encounterCommands.add(new AddHostileCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new AttackCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new CreateHostileEncounterCommand(
             processManager,
             encounterHolder,
@@ -62,6 +63,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new DodgeCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassHelpCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndActionCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndTurnCommand(processManager, encounterHolder, encounterLogger, dmChecker));
@@ -83,8 +85,6 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         ));
         encounterCommands.add(new SetTierCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new SkipCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StartEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StatBoostCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StatDropCommand(processManager, encounterHolder, encounterLogger, dmChecker));
@@ -92,7 +92,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
 
         ArrayList<CommandInterface> commands = new ArrayList<>(encounterCommands);
         encounterCommands.add(new UseItemCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        commands.add(new HelpCommand(processManager, dmChecker, privateLogger, encounterCommands));
+        commands.add(new HelpEncounterCommand(processManager, dmChecker, privateLogger, encounterCommands));
 
         return commands;
     }

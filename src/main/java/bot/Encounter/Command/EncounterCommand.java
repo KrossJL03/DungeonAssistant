@@ -29,9 +29,9 @@ abstract class EncounterCommand extends Command
      * @param holder         Encounter holder
      * @param logger         Encounter Logger
      * @param dmChecker      Dungeon master checker
-     * @param commandName    Command name
+     * @param commandName    HelpCommand name
      * @param parameters     Parameters
-     * @param description    Command description
+     * @param description    HelpCommand description
      * @param isDmExclusive  Is command only usable by dungeon masters
      */
     protected EncounterCommand(

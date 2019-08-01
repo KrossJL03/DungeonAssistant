@@ -1,16 +1,13 @@
 package bot.Encounter.Command;
 
-import bot.Command;
-import bot.CommandInterface;
+import bot.*;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
-import bot.PrivateLogger;
-import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class HelpCommand extends Command
+public class HelpEncounterCommand extends Command implements HelpCommandInterface
 {
     private DungeonMasterChecker        dmChecker;
     private PrivateLogger               logger;
@@ -18,14 +15,14 @@ public class HelpCommand extends Command
     private ArrayList<CommandInterface> memberCommands;
 
     /**
-     * HelpCommand constructor.
+     * HelpEncounterCommand constructor.
      *
      * @param processManager Process manager
      * @param dmChecker      Dungeon master checker
      * @param logger         Private logger
-     * @param commands       Encounter memberCommands
+     * @param commands       Encounter commands
      */
-    HelpCommand(
+    HelpEncounterCommand(
         @NotNull ProcessManager processManager,
         @NotNull DungeonMasterChecker dmChecker,
         @NotNull PrivateLogger logger,

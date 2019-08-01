@@ -9,15 +9,18 @@ public interface HelpMessageBuilderInterface
     /**
      * Build help message for admin
      *
-     * @param adminCommands  List of admin commands
-     * @param memberCommands List of member commands
+     * @param commands List of commands
      *
      * @return String
      */
-    @NotNull String buildAdminHelpMessage(
-        @NotNull ArrayList<CommandInterface> adminCommands,
-        @NotNull ArrayList<CommandInterface> memberCommands
-    );
+    @NotNull String buildAdminCommandsMessage(@NotNull ArrayList<CommandInterface> commands);
+
+    /**
+     * Build help message description
+     *
+     * @return HelpMessage
+     */
+    @NotNull String buildDescriptionMessage();
 
     /**
      * Build help message for member
@@ -26,5 +29,5 @@ public interface HelpMessageBuilderInterface
      *
      * @return String
      */
-    @NotNull String buildMemberHelpMessage(@NotNull ArrayList<CommandInterface> commands);
+    @NotNull String buildMemberCommandsMessage(@NotNull ArrayList<CommandInterface> commands);
 }

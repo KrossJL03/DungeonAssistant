@@ -17,9 +17,9 @@ abstract class ReviewCommand extends Command
      *
      * @param processManager Process manager
      * @param logger         Registry logger
-     * @param commandName    Command name
+     * @param commandName    HelpCommand name
      * @param parameters     Parameters
-     * @param description    Command description
+     * @param description    HelpCommand description
      */
     protected ReviewCommand(
         @NotNull ProcessManager processManager,

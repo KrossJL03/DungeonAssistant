@@ -37,7 +37,7 @@ public class UseItemCommand extends EncounterCommand
             {
                 {
                     add(new CommandParameter("ItemName", true));
-                    add(new CommandParameter("Quantity", true));
+                    add(new CommandParameter("Amount", true));
                 }
             },
             "Use an item through rp!bot. The DM will be pinged to activate the item.",
