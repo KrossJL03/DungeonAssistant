@@ -2,9 +2,9 @@ package bot.Encounter.Logger;
 
 import bot.Encounter.*;
 import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.MessageInterface;
 import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
+import bot.MyProperties;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +57,11 @@ public class EncounterLogger
      */
     public void logPhaseChange(PhaseChangeResult result)
     {
-        sendMessage(phaseChangeMessageBuilder.buildPhaseChangeMessage(result));
+        String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
+        if (!MyProperties.isTest && result.getNextPhase().isJoinPhase()) {
+            message = everyoneMention.getValue() + " " + message;
+        }
+        sendMessage(message);
         logSummary(result.getExplorers(), result.getHostiles());
     }
 
