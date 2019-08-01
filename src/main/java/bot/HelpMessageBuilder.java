@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
 {
-    private IniCodeFormatter codeFormatter;
+    private MarkdownCodeFormatter codeFormatter;
 
     /**
      * HelpEncounterMessageBuilder constructor.
      */
-    protected @NotNull HelpMessageBuilder(@NotNull IniCodeFormatter codeFormatter)
+    protected @NotNull HelpMessageBuilder(@NotNull MarkdownCodeFormatter codeFormatter)
     {
         this.codeFormatter = codeFormatter;
     }
@@ -34,9 +34,11 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format("%s COMMANDS", commandType).toUpperCase());
         message.addLine();
+
         for (CommandInterface command : commands) {
             message.add(formatCommand(command));
         }
+
         message.endCodeBlock();
 
         return message;
@@ -53,15 +55,22 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
     {
         StringBuilder parameterBuilder = new StringBuilder();
         for (CommandParameter parameter : command.getParameters()) {
-            parameterBuilder.append(codeFormatter.makeBlue(parameter.getName()));
+            String parameterString = parameter.isRequired()
+                                     ? codeFormatter.makeYellow(parameter.getName())
+                                     : codeFormatter.makeBlue(parameter.getName());
+            parameterBuilder.append(parameterString);
             parameterBuilder.append(" ");
         }
 
-        return String.format(
-            "   %s%-36s %s",
+        Message message = new Message();
+        message.add(String.format(
+            "%s%s %s",
             CommandListener.COMMAND_KEY,
-            command.getCommandName() + " " + parameterBuilder.toString().trim(),
-            command.getDescription()
-        );
+            command.getCommandName(),
+            parameterBuilder.toString().trim()
+        ));
+        message.add(codeFormatter.makeGrey(command.getDescription()));
+
+        return message.getAsString();
     }
 }

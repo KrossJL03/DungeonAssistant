@@ -14,7 +14,7 @@ public class HelpEncounterMessageBuilder extends HelpMessageBuilder
      */
     public @NotNull HelpEncounterMessageBuilder()
     {
-        super(new IniCodeFormatter());
+        super(new MarkdownCodeFormatter());
         this.textFormatter = new TextFormatter();
     }
 
@@ -35,8 +35,8 @@ public class HelpEncounterMessageBuilder extends HelpMessageBuilder
     {
         Message message = new Message();
 
-        message.add(textFormatter.makeBold("ENCOUNTER HELP PAGE").toUpperCase());
-        message.add("Useful links:");
+        message.add(textFormatter.makeBold("Encounter Help Page"));
+        message.add("Helpful links:");
         message.add("--- https://skaiaexplorers.wixsite.com/skyexplorers/bot-guide");
         message.add("--- https://skaiaexplorers.wixsite.com/skyexplorers/stats-and-effects");
         message.add("--- https://skaiaexplorers.wixsite.com/skyexplorers/registering-a-character");

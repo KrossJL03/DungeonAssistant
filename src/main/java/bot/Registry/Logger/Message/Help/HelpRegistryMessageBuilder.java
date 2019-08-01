@@ -15,7 +15,7 @@ public class HelpRegistryMessageBuilder extends HelpMessageBuilder
      */
     public @NotNull HelpRegistryMessageBuilder()
     {
-        super(new IniCodeFormatter());
+        super(new MarkdownCodeFormatter());
         this.textFormatter = new TextFormatter();
     }
 

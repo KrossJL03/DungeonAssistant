@@ -105,7 +105,12 @@ public abstract class Command implements CommandInterface
      */
     final protected @NotNull String[] getParametersFromEvent(@NotNull MessageReceivedEvent event)
     {
-        String[] splitMessage = event.getMessage().getContentRaw().replace(commandName, "").split("\\s+");
+        String parameterString = event.getMessage().getContentRaw().replace(
+            CommandListener.COMMAND_KEY + commandName,
+            ""
+        ).trim();
+
+        String[] splitMessage = parameterString.length() > 0 ? parameterString.split("\\s+") : new String[0];
 
         if (splitMessage.length < getRequiredParameterCount()) {
             throw CommandException.createMissingParameters(getFormattedCommand());

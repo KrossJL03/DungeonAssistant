@@ -116,7 +116,7 @@ abstract class EncounterCommand extends Command
         if (encounter instanceof Encounter) {
             return (Encounter) encounter;
         }
-        throw EncounterCommandException.createWrongEncounterType(getFormattedCommand(), encounter.getEncounterType());
+        throw EncounterCommandException.createWrongEncounterType(getCommandName(), encounter.getEncounterType());
     }
 
     /**
@@ -139,7 +139,7 @@ abstract class EncounterCommand extends Command
     private void ensureDungeonMaster(MessageReceivedEvent event)
     {
         if (!isDungeonMaster(event)) {
-            throw EncounterCommandException.createDmCommand(getFormattedCommand());
+            throw EncounterCommandException.createDmCommand(getCommandName());
         }
     }
 

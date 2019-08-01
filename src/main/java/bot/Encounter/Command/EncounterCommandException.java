@@ -23,7 +23,7 @@ class EncounterCommandException extends CommandException
     static @NotNull EncounterCommandException createDmCommand(@NotNull String formattedCommand)
     {
         return new EncounterCommandException(String.format(
-            "Only the Dungeon Master can use the %s command",
+            "Only the Dungeon Master can use the `%s` command",
             formattedCommand
         ));
     }
@@ -54,7 +54,7 @@ class EncounterCommandException extends CommandException
     )
     {
         return new EncounterCommandException(String.format(
-            "That %s command cannot be used for a %s encounter",
+            "That `%s` command cannot be used for a %s encounter",
             formattedCommand,
             encounterType
         ));

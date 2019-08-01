@@ -14,7 +14,7 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
      */
     @NotNull HelpDefaultMessageBuilder()
     {
-        super(new IniCodeFormatter());
+        super(new MarkdownCodeFormatter());
         this.textFormatter = new TextFormatter();
     }
 

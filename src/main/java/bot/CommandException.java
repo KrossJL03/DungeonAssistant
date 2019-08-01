@@ -26,7 +26,7 @@ public class CommandException extends RuntimeException implements EncounterExcep
     {
         return new CommandException(
             String.format(
-                "I think I'm missing something... could you say the command again like this: %s",
+                "I think I'm missing something... could you say the command again like this: `%s`",
                 formattedCommand
             )
         );

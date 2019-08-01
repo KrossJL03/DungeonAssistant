@@ -36,7 +36,7 @@ public class StatDropCommand extends EncounterCommand
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("Name", true));
+                    add(new CommandParameter("TargetName", true));
                     add(new CommandParameter("StatName", true));
                     add(new CommandParameter("Amount", true));
                 }
