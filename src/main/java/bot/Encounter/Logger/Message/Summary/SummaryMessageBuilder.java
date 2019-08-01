@@ -13,14 +13,14 @@ import java.util.ArrayList;
 public class SummaryMessageBuilder
 {
 
-    private DiffCodeBlockFormatter codeFormatter;
+    private DiffCodeFormatter codeFormatter;
 
     /**
      * SummaryMessageBuilder constructor
      */
     public @NotNull SummaryMessageBuilder()
     {
-        this.codeFormatter = new DiffCodeBlockFormatter();
+        this.codeFormatter = new DiffCodeFormatter();
     }
 
     /**
@@ -111,7 +111,7 @@ public class SummaryMessageBuilder
     {
         if (encounteredHostile.isSlain()) {
             Slayer slayer = encounteredHostile.getSlayer();
-            return codeFormatter.makeGray(String.format(
+            return codeFormatter.makeGrey(String.format(
                 "%s was slain %s",
                 encounteredHostile.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
@@ -131,10 +131,10 @@ public class SummaryMessageBuilder
     private @NotNull String getNameLine(EncounteredExplorerInterface encounteredExplorer)
     {
         if (!encounteredExplorer.isPresent()) {
-            return codeFormatter.makeGray(String.format("%s has left", encounteredExplorer.getName()));
+            return codeFormatter.makeGrey(String.format("%s has left", encounteredExplorer.getName()));
         } else if (encounteredExplorer.isSlain()) {
             Slayer slayer = encounteredExplorer.getSlayer();
-            return codeFormatter.makeGray(String.format(
+            return codeFormatter.makeGrey(String.format(
                 "%s was knocked out %s",
                 encounteredExplorer.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""

@@ -4,18 +4,19 @@ import bot.CommandListener;
 import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
+import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
-    private TextBlockFormatter textFormatter;
+    private TextFormatter textFormatter;
 
     /**
-     * PhaseChangeMessageBuilder constructor
+     * LootPhaseStartMessageFactory constructor.
      */
     @NotNull LootPhaseStartMessageFactory()
     {
-        this.textFormatter = new TextBlockFormatter();
+        this.textFormatter = new TextFormatter();
     }
 
     /**

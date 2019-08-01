@@ -1,6 +1,7 @@
 package bot.Encounter.Command;
 
 import bot.CommandParameter;
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Explorer.Explorer;
@@ -20,17 +21,20 @@ public class JoinCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     JoinCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "join",
             new ArrayList<CommandParameter>()
             {

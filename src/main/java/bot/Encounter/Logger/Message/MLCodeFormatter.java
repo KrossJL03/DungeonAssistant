@@ -1,9 +1,10 @@
 package bot.Encounter.Logger.Message;
 
+import bot.CodeFormatter;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class MLCodeBlockFormatter implements CodeBlockFormatter
+public class MLCodeFormatter implements CodeFormatter
 {
     /**
      * {@inheritDoc}
@@ -27,13 +28,13 @@ public class MLCodeBlockFormatter implements CodeBlockFormatter
     }
 
     /**
-     * Format text to be gray
+     * Format text to be grey
      *
      * @param text Text to format
      *
      * @return String
      */
-    public @NotNull String makeGray(@NotNull String text)
+    public @NotNull String makeGrey(@NotNull String text)
     {
         return String.format("(* %s *)", text);
     }

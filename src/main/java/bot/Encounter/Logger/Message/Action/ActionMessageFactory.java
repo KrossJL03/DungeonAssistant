@@ -1,17 +1,17 @@
 package bot.Encounter.Logger.Message.Action;
 
-import bot.Encounter.Logger.Message.MLCodeBlockFormatter;
+import bot.Encounter.Logger.Message.MLCodeFormatter;
 import org.jetbrains.annotations.NotNull;
 
 abstract class ActionMessageFactory
 {
-    protected MLCodeBlockFormatter codeFormatter;
+    protected MLCodeFormatter codeFormatter;
 
     /**
-     * AttackActionMessageFactory constructor
+     * ActionMessageFactory constructor.
      */
     @NotNull ActionMessageFactory()
     {
-        this.codeFormatter = new MLCodeBlockFormatter();
+        this.codeFormatter = new MLCodeFormatter();
     }
 }

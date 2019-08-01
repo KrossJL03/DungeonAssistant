@@ -1,6 +1,7 @@
 package bot.Encounter.Command;
 
 import bot.Command;
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.Encounter;
 import bot.Encounter.EncounterHolder;
 import bot.CommandParameter;
@@ -16,9 +17,10 @@ import java.util.List;
 
 abstract class EncounterCommand extends Command
 {
-    private EncounterHolder holder;
-    private EncounterLogger logger;
-    private boolean         isDmExclusive;
+    private DungeonMasterChecker dmChecker;
+    private EncounterHolder      holder;
+    private EncounterLogger      logger;
+    private boolean              isDmExclusive;
 
     /**
      * EncounterCommand constructor
@@ -26,6 +28,7 @@ abstract class EncounterCommand extends Command
      * @param processManager Processed manager
      * @param holder         Encounter holder
      * @param logger         Encounter Logger
+     * @param dmChecker      Dungeon master checker
      * @param commandName    Command name
      * @param parameters     Parameters
      * @param description    Command description
@@ -35,6 +38,7 @@ abstract class EncounterCommand extends Command
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
         @NotNull String description,
@@ -42,6 +46,7 @@ abstract class EncounterCommand extends Command
     )
     {
         super(processManager, commandName, parameters, description);
+        this.dmChecker = dmChecker;
         this.holder = holder;
         this.isDmExclusive = isDmExclusive;
         this.logger = logger;
@@ -57,6 +62,14 @@ abstract class EncounterCommand extends Command
             ensureDungeonMaster(event);
         }
         execute(event);
+    }
+
+    /**
+     * Is this command exclusive to dungeon masters
+     */
+    boolean isDmExclusive()
+    {
+        return isDmExclusive;
     }
 
     /**
@@ -77,11 +90,7 @@ abstract class EncounterCommand extends Command
      */
     final protected @NotNull Role getDungeonMaster(MessageReceivedEvent event)
     {
-        List<Role> roles = event.getGuild().getRolesByName("Dungeon Master", false);
-        if (!roles.isEmpty()) {
-            return roles.get(0);
-        }
-        throw EncounterCommandException.createDmNotFound();
+        return dmChecker.getDungeonMaster(event);
     }
 
     /**
@@ -143,6 +152,6 @@ abstract class EncounterCommand extends Command
      */
     private boolean isDungeonMaster(@NotNull MessageReceivedEvent event)
     {
-        return event.getMember().getRoles().indexOf(getDungeonMaster(event)) > -1;
+        return dmChecker.isDungeonMaster(event);
     }
 }

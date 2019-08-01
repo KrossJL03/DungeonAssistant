@@ -79,7 +79,7 @@ class LootActionMessageFactory extends ActionMessageFactory
         output.append(String.format("%2d %s ", roll.getLootRoll(), ActionMessage.DOUBLE_ARROW));
 
         if (loot.getItem() == null || loot.getItem().equals("null")) {
-            output.append(codeFormatter.makeGray(String.format("nothing from %s", roll.getKillName())));
+            output.append(codeFormatter.makeGrey(String.format("nothing from %s", roll.getKillName())));
         } else {
             output.append(String.format(
                 "x%d %s from %s",

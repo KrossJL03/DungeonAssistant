@@ -38,7 +38,7 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
                 "d%d %s %s",
                 result.getTargetDodgeDie(),
                 codeFormatter.makeCyan("dodge dice"),
-                codeFormatter.makeGray(String.format("success = %d", result.getMinSucessDodgeRoll()))
+                codeFormatter.makeGrey(String.format("success = %d", result.getMinSucessDodgeRoll()))
             ));
             message.addBreak();
             for (DodgeResultInterface subActionData : result.getDodgeResults()) {
@@ -77,7 +77,7 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
             output.append(String.format(
                 "%s! %s",
                 codeFormatter.makeYellow("DODGED"),
-                codeFormatter.makeGray(String.format("no dmg from %s", result.getAttackerName()))
+                codeFormatter.makeGrey(String.format("no dmg from %s", result.getAttackerName()))
             ));
         } else {
             output.append(String.format(

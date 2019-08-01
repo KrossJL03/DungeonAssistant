@@ -1,6 +1,7 @@
 package bot.Encounter.Command;
 
 import bot.CommandParameter;
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Tier.TierRegistry;
@@ -19,17 +20,20 @@ public class SetTierCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     SetTierCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "tier",
             new ArrayList<CommandParameter>()
             {

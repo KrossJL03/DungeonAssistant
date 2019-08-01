@@ -1,5 +1,6 @@
 package bot.Encounter.Command;
 
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.Encounter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
@@ -17,17 +18,20 @@ public class ViewSummaryCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     ViewSummaryCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "view summary",
             new ArrayList<>(),
             "View encounter summary.",

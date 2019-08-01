@@ -5,20 +5,21 @@ import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
+import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
-    private MLCodeBlockFormatter codeFormatter;
-    private TextBlockFormatter   textFormatter;
+    private MLCodeFormatter codeFormatter;
+    private TextFormatter   textFormatter;
 
     /**
-     * PhaseChangeMessageBuilder constructor
+     * DodgePhaseStartMessageFactory constructor.
      */
     @NotNull DodgePhaseStartMessageFactory()
     {
-        this.codeFormatter = new MLCodeBlockFormatter();
-        this.textFormatter = new TextBlockFormatter();
+        this.codeFormatter = new MLCodeFormatter();
+        this.textFormatter = new TextFormatter();
     }
 
     /**

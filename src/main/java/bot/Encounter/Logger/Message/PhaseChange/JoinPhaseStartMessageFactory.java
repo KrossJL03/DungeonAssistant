@@ -5,18 +5,19 @@ import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
 import bot.Encounter.TierInterface;
+import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
-    private TextBlockFormatter textFormatter;
+    private TextFormatter textFormatter;
 
     /**
-     * PhaseChangeMessageBuilder constructor
+     * JoinPhaseStartMessageFactory constructor.
      */
     @NotNull JoinPhaseStartMessageFactory()
     {
-        this.textFormatter = new TextBlockFormatter();
+        this.textFormatter = new TextFormatter();
     }
 
     /**

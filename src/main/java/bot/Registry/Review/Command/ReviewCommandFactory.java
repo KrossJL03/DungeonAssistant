@@ -7,6 +7,7 @@ import bot.Encounter.Logger.EncounterLogger;
 import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
 import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
+import bot.PrivateLogger;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import org.jetbrains.annotations.NotNull;
@@ -15,24 +16,27 @@ import java.util.ArrayList;
 
 public class ReviewCommandFactory implements CommandFactoryInterface
 {
-    private RegistryLogger logger;
+    private PrivateLogger  privateLogger;
     private ProcessManager processManager;
+    private RegistryLogger registryLogger;
 
     /**
      * ReviewCommandFactory constructor.
      *
      * @param processManager Process manager
-     * @param logger         Registry logger
+     * @param registryLogger Registry logger
+     * @param privateLogger  Private logger
      */
     public ReviewCommandFactory(
         @NotNull ProcessManager processManager,
-        @NotNull RegistryLogger logger
+        @NotNull RegistryLogger registryLogger,
+        @NotNull PrivateLogger privateLogger
     )
     {
-        this.logger = logger;
+        this.privateLogger = privateLogger;
         this.processManager = processManager;
+        this.registryLogger = registryLogger;
     }
-
     /**
      * {@inheritDoc}
      */
@@ -41,12 +45,13 @@ public class ReviewCommandFactory implements CommandFactoryInterface
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
 
-        commands.add(new HelpCommand(processManager, logger));
-        commands.add(new ViewExplorersCommand(processManager, logger));
-        commands.add(new ViewHostileLootCommand(processManager, logger));
-        commands.add(new ViewHostilesCommand(processManager, logger));
-        commands.add(new ViewItemCommand(processManager, logger));
-        commands.add(new ViewItemsCommand(processManager, logger));
+        commands.add(new ViewExplorersCommand(processManager, registryLogger));
+        commands.add(new ViewHostileLootCommand(processManager, registryLogger));
+        commands.add(new ViewHostilesCommand(processManager, registryLogger));
+        commands.add(new ViewItemCommand(processManager, registryLogger));
+        commands.add(new ViewItemsCommand(processManager, registryLogger));
+
+        commands.add(new HelpCommand(processManager, privateLogger, commands));
 
         return commands;
     }

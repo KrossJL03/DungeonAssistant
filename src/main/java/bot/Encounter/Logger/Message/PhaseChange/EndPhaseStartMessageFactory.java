@@ -3,18 +3,19 @@ package bot.Encounter.Logger.Message.PhaseChange;
 import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
+import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
-    private TextBlockFormatter textFormatter;
+    private TextFormatter textFormatter;
 
     /**
-     * PhaseChangeMessageBuilder constructor
+     * EndPhaseStartMessageFactory constructor.
      */
     @NotNull EndPhaseStartMessageFactory()
     {
-        this.textFormatter = new TextBlockFormatter();
+        this.textFormatter = new TextFormatter();
     }
 
     /**

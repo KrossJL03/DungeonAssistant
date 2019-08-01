@@ -1,40 +1,40 @@
 package bot.Registry.Record.Command;
 
-import bot.CommandParameter;
+import bot.Command;
+import bot.CommandInterface;
+import bot.PrivateLogger;
 import bot.ProcessManager;
-import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class HelpCommand extends RecordCommand
+public class HelpCommand extends Command
 {
+    private PrivateLogger               privateLogger;
+    private ArrayList<CommandInterface> commands;
+
     /**
-     * HelpCommand constructor
+     * HelpCommand constructor.
      *
      * @param processManager Process manager
-     * @param logger         Logger
+     * @param privateLogger  Private logger
+     * @param commands       Commands
      */
-    HelpCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
+    HelpCommand(
+        @NotNull ProcessManager processManager,
+        @NotNull PrivateLogger privateLogger,
+        @NotNull ArrayList<CommandInterface> commands
+    )
     {
         super(
             processManager,
-            logger,
-            "create explorer",
-            new ArrayList<CommandParameter>()
-            {
-                {
-                    add(new CommandParameter("Name", true));
-                    add(new CommandParameter("HP", true));
-                    add(new CommandParameter("STR", true));
-                    add(new CommandParameter("WIS", true));
-                    add(new CommandParameter("AGI", true));
-                    add(new CommandParameter("DEF", true));
-                }
-            },
-            "Create an explorer."
+            "help record",
+            new ArrayList<>(),
+            "View all commands for recording information."
         );
+        this.commands = commands;
+        this.privateLogger = privateLogger;
     }
 
     /**
@@ -43,6 +43,6 @@ public class HelpCommand extends RecordCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws RecordCommandException
     {
-        event.getChannel().sendMessage("Help").queue();
+        privateLogger.logMemberHelpPage(event.getAuthor(), commands);
     }
 }

@@ -1,8 +1,8 @@
-package bot.Encounter.Logger.Message;
+package bot;
 
 import org.jetbrains.annotations.NotNull;
 
-public class TextBlockFormatter
+public class TextFormatter
 {
     /**
      * Make text bold

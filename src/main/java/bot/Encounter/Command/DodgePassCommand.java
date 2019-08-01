@@ -1,5 +1,6 @@
 package bot.Encounter.Command;
 
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.ProcessManager;
@@ -16,17 +17,19 @@ public class DodgePassCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     DodgePassCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
-    )
-    {
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
+    ){
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "dodgePass",
             new ArrayList<>(),
             "The current character successfully dodges all attacks this round",

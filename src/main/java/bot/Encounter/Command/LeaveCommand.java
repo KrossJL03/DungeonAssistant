@@ -1,5 +1,6 @@
 package bot.Encounter.Command;
 
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
@@ -17,17 +18,20 @@ public class LeaveCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     LeaveCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "leave",
             new ArrayList<>(),
             "Leave the encounter.",

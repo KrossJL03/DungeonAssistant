@@ -1,6 +1,7 @@
 package bot.Encounter.Command;
 
 import bot.CommandParameter;
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.ProcessManager;
@@ -17,17 +18,20 @@ public class StatDropCommand extends EncounterCommand
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
     StatDropCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "statDrop",
             new ArrayList<CommandParameter>()
             {
@@ -48,10 +52,10 @@ public class StatDropCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[] parameters  = getParametersFromEvent(event);
-        String   targetName  = parameters[0];
-        String   statName    = parameters[1];
-        int      dropAmount  = 0 - Integer.parseInt(parameters[2]);
+        String[] parameters = getParametersFromEvent(event);
+        String   targetName = parameters[0];
+        String   statName   = parameters[1];
+        int      dropAmount = 0 - Integer.parseInt(parameters[2]);
         getEncounter().modifyStat(targetName, statName, dropAmount);
     }
 }

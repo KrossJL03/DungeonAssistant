@@ -2,6 +2,7 @@ package bot.Registry.Record.Command;
 
 import bot.CommandFactoryInterface;
 import bot.CommandInterface;
+import bot.PrivateLogger;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import org.jetbrains.annotations.NotNull;
@@ -10,22 +11,26 @@ import java.util.ArrayList;
 
 public class RecordCommandFactory implements CommandFactoryInterface
 {
-    private RegistryLogger logger;
+    private PrivateLogger  privateLogger;
     private ProcessManager processManager;
+    private RegistryLogger registryLogger;
 
     /**
      * RecordCommandFactory constructor.
      *
      * @param processManager Process manager
-     * @param logger         Registry logger
+     * @param registryLogger Registry logger
+     * @param privateLogger  Private logger
      */
     public RecordCommandFactory(
         @NotNull ProcessManager processManager,
-        @NotNull RegistryLogger logger
+        @NotNull RegistryLogger registryLogger,
+        @NotNull PrivateLogger privateLogger
     )
     {
-        this.logger = logger;
+        this.privateLogger = privateLogger;
         this.processManager = processManager;
+        this.registryLogger = registryLogger;
     }
 
     /**
@@ -36,10 +41,11 @@ public class RecordCommandFactory implements CommandFactoryInterface
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
 
-        commands.add(new CreateCharacterCommand(processManager, logger));
-        commands.add(new DeleteCharacterCommand(processManager, logger));
-        commands.add(new HelpCommand(processManager, logger));
-        commands.add(new RegisterPlayerCommand(processManager, logger));
+        commands.add(new CreateCharacterCommand(processManager, registryLogger));
+        commands.add(new DeleteCharacterCommand(processManager, registryLogger));
+        commands.add(new RegisterPlayerCommand(processManager, registryLogger));
+
+        commands.add(new HelpCommand(processManager, privateLogger, commands));
 
         return commands;
     }

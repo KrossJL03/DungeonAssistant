@@ -1,6 +1,7 @@
 package bot.Encounter.Command;
 
 import bot.CommandParameter;
+import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
@@ -22,13 +23,15 @@ public class UseItemCommand extends EncounterCommand
     UseItemCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger
+        @NotNull EncounterLogger logger,
+        @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
             logger,
+            dmChecker,
             "rp!use",
             new ArrayList<CommandParameter>()
             {
