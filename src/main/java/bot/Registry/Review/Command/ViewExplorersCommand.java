@@ -42,20 +42,20 @@ public class ViewExplorersCommand extends ReviewCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event)
     {
-        MessageChannel channel    = event.getChannel();
-        String[]       parameters = getParametersFromEvent(event);
+        MessageChannel channel   = event.getChannel();
+        String         parameter = getStringParameterFromEvent(event);
 
-        if (parameters.length < 1) {
+        if (parameter.length() < 1) {
             getLogger().logExplorersWithOwners(channel, ExplorerManager.getAllExplorers());
         } else {
-            String ownerName = parameters[0];
+            String ownerName = parameter.toLowerCase();
             String ownerId;
             if (ownerName.equals("mine")) {
                 ownerId = event.getAuthor().getId();
             } else {
                 ownerId = PlayerRepository.getPlayerIdByName(ownerName);
             }
-            ExplorerManager.getAllMyExplorers(ownerId);
+            getLogger().logExplorersWithDetails(channel, ExplorerManager.getAllMyExplorers(ownerId));
         }
     }
 }

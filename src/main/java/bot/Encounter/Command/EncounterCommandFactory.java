@@ -51,9 +51,11 @@ public class EncounterCommandFactory implements CommandFactoryInterface
     {
         ArrayList<EncounterCommand> encounterCommands = new ArrayList<>();
 
+        encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new StartEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new AddHostileCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new AttackCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new CreateHostileEncounterCommand(
             processManager,
             encounterHolder,
@@ -63,7 +65,6 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new DodgeCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassHelpCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndActionCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndTurnCommand(processManager, encounterHolder, encounterLogger, dmChecker));
@@ -75,8 +76,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new LootCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new ProtectCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new RejoinCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new RemoveExplorerCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new RemoveHostileCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new RemoveCreatureCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new SetMaxPlayerCountCommand(
             processManager,
             encounterHolder,
@@ -85,7 +85,6 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         ));
         encounterCommands.add(new SetTierCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new SkipCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StartEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StatBoostCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StatDropCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new ViewSummaryCommand(processManager, encounterHolder, encounterLogger, dmChecker));

@@ -85,7 +85,7 @@ public class CommandListener extends ListenerAdapter
                 )
             ).queue();
         } catch (NumberFormatException e) {
-            channel.sendMessage("Hey could you say that again? Sorry, I'm bad with numbers.").queue();
+            channel.sendMessage("I need a number and I could be wrong but I don't think that was a number...").queue();
         } catch (Throwable e) {
             if (e instanceof CustomExceptionInterface) {
                 channel.sendMessage(e.getMessage()).queue();

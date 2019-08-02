@@ -54,8 +54,8 @@ public class AddHostileCommand extends EncounterCommand
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
         String[]                    parameters = getParametersFromEvent(event);
-        Hostile                     hostile    = HostileManager.getHostile(parameters[1]);
-        String                      name       = parameters.length > 2 ? parameters[2] : parameters[1];
+        Hostile                     hostile    = HostileManager.getHostile(parameters[0]);
+        String                      name       = parameters.length > 1 ? parameters[1] : parameters[0];
         EncounteredHostileInterface result     = getHostileEncounter().addHostile(hostile, name);
         getLogger().logAddedHostile(result);
     }

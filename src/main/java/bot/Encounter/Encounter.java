@@ -455,38 +455,14 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
+    public void removeCreature(@NotNull String name) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
+        EncounterCreatureInterface encounterCreature = getCreature(name);
+        if (encounterCreature instanceof EncounteredExplorerInterface) {
+            removeExplorer((EncounteredExplorerInterface) encounterCreature);
+        } else {
+            removeHostile((EncounteredHostileInterface) encounterCreature);
         }
-
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(name);
-        explorerRoster.remove(encounteredExplorer);
-        encounteredExplorer.useAllActions();
-
-        listener.onRemoveExplorer(encounteredExplorer.getName());
-        handleEndOfAction();
-    }
-
-    /**
-     * Remove encountered hostile from encounter
-     *
-     * @param hostileName Name of hostile to remove
-     *
-     * @throws EncounterPhaseException If encounter is over
-     */
-    public void removeHostile(@NotNull String hostileName) throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
-
-        EncounteredHostileInterface encounteredHostile = getHostile(hostileName);
-        hostiles.remove(encounteredHostile);
-
-        listener.onRemoveHostile(encounteredHostile.getName());
-        handleEndOfAction();
     }
 
     /**
@@ -744,19 +720,21 @@ public class Encounter implements EncounterInterface
      */
     private void handleEndOfAction()
     {
-        if (hasNoActiveHostiles()) {
-            startLootPhase();
-        } else if (!explorerRoster.hasActiveExplorers()) {
-            startEndPhase();
-        } else if (currentPhase.isInitiativePhase()) {
-            EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-            if (currentExplorer.isActive() && currentExplorer.hasActions()) {
-                listener.onActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
-            } else {
-                try {
-                    listener.onNextPlayerTurn(initiative.getNextExplorer());
-                } catch (InitiativeQueueException exception) {
-                    startRpPhase();
+        if (!currentPhase.isJoinPhase()) {
+            if (hasNoActiveHostiles()) {
+                startLootPhase();
+            } else if (!explorerRoster.hasActiveExplorers()) {
+                startEndPhase();
+            } else if (currentPhase.isInitiativePhase()) {
+                EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+                if (currentExplorer.isActive() && currentExplorer.hasActions()) {
+                    listener.onActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
+                } else {
+                    try {
+                        listener.onNextPlayerTurn(initiative.getNextExplorer());
+                    } catch (InitiativeQueueException exception) {
+                        startRpPhase();
+                    }
                 }
             }
         }
@@ -804,6 +782,43 @@ public class Encounter implements EncounterInterface
         if (currentPhase.isInitiativePhase()) {
             listener.onNextPlayerTurn(initiative.getCurrentExplorer());
         }
+    }
+
+    /**
+     * Remove encountered explorer from encounter
+     *
+     * @param encounteredExplorer Explorer to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    private void removeExplorer(EncounteredExplorerInterface encounteredExplorer) throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        }
+
+        explorerRoster.remove(encounteredExplorer);
+        encounteredExplorer.useAllActions();
+        listener.onRemoveExplorer(encounteredExplorer.getName());
+        handleEndOfAction();
+    }
+
+    /**
+     * Remove encountered hostile from encounter
+     *
+     * @param encounteredHostile Hostile to remove
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    private void removeHostile(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        }
+
+        hostiles.remove(encounteredHostile);
+        listener.onRemoveHostile(encounteredHostile.getName());
+        handleEndOfAction();
     }
 
     /**

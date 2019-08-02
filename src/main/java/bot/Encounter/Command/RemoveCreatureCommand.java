@@ -10,17 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class RemoveExplorerCommand extends EncounterCommand
+public class RemoveCreatureCommand extends EncounterCommand
 {
     /**
-     * RemoveExplorerCommand constructor
+     * RemoveCreatureCommand constructor
      *
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
      * @param dmChecker      Dungeon master checker
      */
-    RemoveExplorerCommand(
+    RemoveCreatureCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -32,14 +32,15 @@ public class RemoveExplorerCommand extends EncounterCommand
             holder,
             logger,
             dmChecker,
-            "removePc",
+            "remove",
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("ExplorerName", true));
+                    add(new CommandParameter("TargetName", true));
                 }
             },
-            "Remove a character from an encounter. The player may join again with a new character.",
+            "Remove a creature from an encounter. " +
+            "If an explorer is removed the player may join again with a new character.",
             true
         );
     }
@@ -50,9 +51,8 @@ public class RemoveExplorerCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[] parameters   = getParametersFromEvent(event);
-        String   explorerName = parameters[0];
+        String creatureName = getStringParameterFromEvent(event);
 
-        getEncounter().removeExplorer(explorerName);
+        getEncounter().removeCreature(creatureName);
     }
 }

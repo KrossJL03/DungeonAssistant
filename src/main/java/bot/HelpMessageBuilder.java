@@ -30,6 +30,8 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         ArrayList<CommandInterface> commands
     )
     {
+        commands.sort(new CommandComparator());
+
         Message message = new Message();
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format("%s COMMANDS", commandType).toUpperCase());

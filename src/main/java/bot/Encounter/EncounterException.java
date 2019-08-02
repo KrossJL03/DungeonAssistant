@@ -31,7 +31,7 @@ class EncounterException extends RuntimeException implements EncounterExceptionI
      */
     static @NotNull EncounterException createNullEncounter()
     {
-        return new EncounterException("There is no encounter.");
+        return new EncounterException("There is no encounter being created, use `?create encounter` to start one.");
     }
 
     /**

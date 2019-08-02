@@ -36,18 +36,18 @@ class ExplorerRepository
     ) {
         String sql =
             String.format(
-                "INSERT OR REPLACE INTO %s(playerId, name, strength, defense, agility, wisdom, hitpoints, appLink, statsLink)",
+                "INSERT OR REPLACE INTO %s(playerId, name, hitpoints, strength, wisdom, agility, defense, appLink, statsLink)",
                 ExplorerRepository.TABLE_NAME
             ) +
             String.format(
                 "VALUES('%s','%s',%d,%d,%d,%d,%d,'%s','%s')",
                 playerId,
                 name,
-                strength,
-                defense,
-                agility,
-                wisdom,
                 hitpoints,
+                strength,
+                wisdom,
+                agility,
+                defense,
                 appLink,
                 statsLink
             );
@@ -244,11 +244,11 @@ class ExplorerRepository
                      "(" +
                      " playerId  TEXT NOT NULL, " +
                      " name      TEXT NOT NULL , " +
-                     " strength  INT  NOT NULL, " +
-                     " defense   INT  NOT NULL, " +
-                     " agility   INT  NOT NULL, " +
-                     " wisdom    INT  NOT NULL, " +
                      " hitpoints INT  NOT NULL, " +
+                     " strength  INT  NOT NULL, " +
+                     " wisdom    INT  NOT NULL, " +
+                     " agility   INT  NOT NULL, " +
+                     " defense   INT  NOT NULL, " +
                      " appLink   TEXT NOT NULL, " +
                      " statsLInk TEXT NOT NULL, " +
                      " PRIMARY KEY (name COLLATE NOCASE)" +

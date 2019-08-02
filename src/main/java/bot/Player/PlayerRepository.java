@@ -133,7 +133,7 @@ public class PlayerRepository
         Statement         statement  = null;
         RegistryException exception  = null;
         String sql = String.format(
-            "SELECT userId FROM %s WHERE playerName = '%s'",
+            "SELECT userId FROM %s WHERE lower(name) = '%s'",
             PlayerRepository.TABLE_NAME,
             playerName
         );

@@ -82,21 +82,6 @@ public abstract class Command implements CommandInterface
     }
 
     /**
-     * Get formatted command
-     *
-     * @return String
-     */
-    final protected @NotNull String getFormattedCommand()
-    {
-        StringBuilder parameterBuilder = new StringBuilder();
-        for (CommandParameter parameter : parameters) {
-            parameterBuilder.append(parameter.getFormatted());
-            parameterBuilder.append(" ");
-        }
-        return String.format("`%s%s %s`", CommandListener.COMMAND_KEY, commandName, parameterBuilder.toString().trim());
-    }
-
-    /**
      * Get parameters from event
      *
      * @param event Event
@@ -105,12 +90,8 @@ public abstract class Command implements CommandInterface
      */
     final protected @NotNull String[] getParametersFromEvent(@NotNull MessageReceivedEvent event)
     {
-        String parameterString = event.getMessage().getContentRaw().replace(
-            CommandListener.COMMAND_KEY + commandName,
-            ""
-        ).trim();
-
-        String[] splitMessage = parameterString.length() > 0 ? parameterString.split("\\s+") : new String[0];
+        String   parameterString = getParameterString(event);
+        String[] splitMessage    = parameterString.length() > 0 ? parameterString.split("\\s+") : new String[0];
 
         if (splitMessage.length < getRequiredParameterCount()) {
             throw CommandException.createMissingParameters(getFormattedCommand());
@@ -132,6 +113,24 @@ public abstract class Command implements CommandInterface
     }
 
     /**
+     * Get parameters from event
+     *
+     * @param event Event
+     *
+     * @return String
+     */
+    final protected @NotNull String getStringParameterFromEvent(@NotNull MessageReceivedEvent event)
+    {
+        String parameterString = getParameterString(event);
+
+        if (parameterString.length() < 1 && getRequiredParameterCount() > 0) {
+            throw CommandException.createMissingParameters(getFormattedCommand());
+        }
+
+        return parameterString;
+    }
+
+    /**
      * Is database locked
      *
      * @return boolean
@@ -149,6 +148,38 @@ public abstract class Command implements CommandInterface
     final protected void removeProcessToManager(@NotNull ProcessInterface process)
     {
         processManager.removeProcess(process);
+    }
+
+    /**
+     * Get formatted command
+     *
+     * @return String
+     */
+    private @NotNull String getFormattedCommand()
+    {
+        StringBuilder parameterBuilder = new StringBuilder();
+        for (CommandParameter parameter : parameters) {
+            parameterBuilder.append(parameter.getFormatted());
+            parameterBuilder.append(" ");
+        }
+        return String.format("`%s%s %s`", CommandListener.COMMAND_KEY, commandName, parameterBuilder.toString().trim());
+    }
+
+    /**
+     * Get string of parameters from event
+     *
+     * @param event Event to retrieve parameter string from
+     *
+     * @return String
+     */
+    private @NotNull String getParameterString(MessageReceivedEvent event)
+    {
+        return event.getMessage()
+                    .getContentRaw()
+                    .trim()
+                    .substring(1)
+                    .replaceAll(String.format("(?i)%s", commandName), "")
+                    .trim();
     }
 
     /**

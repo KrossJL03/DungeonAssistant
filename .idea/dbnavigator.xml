@@ -8,11 +8,11 @@
   <component name="DBNavigator.Project.DataExportManager">
     <export-instructions>
       <create-header value="true" />
-      <quote-values-containing-separator value="true" />
+      <quote-values-containing-separator value="false" />
       <quote-all-values value="false" />
       <value-separator value="" />
-      <file-name value="" />
-      <file-location value="" />
+      <file-name value="player2019-08-01.xls" />
+      <file-location value="C:\Users\Jenny\Documents\Coding\Java\DungeonAssistant\Backups" />
       <scope value="GLOBAL" />
       <destination value="FILE" />
       <format value="EXCEL" />
@@ -23,7 +23,11 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
+        <schema name="main" object-types="column, constraint, index, table, dataset trigger, view" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
@@ -32,6 +36,11 @@
 
 SELECT * FROM playerCharacter;
 --DELETE FROM playerCharacter;
+--DROP TABLE playerCharacter;
+
+SELECT * FROM explorer;
+--DELETE FROM explorer;
+--DROP TABLE explorer;
 
 SELECT * FROM hostile;
 --DELETE FROM hostile;
@@ -45,15 +54,19 @@ SELECT * FROM consumable;
 SELECT * FROM tier;
 --DELETE * FROM tier;
 
-ALTER TABLE playerCharacter RENAME TO testPlayerCharacter;
---DROP TABLE playerCharacter;
+DELETE
+FROM explorer;
+
+INSERT INTO explorer
+SELECT playerId, name, hitpoints, strength, wisdom, agility, defense, appLink, statsLink
+FROM playerCharacter;
 
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
 
-SELECT h.rowid, h.*, l.* 
-FROM hostile h 
-INNER JOIN loot l ON l.hostile_id = h.rowid 
+SELECT h.rowid, h.*, l.*
+FROM hostile h
+INNER JOIN loot l ON l.hostile_id = h.rowid
 WHERE lower(h.species) = 'hootaloo';
 
 SELECT name, (strength + wisdom + agility + defense + (hitpoints/10) - 5) as statPoints
@@ -108,7 +121,7 @@ ORDER BY statPoints desc;]]></console>
           <port value="" />
           <database value="" />
           <files>
-            <file path="C:\Users\Jenny\Documents\Coding\Java\DungeonAssistant\src\main\java\bot\Repository\Database\database.db" schema="main" />
+            <file path="C:\Users\Jenny\Documents\Coding\Java\DungeonAssistant\src\main\java\bot\Registry\Database\database.db" schema="main" />
           </files>
           <os-authentication value="false" />
           <empty-password value="false" />

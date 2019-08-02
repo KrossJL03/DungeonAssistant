@@ -108,13 +108,13 @@ public interface EncounterInterface extends ProcessInterface
     void rejoin(@NotNull Player player);
 
     /**
-     * Remove encountered explorer from encounter
+     * Remove encountered creature from encounter
      *
-     * @param name Name of explorer
+     * @param name Name of creature
      *
      * @throws EncounterPhaseException If encounter is over
      */
-    void removeExplorer(@NotNull String name) throws EncounterPhaseException;
+    void removeCreature(@NotNull String name) throws EncounterPhaseException;
 
     /**
      * Set max player count

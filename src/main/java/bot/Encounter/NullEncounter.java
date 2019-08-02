@@ -126,7 +126,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void removeExplorer(@NotNull String name) throws EncounterPhaseException
+    public void removeCreature(@NotNull String name) throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
     }
