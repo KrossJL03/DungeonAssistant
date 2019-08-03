@@ -1,6 +1,6 @@
 package bot.Encounter.EncounteredCreature;
 
-import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredCreatureInterface;
 import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.HealActionResultInterface;
 import bot.Encounter.HurtActionResultInterface;
@@ -229,7 +229,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int takeDamage(@NotNull EncounterCreatureInterface attacker, int damage)
+    public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         if (currentHp > 0 && currentHp - damage < 1) {
             slayer = new Slayer(attacker.getName());

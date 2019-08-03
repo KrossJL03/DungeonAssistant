@@ -1,8 +1,5 @@
 package bot.Encounter.Logger;
 
-import bot.Player.Player;
-import net.dv8tion.jda.core.entities.Role;
-
 public class Mention {
 
     private String value;
@@ -41,5 +38,12 @@ public class Mention {
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * Factory method for everyone
+     */
+    static Mention createForEveryone() {
+        return new Mention("@everyone");
     }
 }

@@ -2,6 +2,7 @@ package bot.Registry.Record.Command;
 
 import bot.CommandParameter;
 import bot.Explorer.ExplorerManager;
+import bot.MyProperties;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -40,6 +41,10 @@ public class DeleteCharacterCommand extends RecordCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws RecordCommandException
     {
+        if (MyProperties.isBetaTest) {
+            throw RecordCommandException.createDisabledForTesting();
+        }
+
         ensureRecordingNotLocked();
 
         MessageChannel channel    = event.getChannel();

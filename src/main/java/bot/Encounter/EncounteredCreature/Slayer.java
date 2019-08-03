@@ -1,6 +1,6 @@
 package bot.Encounter.EncounteredCreature;
 
-import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredCreatureInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class Slayer
@@ -52,7 +52,7 @@ public class Slayer
      *
      * @return boolean
      */
-    boolean isSlayer(EncounterCreatureInterface slayer)
+    boolean isSlayer(EncounteredCreatureInterface slayer)
     {
         return name.equals(slayer.getName());
     }

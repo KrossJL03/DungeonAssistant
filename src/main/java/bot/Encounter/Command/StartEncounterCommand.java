@@ -47,7 +47,6 @@ public class StartEncounterCommand extends EncounterCommand
     {
         EncounterLogger logger = getLogger();
         logger.setChannel(event.getChannel());
-        logger.setEveryoneMention(Mention.createForRole(event.getGuild().getPublicRole().getId()));
         getEncounter().startJoinPhase();
     }
 }

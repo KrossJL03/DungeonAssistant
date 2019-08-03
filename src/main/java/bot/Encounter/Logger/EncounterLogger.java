@@ -36,6 +36,7 @@ public class EncounterLogger
     )
     {
         this.actionMessageBuilder = actionMessageBuilder;
+        this.everyoneMention = Mention.createForEveryone();
         this.phaseChangeMessageBuilder = phaseChangeMessageBuilder;
         this.summaryMessageBuilder = summaryMessageBuilder;
     }
@@ -58,7 +59,7 @@ public class EncounterLogger
     public void logPhaseChange(PhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (!MyProperties.isTest && result.getNextPhase().isJoinPhase()) {
+        if (!MyProperties.isAlphaTest && result.getNextPhase().isJoinPhase()) {
             message = everyoneMention.getValue() + " " + message;
         }
         sendMessage(message);
@@ -312,16 +313,6 @@ public class EncounterLogger
     public void setDmMention(@NotNull Mention dmMention)
     {
         this.dmMention = dmMention;
-    }
-
-    /**
-     * Set everyone mention
-     *
-     * @param everyoneMention Everyone mention
-     */
-    public void setEveryoneMention(@NotNull Mention everyoneMention)
-    {
-        this.everyoneMention = everyoneMention;
     }
 
     /**

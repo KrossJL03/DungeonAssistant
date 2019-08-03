@@ -63,8 +63,8 @@ public class EncounterCommandFactory implements CommandFactoryInterface
             dmChecker
         ));
         encounterCommands.add(new DodgeCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new PassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new DodgePassHelpCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndActionCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndTurnCommand(processManager, encounterHolder, encounterLogger, dmChecker));

@@ -15,13 +15,14 @@ public class PhaseChangeMessageBuilder
     public @NotNull PhaseChangeMessageBuilder()
     {
         this.messageBuilders = new ArrayList<>();
+        // order matters
+        messageBuilders.add(new JoinPhaseStartMessageFactory());
+        messageBuilders.add(new EndPhaseStartMessageFactory());
+        messageBuilders.add(new LootPhaseStartMessageFactory());
         messageBuilders.add(new AttackPhaseStartMessageFactory());
         messageBuilders.add(new AttackPhaseEndMessageFactory());
         messageBuilders.add(new DodgePhaseStartMessageFactory());
         messageBuilders.add(new DodgePhaseEndMessageFactory());
-        messageBuilders.add(new EndPhaseStartMessageFactory());
-        messageBuilders.add(new JoinPhaseStartMessageFactory());
-        messageBuilders.add(new LootPhaseStartMessageFactory());
     }
 
     /**

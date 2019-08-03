@@ -3,14 +3,16 @@ package bot.Registry;
 import bot.CommandFactoryInterface;
 import bot.PrivateLogger;
 import bot.ProcessManager;
-import bot.Registry.Logger.Message.Help.HelpRegistryMessageBuilder;
 import bot.Registry.Record.Command.RecordCommandFactory;
+import bot.Registry.Record.Logger.Message.HelpRecordMessageBuilder;
 import bot.Registry.Review.Command.ReviewCommandFactory;
+import bot.Registry.Review.Logger.Message.HelpReviewMessageBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public class RegistryServiceProvider
 {
-    private PrivateLogger  privateLogger;
+    private PrivateLogger  recordPrivateLogger;
+    private PrivateLogger  reviewPrivateLogger;
     private ProcessManager processManager;
     private RegistryLogger logger;
 
@@ -22,8 +24,9 @@ public class RegistryServiceProvider
     public RegistryServiceProvider(@NotNull ProcessManager processManager)
     {
         this.logger = new RegistryLogger();
-        this.privateLogger = new PrivateLogger(new HelpRegistryMessageBuilder());
         this.processManager = processManager;
+        this.recordPrivateLogger = new PrivateLogger(new HelpRecordMessageBuilder());
+        this.reviewPrivateLogger = new PrivateLogger(new HelpReviewMessageBuilder());
     }
 
     /**
@@ -33,7 +36,7 @@ public class RegistryServiceProvider
      */
     public @NotNull CommandFactoryInterface getRecordCommandFactory()
     {
-        return new RecordCommandFactory(processManager, logger, privateLogger);
+        return new RecordCommandFactory(processManager, logger, recordPrivateLogger);
     }
 
     /**
@@ -43,6 +46,6 @@ public class RegistryServiceProvider
      */
     public @NotNull CommandFactoryInterface getReviewCommandFactory()
     {
-        return new ReviewCommandFactory(processManager, logger, privateLogger);
+        return new ReviewCommandFactory(processManager, logger, reviewPrivateLogger);
     }
 }

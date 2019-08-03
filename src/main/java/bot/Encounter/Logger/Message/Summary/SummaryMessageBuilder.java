@@ -1,6 +1,6 @@
 package bot.Encounter.Logger.Message.Summary;
 
-import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredCreatureInterface;
 import bot.Encounter.EncounteredCreature.Slayer;
 import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.EncounteredHostileInterface;
@@ -76,7 +76,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getHealthBarLine(EncounterCreatureInterface creature)
+    private @NotNull String getHealthBarLine(EncounteredCreatureInterface creature)
     {
         StringBuilder output    = new StringBuilder();
         int           currentHP = creature.getCurrentHP();
@@ -151,7 +151,7 @@ public class SummaryMessageBuilder
      *
      * @return boolean
      */
-    private boolean isLowHealth(EncounterCreatureInterface creature)
+    private boolean isLowHealth(EncounteredCreatureInterface creature)
     {
         return creature.getCurrentHP() < (creature.getMaxHP() / 4);
     }

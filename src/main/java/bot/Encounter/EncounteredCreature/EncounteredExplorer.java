@@ -14,18 +14,18 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private static int FINAL_BLOW_BONUS = 300;
     private static int LOOT_DIE         = 10;
 
-    private Player                                owner;
-    private Slayer                                slayer;
-    private ArrayList<EncounterCreatureInterface> kills;
-    private LootActionResult                      loot;
-    private String                                name;
-    private int                                   agility;
-    private int                                   currentActions;
-    private int                                   currentHp;
-    private int                                   defense;
-    private int                                   maxHp;
-    private int                                   strength;
-    private int                                   wisdom;
+    private Player                                  owner;
+    private Slayer                                  slayer;
+    private ArrayList<EncounteredCreatureInterface> kills;
+    private LootActionResult                        loot;
+    private String                                  name;
+    private int                                     agility;
+    private int                                     currentActions;
+    private int                                     currentHp;
+    private int                                     defense;
+    private int                                     maxHp;
+    private int                                     strength;
+    private int                                     wisdom;
     private boolean                               hasProtect;
     private boolean                               isPresent;
 
@@ -57,7 +57,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void addKill(@NotNull EncounterCreatureInterface kill) throws EncounteredExplorerException
+    public void addKill(@NotNull EncounteredCreatureInterface kill) throws EncounteredExplorerException
     {
         if (!isActive()) {
             throw EncounteredExplorerException.createFailedToAddKill(name, kill.getName());
@@ -69,7 +69,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull AttackActionResult attack(@NotNull EncounterCreatureInterface target)
+    public @NotNull AttackActionResult attack(@NotNull EncounteredCreatureInterface target)
         throws EncounteredExplorerException
     {
         if (!hasActions()) {
@@ -349,7 +349,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
         if (isSlain()) {
-            slayer = null;
+            slayer = new Slayer();
         }
 
         int healedHp;
@@ -371,7 +371,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public int healPercent(float percent)
     {
         if (isSlain()) {
-            slayer = null;
+            slayer = new Slayer();
         }
 
         int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
@@ -393,7 +393,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         int hurtHp;
         if (currentHp - hitpoints < 0) {
-            hurtHp = currentHp - hitpoints;
+            hurtHp = currentHp;
             currentHp = 0;
         } else {
             hurtHp = hitpoints;
@@ -571,9 +571,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public void rollLoot()
     {
-        ArrayList<EncounterCreatureInterface> finalBlows = new ArrayList<>();
-        ArrayList<LootRollInterface>          lootRolls  = new ArrayList<>();
-        for (EncounterCreatureInterface kill : kills) {
+        ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
+        ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
+        for (EncounteredCreatureInterface kill : kills) {
             int roll = (int) Math.floor(Math.random() * LOOT_DIE) + 1;
             lootRolls.add(new LootRoll(roll, kill.getName(), kill.getLoot(roll)));
             if (kill.getSlayer().isSlayer(this)) {
@@ -594,7 +594,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int takeDamage(@NotNull EncounterCreatureInterface attacker, int damage)
+    public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         damage = damage - this.getEndurance();
         damage = damage < 1 ? 1 : damage;

@@ -3,6 +3,7 @@ package bot.Encounter.Command;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
+import bot.Player.Player;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,8 @@ public class DodgePassCommand extends EncounterCommand
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
-    ){
+    )
+    {
         super(
             processManager,
             holder,
@@ -32,8 +34,9 @@ public class DodgePassCommand extends EncounterCommand
             dmChecker,
             "dodgePass",
             new ArrayList<>(),
-            "The current character successfully dodges all attacks this round",
-            true
+            "Auto dodge all attacks. Use for smoke bombs, special abilities, or being protected." +
+            " DM will be pinged to confirm.",
+            false
         );
     }
 
@@ -43,6 +46,8 @@ public class DodgePassCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        getHostileEncounter().dodgePassAction();
+        Player player = getPlayerFromEvent(event);
+
+        getLogger().pingDmDodgePass(player);
     }
 }

@@ -3,7 +3,7 @@ package bot.Encounter;
 import bot.Hostile.Hostile;
 import org.jetbrains.annotations.NotNull;
 
-public interface EncounteredHostileInterface extends EncounterCreatureInterface
+public interface EncounteredHostileInterface extends EncounteredCreatureInterface
 {
     /**
      * Attack

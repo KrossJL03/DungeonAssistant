@@ -75,6 +75,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
                 ));
             }
         }
+        message.addNewLine();
         message.add(String.format("combined attacks add up to %d dmg!!", totalDamage));
         message.endCodeBlock();
 

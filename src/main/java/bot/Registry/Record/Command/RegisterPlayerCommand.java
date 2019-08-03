@@ -1,5 +1,6 @@
 package bot.Registry.Record.Command;
 
+import bot.MyProperties;
 import bot.Player.PlayerManager;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
@@ -34,9 +35,13 @@ public class RegisterPlayerCommand extends RecordCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws RecordCommandException
     {
+        if (MyProperties.isBetaTest) {
+            throw RecordCommandException.createDisabledForTesting();
+        }
+
         ensureRecordingNotLocked();
 
-        MessageChannel channel = event.getChannel();
+        MessageChannel channel  = event.getChannel();
         String         nickname = event.getMember().getNickname();
         if (nickname == null) {
             nickname = event.getAuthor().getName();

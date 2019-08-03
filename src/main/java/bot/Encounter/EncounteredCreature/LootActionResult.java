@@ -1,6 +1,6 @@
 package bot.Encounter.EncounteredCreature;
 
-import bot.Encounter.EncounterCreatureInterface;
+import bot.Encounter.EncounteredCreatureInterface;
 import bot.Encounter.Logger.Mention;
 import bot.Encounter.LootActionResultInterface;
 import bot.Encounter.LootRollInterface;
@@ -11,13 +11,13 @@ import java.util.ArrayList;
 
 public class LootActionResult implements LootActionResultInterface
 {
-    private ArrayList<EncounterCreatureInterface> finalBlows;
-    private ArrayList<LootRollInterface>           lootRolls;
-    private Player                                 owner;
-    private String                                 name;
-    private int                                    finalBlowBonus;
-    private int                                    lootDie;
-    private boolean                                isRolled;
+    private ArrayList<EncounteredCreatureInterface> finalBlows;
+    private ArrayList<LootRollInterface>            lootRolls;
+    private Player                                  owner;
+    private String                                  name;
+    private int                                     finalBlowBonus;
+    private int                                     lootDie;
+    private boolean                                 isRolled;
 
     /**
      * LootActionResult constructor
@@ -48,7 +48,7 @@ public class LootActionResult implements LootActionResultInterface
         @NotNull String name,
         @NotNull Player owner,
         @NotNull ArrayList<LootRollInterface> lootRolls,
-        @NotNull ArrayList<EncounterCreatureInterface> kills,
+        @NotNull ArrayList<EncounteredCreatureInterface> kills,
         int lootDie,
         int finalBlowBonus
     )
@@ -78,7 +78,7 @@ public class LootActionResult implements LootActionResultInterface
     public @NotNull ArrayList<String> getFinalBlowNames()
     {
         ArrayList<String> finalBlowNames = new ArrayList<>();
-        for (EncounterCreatureInterface finalBlow : finalBlows) {
+        for (EncounteredCreatureInterface finalBlow : finalBlows) {
             finalBlowNames.add(finalBlow.getName());
         }
         return finalBlowNames;

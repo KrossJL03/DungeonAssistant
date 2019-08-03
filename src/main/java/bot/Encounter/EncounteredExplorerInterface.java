@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public interface EncounteredExplorerInterface extends EncounterCreatureInterface
+public interface EncounteredExplorerInterface extends EncounteredCreatureInterface
 {
     /**
      * Add kill
@@ -15,7 +15,7 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      *
      * @throws EncounteredExplorerException If explorer was not active for kill
      */
-    void addKill(@NotNull EncounterCreatureInterface encounterCreature) throws EncounteredExplorerException;
+    void addKill(@NotNull EncounteredCreatureInterface encounterCreature) throws EncounteredExplorerException;
 
     /**
      * Attack a target
@@ -26,7 +26,7 @@ public interface EncounteredExplorerInterface extends EncounterCreatureInterface
      *
      * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull AttackActionResultInterface attack(@NotNull EncounterCreatureInterface target)
+    @NotNull AttackActionResultInterface attack(@NotNull EncounteredCreatureInterface target)
         throws EncounteredExplorerException;
 
     /**

@@ -4,7 +4,7 @@ import bot.Encounter.EncounteredCreature.Slayer;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
-public interface EncounterCreatureInterface
+public interface EncounteredCreatureInterface
 {
     /**
      * Get attack dice
@@ -112,5 +112,5 @@ public interface EncounterCreatureInterface
      *
      * @return damage taken
      */
-    int takeDamage(@NotNull EncounterCreatureInterface attacker, int damage);
+    int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage);
 }

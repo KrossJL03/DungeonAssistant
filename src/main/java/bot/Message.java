@@ -29,7 +29,7 @@ public class Message implements MessageInterface
     /**
      * Add break
      */
-    void addBreak()
+    public void addBreak()
     {
         stringBuilder.append(NEWLINE);
     }

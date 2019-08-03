@@ -69,8 +69,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
      */
     static @NotNull EncounterPhaseException createNotInitiativePhase()
     {
-        return new EncounterPhaseException(
-            "There is no turn order currently, so there is no current player to be skipped.");
+        return new EncounterPhaseException("There is no initiative currently.");
     }
 
     /**
@@ -85,6 +84,22 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
                 "You can only `%sloot` during the %s turn",
                 CommandListener.COMMAND_KEY,
                 EncounterPhaseInterface.LOOT_PHASE
+            )
+        );
+    }
+
+    /**
+     * Factory method for "not loot phase"
+     *
+     * @return EncounterPhaseException
+     */
+    static @NotNull EncounterPhaseException createNotPassablePhase()
+    {
+        return new EncounterPhaseException(
+            String.format(
+                "You can only `%spass` during the %s turn",
+                CommandListener.COMMAND_KEY,
+                EncounterPhaseInterface.DODGE_PHASE
             )
         );
     }
@@ -120,7 +135,8 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
      *
      * @return EncounterPhaseException
      */
-    static @NotNull EncounterPhaseException createSetTierAfterCreatePhase() {
+    static @NotNull EncounterPhaseException createSetTierAfterCreatePhase()
+    {
         return new EncounterPhaseException("Tier must be set before the encounter has started");
     }
 

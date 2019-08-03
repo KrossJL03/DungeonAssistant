@@ -27,4 +27,16 @@ class RecordCommandException extends CommandException
             "Characters cannot be created or updated while an encounter is in progress, please try again later."
         );
     }
+
+    /**
+     * Factory method for "disabled for testing"
+     *
+     * @return RecordCommandException
+     */
+    static @NotNull RecordCommandException createDisabledForTesting()
+    {
+        return new RecordCommandException(
+            "Sorry, the bot is currently being worked on so this command has been disabled temporarily."
+        );
+    }
 }

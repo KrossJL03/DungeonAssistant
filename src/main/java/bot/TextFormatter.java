@@ -63,4 +63,16 @@ public class TextFormatter
     {
         return String.format("*%s*", text);
     }
+
+    /**
+     * Make link text not display and embed preview
+     *
+     * @param text Text to format
+     *
+     * @return String
+     */
+    public @NotNull String makeLinkPreviewless(String text)
+    {
+        return String.format("<%s>", text);
+    }
 }
