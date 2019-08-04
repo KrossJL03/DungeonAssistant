@@ -1,9 +1,7 @@
 package bot.Encounter.EncounteredCreature;
 
-import bot.Encounter.EncounteredCreatureInterface;
-import bot.Encounter.EncounteredHostileInterface;
-import bot.Encounter.HealActionResultInterface;
-import bot.Encounter.HurtActionResultInterface;
+import bot.Constant;
+import bot.Encounter.*;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
@@ -11,10 +9,12 @@ import org.jetbrains.annotations.NotNull;
 public class EncounteredHostile implements EncounteredHostileInterface
 {
     private Hostile hostile;
-    private int     currentHp;
-    private String  name;
     private Slayer  slayer;
+    private String  name;
+    private int     attack;
     private int     attackRoll;
+    private int     currentHp;
+    private int     maxHp;
 
     /**
      * EncounteredHostile constructor
@@ -24,8 +24,10 @@ public class EncounteredHostile implements EncounteredHostileInterface
      */
     public EncounteredHostile(@NotNull Hostile hostile, @NotNull String name)
     {
+        this.attack = hostile.getAttackDice();
         this.attackRoll = 0;
         this.currentHp = hostile.getHitpoints();
+        this.maxHp = hostile.getHitpoints();
         this.hostile = hostile;
         this.name = name;
         this.slayer = new Slayer();
@@ -46,7 +48,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public int getAttackDice()
     {
-        return hostile.getAttackDice();
+        return attack;
     }
 
     /**
@@ -82,7 +84,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public int getMaxHP()
     {
-        return hostile.getHitpoints();
+        return maxHp;
     }
 
     /**
@@ -128,9 +130,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
         int healedHp;
-        if (currentHp + hitpoints > getMaxHP()) {
-            healedHp = getMaxHP() - currentHp;
-            currentHp = getMaxHP();
+        if (currentHp + hitpoints > maxHp) {
+            healedHp = maxHp - currentHp;
+            currentHp = maxHp;
         } else {
             healedHp = hitpoints;
             currentHp += hitpoints;
@@ -140,7 +142,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
             slayer = null;
         }
 
-        return new HealActionResult(name, healedHp, currentHp, getMaxHP());
+        return new HealActionResult(name, healedHp, currentHp, maxHp);
     }
 
     /**
@@ -152,10 +154,10 @@ public class EncounteredHostile implements EncounteredHostileInterface
         if (isSlain()) {
             slayer = null;
         }
-        int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
-        if (currentHp + hitpointsHealed > getMaxHP()) {
-            hitpointsHealed = getMaxHP() - currentHp;
-            currentHp = getMaxHP();
+        int hitpointsHealed = (int) Math.floor(maxHp * percent);
+        if (currentHp + hitpointsHealed > maxHp) {
+            hitpointsHealed = maxHp - currentHp;
+            currentHp = maxHp;
         } else {
             currentHp += hitpointsHealed;
         }
@@ -177,7 +179,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
             currentHp -= hitpoints;
         }
 
-        return new HurtActionResult(name, hurtHp, currentHp, getMaxHP());
+        return new HurtActionResult(name, hurtHp, currentHp, maxHp);
     }
 
     /**
@@ -211,6 +213,26 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier)
+    {
+        switch (statName.toLowerCase()) {
+            case Constant.HOSTILE_STAT_ATTACK:
+                return modifyAttack(statModifier);
+            case Constant.HOSTILE_STAT_HITPOINTS:
+                return modifyHitpoints(statModifier);
+            case Constant.HOSTILE_STAT_ATTACK_SHORT:
+                return modifyAttack(statModifier);
+            case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
+                return modifyHitpoints(statModifier);
+            default:
+                throw EncounteredCreatureException.createInvalidStatName(statName);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int rollDamage()
     {
         return (int) Math.floor(Math.random() * getAttackDice()) + 1;
@@ -238,5 +260,48 @@ public class EncounteredHostile implements EncounteredHostileInterface
             currentHp -= damage;
         }
         return damage;
+    }
+
+    private @NotNull ModifyStatActionResultInterface modifyAttack(int statModifier)
+    {
+        int moddedStatValue = attack + statModifier;
+        if (moddedStatValue < Constant.HOSTILE_MIN_ATTACK) {
+            throw EncounteredCreatureException.createStatLessThanMin(
+                name,
+                Constant.HOSTILE_STAT_ATTACK,
+                Constant.HOSTILE_MIN_ATTACK
+            );
+        }
+        attack = moddedStatValue;
+
+        return new ModifyStatActionResult(name, Constant.HOSTILE_STAT_ATTACK, statModifier, attack);
+    }
+
+    /**
+     * Modify hitpoints
+     *
+     * @param statModifier Hitpoints modifier
+     *
+     * @return ModifyStatActionResultInterface
+     */
+    private @NotNull ModifyStatActionResultInterface modifyHitpoints(int statModifier)
+    {
+        int moddedStatValue = maxHp + statModifier;
+        if (moddedStatValue < Constant.HOSTILE_MIN_HITPOINTS) {
+            throw EncounteredCreatureException.createStatLessThanMin(
+                name,
+                Constant.HOSTILE_STAT_HITPOINTS,
+                Constant.HOSTILE_MIN_HITPOINTS
+            );
+        }
+        maxHp += statModifier;
+        if (statModifier > 0) {
+            currentHp += statModifier;
+        }
+        if (currentHp > maxHp) {
+            currentHp = maxHp;
+        }
+
+        return new ModifyStatActionResult(name, Constant.HOSTILE_STAT_HITPOINTS, statModifier, maxHp);
     }
 }

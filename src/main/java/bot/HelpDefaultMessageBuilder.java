@@ -70,6 +70,12 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
         message.add(codeFormatter.makeGreen(
             "Letters are no longer appended to all hostile names, only when multiple exist without nicknames"
         ));
+        message.add(codeFormatter.makeGreen(
+            "?statDrop and ?statBoost have been combined and renamed to ?modifyStat"
+        ));
+        message.add(codeFormatter.makeGreen(
+            "?modifyStat now works on hostiles"
+        ));
         message.addBreak();
         message.add(codeFormatter.makeGrey("Last Update 2019-08-03"));
         message.endCodeBlock();

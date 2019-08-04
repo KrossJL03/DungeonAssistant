@@ -399,8 +399,8 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        EncounteredExplorerInterface    encounteredExplorer = explorerRoster.getExplorer(name);
-        ModifyStatActionResultInterface result              = encounteredExplorer.modifyStat(statName, statModifier);
+        EncounteredCreatureInterface    encounteredCreature = getCreature(name);
+        ModifyStatActionResultInterface result              = encounteredCreature.modifyStat(statName, statModifier);
         explorerRoster.sort();
         listener.onAction(result);
     }

@@ -85,8 +85,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         ));
         encounterCommands.add(new SetTierCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new SkipCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StatBoostCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new StatDropCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new ModifyStatCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new ViewSummaryCommand(processManager, encounterHolder, encounterLogger, dmChecker));
 
         ArrayList<CommandInterface> commands = new ArrayList<>(encounterCommands);

@@ -1,78 +1,41 @@
 package bot;
 
-import bot.Encounter.EncounteredCreature.EncounteredExplorerException;
+public class Constant
+{
+    // todo rename and move to proper location for Explorer/Hostile and/or EncounteredCreature
 
-import java.util.ArrayList;
+    public static final int EXPLORER_MAX_AGILITY   = 20;
+    public static final int EXPLORER_MAX_DEFENSE   = 20;
+    public static final int EXPLORER_MAX_HITPOINTS = 240;
+    public static final int EXPLORER_MAX_STRENGTH  = 20;
+    public static final int EXPLORER_MAX_WISDOM    = 20;
 
-public class Constant {
+    public static final int EXPLORER_MIN_AGILITY   = 0;
+    public static final int EXPLORER_MIN_DEFENSE   = 0;
+    public static final int EXPLORER_MIN_HITPOINTS = 50;
+    public static final int EXPLORER_MIN_STRENGTH  = 0;
+    public static final int EXPLORER_MIN_WISDOM    = 0;
 
-    // todo rename and move to EncounteredCreature folder, or refactor how stats are changed
+    public static final int EXPLORER_HITPOINT_STAT_MULTIPLIER = 10;
 
-    public static final int MAX_AGILITY  = 20;
-    public static final int MAX_DEFENSE  = 20;
-    public static final int MAX_MAX_HP   = 240;
-    public static final int MAX_STRENGTH = 20;
-    public static final int MAX_WISDOM   = 20;
+    public static final String EXPLORER_STAT_AGILITY   = "agility";
+    public static final String EXPLORER_STAT_DEFENSE   = "defense";
+    public static final String EXPLORER_STAT_HITPOINTS = "hitpoints";
+    public static final String EXPLORER_STAT_STRENGTH  = "strength";
+    public static final String EXPLORER_STAT_WISDOM    = "wisdom";
 
-    public static final int MIN_AGILITY  = 0;
-    public static final int MIN_DEFENSE  = 0;
-    public static final int MIN_MAX_HP   = 50;
-    public static final int MIN_STRENGTH = 0;
-    public static final int MIN_WISDOM   = 0;
+    public static final String EXPLORER_STAT_AGILITY_SHORT   = "agi";
+    public static final String EXPLORER_STAT_DEFENSE_SHORT   = "def";
+    public static final String EXPLORER_STAT_HITPOINTS_SHORT = "hp";
+    public static final String EXPLORER_STAT_STRENGTH_SHORT  = "str";
+    public static final String EXPLORER_STAT_WISDOM_SHORT    = "wis";
 
-    public static final int HP_STAT_MULTIPLIER = 10;
+    public static final int HOSTILE_MIN_ATTACK    = 1;
+    public static final int HOSTILE_MIN_HITPOINTS = 1;
 
-    public static final String STAT_AGILITY  = "agility";
-    public static final String STAT_DEFENSE  = "defense";
-    public static final String STAT_MAX_HP   = "maxHp";
-    public static final String STAT_STRENGTH = "strength";
-    public static final String STAT_WISDOM   = "wisdom";
+    public static final String HOSTILE_STAT_ATTACK    = "attack";
+    public static final String HOSTILE_STAT_HITPOINTS = "hitpoints";
 
-    public static int getStatMax(String statName) {
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                return MAX_AGILITY;
-            case Constant.STAT_DEFENSE:
-                return MAX_DEFENSE;
-            case Constant.STAT_MAX_HP:
-                return MAX_MAX_HP;
-            case Constant.STAT_STRENGTH:
-                return MAX_STRENGTH;
-            case Constant.STAT_WISDOM:
-                return MAX_WISDOM;
-            default:
-                throw EncounteredExplorerException.invalidStatName(statName);
-        }
-    }
-
-    public static int getStatMin(String statName) {
-        switch (statName) {
-            case Constant.STAT_AGILITY:
-                return MIN_AGILITY;
-            case Constant.STAT_DEFENSE:
-                return MIN_DEFENSE;
-            case Constant.STAT_MAX_HP:
-                return MIN_MAX_HP;
-            case Constant.STAT_STRENGTH:
-                return MIN_STRENGTH;
-            case Constant.STAT_WISDOM:
-                return MIN_WISDOM;
-            default:
-                throw EncounteredExplorerException.invalidStatName(statName);
-        }
-    }
-
-    private static ArrayList<String> getStatNames() {
-        return new ArrayList<String>() {{
-            add(STAT_AGILITY);
-            add(STAT_DEFENSE);
-            add(STAT_MAX_HP);
-            add(STAT_STRENGTH);
-            add(STAT_WISDOM);
-        }};
-    }
-
-    public static boolean isStatName(String name) {
-        return getStatNames().contains(name);
-    }
+    public static final String HOSTILE_STAT_ATTACK_SHORT    = "atk";
+    public static final String HOSTILE_STAT_HITPOINTS_SHORT = "hp";
 }

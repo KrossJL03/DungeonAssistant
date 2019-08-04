@@ -27,7 +27,7 @@ public class AttackPhaseEndMessageFactory implements PhaseChangeMessageFactoryIn
         @NotNull EncounterPhaseInterface nextPhase
     )
     {
-        return previousPhase.isAttackPhase();
+        return previousPhase.isAttackPhase() && nextPhase.isRpPhase();
     }
 
     /**

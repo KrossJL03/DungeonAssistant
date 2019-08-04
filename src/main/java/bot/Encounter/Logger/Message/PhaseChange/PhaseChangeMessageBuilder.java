@@ -20,8 +20,8 @@ public class PhaseChangeMessageBuilder
         messageBuilders.add(new EndPhaseStartMessageFactory());
         messageBuilders.add(new LootPhaseStartMessageFactory());
         messageBuilders.add(new AttackPhaseStartMessageFactory());
-        messageBuilders.add(new AttackPhaseEndMessageFactory());
         messageBuilders.add(new DodgePhaseStartMessageFactory());
+        messageBuilders.add(new AttackPhaseEndMessageFactory());
         messageBuilders.add(new DodgePhaseEndMessageFactory());
     }
 

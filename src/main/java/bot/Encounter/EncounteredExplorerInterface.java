@@ -161,14 +161,6 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void leave() throws EncounteredExplorerException;
 
     /**
-     * Modify stat
-     *
-     * @param statName     Name of stat to modify
-     * @param statModifier Modifier to apply to stat
-     */
-    @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier);
-
-    /**
      * Protect recipient from encountered hostile attacks
      *
      * @param recipient           Encountered explorer being protected

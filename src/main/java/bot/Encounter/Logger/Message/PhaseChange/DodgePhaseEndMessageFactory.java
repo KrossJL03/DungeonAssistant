@@ -27,7 +27,7 @@ public class DodgePhaseEndMessageFactory implements PhaseChangeMessageFactoryInt
         @NotNull EncounterPhaseInterface nextPhase
     )
     {
-        return previousPhase.isDodgePhase();
+        return previousPhase.isDodgePhase() && nextPhase.isRpPhase();
     }
 
     /**

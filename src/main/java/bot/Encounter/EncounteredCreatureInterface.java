@@ -101,6 +101,14 @@ public interface EncounteredCreatureInterface
     @NotNull HurtActionResultInterface hurt(int hitpoints);
 
     /**
+     * Modify stat
+     *
+     * @param statName     Name of stat to modify
+     * @param statModifier Modifier to apply to stat
+     */
+    @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier);
+
+    /**
      * Roll damage
      *
      * @return int

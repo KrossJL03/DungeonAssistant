@@ -86,29 +86,29 @@ public class Explorer
         int agility,
         int wisdom
     ) {
-        if (strength > Constant.MAX_STRENGTH) {
+        if (strength > Constant.EXPLORER_MAX_STRENGTH) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too strong! %d/%d", name, strength, Constant.MAX_STRENGTH)
+                String.format("%s is too strong! %d/%d", name, strength, Constant.EXPLORER_MAX_STRENGTH)
             );
-        } else if (defense > Constant.MAX_DEFENSE) {
+        } else if (defense > Constant.EXPLORER_MAX_DEFENSE) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too durable! %d/%d", name, defense, Constant.MAX_DEFENSE)
+                String.format("%s is too durable! %d/%d", name, defense, Constant.EXPLORER_MAX_DEFENSE)
             );
-        } else if (agility > Constant.MAX_AGILITY) {
+        } else if (agility > Constant.EXPLORER_MAX_AGILITY) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too fast! %d/%d", name, agility, Constant.MAX_AGILITY)
+                String.format("%s is too fast! %d/%d", name, agility, Constant.EXPLORER_MAX_AGILITY)
             );
-        } else if (wisdom > Constant.MAX_WISDOM) {
+        } else if (wisdom > Constant.EXPLORER_MAX_WISDOM) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too wise! %d/%d", name, wisdom, Constant.MAX_WISDOM)
+                String.format("%s is too wise! %d/%d", name, wisdom, Constant.EXPLORER_MAX_WISDOM)
             );
-        } else if (hitpoints > Constant.MAX_MAX_HP) {
+        } else if (hitpoints > Constant.EXPLORER_MAX_HITPOINTS) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too healthy! %d/%d", name, hitpoints, Constant.MAX_MAX_HP)
+                String.format("%s is too healthy! %d/%d", name, hitpoints, Constant.EXPLORER_MAX_HITPOINTS)
             );
-        } else if (hitpoints < Constant.MIN_MAX_HP) {
+        } else if (hitpoints < Constant.EXPLORER_MIN_HITPOINTS) {
             throw new OutOfBoundsStatExecption(
-                String.format("%s is too weak! They should have at least %d HP!", name, Constant.MIN_MAX_HP)
+                String.format("%s is too weak! They should have at least %d HP!", name, Constant.EXPLORER_MIN_HITPOINTS)
             );
         }
     }

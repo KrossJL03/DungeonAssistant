@@ -10,17 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class StatDropCommand extends EncounterCommand
+public class ModifyStatCommand extends EncounterCommand
 {
     /**
-     * StatDropCommand constructor
+     * ModifyStatCommand constructor
      *
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
      * @param dmChecker      Dungeon master checker
      */
-    StatDropCommand(
+    ModifyStatCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -32,7 +32,7 @@ public class StatDropCommand extends EncounterCommand
             holder,
             logger,
             dmChecker,
-            "statDrop",
+            "modify",
             new ArrayList<CommandParameter>()
             {
                 {
@@ -41,7 +41,8 @@ public class StatDropCommand extends EncounterCommand
                     add(new CommandParameter("Amount", true));
                 }
             },
-            "Temporarily decrease an explorer's stat by the boost amount for the duration of the encounter.",
+            "Temporarily modify a creature's stat by the amount for the duration of the encounter. " +
+            "Add '-' to the amount to decrease the stat by the given amount.",
             true
         );
     }
@@ -52,10 +53,20 @@ public class StatDropCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[] parameters = getParametersFromEvent(event);
-        String   targetName = parameters[0];
-        String   statName   = parameters[1];
-        int      dropAmount = 0 - Integer.parseInt(parameters[2]);
-        getEncounter().modifyStat(targetName, statName, dropAmount);
+        String[] parameters  = getParametersFromEvent(event);
+        String   targetName  = parameters[0];
+        String   statName    = parameters[1];
+        String   boostString = parameters[2];
+
+        if (boostString.startsWith("-")) {
+            int boostAmount = Integer.parseInt(boostString.substring(1).trim());
+            getEncounter().modifyStat(targetName, statName, 0 - boostAmount);
+        } else if (boostString.startsWith("+")) {
+            int boostAmount = Integer.parseInt(boostString.substring(1).trim());
+            getEncounter().modifyStat(targetName, statName, boostAmount);
+        } else {
+            int boostAmount = Integer.parseInt(boostString.trim());
+            getEncounter().modifyStat(targetName, statName, boostAmount);
+        }
     }
 }

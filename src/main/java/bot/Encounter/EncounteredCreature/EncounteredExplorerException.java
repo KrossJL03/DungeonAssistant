@@ -1,8 +1,6 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.CommandListener;
-import bot.Constant;
-import bot.CustomExceptionInterface;
 import bot.Encounter.EncounterExceptionInterface;
 import bot.Encounter.Logger.Mention;
 import bot.Player.Player;
@@ -18,18 +16,6 @@ public class EncounteredExplorerException extends RuntimeException implements En
     private @NotNull EncounteredExplorerException(@NotNull String message)
     {
         super(message);
-    }
-
-    /**
-     * Factory method for "invalid stat name"
-     *
-     * @param name Stat name
-     *
-     * @return EncounteredExplorerException
-     */
-    public static @NotNull EncounteredExplorerException invalidStatName(String name)
-    {
-        return new EncounteredExplorerException(String.format("%s is not the name of a stat", name));
     }
 
     /**
@@ -141,26 +127,5 @@ public class EncounteredExplorerException extends RuntimeException implements En
      */
     static @NotNull EncounteredExplorerException createProtectYourself() {
         return new EncounteredExplorerException("You can't protect yourself.");
-    }
-
-    /**
-     * Factory method for "out of bounds stat"
-     *
-     * @param name     Explorer name
-     * @param statName Stat name
-     *
-     * @return EncounteredExplorerException
-     */
-    static @NotNull EncounteredExplorerException createStatOutOfBounds(String name, String statName)
-    {
-        return new EncounteredExplorerException(
-            String.format(
-                "%s's %s must be between %d and %d!",
-                name,
-                statName,
-                Constant.getStatMin(statName),
-                Constant.getStatMax(statName)
-            )
-        );
     }
 }
