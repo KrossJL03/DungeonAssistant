@@ -11,7 +11,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
     private MarkdownCodeFormatter codeFormatter;
 
     /**
-     * HelpEncounterMessageBuilder constructor.
+     * HelpMessageBuilder constructor.
      */
     protected @NotNull HelpMessageBuilder(@NotNull MarkdownCodeFormatter codeFormatter)
     {
