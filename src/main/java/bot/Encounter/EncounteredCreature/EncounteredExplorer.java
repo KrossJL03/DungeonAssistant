@@ -334,6 +334,40 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         return this.wisdom;
     }
 
+    @Override
+    public @NotNull GuardActionResultInterface guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+        throws EncounteredExplorerException
+    {
+        if (!hasActions()) {
+            throw EncounteredExplorerException.createHasNoActions(name);
+        }
+
+        ArrayList<GuardResultInterface> guardResults = new ArrayList<>();
+        for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
+            int hostileDamageRoll = encounteredHostile.getAttackRoll();
+            int damageResisted    = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
+
+            GuardResultInterface result = new GuardResult(
+                encounteredHostile.getName(),
+                hostileDamageRoll,
+                damageResisted
+            );
+
+            guardResults.add(result);
+        }
+
+        useAllActions();
+
+        return new GuardActionResult(
+            name,
+            guardResults,
+            getGuardEndurance(),
+            currentHp,
+            maxHp,
+            slayer
+        );
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -490,7 +524,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             case Constant.EXPLORER_STAT_WISDOM_SHORT:
                 return modifyWisdom(statModifier);
             default:
-                throw EncounteredCreatureException.createInvalidStatName(statName);
+                throw EncounteredExplorerException.createInvalidStatName(statName);
         }
     }
 
@@ -661,6 +695,16 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     /**
+     * Get endurance
+     *
+     * @return int
+     */
+    private int getGuardEndurance()
+    {
+        return (int) Math.floor(this.defense * .75);
+    }
+
+    /**
      * Modify agility
      *
      * @param statModifier Agility modifier
@@ -806,6 +850,25 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         int roll = (int) Math.floor(Math.random() * 20) + 1;
         return new HitRoll(roll, this.getMinCrit());
+    }
+
+    /**
+     * Take guarded damage
+     *
+     * @return int Damage taken
+     */
+    private int takeGuardedDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
+    {
+        damage = damage - getGuardEndurance();
+        damage = damage < 1 ? 1 : damage;
+        if (this.currentHp > 0 && this.currentHp - damage < 0) {
+            this.slayer = new Slayer(attacker.getName());
+        }
+        this.currentHp -= damage;
+        if (this.currentHp < 0) {
+            this.currentHp = 0;
+        }
+        return damage;
     }
 
     /**

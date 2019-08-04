@@ -147,32 +147,6 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Pass action
-     *
-     * @throws EncounterPhaseException If encounter is over
-     *                                 If not passable phase
-     */
-    public void passAction() throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotPassablePhase();
-        }
-
-        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
-        encounteredExplorer.useAllActions();
-
-        listener.onDodgePassAction(
-            encounteredExplorer.getName(),
-            encounteredExplorer.getCurrentHP(),
-            encounteredExplorer.getMaxHP()
-        );
-
-        handleEndOfAction();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -198,6 +172,38 @@ public class Encounter implements EncounterInterface
     public @NotNull String getEncounterType()
     {
         return "hostile";
+    }
+
+    /**
+     * Dodge action
+     *
+     * @param player Player
+     *
+     * @throws EncounterPhaseException If not dodge phase
+     * @throws NotYourTurnException    If it is not the player's turn
+     */
+    public void guardAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (!currentPhase.isDodgePhase()) {
+            throw EncounterPhaseException.createNotDodgePhase();
+        }
+
+        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+        if (!currentExplorer.isOwner(player)) {
+            throw NotYourTurnException.createNotYourTurn();
+        }
+
+        GuardActionResultInterface result = currentExplorer.guard(getActiveHostiles());
+
+        listener.onAction(result);
+
+        if (currentExplorer.isSlain() && hasPhoenixDown) {
+            usePhoenixDown(currentExplorer);
+        }
+
+        handleEndOfAction();
     }
 
     /**
@@ -362,7 +368,6 @@ public class Encounter implements EncounterInterface
         }
 
         EncounteredExplorerInterface encounteredExplorer = explorerRoster.leave(player);
-        encounteredExplorer.useAllActions();
         listener.onLeave(encounteredExplorer.getName());
         handleEndOfAction();
     }
@@ -403,6 +408,32 @@ public class Encounter implements EncounterInterface
         ModifyStatActionResultInterface result              = encounteredCreature.modifyStat(statName, statModifier);
         explorerRoster.sort();
         listener.onAction(result);
+    }
+
+    /**
+     * Pass action
+     *
+     * @throws EncounterPhaseException If encounter is over
+     *                                 If not passable phase
+     */
+    public void passAction() throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (!currentPhase.isDodgePhase()) {
+            throw EncounterPhaseException.createNotPassablePhase();
+        }
+
+        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        encounteredExplorer.useAllActions();
+
+        listener.onDodgePassAction(
+            encounteredExplorer.getName(),
+            encounteredExplorer.getCurrentHP(),
+            encounteredExplorer.getMaxHP()
+        );
+
+        handleEndOfAction();
     }
 
     /**

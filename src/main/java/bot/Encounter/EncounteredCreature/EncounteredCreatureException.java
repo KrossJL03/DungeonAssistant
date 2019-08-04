@@ -16,18 +16,6 @@ class EncounteredCreatureException extends RuntimeException implements CustomExc
     }
 
     /**
-     * Factory method for "invalid stat name"
-     *
-     * @param name Stat name
-     *
-     * @return EncounteredCreatureException
-     */
-    static @NotNull EncounteredCreatureException createInvalidStatName(@NotNull String name)
-    {
-        return new EncounteredCreatureException(String.format("%s is not the name of a stat", name));
-    }
-
-    /**
      * Factory method for "out of bounds stat"
      *
      * @param name     Creature name

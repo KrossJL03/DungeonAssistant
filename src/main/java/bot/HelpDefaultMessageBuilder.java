@@ -76,8 +76,11 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
         message.add(codeFormatter.makeGreen(
             "?modifyStat now works on hostiles"
         ));
+        message.add(codeFormatter.makeGreen(
+            "The ?guard command has been added for dodge turns. Find out more in ?help encounter"
+        ));
         message.addBreak();
-        message.add(codeFormatter.makeGrey("Last Update 2019-08-03"));
+        message.add(codeFormatter.makeGrey("Last Update 2019-08-04"));
         message.endCodeBlock();
 
         message.addBreak();

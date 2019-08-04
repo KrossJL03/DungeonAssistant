@@ -51,6 +51,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
     {
         ArrayList<EncounterCommand> encounterCommands = new ArrayList<>();
 
+        // order matters
         encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new StartEncounterCommand(processManager, encounterHolder, encounterLogger, dmChecker));
@@ -63,6 +64,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
             dmChecker
         ));
         encounterCommands.add(new DodgeCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new GuardCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new PassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new DodgePassCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new EndActionCommand(processManager, encounterHolder, encounterLogger, dmChecker));

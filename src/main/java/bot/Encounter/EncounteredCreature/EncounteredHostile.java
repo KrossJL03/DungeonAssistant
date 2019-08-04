@@ -225,7 +225,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
             case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statModifier);
             default:
-                throw EncounteredCreatureException.createInvalidStatName(statName);
+                throw EncounteredHostileException.createInvalidStatName(statName);
         }
     }
 

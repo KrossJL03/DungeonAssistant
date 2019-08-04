@@ -67,7 +67,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
             if (!hostile.isSlain()) {
                 totalDamage += hostile.getAttackRoll();
                 message.add(String.format(
-                    "d%d %s %2d dmg from %s!",
+                    "d%-2d %s %2d dmg from %s!",
                     hostile.getAttackDice(),
                     PhaseChangeMessage.DOUBLE_ARROW,
                     hostile.getAttackRoll(),

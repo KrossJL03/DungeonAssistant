@@ -9,6 +9,7 @@ public class ActionMessageBuilder
 {
     private AttackActionMessageFactory     attackActionMessageFactory;
     private DodgeActionMessageFactory      dodgeActionMessageFactory;
+    private GuardActionMessageFactory      guardActionMessageFactory;
     private HealActionMessageFactory       healActionMessageFactory;
     private HurtActionMessageFactory       hurtActionMessageFactory;
     private JoinActionMessageFactory       joinActionMessageFactory;
@@ -23,6 +24,7 @@ public class ActionMessageBuilder
     {
         this.attackActionMessageFactory = new AttackActionMessageFactory();
         this.dodgeActionMessageFactory = new DodgeActionMessageFactory();
+        this.guardActionMessageFactory = new GuardActionMessageFactory();
         this.healActionMessageFactory = new HealActionMessageFactory();
         this.hurtActionMessageFactory = new HurtActionMessageFactory();
         this.joinActionMessageFactory = new JoinActionMessageFactory();
@@ -50,6 +52,8 @@ public class ActionMessageBuilder
             message = attackActionMessageFactory.createMessage((AttackActionResultInterface) result, dmMention);
         } else if (result instanceof DodgeActionResultInterface) {
             message = dodgeActionMessageFactory.createMessage((DodgeActionResultInterface) result);
+        } else if (result instanceof GuardActionResultInterface) {
+            message = guardActionMessageFactory.createMessage((GuardActionResultInterface) result);
         } else if (result instanceof HealActionResultInterface) {
             message = healActionMessageFactory.createMessage((HealActionResultInterface) result);
         } else if (result instanceof HurtActionResultInterface) {

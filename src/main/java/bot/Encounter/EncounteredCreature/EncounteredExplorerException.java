@@ -85,6 +85,18 @@ public class EncounteredExplorerException extends RuntimeException implements En
     }
 
     /**
+     * Factory method for "invalid stat name"
+     *
+     * @param name Stat name
+     *
+     * @return EncounteredExplorerException
+     */
+    static @NotNull EncounteredExplorerException createInvalidStatName(@NotNull String name)
+    {
+        return new EncounteredExplorerException(String.format("%s is not the name of an explorer stat", name));
+    }
+
+    /**
      * Factory method for "protect actionless explorer"
      *
      * @return EncounteredExplorerException

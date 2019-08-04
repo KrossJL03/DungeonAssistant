@@ -131,6 +131,18 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     int getWisdom();
 
     /**
+     * Guard against encountered hostile attacks
+     *
+     * @param encounteredHostiles Encountered hostiles to guard against
+     *
+     * @return GuardActionResultInterface
+     *
+     * @throws EncounteredExplorerException If explorer has no actions
+     */
+    @NotNull GuardActionResultInterface guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+        throws EncounteredExplorerException;
+
+    /**
      * Has actions
      *
      * @return boolean

@@ -1,7 +1,5 @@
 package bot.Encounter.Command;
 
-import bot.CommandParameter;
-import bot.Encounter.AdditionalCommandInterface;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
@@ -12,16 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class UseItemCommand extends EncounterCommand implements AdditionalCommandInterface
+public class GuardCommand extends EncounterCommand
 {
     /**
-     * UseItemCommand constructor
+     * DodgeCommand constructor
      *
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
-    UseItemCommand(
+    GuardCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -33,15 +32,10 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
             holder,
             logger,
             dmChecker,
-            "rp!use",
-            new ArrayList<CommandParameter>()
-            {
-                {
-                    add(new CommandParameter("ItemName", true));
-                    add(new CommandParameter("Amount", true));
-                }
-            },
-            "Use an item through rp!bot. The DM will be pinged to activate the item.",
+            "guard",
+            new ArrayList<>(),
+            "Guard against enemy attacks during the dodge turn. " +
+            "All attacks hit but damage resistance is increased by 50%.",
             false
         );
     }
@@ -54,6 +48,6 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
     {
         Player player = getPlayerFromEvent(event);
 
-        getLogger().pingDmItemUsed(player);
+        getHostileEncounter().guardAction(player);
     }
 }

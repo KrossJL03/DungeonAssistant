@@ -1,5 +1,6 @@
 package bot;
 
+import bot.Encounter.AdditionalCommandInterface;
 import bot.Encounter.Logger.Message.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +68,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         Message message = new Message();
         message.add(String.format(
             "%s%s %s",
-            CommandListener.COMMAND_KEY,
+            command instanceof AdditionalCommandInterface ? CommandListener.COMMAND_KEY : "",
             command.getCommandName(),
             parameterBuilder.toString().trim()
         ));
