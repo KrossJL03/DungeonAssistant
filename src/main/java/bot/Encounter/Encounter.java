@@ -521,6 +521,22 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        }
+
+        EncounteredCreatureInterface    encounteredCreature = getCreature(name);
+        ModifyStatActionResultInterface result              = encounteredCreature.setStat(statName, statValue);
+        explorerRoster.sort();
+        listener.onAction(result);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
     {
         if (!currentPhase.isCreatePhase()) {

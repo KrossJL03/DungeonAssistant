@@ -633,6 +633,38 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue)
+    {
+        switch (statName.toLowerCase()) {
+            case Constant.EXPLORER_STAT_AGILITY:
+                return modifyAgility(agility - statValue);
+            case Constant.EXPLORER_STAT_DEFENSE:
+                return modifyDefense(defense - statValue);
+            case Constant.EXPLORER_STAT_HITPOINTS:
+                return modifyHitpoints(maxHp - statValue);
+            case Constant.EXPLORER_STAT_STRENGTH:
+                return modifyStrength(strength - statValue);
+            case Constant.EXPLORER_STAT_WISDOM:
+                return modifyWisdom(wisdom - statValue);
+            case Constant.EXPLORER_STAT_AGILITY_SHORT:
+                return modifyAgility(agility - statValue);
+            case Constant.EXPLORER_STAT_DEFENSE_SHORT:
+                return modifyDefense(defense - statValue);
+            case Constant.EXPLORER_STAT_HITPOINTS_SHORT:
+                return modifyHitpoints(maxHp - statValue);
+            case Constant.EXPLORER_STAT_STRENGTH_SHORT:
+                return modifyStrength(strength - statValue);
+            case Constant.EXPLORER_STAT_WISDOM_SHORT:
+                return modifyWisdom(wisdom - statValue);
+            default:
+                throw EncounteredExplorerException.createInvalidStatName(statName);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         damage = damage - this.getEndurance();

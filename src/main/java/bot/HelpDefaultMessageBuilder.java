@@ -68,15 +68,6 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
             "?view explorers can be used to view all, yours, or another players explorers"
         ));
         message.add(codeFormatter.makeGreen(
-            "Letters are no longer appended to all hostile names, only when multiple exist without nicknames"
-        ));
-        message.add(codeFormatter.makeGreen(
-            "?statDrop and ?statBoost have been combined and renamed to ?modifyStat"
-        ));
-        message.add(codeFormatter.makeGreen(
-            "?modifyStat now works on hostiles"
-        ));
-        message.add(codeFormatter.makeGreen(
             "The ?guard command has been added for dodge turns. Find out more in ?help encounter"
         ));
         message.addBreak();

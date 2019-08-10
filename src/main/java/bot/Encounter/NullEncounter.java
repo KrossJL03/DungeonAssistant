@@ -144,6 +144,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws EncounterPhaseException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void skipCurrentPlayerTurn() throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();

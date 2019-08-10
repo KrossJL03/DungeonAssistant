@@ -41,8 +41,8 @@ public class ModifyStatCommand extends EncounterCommand
                     add(new CommandParameter("Amount", true));
                 }
             },
-            "Temporarily modify a creature's stat by the amount for the duration of the encounter. " +
-            "Add '-' to the amount to decrease the stat by the given amount.",
+            "Temporarily set a creature's stat to the amount for the duration of the encounter. " +
+            "Add '+' or '-' to the amount to increase or decrease the stat by the given amount.",
             true
         );
     }
@@ -65,8 +65,8 @@ public class ModifyStatCommand extends EncounterCommand
             int boostAmount = Integer.parseInt(boostString.substring(1).trim());
             getEncounter().modifyStat(targetName, statName, boostAmount);
         } else {
-            int boostAmount = Integer.parseInt(boostString.trim());
-            getEncounter().modifyStat(targetName, statName, boostAmount);
+            int statValue = Integer.parseInt(boostString.trim());
+            getEncounter().setStat(targetName, statName, statValue);
         }
     }
 }

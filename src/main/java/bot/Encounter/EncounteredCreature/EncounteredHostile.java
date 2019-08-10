@@ -251,6 +251,26 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue)
+    {
+        switch (statName.toLowerCase()) {
+            case Constant.HOSTILE_STAT_ATTACK:
+                return modifyAttack(attack - statValue);
+            case Constant.HOSTILE_STAT_HITPOINTS:
+                return modifyHitpoints(maxHp - statValue);
+            case Constant.HOSTILE_STAT_ATTACK_SHORT:
+                return modifyAttack(attack - statValue);
+            case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
+                return modifyHitpoints(maxHp - statValue);
+            default:
+                throw EncounteredHostileException.createInvalidStatName(statName);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         if (currentHp > 0 && currentHp - damage < 1) {

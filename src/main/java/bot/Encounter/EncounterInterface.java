@@ -126,6 +126,21 @@ public interface EncounterInterface extends ProcessInterface
     void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException;
 
     /**
+     * Set stat
+     *
+     * @param name      Name of creature to modify stat for
+     * @param statName  Name of stat to modify
+     * @param statValue New stat value
+     *
+     * @throws EncounterPhaseException If the encounter is over
+     */
+    void setStat(
+        @NotNull String name,
+        @NotNull String statName,
+        int statValue
+    ) throws EncounterPhaseException;
+
+    /**
      * Skip current player turn
      *
      * @throws EncounterPhaseException If encounter is over

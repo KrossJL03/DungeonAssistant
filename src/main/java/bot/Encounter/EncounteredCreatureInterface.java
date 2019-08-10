@@ -116,6 +116,14 @@ public interface EncounteredCreatureInterface
     int rollDamage();
 
     /**
+     * Modify stat
+     *
+     * @param statName  Name of stat to modify
+     * @param statValue New stat value
+     */
+    @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue);
+
+    /**
      * Take damage
      *
      * @return damage taken

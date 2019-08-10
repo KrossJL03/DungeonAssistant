@@ -23,11 +23,7 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
-        <schema name="main" object-types="column, constraint, index, table, dataset trigger, view" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
@@ -43,10 +39,10 @@ SELECT * FROM explorer;
 --DROP TABLE explorer;
 
 SELECT * FROM hostile;
---DELETE FROM hostile;
+DELETE FROM hostile;
 
 SELECT * FROM loot;
---DELETE FROM loot;
+DELETE FROM loot;
 
 SELECT * FROM consumable;
 --DELETE FROM consumable;
