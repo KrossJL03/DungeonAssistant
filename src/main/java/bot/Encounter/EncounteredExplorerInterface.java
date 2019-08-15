@@ -200,8 +200,10 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
 
     /**
      * Reset actions
+     *
+     * @param singleAction Reset a single action only as opposed to all actions
      */
-    void resetActions();
+    void resetActions(boolean singleAction);
 
     /**
      * Roll loot

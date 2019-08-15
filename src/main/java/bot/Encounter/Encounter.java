@@ -332,7 +332,7 @@ public class Encounter implements EncounterInterface
         explorerRoster.addExplorer(encounteredExplorer);
         if (currentPhase.isInitiativePhase()) {
             initiative.add(encounteredExplorer);
-            encounteredExplorer.resetActions();
+            encounteredExplorer.resetActions(currentPhase.isDodgePhase());
         }
 
         JoinActionResultInterface result = new JoinActionResult(encounteredExplorer, explorerRoster.isFull());
@@ -587,7 +587,7 @@ public class Encounter implements EncounterInterface
         }
 
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.resetActions();
+            encounteredExplorer.resetActions(false);
         }
 
         EncounterPhaseInterface previousPhase = currentPhase;
@@ -617,7 +617,7 @@ public class Encounter implements EncounterInterface
         }
 
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.resetActions();
+            encounteredExplorer.resetActions(true);
         }
 
         for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {

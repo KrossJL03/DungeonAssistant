@@ -255,13 +255,13 @@ public class EncounteredHostile implements EncounteredHostileInterface
     {
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
-                return modifyAttack(attack - statValue);
+                return modifyAttack(statValue - attack);
             case Constant.HOSTILE_STAT_HITPOINTS:
-                return modifyHitpoints(maxHp - statValue);
+                return modifyHitpoints(statValue - maxHp);
             case Constant.HOSTILE_STAT_ATTACK_SHORT:
-                return modifyAttack(attack - statValue);
+                return modifyAttack(statValue - attack);
             case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
-                return modifyHitpoints(maxHp - statValue);
+                return modifyHitpoints(statValue - maxHp);
             default:
                 throw EncounteredHostileException.createInvalidStatName(statName);
         }

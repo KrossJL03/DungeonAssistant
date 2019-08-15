@@ -23,26 +23,27 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
+        <schema name="main" object-types="column, table, view" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="3519e7fb-246a-4f86-bd38-af9d0ec35c13">
       <console name="Database" type="STANDARD"><![CDATA[SELECT * FROM player;
---DELETE FROM player;
 
 SELECT * FROM playerCharacter;
 --DELETE FROM playerCharacter;
 --DROP TABLE playerCharacter;
 
 SELECT * FROM explorer;
---DELETE FROM explorer;
---DROP TABLE explorer;
 
 SELECT * FROM hostile;
-DELETE FROM hostile;
+--DELETE FROM hostile;
 
 SELECT * FROM loot;
-DELETE FROM loot;
+--DELETE FROM loot;
 
 SELECT * FROM consumable;
 --DELETE FROM consumable;
@@ -50,12 +51,23 @@ SELECT * FROM consumable;
 SELECT * FROM tier;
 --DELETE * FROM tier;
 
-DELETE
-FROM explorer;
+--UPDATE explorer
+--SET 
+--hitpoints = 190,
+--strength = 16,
+--defense = 7,
+--agility = 10,
+--wisdom = 15
+--WHERE name = 'Froyo';
 
-INSERT INTO explorer
-SELECT playerId, name, hitpoints, strength, wisdom, agility, defense, appLink, statsLink
-FROM playerCharacter;
+
+--INSERT into explorer (playerId, name, hitpoints, strength, defense, agility, wisdom, appLink, statsLInk)
+--VALUES(171385370821394433, 'Damper', 50, 2, 1, 5, 1, 'https://www.deviantart.com/jemanite/art/SE-Damper-756375441', 'https://www.deviantart.com/jemanite/art/Damper-Stat-Sheet-808070244');
+
+
+--INSERT INTO explorer
+--SELECT playerId, name, hitpoints, strength, wisdom, agility, defense, appLink, statsLink
+--FROM playerCharacter;
 
 
 SELECT h.rowid, h.* FROM hostile h WHERE lower(h.species) = 'slime';
@@ -66,7 +78,7 @@ INNER JOIN loot l ON l.hostile_id = h.rowid
 WHERE lower(h.species) = 'hootaloo';
 
 SELECT name, (strength + wisdom + agility + defense + (hitpoints/10) - 5) as statPoints
-FROM "playerCharacter"
+FROM "explorer"
 ORDER BY statPoints desc;]]></console>
     </connection>
   </component>

@@ -128,7 +128,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
-        useAllActions();
+        useAction();
 
         return new DodgeActionResult(
             name,
@@ -166,7 +166,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
-        useAllActions();
+        useAction();
 
         return new DodgeActionResult(
             name,
@@ -356,7 +356,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             guardResults.add(result);
         }
 
-        useAllActions();
+        useAction();
 
         return new GuardActionResult(
             name,
@@ -492,7 +492,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         if (!isPresent()) {
             throw EncounteredExplorerException.createHasAleadyLeft(owner);
         }
-        useAllActions();
         isPresent = false;
     }
 
@@ -558,9 +557,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             damageResisted += encounteredHostile.getAttackRoll() - damage;
         }
 
-        useAllActions();
+        useAction();
         useProtect();
-        recipient.useAllActions();
+        recipient.useAction();
 
         return new ProtectActionResult(
             name,
@@ -590,9 +589,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void resetActions()
+    public void resetActions(boolean singleAction)
     {
-        this.currentActions = getMaxActions();
+        this.currentActions = singleAction ? 1 : getMaxActions();
     }
 
     /**
@@ -637,25 +636,25 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         switch (statName.toLowerCase()) {
             case Constant.EXPLORER_STAT_AGILITY:
-                return modifyAgility(agility - statValue);
+                return modifyAgility(statValue - agility);
             case Constant.EXPLORER_STAT_DEFENSE:
-                return modifyDefense(defense - statValue);
+                return modifyDefense(statValue - defense);
             case Constant.EXPLORER_STAT_HITPOINTS:
-                return modifyHitpoints(maxHp - statValue);
+                return modifyHitpoints(statValue - maxHp);
             case Constant.EXPLORER_STAT_STRENGTH:
-                return modifyStrength(strength - statValue);
+                return modifyStrength(statValue - strength);
             case Constant.EXPLORER_STAT_WISDOM:
-                return modifyWisdom(wisdom - statValue);
+                return modifyWisdom(statValue - wisdom);
             case Constant.EXPLORER_STAT_AGILITY_SHORT:
-                return modifyAgility(agility - statValue);
+                return modifyAgility(statValue - agility);
             case Constant.EXPLORER_STAT_DEFENSE_SHORT:
-                return modifyDefense(defense - statValue);
+                return modifyDefense(statValue - defense);
             case Constant.EXPLORER_STAT_HITPOINTS_SHORT:
-                return modifyHitpoints(maxHp - statValue);
+                return modifyHitpoints(statValue - maxHp);
             case Constant.EXPLORER_STAT_STRENGTH_SHORT:
-                return modifyStrength(strength - statValue);
+                return modifyStrength(statValue - strength);
             case Constant.EXPLORER_STAT_WISDOM_SHORT:
-                return modifyWisdom(wisdom - statValue);
+                return modifyWisdom(statValue - wisdom);
             default:
                 throw EncounteredExplorerException.createInvalidStatName(statName);
         }

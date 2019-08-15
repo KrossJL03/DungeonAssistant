@@ -53,15 +53,15 @@ class JoinActionMessageFactory extends ActionMessageFactory
         output += ActionMessage.NEWLINE;
         output += "=============================";
         output += ActionMessage.NEWLINE;
-        output += "  HP | STR | DEF | AGI | WIS ";
+        output += "  HP | STR | WIS | AGI | DEF ";
         output += ActionMessage.NEWLINE;
         output += String.format(
             "%4s | %2s  | %2s  | %2s  | %2s",
             explorer.getMaxHP(),
             explorer.getStrength(),
-            explorer.getDefense(),
+            explorer.getWisdom(),
             explorer.getAgility(),
-            explorer.getWisdom()
+            explorer.getDefense()
         );
         output += ActionMessage.NEWLINE;
         output += "=============================";

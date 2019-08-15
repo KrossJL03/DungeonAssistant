@@ -137,7 +137,7 @@ public class SummaryMessageBuilder
             return codeFormatter.makeGrey(String.format(
                 "%s was knocked out %s",
                 encounteredExplorer.getName(),
-                slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
+                slayer.exists() ? String.format("by %s", slayer.getName()) : ""
             ));
         } else {
             return String.format("%s [%s]", encounteredExplorer.getName(), encounteredExplorer.getOwner().getName());
