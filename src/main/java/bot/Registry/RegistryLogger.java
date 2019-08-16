@@ -34,7 +34,7 @@ public class RegistryLogger
         output.append(RegistryLogger.NEWLINE);
         output.append("=======================================");
         output.append(RegistryLogger.NEWLINE);
-        output.append("Name            <  HP STR DEF AGI WIS >");
+        output.append("Name            <  HP STR WIS AGI DEF >");
         output.append(RegistryLogger.NEWLINE);
         output.append("---------------------------------------");
         output.append(RegistryLogger.NEWLINE);
@@ -45,9 +45,9 @@ public class RegistryLogger
                     character.getName(),
                     character.getHitpoints(),
                     character.getStrength(),
-                    character.getDefense(),
+                    character.getWisdom(),
                     character.getAgility(),
-                    character.getWisdom()
+                    character.getDefense()
                 )
             );
             output.append(RegistryLogger.NEWLINE);
