@@ -14,15 +14,15 @@ import java.util.Hashtable;
 
 public class HostileRepository
 {
-    static         String TABLE_NAME             = "hostile";
-    private static String COLUMN_ID              = "rowId";
-    private static String COLUMN_SPECIES         = "species";
-    private static String COLUMN_DANGER_LEVEL    = "dangerLevel";
-    private static String COLUMN_HITPOINTS       = "hitpoints";
-    private static String COLUMN_ATTACK_DIE      = "attackDie";
-    private static String COLUMN_ATTACK_COUNT    = "attackCount";
-    private static String COLUMN_LOOT_ROLL_COUNT = "lootRollCount";
-    private static String COLUMN_IS_VIEWABLE     = "isViewable";
+    static         String TABLE_NAME          = "hostile";
+    private static String COLUMN_ID           = "rowId";
+    private static String COLUMN_SPECIES      = "species";
+    private static String COLUMN_DANGER_LEVEL = "dangerLevel";
+    private static String COLUMN_HITPOINTS    = "hitpoints";
+    private static String COLUMN_ATTACK       = "attack";
+    private static String COLUMN_ATTACK_COUNT = "attackCount";
+    private static String COLUMN_LOOT_ROLLS   = "lootRollCount";
+    private static String COLUMN_IS_VIEWABLE  = "isViewable";
 
     /**
      * Insert hostile
@@ -37,14 +37,14 @@ public class HostileRepository
             COLUMN_SPECIES,
             COLUMN_DANGER_LEVEL,
             COLUMN_HITPOINTS,
-            COLUMN_ATTACK_DIE,
+            COLUMN_ATTACK,
             COLUMN_ATTACK_COUNT,
-            COLUMN_LOOT_ROLL_COUNT,
+            COLUMN_LOOT_ROLLS,
             COLUMN_IS_VIEWABLE,
             hostile.getSpecies(),
             hostile.getDangerLevel(),
             hostile.getHitpoints(),
-            hostile.getAttackDie(),
+            hostile.getAttack(),
             hostile.getAttackCount(),
             hostile.getLootRollCount(),
             hostile.isViewable()
@@ -52,6 +52,11 @@ public class HostileRepository
         HostileRepository.executeUpdate(sql);
     }
 
+    /**
+     * Get info for all hostiles
+     *
+     * @return ArrayList
+     */
     public static ArrayList<Hashtable<String, String>> getInfoForAllHostiles()
     {
         Connection                           connection   = null;
@@ -62,11 +67,11 @@ public class HostileRepository
             COLUMN_SPECIES,
             COLUMN_DANGER_LEVEL,
             COLUMN_HITPOINTS,
-            COLUMN_ATTACK_DIE,
+            COLUMN_ATTACK,
             TABLE_NAME,
             COLUMN_DANGER_LEVEL,
             COLUMN_HITPOINTS,
-            COLUMN_ATTACK_DIE
+            COLUMN_ATTACK
         );
         try {
             connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
@@ -78,7 +83,61 @@ public class HostileRepository
                     hostileInfo.put(COLUMN_SPECIES, resultSet.getString(COLUMN_SPECIES));
                     hostileInfo.put(COLUMN_DANGER_LEVEL, resultSet.getString(COLUMN_DANGER_LEVEL));
                     hostileInfo.put(COLUMN_HITPOINTS, resultSet.getString(COLUMN_HITPOINTS));
-                    hostileInfo.put(COLUMN_ATTACK_DIE, resultSet.getString(COLUMN_ATTACK_DIE));
+                    hostileInfo.put(COLUMN_ATTACK, resultSet.getString(COLUMN_ATTACK));
+                    hostileInfos.add(hostileInfo);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Throwable e) {
+                System.out.println("Failed to close");
+            }
+        }
+        return hostileInfos;
+    }
+
+    /**
+     * Get info for viewable hostiles
+     *
+     * @return ArrayList
+     */
+    public static ArrayList<Hashtable<String, String>> getInfoForViewablelHostiles()
+    {
+        Connection                           connection   = null;
+        Statement                            statement    = null;
+        ArrayList<Hashtable<String, String>> hostileInfos = new ArrayList<>();
+        String sql = String.format(
+            "SELECT %s,%s,%s,%s FROM %s WHERE %s = true ORDER BY %s,%s,%s;",
+            COLUMN_SPECIES,
+            COLUMN_DANGER_LEVEL,
+            COLUMN_HITPOINTS,
+            COLUMN_ATTACK,
+            TABLE_NAME,
+            COLUMN_IS_VIEWABLE,
+            COLUMN_DANGER_LEVEL,
+            COLUMN_HITPOINTS,
+            COLUMN_ATTACK
+        );
+        try {
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    Hashtable<String, String> hostileInfo = new Hashtable<>();
+                    hostileInfo.put(COLUMN_SPECIES, resultSet.getString(COLUMN_SPECIES));
+                    hostileInfo.put(COLUMN_DANGER_LEVEL, resultSet.getString(COLUMN_DANGER_LEVEL));
+                    hostileInfo.put(COLUMN_HITPOINTS, resultSet.getString(COLUMN_HITPOINTS));
+                    hostileInfo.put(COLUMN_ATTACK, resultSet.getString(COLUMN_ATTACK));
+                    hostileInfo.put(COLUMN_ATTACK_COUNT, resultSet.getString(COLUMN_ATTACK_COUNT));
                     hostileInfos.add(hostileInfo);
                 }
             }
@@ -131,13 +190,12 @@ public class HostileRepository
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
-                int     id            = resultSet.getInt(COLUMN_ID);
                 String  species2      = resultSet.getString(COLUMN_SPECIES);
                 int     dangerLevel   = resultSet.getInt(COLUMN_DANGER_LEVEL);
                 int     hitpoints     = resultSet.getInt(COLUMN_HITPOINTS);
-                int     attackDice    = resultSet.getInt(COLUMN_ATTACK_DIE);
+                int     attackDice    = resultSet.getInt(COLUMN_ATTACK);
                 int     attackCount   = resultSet.getInt(COLUMN_ATTACK_COUNT);
-                int     lootRollCount = resultSet.getInt(COLUMN_LOOT_ROLL_COUNT);
+                int     lootRollCount = resultSet.getInt(COLUMN_LOOT_ROLLS);
                 boolean isViewable    = resultSet.getBoolean(COLUMN_IS_VIEWABLE);
                 while (resultSet.next()) {
                     Loot loot = new Loot(
@@ -228,9 +286,9 @@ public class HostileRepository
                      String.format(" %s TEXT PRIMARY KEY  NOT NULL, ", COLUMN_SPECIES) +
                      String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_DANGER_LEVEL) +
                      String.format(" %s INT               NOT NULL, ", COLUMN_HITPOINTS) +
-                     String.format(" %s INT               NOT NULL, ", COLUMN_ATTACK_DIE) +
+                     String.format(" %s INT               NOT NULL, ", COLUMN_ATTACK) +
                      String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_ATTACK_COUNT) +
-                     String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_LOOT_ROLL_COUNT) +
+                     String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_LOOT_ROLLS) +
                      String.format(" %s BOOL DEFAULT TRUE NOT NULL  ", COLUMN_IS_VIEWABLE) +
                      ")";
         HostileRepository.executeUpdate(sql);

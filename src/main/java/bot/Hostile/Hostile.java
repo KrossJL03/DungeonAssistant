@@ -8,11 +8,10 @@ public class Hostile
 {
     private HashMap<Integer, Loot> lootList;
     private String                 species;
+    private int                    attack;
     private int                    attackCount;
-    private int                    attackDie;
     private int                    dangerLevel;
     private int                    hitpoints;
-    private int                    id;
     private int                    lootRollCount;
     private boolean                isViewable;
 
@@ -22,7 +21,7 @@ public class Hostile
      * @param species       Species
      * @param dangerLevel   Danger level
      * @param hitpoints     Hitpoints
-     * @param attackDie     Attack die rolled for attacks
+     * @param attack        Attack die rolled for attacks
      * @param attackCount   Number of attacks per round
      * @param lootRollCount Number of loot die rolled
      * @param lootList      List of loot
@@ -32,7 +31,7 @@ public class Hostile
         @NotNull String species,
         int dangerLevel,
         int hitpoints,
-        int attackDie,
+        int attack,
         int attackCount,
         int lootRollCount,
         @NotNull HashMap<Integer, Loot> lootList,
@@ -40,7 +39,7 @@ public class Hostile
     )
     {
         this.attackCount = attackCount;
-        this.attackDie = attackDie;
+        this.attack = attack;
         this.dangerLevel = dangerLevel;
         this.hitpoints = hitpoints;
         this.isViewable = isViewable;
@@ -64,9 +63,9 @@ public class Hostile
      *
      * @return int
      */
-    public int getAttackDie()
+    public int getAttack()
     {
-        return attackDie;
+        return attack;
     }
 
     /**
@@ -112,7 +111,7 @@ public class Hostile
     }
 
     /**
-     * Get loot count
+     * Get amount of loot rolls
      *
      * @return int
      */

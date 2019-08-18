@@ -30,7 +30,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      */
     public EncounteredHostile(@NotNull Hostile hostile, @NotNull String name)
     {
-        this.attack = hostile.getAttackDie();
+        this.attack = hostile.getAttack();
         this.attackRoll = 0;
         this.currentHp = hostile.getHitpoints();
         this.maxHp = hostile.getHitpoints();
