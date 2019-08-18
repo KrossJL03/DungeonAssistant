@@ -918,7 +918,7 @@ public class Encounter implements EncounterInterface
         initiative = new InitiativeQueue();
 
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.rollLoot();
+            encounteredExplorer.rollKillLoot();
         }
 
         notifyListenerOfPhaseChange(previousPhase);

@@ -31,11 +31,11 @@ public interface LootActionResultInterface extends ActionResultInterface
     int getKillCount();
 
     /**
-     * Get loot die
+     * Get loot roll count
      *
      * @return int
      */
-    int getLootDie();
+    int getLootRollCount();
 
     /**
      * Get individual loot rolls

@@ -22,6 +22,13 @@ public interface LootRollInterface
     Loot getLoot();
 
     /**
+     * Get loot die
+     *
+     * @return int
+     */
+    int getLootDie();
+
+    /**
      * Get loot roll
      *
      * @return int

@@ -102,6 +102,16 @@ public class Hostile
     }
 
     /**
+     * Get loot pool size
+     *
+     * @return int
+     */
+    public int getLootPoolSize()
+    {
+        return lootList.size();
+    }
+
+    /**
      * Get loot count
      *
      * @return int

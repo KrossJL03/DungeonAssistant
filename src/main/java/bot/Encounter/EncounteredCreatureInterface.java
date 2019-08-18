@@ -1,8 +1,11 @@
 package bot.Encounter;
 
+import bot.Encounter.EncounteredCreature.EncounteredCreatureException;
+import bot.Encounter.EncounteredCreature.LootRoll;
 import bot.Encounter.EncounteredCreature.Slayer;
-import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 public interface EncounteredCreatureInterface
 {
@@ -19,15 +22,6 @@ public interface EncounteredCreatureInterface
      * @return int
      */
     int getCurrentHP();
-
-    /**
-     * Get loot
-     *
-     * @param roll Loot roll
-     *
-     * @return Loot
-     */
-    @NotNull Loot getLoot(int roll);
 
     /**
      * Get max hitpoints
@@ -122,6 +116,15 @@ public interface EncounteredCreatureInterface
      * @param statValue New stat value
      */
     @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue);
+
+    /**
+     * Roll loot
+     *
+     * @return ArrayList<LootRoll>
+     *
+     * @throws EncounteredCreatureException When attempting to loot and not slain
+     */
+    @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException;
 
     /**
      * Take damage

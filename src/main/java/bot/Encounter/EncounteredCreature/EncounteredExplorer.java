@@ -1,8 +1,17 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.*;
-import bot.Hostile.Loot;
+import bot.Encounter.DodgeResultInterface;
+import bot.Encounter.EncounteredCreatureInterface;
+import bot.Encounter.EncounteredExplorerInterface;
+import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.GuardActionResultInterface;
+import bot.Encounter.GuardResultInterface;
+import bot.Encounter.HealActionResultInterface;
+import bot.Encounter.HurtActionResultInterface;
+import bot.Encounter.LootRollInterface;
+import bot.Encounter.ModifyStatActionResultInterface;
+import bot.Encounter.ProtectActionResultInterface;
 import bot.Player.Player;
 import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +21,6 @@ import java.util.ArrayList;
 public class EncounteredExplorer implements EncounteredExplorerInterface
 {
     private static int FINAL_BLOW_BONUS = 300;
-    private static int LOOT_DIE         = 10;
 
     private Player                                  owner;
     private Slayer                                  slayer;
@@ -237,10 +245,13 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Loot getLoot(int roll)
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
     {
-        //todo
-        return new Loot(roll, "Bloody fur patch", 1);
+        if (!isSlain()) {
+            throw EncounteredCreatureException.createLootWhenNotSlain(name);
+        }
+
+        return new ArrayList<>();
     }
 
     /**
@@ -607,13 +618,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void rollLoot()
+    public void rollKillLoot()
     {
         ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
         ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
         for (EncounteredCreatureInterface kill : kills) {
-            int roll = (int) Math.floor(Math.random() * LOOT_DIE) + 1;
-            lootRolls.add(new LootRoll(roll, kill.getName(), kill.getLoot(roll)));
+            lootRolls.addAll(kill.rollLoot());
             if (kill.getSlayer().isSlayer(this)) {
                 finalBlows.add(kill);
             }
@@ -623,7 +633,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             owner,
             lootRolls,
             finalBlows,
-            LOOT_DIE,
+            kills.size(),
             finalBlows.size() * FINAL_BLOW_BONUS
         );
     }

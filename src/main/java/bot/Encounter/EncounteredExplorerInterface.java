@@ -206,9 +206,9 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void resetActions(boolean singleAction);
 
     /**
-     * Roll loot
+     * Roll loot for kills
      */
-    void rollLoot();
+    void rollKillLoot();
 
     /**
      * Use one action

@@ -3,7 +3,7 @@ package bot.Encounter.EncounteredCreature;
 import bot.CustomExceptionInterface;
 import org.jetbrains.annotations.NotNull;
 
-class EncounteredCreatureException extends RuntimeException implements CustomExceptionInterface
+public class EncounteredCreatureException extends RuntimeException implements CustomExceptionInterface
 {
     /**
      * EncounteredCreatureException constructor
@@ -13,6 +13,20 @@ class EncounteredCreatureException extends RuntimeException implements CustomExc
     private @NotNull EncounteredCreatureException(@NotNull String message)
     {
         super(message);
+    }
+
+    /**
+     * Factory method for "loot when not slain"
+     *
+     * @param name Creature name
+     *
+     * @return EncounteredCreatureException
+     */
+    static @NotNull EncounteredCreatureException createLootWhenNotSlain(@NotNull String name)
+    {
+        return new EncounteredCreatureException(
+            String.format("%s has not been slain, they cannot be looted!", name)
+        );
     }
 
     /**

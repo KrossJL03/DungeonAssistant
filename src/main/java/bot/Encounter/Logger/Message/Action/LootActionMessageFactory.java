@@ -34,9 +34,8 @@ class LootActionMessageFactory extends ActionMessageFactory
             result.getKillCount() > 1 ? "s" : ""
         ));
         message.add(String.format(
-            "%dd%d %s",
-            result.getKillCount(),
-            result.getLootDie(),
+            "they get to roll %d %s",
+            result.getLootRollCount(),
             codeFormatter.makeCyan("loot dice")
         ));
 
@@ -76,7 +75,12 @@ class LootActionMessageFactory extends ActionMessageFactory
         StringBuilder output = new StringBuilder();
         Loot          loot   = roll.getLoot();
 
-        output.append(String.format("%2d %s ", roll.getLootRoll(), ActionMessage.DOUBLE_ARROW));
+        output.append(String.format(
+            "%3s %s %2d --> ",
+            "d" + roll.getLootDie(),
+            ActionMessage.DOUBLE_ARROW,
+            roll.getLootRoll()
+        ));
 
         if (loot.getItem() == null || loot.getItem().equals("null")) {
             output.append(codeFormatter.makeGrey(String.format("nothing from %s", roll.getKillName())));

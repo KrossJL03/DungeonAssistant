@@ -16,7 +16,7 @@ public class LootActionResult implements LootActionResultInterface
     private Player                                  owner;
     private String                                  name;
     private int                                     finalBlowBonus;
-    private int                                     lootDie;
+    private int                                     killCount;
     private boolean                                 isRolled;
 
     /**
@@ -27,8 +27,10 @@ public class LootActionResult implements LootActionResultInterface
      */
     @NotNull LootActionResult(@NotNull String name, @NotNull Player owner)
     {
+        this.finalBlowBonus = 0;
         this.finalBlows = new ArrayList<>();
         this.isRolled = false;
+        this.killCount = 0;
         this.lootRolls = new ArrayList<>();
         this.name = name;
         this.owner = owner;
@@ -40,23 +42,23 @@ public class LootActionResult implements LootActionResultInterface
      * @param name           Name
      * @param owner          Owner
      * @param lootRolls      Loot rolls
-     * @param kills          Kills
-     * @param lootDie        Loot die used to roll loot
+     * @param finalBlows     Kills
+     * @param killCount      Number of kills present for
      * @param finalBlowBonus Bonus cumulus for final blows
      */
     @NotNull LootActionResult(
         @NotNull String name,
         @NotNull Player owner,
         @NotNull ArrayList<LootRollInterface> lootRolls,
-        @NotNull ArrayList<EncounteredCreatureInterface> kills,
-        int lootDie,
+        @NotNull ArrayList<EncounteredCreatureInterface> finalBlows,
+        int killCount,
         int finalBlowBonus
     )
     {
         this.finalBlowBonus = finalBlowBonus;
-        this.finalBlows = kills;
+        this.finalBlows = finalBlows;
         this.isRolled = true;
-        this.lootDie = lootDie;
+        this.killCount = killCount;
         this.lootRolls = lootRolls;
         this.name = name;
         this.owner = owner;
@@ -90,16 +92,16 @@ public class LootActionResult implements LootActionResultInterface
     @Override
     public int getKillCount()
     {
-        return lootRolls.size();
+        return killCount;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getLootDie()
+    public int getLootRollCount()
     {
-        return lootDie;
+        return lootRolls.size();
     }
 
     /**

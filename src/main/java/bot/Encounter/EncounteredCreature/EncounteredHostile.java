@@ -1,10 +1,16 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.*;
+import bot.Encounter.EncounteredCreatureInterface;
+import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.HealActionResultInterface;
+import bot.Encounter.HurtActionResultInterface;
+import bot.Encounter.ModifyStatActionResultInterface;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 public class EncounteredHostile implements EncounteredHostileInterface
 {
@@ -91,9 +97,22 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Loot getLoot(int roll)
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
     {
-        return hostile.getLoot(roll);
+        if (!isSlain()) {
+            throw EncounteredCreatureException.createLootWhenNotSlain(name);
+        }
+
+        ArrayList<LootRoll> lootRolls = new ArrayList<>();
+        int                 lootDie   = hostile.getLootPoolSize();
+
+        while (hostile.getLootRollCount() > lootRolls.size()) {
+            int  roll = (int) Math.floor(Math.random() * lootDie) + 1;
+            Loot loot = hostile.getLoot(roll);
+            lootRolls.add(new LootRoll(name, loot, lootDie, roll));
+        }
+
+        return lootRolls;
     }
 
     /**
@@ -282,6 +301,13 @@ public class EncounteredHostile implements EncounteredHostileInterface
         return damage;
     }
 
+    /**
+     * Modify attack
+     *
+     * @param statModifier Attack modifier
+     *
+     * @return ModifyStatActionResultInterface
+     */
     private @NotNull ModifyStatActionResultInterface modifyAttack(int statModifier)
     {
         int moddedStatValue = attack + statModifier;

@@ -8,26 +8,31 @@ public class LootRoll implements LootRollInterface
 {
     private Loot   loot;
     private String hostileName;
-    private int    roll;
+    private int    lootDie;
+    private int    lootRoll;
 
     /**
      * LootRoll constructor
      *
-     * @param roll        Roll
      * @param hostileName Hostile name
-     * @param loot        loot
+     * @param loot        Loot
+     * @param lootDie     Loot die
+     * @param lootRoll    Loot roll
      */
-    @NotNull LootRoll(int roll, @NotNull String hostileName, @NotNull Loot loot) {
+    @NotNull LootRoll(@NotNull String hostileName, @NotNull Loot loot, int lootDie, int lootRoll)
+    {
         this.hostileName = hostileName;
         this.loot = loot;
-        this.roll = roll;
+        this.lootDie = lootDie;
+        this.lootRoll = lootRoll;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getKillName() {
+    public @NotNull String getKillName()
+    {
         return hostileName;
     }
 
@@ -35,7 +40,8 @@ public class LootRoll implements LootRollInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Loot getLoot() {
+    public @NotNull Loot getLoot()
+    {
         return loot;
     }
 
@@ -43,7 +49,17 @@ public class LootRoll implements LootRollInterface
      * {@inheritDoc}
      */
     @Override
-    public int getLootRoll() {
-        return roll;
+    public int getLootDie()
+    {
+        return lootDie;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getLootRoll()
+    {
+        return lootRoll;
     }
 }
