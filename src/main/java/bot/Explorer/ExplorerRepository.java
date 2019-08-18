@@ -65,7 +65,7 @@ class ExplorerRepository
         RegistryException   exception  = null;
         ArrayList<Explorer> explorers  = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -114,7 +114,7 @@ class ExplorerRepository
         RegistryException   exception  = null;
         ArrayList<Explorer> explorers  = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -163,7 +163,7 @@ class ExplorerRepository
             name.toLowerCase()
         );
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -205,7 +205,7 @@ class ExplorerRepository
             name.toLowerCase()
         );
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -261,7 +261,7 @@ class ExplorerRepository
         Statement         statement  = null;
         RegistryException exception  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Throwable e) {

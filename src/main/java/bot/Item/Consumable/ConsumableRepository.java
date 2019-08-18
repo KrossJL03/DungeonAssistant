@@ -88,7 +88,7 @@ class ConsumableRepository {
         ArrayList<ConsumableItem> items      = new ArrayList<>();
 
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -148,7 +148,7 @@ class ConsumableRepository {
         Statement  statement  = null;
 
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -221,7 +221,7 @@ class ConsumableRepository {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {

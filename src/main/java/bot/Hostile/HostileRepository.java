@@ -2,6 +2,7 @@ package bot.Hostile;
 
 import bot.Hostile.Exception.HostileNotFoundException;
 import bot.Registry.RegistryPaths;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,41 +12,73 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-public class HostileRepository {
+public class HostileRepository
+{
+    static         String TABLE_NAME             = "hostile";
+    private static String COLUMN_ID              = "rowId";
+    private static String COLUMN_SPECIES         = "species";
+    private static String COLUMN_DANGER_LEVEL    = "dangerLevel";
+    private static String COLUMN_HITPOINTS       = "hitpoints";
+    private static String COLUMN_ATTACK_DIE      = "attackDie";
+    private static String COLUMN_ATTACK_COUNT    = "attackCount";
+    private static String COLUMN_LOOT_ROLL_COUNT = "lootRollCount";
+    private static String COLUMN_IS_VIEWABLE     = "isViewable";
 
-    static String TABLE_NAME = "hostile";
-
-    static void insertHostile(String species, int dangerLevel, int hitpoints, int attackDice) {
+    /**
+     * Insert hostile
+     *
+     * @param hostile Hostile to insert
+     */
+    static void insertHostile(@NotNull Hostile hostile)
+    {
         String sql = String.format(
-            "INSERT INTO %s(species, danger_level, hitpoints, attack_dice) VALUES('%s',%d,%d,%d)",
-            HostileRepository.TABLE_NAME,
-            species,
-            dangerLevel,
-            hitpoints,
-            attackDice
+            "INSERT INTO %s(%s,%s,%s,%s,%s,%s,%s) VALUES('%s',%d,%d,%d,%s,%s,'%s')",
+            TABLE_NAME,
+            COLUMN_SPECIES,
+            COLUMN_DANGER_LEVEL,
+            COLUMN_HITPOINTS,
+            COLUMN_ATTACK_DIE,
+            COLUMN_ATTACK_COUNT,
+            COLUMN_LOOT_ROLL_COUNT,
+            COLUMN_IS_VIEWABLE,
+            hostile.getSpecies(),
+            hostile.getDangerLevel(),
+            hostile.getHitpoints(),
+            hostile.getAttackDie(),
+            hostile.getAttackCount(),
+            hostile.getLootRollCount(),
+            hostile.isViewable()
         );
         HostileRepository.executeUpdate(sql);
     }
 
-    public static ArrayList<Hashtable<String, String>> getInfoForAllHostiles() {
+    public static ArrayList<Hashtable<String, String>> getInfoForAllHostiles()
+    {
         Connection                           connection   = null;
         Statement                            statement    = null;
         ArrayList<Hashtable<String, String>> hostileInfos = new ArrayList<>();
         String sql = String.format(
-            "SELECT species, danger_level, hitpoints, attack_dice FROM %s ORDER BY danger_level, species;",
-            HostileRepository.TABLE_NAME
+            "SELECT %s,%s,%s,%s FROM %s ORDER BY %s,%s,%s;",
+            COLUMN_SPECIES,
+            COLUMN_DANGER_LEVEL,
+            COLUMN_HITPOINTS,
+            COLUMN_ATTACK_DIE,
+            TABLE_NAME,
+            COLUMN_DANGER_LEVEL,
+            COLUMN_HITPOINTS,
+            COLUMN_ATTACK_DIE
         );
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
                 while (resultSet.next()) {
                     Hashtable<String, String> hostileInfo = new Hashtable<>();
-                    hostileInfo.put("species", resultSet.getString("species"));
-                    hostileInfo.put("danger_level", resultSet.getString("danger_level"));
-                    hostileInfo.put("hitpoints", resultSet.getString("hitpoints"));
-                    hostileInfo.put("attack_dice", resultSet.getString("attack_dice"));
+                    hostileInfo.put(COLUMN_SPECIES, resultSet.getString(COLUMN_SPECIES));
+                    hostileInfo.put(COLUMN_DANGER_LEVEL, resultSet.getString(COLUMN_DANGER_LEVEL));
+                    hostileInfo.put(COLUMN_HITPOINTS, resultSet.getString(COLUMN_HITPOINTS));
+                    hostileInfo.put(COLUMN_ATTACK_DIE, resultSet.getString(COLUMN_ATTACK_DIE));
                     hostileInfos.add(hostileInfo);
                 }
             }
@@ -66,14 +99,26 @@ public class HostileRepository {
         return hostileInfos;
     }
 
-    public static Hostile getHostile(String species) throws HostileNotFoundException {
+    /**
+     * Get hostile by species
+     *
+     * @param species Species of hostile to retrieve
+     *
+     * @return Hostile
+     *
+     * @throws HostileNotFoundException If hostile not found
+     */
+    public static @NotNull Hostile getHostile(@NotNull String species) throws HostileNotFoundException
+    {
         String sql = String.format(
-            "SELECT h.rowid, h.*, l.* " +
+            "SELECT h.%s, h.*, l.* " +
             "FROM %s h " +
             "INNER JOIN %s l ON l.hostile_id = h.rowid " +
-            "WHERE lower(h.species) = '%s';",
-            HostileRepository.TABLE_NAME,
+            "WHERE lower(h.%s) = '%s';",
+            COLUMN_ID,
+            TABLE_NAME,
             LootRepository.TABLE_NAME,
+            COLUMN_SPECIES,
             species.toLowerCase()
         );
 
@@ -82,15 +127,18 @@ public class HostileRepository {
         HashMap<Integer, Loot> lootList   = HostileRepository.getBlankLootList();
 
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
-                int    id          = resultSet.getInt("rowid");
-                String species2    = resultSet.getString("species");
-                int    dangerLevel = resultSet.getInt("danger_level");
-                int    hitpoints   = resultSet.getInt("hitpoints");
-                int    attackDice  = resultSet.getInt("attack_dice");
+                int     id            = resultSet.getInt(COLUMN_ID);
+                String  species2      = resultSet.getString(COLUMN_SPECIES);
+                int     dangerLevel   = resultSet.getInt(COLUMN_DANGER_LEVEL);
+                int     hitpoints     = resultSet.getInt(COLUMN_HITPOINTS);
+                int     attackDice    = resultSet.getInt(COLUMN_ATTACK_DIE);
+                int     attackCount   = resultSet.getInt(COLUMN_ATTACK_COUNT);
+                int     lootRollCount = resultSet.getInt(COLUMN_LOOT_ROLL_COUNT);
+                boolean isViewable    = resultSet.getBoolean(COLUMN_IS_VIEWABLE);
                 while (resultSet.next()) {
                     Loot loot = new Loot(
                         resultSet.getInt("dice_roll"),
@@ -99,7 +147,16 @@ public class HostileRepository {
                     );
                     lootList.put(loot.getDiceRoll(), loot);
                 }
-                return new Hostile(id, species2, dangerLevel, hitpoints, attackDice, lootList);
+                return new Hostile(
+                    species2,
+                    dangerLevel,
+                    hitpoints,
+                    attackDice,
+                    attackCount,
+                    lootRollCount,
+                    lootList,
+                    isViewable
+                );
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -119,22 +176,31 @@ public class HostileRepository {
         throw HostileNotFoundException.createNotInDatabase(species);
     }
 
-    static int getHostileId(String species) {
+    /**
+     * Get hostile id by species
+     *
+     * @param species Species of hostile id to retrieve
+     *
+     * @return int
+     */
+    static int getHostileId(@NotNull String species)
+    {
         String sql = String.format(
             "SELECT h.rowid " +
             "FROM %s h " +
-            "WHERE lower(h.species) = '%s'",
+            "WHERE lower(h.%s) = '%s'",
             HostileRepository.TABLE_NAME,
+            COLUMN_SPECIES,
             species.toLowerCase()
         );
 
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
-            return resultSet.getInt("rowid");
+            return resultSet.getInt(COLUMN_ID);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
@@ -152,58 +218,35 @@ public class HostileRepository {
         return -1;
     }
 
-    static void updateHostile(String species, int dangerLevel, int hitpoints, int attackDice) {
-        String sql = String.format(
-            "REPLACE INTO %s(species, danger_level, hitpoints, attack_dice) VALUES('%s',%d,%d,%d)",
-            HostileRepository.TABLE_NAME,
-            species,
-            dangerLevel,
-            hitpoints,
-            attackDice
-        );
-        HostileRepository.executeUpdate(sql);
-    }
-
-    static void createTableIfNotExists() {
+    /**
+     * Create table if it does not exist
+     */
+    static void createTableIfNotExists()
+    {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s", HostileRepository.TABLE_NAME) +
                      "(" +
-                     " species      TEXT PRIMARY KEY NOT NULL, " +
-                     " danger_level INT  DEFAULT 1   NOT NULL, " +
-                     " hitpoints    INT              NOT NULL, " +
-                     " attack_dice  INT              NOT NULL " +
+                     String.format(" %s TEXT PRIMARY KEY  NOT NULL, ", COLUMN_SPECIES) +
+                     String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_DANGER_LEVEL) +
+                     String.format(" %s INT               NOT NULL, ", COLUMN_HITPOINTS) +
+                     String.format(" %s INT               NOT NULL, ", COLUMN_ATTACK_DIE) +
+                     String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_ATTACK_COUNT) +
+                     String.format(" %s INT  DEFAULT 1    NOT NULL, ", COLUMN_LOOT_ROLL_COUNT) +
+                     String.format(" %s BOOL DEFAULT TRUE NOT NULL  ", COLUMN_IS_VIEWABLE) +
                      ")";
         HostileRepository.executeUpdate(sql);
     }
 
-    private static ResultSet executeQueryTest(String sql) {
+    /**
+     * Execute update
+     *
+     * @param sql Update to execute
+     */
+    private static void executeUpdate(@NotNull String sql)
+    {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
-            statement = connection.createStatement();
-            return statement.executeQuery(sql);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Throwable e) {
-                System.out.println("Failed to close");
-            }
-        }
-        return null;
-    }
-
-    private static void executeUpdate(String sql) {
-        Connection connection = null;
-        Statement  statement  = null;
-        try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {
@@ -222,7 +265,8 @@ public class HostileRepository {
         }
     }
 
-    private static HashMap<Integer, Loot> getBlankLootList() {
+    private static HashMap<Integer, Loot> getBlankLootList()
+    {
         HashMap<Integer, Loot> lootList = new HashMap<>();
         for (int i = 1; i < 11; i++) {
             lootList.put(i, new Loot(i, null, 0));

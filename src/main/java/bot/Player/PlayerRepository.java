@@ -33,7 +33,7 @@ public class PlayerRepository
             userId
         );
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet != null && resultSet.getBoolean("COUNT(*)");
@@ -81,7 +81,7 @@ public class PlayerRepository
         );
 
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -139,7 +139,7 @@ public class PlayerRepository
         );
 
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -197,7 +197,7 @@ public class PlayerRepository
         Statement         statement  = null;
         RegistryException exception  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Throwable e) {

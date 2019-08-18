@@ -1,22 +1,74 @@
 package bot.Hostile;
 
 import bot.Hostile.Exception.HostileNotFoundException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class HostileManager {
+import java.util.HashMap;
+
+public class HostileManager
+{
 
     public HostileManager() {}
 
-    static void createHostile(String species, int dangerLevel, int hitpoints, int attackDice) {
-        HostileRepository.insertHostile(species, dangerLevel, hitpoints, attackDice);
+    /**
+     * Create hostile
+     *
+     * @param species       Species
+     * @param dangerLevel   Danger level
+     * @param hitpoints     Hitpoints
+     * @param attackDie     Attack die rolled for attacks
+     * @param attackCount   Number of attacks per round
+     * @param lootRollCount Number of loot die rolled
+     * @param isViewable    Is viewable
+     */
+    static void createHostile(
+        String species,
+        int dangerLevel,
+        int hitpoints,
+        int attackDie,
+        int attackCount,
+        int lootRollCount,
+        boolean isViewable
+    )
+    {
+        Hostile hostile = new Hostile(
+            species,
+            dangerLevel,
+            hitpoints,
+            attackDie,
+            attackCount,
+            lootRollCount,
+            new HashMap<>(),
+            isViewable
+        );
+        HostileRepository.insertHostile(hostile);
         int hostileId = HostileRepository.getHostileId(species);
         LootRepository.initializeLoot(hostileId);
     }
 
-    public static Hostile getHostile(String species) {
+    /**
+     * Get hostile by species
+     *
+     * @param species Species of hostile to retrieve
+     *
+     * @return Hostile
+     */
+    public static @NotNull Hostile getHostile(@NotNull String species)
+    {
         return HostileRepository.getHostile(species);
     }
 
-    static void setLoot(String hostileSpecies, int diceRoll, String itemName, int quantity) {
+    /**
+     * Set loot for hostile
+     *
+     * @param hostileSpecies Hostile species to set loot for
+     * @param diceRoll       Loot die rool
+     * @param itemName       Loot item name
+     * @param quantity       Quantity of item
+     */
+    static void setLoot(@NotNull String hostileSpecies, int diceRoll, @Nullable String itemName, int quantity)
+    {
         int hostileId = HostileRepository.getHostileId(hostileSpecies);
         if (hostileId < 0) {
             throw HostileNotFoundException.createNotInDatabase(hostileSpecies);

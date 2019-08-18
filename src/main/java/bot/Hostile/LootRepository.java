@@ -81,7 +81,7 @@ class LootRepository {
         Statement statement      = null;
         ArrayList<Loot> lootList = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
@@ -115,7 +115,7 @@ class LootRepository {
         Connection connection = null;
         Statement  statement  = null;
         try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath("database"));
+            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
             statement = connection.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {
