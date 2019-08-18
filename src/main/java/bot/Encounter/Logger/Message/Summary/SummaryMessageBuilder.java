@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 public class SummaryMessageBuilder
 {
-
     private DiffCodeFormatter codeFormatter;
 
     /**
@@ -86,7 +85,7 @@ public class SummaryMessageBuilder
             return "";
         }
 
-        output.append(String.format("[%3d/%3d] ", currentHP, maxHP));
+        output.append(String.format("[%3s/%3s] ", currentHP > 999 ? "???" : currentHP, maxHP > 999 ? "???" : maxHP));
         int healthBlocks      = (int) Math.ceil(maxHP / 10) + 1;
         int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP) / 10);
         int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
