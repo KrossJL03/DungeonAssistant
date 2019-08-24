@@ -31,4 +31,11 @@ public interface HealActionResultInterface extends ActionResultInterface
      * @return int
      */
     @NotNull String getName();
+
+    /**
+     * Was the target revived
+     *
+     * @return int
+     */
+    boolean wasTargetRevived();
 }

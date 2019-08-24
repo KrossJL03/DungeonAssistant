@@ -1,17 +1,29 @@
 package bot.Player;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Player {
+public class Player
+{
+    private String  userId;
+    private String  name;
+    private int     cumulus;
+    private boolean isMod;
 
-    private String userId;
-    private String name;
-    private int cumulus;
-
-    public Player(String userId, String name, int cumulus) {
-        this.userId = userId;
-        this.name = name;
+    /**
+     * Constructor.
+     *
+     * @param userId  User id
+     * @param name    Server nickname
+     * @param cumulus Cumulus
+     * @param isMod   Is mod
+     */
+    public Player(@NotNull String userId, @NotNull String name, int cumulus, boolean isMod)
+    {
         this.cumulus = cumulus;
+        this.isMod = isMod;
+        this.name = name;
+        this.userId = userId;
     }
 
     /**
@@ -26,19 +38,45 @@ public class Player {
         return super.equals(o);
     }
 
-    public int getCumulus() {
-        return cumulus;
-    }
-
-    public String getName() {
+    /**
+     * Get name
+     *
+     * @return String
+     */
+    public @NotNull String getName()
+    {
         return name;
     }
 
-    public String getUserId() {
+    /**
+     * Get user id
+     *
+     * @return String
+     */
+    public @NotNull String getUserId()
+    {
         return userId;
     }
 
-    public boolean isSamePlayer(Player player) {
+    /**
+     * Is this player a mod
+     *
+     * @return boolean
+     */
+    public boolean isMod()
+    {
+        return isMod;
+    }
+
+    /**
+     * Are these players the same player
+     *
+     * @param player Player to compare
+     *
+     * @return boolean
+     */
+    public boolean isSamePlayer(@NotNull Player player)
+    {
         return userId.equals(player.getUserId());
     }
 }

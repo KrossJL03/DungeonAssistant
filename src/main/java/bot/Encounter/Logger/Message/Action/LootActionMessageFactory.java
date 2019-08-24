@@ -36,7 +36,7 @@ class LootActionMessageFactory extends ActionMessageFactory
         message.add(String.format(
             "they get to roll %d %s",
             result.getLootRollCount(),
-            codeFormatter.makeCyan("loot dice")
+            codeFormatter.makeCyan(String.format("loot di%se", result.getKillCount() > 1 ? "c" : ""))
         ));
 
         message.addBreak();

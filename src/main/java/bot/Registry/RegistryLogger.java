@@ -102,12 +102,12 @@ public class RegistryLogger
         output.append(RegistryLogger.NEWLINE);
         for (Hashtable<String, String> hostileInfo : hostilesInfo) {
             output.append(String.format(
-                "%-20s %3s★  %3s HP  %s%s",
+                "%-20s %3s★  %4s HP  %sd%s",
                 hostileInfo.get("species"),
                 hostileInfo.get("dangerLevel"),
                 hostileInfo.get("hitpoints"),
-                "d",
-                hostileInfo.get("attackDie")
+                hostileInfo.get("attackCount"),
+                hostileInfo.get("attack")
             ));
             output.append(RegistryLogger.NEWLINE);
         }
@@ -131,7 +131,7 @@ public class RegistryLogger
         output.append(RegistryLogger.NEWLINE);
         output.append("------------------------------------");
         output.append(RegistryLogger.NEWLINE);
-        for (int i = 1; i < 11; i++) {
+        for (int i = 1; i < hostile.getLootPoolSize() + 1; i++) {
             Loot loot = hostile.getLoot(i);
             output.append(String.format("roll %2d --> x%d %s", i, loot.getQuantity(), loot.getItem()));
             output.append(RegistryLogger.NEWLINE);

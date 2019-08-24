@@ -8,16 +8,20 @@ import java.sql.*;
 
 public class PlayerRepository
 {
-
-    private static String TABLE_NAME = "player";
+    private static String TABLE_NAME     = "player";
+    private static String COLUMN_CUMULUS = "cumulus";
+    private static String COLUMN_IS_MOD  = "isMod";
+    private static String COLUMN_NAME    = "name";
+    private static String COLUMN_USER_ID = "userId";
 
     static void createTableIfNotExists()
     {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s ", PlayerRepository.TABLE_NAME) +
                      "(" +
-                     " userId  TEXT PRIMARY KEY NOT NULL, " +
-                     " name    TEXT             NOT NULL, " +
-                     " cumulus INT              DEFAULT 0 " +
+                     String.format(" %s TEXT PRIMARY KEY NOT NULL,     ", COLUMN_USER_ID) +
+                     String.format(" %s TEXT             NOT NULL,     ", COLUMN_NAME) +
+                     String.format(" %s INT              DEFAULT 0     ", COLUMN_CUMULUS) +
+                     String.format(" %s BOOL             DEFAULT FALSE ", COLUMN_IS_MOD) +
                      ")";
         PlayerRepository.executeUpdate(sql);
     }
@@ -28,8 +32,9 @@ public class PlayerRepository
         Statement         statement  = null;
         RegistryException exception;
         String sql = String.format(
-            "SELECT COUNT(*) FROM %s WHERE userId = '%s'",
-            PlayerRepository.TABLE_NAME,
+            "SELECT COUNT(*) FROM %s WHERE %s = '%s'",
+            TABLE_NAME,
+            COLUMN_USER_ID,
             userId
         );
         try {
@@ -75,8 +80,9 @@ public class PlayerRepository
         Statement         statement  = null;
         RegistryException exception  = null;
         String sql = String.format(
-            "SELECT * FROM %s WHERE userId = '%s'",
-            PlayerRepository.TABLE_NAME,
+            "SELECT * FROM %s WHERE %s = '%s'",
+            TABLE_NAME,
+            COLUMN_USER_ID,
             userId
         );
 
@@ -86,9 +92,10 @@ public class PlayerRepository
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
                 player = new Player(
-                    resultSet.getString("userId"),
-                    resultSet.getString("name"),
-                    resultSet.getInt("cumulus")
+                    resultSet.getString(COLUMN_USER_ID),
+                    resultSet.getString(COLUMN_NAME),
+                    resultSet.getInt(COLUMN_CUMULUS),
+                    resultSet.getBoolean(COLUMN_IS_MOD)
                 );
             }
         } catch (Throwable e) {
@@ -133,8 +140,9 @@ public class PlayerRepository
         Statement         statement  = null;
         RegistryException exception  = null;
         String sql = String.format(
-            "SELECT userId FROM %s WHERE lower(name) = '%s'",
-            PlayerRepository.TABLE_NAME,
+            "SELECT %s FROM %s WHERE lower(name) = '%s'",
+            COLUMN_NAME,
+            TABLE_NAME,
             playerName
         );
 
@@ -143,7 +151,7 @@ public class PlayerRepository
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet != null) {
-                playerId = resultSet.getString("userId");
+                playerId = resultSet.getString(COLUMN_USER_ID);
             }
         } catch (Throwable e) {
             exception = RegistryException.createFailedToRetrieve();
@@ -172,8 +180,10 @@ public class PlayerRepository
     static void insertPlayer(String userId, String name)
     {
         String sql = String.format(
-            "INSERT INTO %s(userId, name) VALUES('%s','%s')",
-            PlayerRepository.TABLE_NAME,
+            "INSERT INTO %s(%s,%s) VALUES('%s','%s')",
+            TABLE_NAME,
+            COLUMN_USER_ID,
+            COLUMN_NAME,
             userId,
             name
         );
@@ -183,8 +193,9 @@ public class PlayerRepository
     static void updatePlayer(String userId, String name)
     {
         String sql = String.format(
-            "UPDATE %s SET name = '%s' WHERE userId = '%s'",
-            PlayerRepository.TABLE_NAME,
+            "UPDATE %s SET %s = '%s' WHERE userId = '%s'",
+            TABLE_NAME,
+            COLUMN_NAME,
             userId,
             name
         );

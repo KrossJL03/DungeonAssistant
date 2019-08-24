@@ -219,6 +219,10 @@ public class Encounter implements EncounterInterface
         EncounteredCreatureInterface encounterCreature = getCreature(name);
         HealActionResultInterface    result            = encounterCreature.healPoints(hitpoints);
 
+        if (result.wasTargetRevived() && encounterCreature instanceof EncounteredHostileInterface) {
+            removeKillFromExplorers(encounterCreature);
+        }
+
         listener.onAction(result);
     }
 
@@ -889,6 +893,18 @@ public class Encounter implements EncounterInterface
         hostiles.remove(encounteredHostile);
         listener.onRemoveHostile(encounteredHostile.getName());
         handleEndOfAction();
+    }
+
+    /**
+     * Remove kill from explorers
+     *
+     * @param target Encountered hostile
+     */
+    private void removeKillFromExplorers(@NotNull EncounteredCreatureInterface target)
+    {
+        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
+            encounteredExplorer.removeKill(target);
+        }
     }
 
     /**

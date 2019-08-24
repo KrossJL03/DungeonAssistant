@@ -199,6 +199,13 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void rejoin() throws EncounteredExplorerException;
 
     /**
+     * Remove kill
+     *
+     * @param encounterCreature Encountered creature
+     */
+    void removeKill(@NotNull EncounteredCreatureInterface encounterCreature);
+
+    /**
      * Reset actions
      *
      * @param singleAction Reset a single action only as opposed to all actions

@@ -3,6 +3,8 @@ package bot.Registry.Review.Command;
 import bot.CommandParameter;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
+import bot.Player.Player;
+import bot.Player.PlayerRepository;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -40,9 +42,12 @@ public class ViewHostileLootCommand extends ReviewCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event)
     {
+        Player   player     = PlayerRepository.getPlayer(event.getAuthor().getId());
         String[] parameters = getParametersFromEvent(event);
         String   species    = parameters[0];
-        Hostile  hostile    = HostileRepository.getHostile(species);
+        Hostile  hostile    = player.isMod()
+                              ? HostileRepository.getHostile(species)
+                              : HostileRepository.getViewableHostile(species);
 
         getLogger().logHostileLoot(event.getChannel(), hostile);
     }

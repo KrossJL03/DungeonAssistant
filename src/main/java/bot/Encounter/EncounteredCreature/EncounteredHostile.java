@@ -148,6 +148,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        boolean wasRevived = false;
+        if (isSlain()) {
+            slayer = new Slayer();
+            wasRevived = true;
+        }
+
         int healedHp;
         if (currentHp + hitpoints > maxHp) {
             healedHp = maxHp - currentHp;
@@ -157,11 +163,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
             currentHp += hitpoints;
         }
 
-        if (isSlain()) {
-            slayer = null;
-        }
-
-        return new HealActionResult(name, healedHp, currentHp, maxHp);
+        return new HealActionResult(name, healedHp, currentHp, maxHp, wasRevived);
     }
 
     /**

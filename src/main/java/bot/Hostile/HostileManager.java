@@ -43,8 +43,6 @@ public class HostileManager
             isViewable
         );
         HostileRepository.insertHostile(hostile);
-        int hostileId = HostileRepository.getHostileId(species);
-        LootRepository.initializeLoot(hostileId);
     }
 
     /**
@@ -63,7 +61,7 @@ public class HostileManager
      * Set loot for hostile
      *
      * @param hostileSpecies Hostile species to set loot for
-     * @param diceRoll       Loot die rool
+     * @param diceRoll       Loot die roll
      * @param itemName       Loot item name
      * @param quantity       Quantity of item
      */

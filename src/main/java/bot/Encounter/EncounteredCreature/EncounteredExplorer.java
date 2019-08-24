@@ -394,8 +394,10 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        boolean wasRevived = false;
         if (isSlain()) {
             slayer = new Slayer();
+            wasRevived = true;
         }
 
         int healedHp;
@@ -407,7 +409,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp += hitpoints;
         }
 
-        return new HealActionResult(name, healedHp, currentHp, maxHp);
+        return new HealActionResult(name, healedHp, currentHp, maxHp, wasRevived);
     }
 
     /**
@@ -594,6 +596,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             throw EncounteredExplorerException.createCannotRejoinIfPresent(owner);
         }
         this.isPresent = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeKill(@NotNull EncounteredCreatureInterface kill)
+    {
+        kills.remove(kill);
     }
 
     /**
