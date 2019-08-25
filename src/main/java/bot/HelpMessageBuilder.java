@@ -1,7 +1,6 @@
 package bot;
 
 import bot.Encounter.AdditionalCommandInterface;
-import bot.Encounter.Logger.Message.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

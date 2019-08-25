@@ -3,7 +3,7 @@ package bot.Encounter.Logger.Message.Action;
 import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.JoinActionResultInterface;
 import bot.Encounter.Logger.Mention;
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class JoinActionMessageFactory extends ActionMessageFactory

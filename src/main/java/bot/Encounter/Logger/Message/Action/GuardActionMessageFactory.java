@@ -2,7 +2,7 @@ package bot.Encounter.Logger.Message.Action;
 
 import bot.Encounter.GuardActionResultInterface;
 import bot.Encounter.GuardResultInterface;
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class GuardActionMessageFactory extends CombatActionMessageFactory

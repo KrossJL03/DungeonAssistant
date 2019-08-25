@@ -1,4 +1,4 @@
-package bot.Encounter.Logger.Message;
+package bot;
 
 import org.jetbrains.annotations.NotNull;
 

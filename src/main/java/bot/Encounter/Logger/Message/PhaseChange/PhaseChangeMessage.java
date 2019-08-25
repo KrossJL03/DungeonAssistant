@@ -1,6 +1,6 @@
 package bot.Encounter.Logger.Message.PhaseChange;
 
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class PhaseChangeMessage implements MessageInterface

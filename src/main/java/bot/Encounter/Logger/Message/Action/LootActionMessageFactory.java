@@ -1,6 +1,6 @@
 package bot.Encounter.Logger.Message.Action;
 
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import bot.Encounter.LootActionResultInterface;
 import bot.Encounter.LootRollInterface;
 import bot.Hostile.Loot;

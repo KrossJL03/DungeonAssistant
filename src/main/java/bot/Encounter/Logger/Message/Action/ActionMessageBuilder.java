@@ -2,7 +2,7 @@ package bot.Encounter.Logger.Message.Action;
 
 import bot.Encounter.*;
 import bot.Encounter.Logger.Mention;
-import bot.Encounter.Logger.Message.*;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class ActionMessageBuilder

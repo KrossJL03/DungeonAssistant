@@ -1,6 +1,7 @@
 package bot;
 
 import bot.Encounter.EncounterServiceProvider;
+import bot.Lottery.LotteryServiceProvider;
 import bot.Registry.RegistryServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,15 +64,17 @@ public class CommandProvider
      */
     private void init()
     {
-        ProcessManager           processManager           = new ProcessManager();
-        EncounterServiceProvider encounterServiceProvider = new EncounterServiceProvider(processManager);
-        RegistryServiceProvider  registryServiceProvider  = new RegistryServiceProvider(processManager);
+        ProcessManager           processManager             = new ProcessManager();
+        EncounterServiceProvider encounterServiceProvider   = new EncounterServiceProvider(processManager);
+        RegistryServiceProvider  registryServiceProvider    = new RegistryServiceProvider(processManager);
+        LotteryServiceProvider   itemLotteryServiceProvider = new LotteryServiceProvider(processManager);
 
         ArrayList<CommandFactoryInterface> commandFactories = new ArrayList<>();
 
         commandFactories.add(encounterServiceProvider.getCommandFactory());
         commandFactories.add(registryServiceProvider.getRecordCommandFactory());
         commandFactories.add(registryServiceProvider.getReviewCommandFactory());
+        commandFactories.add(itemLotteryServiceProvider.getCommandFactory());
 
         for (CommandFactoryInterface commandFactory : commandFactories) {
             commands.addAll(commandFactory.createCommands());

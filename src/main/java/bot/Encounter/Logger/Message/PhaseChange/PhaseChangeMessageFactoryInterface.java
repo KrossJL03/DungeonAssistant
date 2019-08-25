@@ -1,7 +1,7 @@
 package bot.Encounter.Logger.Message.PhaseChange;
 
 import bot.Encounter.EncounterPhaseInterface;
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import bot.Encounter.PhaseChangeResult;
 import org.jetbrains.annotations.NotNull;
 

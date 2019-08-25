@@ -1,6 +1,6 @@
 package bot.Encounter.Logger.Message.Summary;
 
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class SummaryMessage implements MessageInterface

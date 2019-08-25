@@ -2,9 +2,9 @@ package bot.Encounter.Logger.Message.PhaseChange;
 
 import bot.CommandListener;
 import bot.Encounter.EncounterPhaseInterface;
-import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
 import bot.Encounter.TierInterface;
+import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 

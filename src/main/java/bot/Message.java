@@ -1,6 +1,5 @@
 package bot;
 
-import bot.Encounter.Logger.Message.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class Message implements MessageInterface

@@ -33,8 +33,12 @@ public class PrivateLogger
     )
     {
         sendPrivateMessage(user, helpMessageBuilder.buildDescriptionMessage());
-        sendPrivateMessage(user, helpMessageBuilder.buildAdminCommandsMessage(adminCommands));
-        sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(memberCommands));
+        if (adminCommands.size() > 0) {
+            sendPrivateMessage(user, helpMessageBuilder.buildAdminCommandsMessage(adminCommands));
+        }
+        if (memberCommands.size() > 0) {
+            sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(memberCommands));
+        }
     }
 
     /**

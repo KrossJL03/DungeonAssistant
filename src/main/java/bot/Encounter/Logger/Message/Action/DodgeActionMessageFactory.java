@@ -2,7 +2,7 @@ package bot.Encounter.Logger.Message.Action;
 
 import bot.Encounter.DodgeActionResultInterface;
 import bot.Encounter.DodgeResultInterface;
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class DodgeActionMessageFactory extends CombatActionMessageFactory

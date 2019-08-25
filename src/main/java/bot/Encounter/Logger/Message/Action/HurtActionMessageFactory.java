@@ -1,7 +1,7 @@
 package bot.Encounter.Logger.Message.Action;
 
 import bot.Encounter.HurtActionResultInterface;
-import bot.Encounter.Logger.Message.MessageInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class HurtActionMessageFactory extends ActionMessageFactory
