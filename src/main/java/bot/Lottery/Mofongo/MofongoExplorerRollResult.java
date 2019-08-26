@@ -1,6 +1,5 @@
 package bot.Lottery.Mofongo;
 
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +22,7 @@ class MofongoExplorerRollResult
      */
     MofongoExplorerRollResult(
         @Nullable MofongoItem item,
-        @NotNull String rarityName,
+        @Nullable String rarityName,
         int itemDie,
         int rarityDie,
         int rarityRoll
@@ -32,7 +31,7 @@ class MofongoExplorerRollResult
         this.item = item;
         this.itemDie = itemDie;
         this.rarityDie = rarityDie;
-        this.rarityName = rarityName;
+        this.rarityName = rarityName != null ? rarityName : "Null";
         this.rarityRoll = rarityRoll;
     }
 

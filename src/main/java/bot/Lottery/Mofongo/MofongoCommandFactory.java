@@ -37,6 +37,7 @@ class MofongoCommandFactory implements CommandFactoryInterface
         {
             {
                 add(new MofongoRollCommand(processManager, mofongoLogger));
+                add(new MofongoViewPetsCommand(processManager, mofongoLogger));
             }
         };
     }

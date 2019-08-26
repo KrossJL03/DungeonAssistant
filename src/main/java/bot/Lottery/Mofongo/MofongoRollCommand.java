@@ -6,23 +6,12 @@ import bot.ProcessManager;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 class MofongoRollCommand extends Command
 {
-    final static         String RARITY_ITEM_COMMON     = "Common";
-    final static         String RARITY_ITEM_UNCOMMON   = "Uncommon";
-    final static         String RARITY_ITEM_RARE       = "Rare";
-    final static         String RARITY_ITEM_ULTRA_RARE = "UltraRare";
-    final static private String RARITY_ITEM_NULL       = "Null";
-
-    final static String RARITY_PET_COMMON     = "Common";
-    final static String RARITY_PET_UNCOMMON   = "Uncommon";
-    final static String RARITY_PET_RARE       = "Rare";
-    final static String RARITY_PET_ULTRA_RARE = "UltraRare";
-    final static String RARITY_PET_LEGENDARY  = "Legendary";
-
     final static private int RARITY_DIE = 100;
 
     private MofongoLogger logger;
@@ -73,19 +62,19 @@ class MofongoRollCommand extends Command
      *
      * @return String
      */
-    private String getRarityByRoll(int rarityRoll)
+    private @Nullable String getRarityByRoll(int rarityRoll)
     {
         String result;
         if (rarityRoll > 95) {
-            result = RARITY_ITEM_ULTRA_RARE;
+            result = MofongoItem.RARITY_ITEM_ULTRA_RARE;
         } else if (rarityRoll > 85) {
-            result = RARITY_ITEM_RARE;
+            result = MofongoItem.RARITY_ITEM_RARE;
         } else if (rarityRoll > 60) {
-            result = RARITY_ITEM_UNCOMMON;
+            result = MofongoItem.RARITY_ITEM_UNCOMMON;
         } else if (rarityRoll > 20) {
-            result = RARITY_ITEM_COMMON;
+            result = MofongoItem.RARITY_ITEM_COMMON;
         } else {
-            result = RARITY_ITEM_NULL;
+            result = null;
         }
 
         return result;
@@ -103,7 +92,7 @@ class MofongoRollCommand extends Command
         int         itemDie    = 0;
         MofongoItem item       = null;
 
-        if (!rarityName.equals(RARITY_ITEM_NULL)) {
+        if (rarityName != null) {
             itemDie = MofongoItemRegistry.getItemCountByRarity(rarityName);
             item = MofongoItemRegistry.getItemByRarityAndRoll(rarityName, rollItemDie(itemDie));
         }

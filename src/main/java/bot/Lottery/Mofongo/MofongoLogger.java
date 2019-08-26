@@ -2,14 +2,16 @@ package bot.Lottery.Mofongo;
 
 import bot.Message;
 import bot.MessageInterface;
+import bot.PyCodeFormatter;
 import bot.TextFormatter;
-import bot.XlCodeFormatter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 class MofongoLogger
 {
-    private XlCodeFormatter codeFormatter;
+    private PyCodeFormatter codeFormatter;
     private TextFormatter   textFormatter;
 
     /**
@@ -17,7 +19,7 @@ class MofongoLogger
      */
     MofongoLogger()
     {
-        this.codeFormatter = new XlCodeFormatter();
+        this.codeFormatter = new PyCodeFormatter();
         this.textFormatter = new TextFormatter();
     }
 
@@ -41,7 +43,7 @@ class MofongoLogger
         MofongoItem item = result.getItem();
         if (item != null) {
             message.add(String.format(
-                "Item   Roll d%3d %s %2d => %d %s",
+                "Item   Roll d%-3d %s %2d => %d %s",
                 result.getItemDie(),
                 MessageInterface.DOUBLE_ARROW,
                 item.getRoll(),
@@ -85,6 +87,31 @@ class MofongoLogger
                 message.add(textFormatter.makeLinkPreviewless(item.getLink()));
             }
         }
+
+        logMessage(channel, message.getAsString());
+    }
+
+    /**
+     * Log pet stats
+     *
+     * @param channel Channel to log to
+     * @param stats   Pet stats to log
+     */
+    void logPetStats(@NotNull MessageChannel channel, @NotNull ArrayList<MofongoPetStat> stats)
+    {
+        Message message = new Message();
+        message.startCodeBlock(codeFormatter.getStyle());
+        message.add(codeFormatter.makeOrange(" Mofongo Pet Stats"));
+        message.add(MessageInterface.LINE);
+        for (MofongoPetStat stat : stats) {
+            message.add(String.format(
+                "%-16s %d Rolls %s",
+                stat.getSpeciesName(),
+                stat.getRollCount(),
+                codeFormatter.makeGrey(stat.getRarityName())
+            ));
+        }
+        message.endCodeBlock();
 
         logMessage(channel, message.getAsString());
     }

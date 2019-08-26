@@ -5,6 +5,11 @@ import org.jetbrains.annotations.Nullable;
 
 class MofongoItem
 {
+    final static String RARITY_ITEM_COMMON     = "Common";
+    final static String RARITY_ITEM_UNCOMMON   = "Uncommon";
+    final static String RARITY_ITEM_RARE       = "Rare";
+    final static String RARITY_ITEM_ULTRA_RARE = "UltraRare";
+
     private String link;
     private String name;
     private String rarityName;
