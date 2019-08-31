@@ -2,6 +2,7 @@ package bot.Lottery;
 
 import bot.CommandFactoryInterface;
 import bot.Lottery.Mofongo.MofongoServiceProvider;
+import bot.Lottery.Pan.PanServiceProvider;
 import bot.PrivateLogger;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ public class LotteryServiceProvider
 {
     private LotteryCommandFactory  commandFactory;
     private MofongoServiceProvider mofongoServiceProvider;
+    private PanServiceProvider     panServiceProvider;
     private PrivateLogger          privateLogger;
     private ProcessManager         processManager;
 
@@ -23,6 +25,7 @@ public class LotteryServiceProvider
     public LotteryServiceProvider(@NotNull ProcessManager processManager)
     {
         this.mofongoServiceProvider = new MofongoServiceProvider(processManager);
+        this.panServiceProvider = new PanServiceProvider(processManager);
         this.privateLogger = new PrivateLogger(new LotteryHelpMessageBuilder());
         this.processManager = processManager;
 
@@ -33,6 +36,7 @@ public class LotteryServiceProvider
             {
                 {
                     add(mofongoServiceProvider.getCommandFactory());
+                    add(panServiceProvider.getCommandFactory());
                 }
             }
         );
