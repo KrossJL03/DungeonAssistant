@@ -682,7 +682,7 @@ public class Encounter implements EncounterInterface
     @Override
     public void useAllCurrentExplorerActions()
     {
-        if (!currentPhase.isFinalPhase()) {
+        if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
         } else if (!currentPhase.isInitiativePhase()) {
             throw EncounterPhaseException.createNotInitiativePhase();
@@ -698,7 +698,7 @@ public class Encounter implements EncounterInterface
     @Override
     public void useCurrentExplorerAction()
     {
-        if (!currentPhase.isFinalPhase()) {
+        if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
         } else if (!currentPhase.isInitiativePhase()) {
             throw EncounterPhaseException.createNotInitiativePhase();
