@@ -17,6 +17,7 @@ class HealActionMessageFactory extends ActionMessageFactory
     {
         ActionMessage message = new ActionMessage();
 
+        message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format(
             "%s heals %d points! [%d/%d]",
             result.getName(),
@@ -24,6 +25,13 @@ class HealActionMessageFactory extends ActionMessageFactory
             result.getCurrentHp(),
             result.getMaxHp()
         ));
+        if (result.wasTargetRevived()) {
+            message.add(String.format(
+                "%s has been revived! They have earned the %s title.",
+                result.getName(),
+                codeFormatter.makeCyan("Zombie")
+            ));
+        }
 
         return message;
     }

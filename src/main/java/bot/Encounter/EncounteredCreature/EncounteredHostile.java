@@ -170,19 +170,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPercent(float percent)
+    public @NotNull HealActionResultInterface healPercent(float percent)
     {
-        if (isSlain()) {
-            slayer = null;
-        }
-        int hitpointsHealed = (int) Math.floor(maxHp * percent);
-        if (currentHp + hitpointsHealed > maxHp) {
-            hitpointsHealed = maxHp - currentHp;
-            currentHp = maxHp;
-        } else {
-            currentHp += hitpointsHealed;
-        }
-        return hitpointsHealed;
+        return healPoints((int) Math.floor(maxHp * percent));
     }
 
     /**

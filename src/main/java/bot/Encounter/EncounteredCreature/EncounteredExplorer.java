@@ -416,21 +416,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPercent(float percent)
+    public @NotNull HealActionResultInterface healPercent(float percent)
     {
-        if (isSlain()) {
-            slayer = new Slayer();
-        }
-
-        int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
-        if (currentHp + hitpointsHealed > getMaxHP()) {
-            hitpointsHealed = getMaxHP() - currentHp;
-            currentHp = getMaxHP();
-        } else {
-            currentHp += hitpointsHealed;
-        }
-
-        return hitpointsHealed;
+        return healPoints((int) Math.floor(maxHp * percent));
     }
 
     /**
@@ -688,7 +676,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         damage = damage - this.getEndurance();
-        damage = damage < 1 ? 1 : damage;
+        damage = Math.max(1, damage);
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = new Slayer(attacker.getName());
         }
@@ -912,7 +900,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int takeGuardedDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         damage = damage - getGuardEndurance();
-        damage = damage < 1 ? 1 : damage;
+        damage = Math.max(1, damage);
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = new Slayer(attacker.getName());
         }

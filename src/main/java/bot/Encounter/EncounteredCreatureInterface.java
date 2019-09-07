@@ -81,9 +81,9 @@ public interface EncounteredCreatureInterface
      *
      * @param percent Percent of max hp to heal
      *
-     * @return int Hitpoints healed
+     * @return HealActionResultInterface
      */
-    int healPercent(float percent);
+    @NotNull HealActionResultInterface healPercent(float percent);
 
     /**
      * Hurt

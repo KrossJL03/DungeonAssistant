@@ -268,10 +268,8 @@ public class Encounter implements EncounterInterface
         if (encounterCreature.isSlain()) {
             if (encounterCreature instanceof EncounteredHostile) {
                 addKillToExplorers(encounterCreature);
-            } else if (encounterCreature instanceof EncounteredExplorerInterface) {
-                if (encounterCreature.isSlain() && hasPhoenixDown) {
-                    usePhoenixDown((EncounteredExplorerInterface) encounterCreature);
-                }
+            } else if (hasPhoenixDown && encounterCreature instanceof EncounteredExplorerInterface) {
+                usePhoenixDown((EncounteredExplorerInterface) encounterCreature);
             }
         }
 
@@ -505,6 +503,29 @@ public class Encounter implements EncounterInterface
         } else {
             removeHostile((EncounteredHostileInterface) encounterCreature);
         }
+    }
+
+    /**
+     * Revive an explorer and heal to half health
+     *
+     * @param name Encountered explorer name
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    public void revive(@NotNull String name) throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        }
+
+        EncounteredCreatureInterface encounterCreature = getCreature(name);
+        HealActionResultInterface    result            = encounterCreature.healPercent((float) 0.5);
+
+        if (result.wasTargetRevived() && encounterCreature instanceof EncounteredHostileInterface) {
+            removeKillFromExplorers(encounterCreature);
+        }
+
+        listener.onAction(result);
     }
 
     /**
@@ -968,7 +989,8 @@ public class Encounter implements EncounterInterface
         }
 
         hasPhoenixDown = false;
-        int hitpoints = encounteredExplorer.healPercent((float) 0.5);
-        listener.onUsePhoenixDown(encounteredExplorer.getName(), hitpoints);
+        HealActionResultInterface result = encounteredExplorer.healPercent((float) 0.5);
+        listener.onUsePhoenixDown();
+        listener.onAction(result);
     }
 }
