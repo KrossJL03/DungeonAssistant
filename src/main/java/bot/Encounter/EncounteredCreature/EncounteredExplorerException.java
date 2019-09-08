@@ -37,20 +37,20 @@ public class EncounteredExplorerException extends RuntimeException implements En
     }
 
     /**
-     * Factory method for "failed to add kill"
+     * Factory method for "failed to add opponent"
      *
      * @param explorerName Explorer name
-     * @param killName     Kill name
+     * @param opponentName Opponent name
      *
      * @return EncounteredExplorerException
      */
-    static @NotNull EncounteredExplorerException createFailedToAddKill(
+    static @NotNull EncounteredExplorerException createFailedToAddOpponent(
         @NotNull String explorerName,
-        @NotNull String killName
+        @NotNull String opponentName
     )
     {
         return new EncounteredExplorerException(
-            String.format("%s  was not present for %s's death", explorerName, killName)
+            String.format("%s is not present to fight %s right now.", explorerName, opponentName)
         );
     }
 

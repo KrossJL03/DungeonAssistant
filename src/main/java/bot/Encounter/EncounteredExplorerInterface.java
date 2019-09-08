@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public interface EncounteredExplorerInterface extends EncounteredCreatureInterface
 {
     /**
-     * Add kill
+     * Add creature as opponent when they have been fought long enough to qualify for loot
      *
-     * @param encounterCreature Encountered creature
+     * @param opponent Opponent that was fought against
      *
-     * @throws EncounteredExplorerException If explorer was not active for kill
+     * @throws EncounteredExplorerException If explorer is not active
      */
-    void addKill(@NotNull EncounteredCreatureInterface encounterCreature) throws EncounteredExplorerException;
+    void addOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException;
 
     /**
      * Attack a target
@@ -28,6 +28,15 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      */
     @NotNull AttackActionResultInterface attack(@NotNull EncounteredCreatureInterface target)
         throws EncounteredExplorerException;
+
+    /**
+     * Compare to
+     *
+     * @param encounteredExplorer Encountered explorer to compare
+     *
+     * @return int
+     */
+    int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer);
 
     /**
      * Dodge encountered hostile attacks
@@ -206,6 +215,13 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void removeKill(@NotNull EncounteredCreatureInterface encounterCreature);
 
     /**
+     * Remove opponent that is no longer eligible for loot
+     *
+     * @param opponent Opponent that was fought against
+     */
+    void removeOpponent(@NotNull EncounteredCreatureInterface opponent);
+
+    /**
      * Reset actions
      *
      * @param singleAction Reset a single action only as opposed to all actions
@@ -226,13 +242,4 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      * Use all actions
      */
     void useAllActions();
-
-    /**
-     * Compare to
-     *
-     * @param encounteredExplorer Encountered explorer to compare
-     *
-     * @return int
-     */
-    int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer);
 }

@@ -10,16 +10,16 @@ import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Encounter implements EncounterInterface
 {
-    private ActionListener                         listener;
-    private ArrayList<EncounteredHostileInterface> hostiles;
-    private ExplorerRoster                         explorerRoster;
-    private InitiativeQueue                        initiative;
     private EncounterPhaseInterface                currentPhase;
+    private ExplorerRoster                         explorerRoster;
     private boolean                                hasPhoenixDown;
+    private ArrayList<EncounteredHostileInterface> hostiles;
+    private InitiativeQueue                        initiative;
+    private ActionListener                         listener;
 
     /**
      * Encounter constructor
@@ -105,10 +105,13 @@ public class Encounter implements EncounterInterface
         }
 
         EncounteredHostileInterface encounteredHostile = getHostile(hostileName);
-        AttackActionResultInterface result             = currentExplorer.attack(encounteredHostile);
+        if (!encounteredHostile.isBloodied()) {
+            addOpponentToActiveExplorers(encounteredHostile);
+        }
 
+        AttackActionResultInterface result = currentExplorer.attack(encounteredHostile);
         if (result.isTargetSlain()) {
-            addKillToExplorers(encounteredHostile);
+            removeOpponentFromInactiveExplorers(encounteredHostile);
         }
 
         listener.onAction(result);
@@ -220,8 +223,12 @@ public class Encounter implements EncounterInterface
         EncounteredCreatureInterface encounterCreature = getCreature(name);
         HealActionResultInterface    result            = encounterCreature.healPoints(hitpoints);
 
-        if (result.wasTargetRevived() && encounterCreature instanceof EncounteredHostileInterface) {
-            removeKillFromExplorers(encounterCreature);
+        if (
+            encounterCreature instanceof EncounteredHostileInterface
+            && result.wasTargetRevived()
+            && !encounterCreature.isBloodied()
+        ) {
+            addOpponentToActiveExplorers(encounterCreature);
         }
 
         listener.onAction(result);
@@ -262,13 +269,17 @@ public class Encounter implements EncounterInterface
         }
 
         EncounteredCreatureInterface encounterCreature = getCreature(name);
+        boolean                      wasBloodied       = encounterCreature.isBloodied();
         HurtActionResultInterface    result            = encounterCreature.hurt(hitpoints);
 
         listener.onAction(result);
 
+        if (!wasBloodied) {
+            addOpponentToActiveExplorers(encounterCreature);
+        }
         if (encounterCreature.isSlain()) {
             if (encounterCreature instanceof EncounteredHostile) {
-                addKillToExplorers(encounterCreature);
+                removeOpponentFromInactiveExplorers(encounterCreature);
             } else if (hasPhoenixDown && encounterCreature instanceof EncounteredExplorerInterface) {
                 usePhoenixDown((EncounteredExplorerInterface) encounterCreature);
             }
@@ -522,8 +533,12 @@ public class Encounter implements EncounterInterface
         EncounteredCreatureInterface encounterCreature = getCreature(name);
         HealActionResultInterface    result            = encounterCreature.healPercent((float) 0.5);
 
-        if (result.wasTargetRevived() && encounterCreature instanceof EncounteredHostileInterface) {
-            removeKillFromExplorers(encounterCreature);
+        if (
+            encounterCreature instanceof EncounteredHostileInterface
+            && result.wasTargetRevived()
+            && !encounterCreature.isBloodied()
+        ) {
+            addOpponentToActiveExplorers(encounterCreature);
         }
 
         listener.onAction(result);
@@ -731,14 +746,14 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Add kill to explorers
+     * Add opponent to active explorers
      *
-     * @param target Encountered hostile
+     * @param opponent Opponent
      */
-    private void addKillToExplorers(@NotNull EncounteredCreatureInterface target)
+    private void addOpponentToActiveExplorers(@NotNull EncounteredCreatureInterface opponent)
     {
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
-            encounteredExplorer.addKill(target);
+            encounteredExplorer.addOpponent(opponent);
         }
     }
 
@@ -789,18 +804,11 @@ public class Encounter implements EncounterInterface
      * @return EncounteredHostileInterface
      *
      * @throws EncounteredCreatureNotFoundException If hostile with name not found
-     * @throws HostileRosterException               If hostile is slain
      */
-    private @NotNull EncounteredHostileInterface getHostile(@NotNull String name) throws HostileRosterException
+    private @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
     {
         for (EncounteredHostileInterface encounteredHostile : hostiles) {
             if (encounteredHostile.isName(name)) {
-                if (encounteredHostile.isSlain()) {
-                    throw HostileRosterException.createIsSlain(
-                        encounteredHostile.getName(),
-                        encounteredHostile.getSlayer().getName()
-                    );
-                }
                 return encounteredHostile;
             }
         }
@@ -912,20 +920,35 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         }
 
+        removeOpponentFromAllExplorers(encounteredHostile);
         hostiles.remove(encounteredHostile);
         listener.onRemoveHostile(encounteredHostile.getName());
         handleEndOfAction();
     }
 
     /**
-     * Remove kill from explorers
+     * Remove opponent from all explorers
      *
-     * @param target Encountered hostile
+     * @param slainCreature Slain creature
      */
-    private void removeKillFromExplorers(@NotNull EncounteredCreatureInterface target)
+    private void removeOpponentFromAllExplorers(@NotNull EncounteredCreatureInterface slainCreature)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
-            encounteredExplorer.removeKill(target);
+        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
+            encounteredExplorer.removeOpponent(slainCreature);
+        }
+    }
+
+    /**
+     * Remove opponent from non-active explorers
+     *
+     * @param slainCreature Slain creature
+     */
+    private void removeOpponentFromInactiveExplorers(@NotNull EncounteredCreatureInterface slainCreature)
+    {
+        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
+            if (!encounteredExplorer.isActive()) {
+                encounteredExplorer.removeOpponent(slainCreature);
+            }
         }
     }
 
