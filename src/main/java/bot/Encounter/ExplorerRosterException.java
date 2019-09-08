@@ -155,6 +155,24 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
     }
 
     /**
+     * Factory method for "cannot rejoin if present"
+     *
+     * @param player Owner
+     *
+     * @return ExplorerRosterException
+     */
+    static @NotNull ExplorerRosterException createNameTaken(@NotNull Player player, @NotNull String name)
+    {
+        return new ExplorerRosterException(
+            String.format(
+                "%s Someone named '%s' is already in the battle. Could you use a nickname?",
+                (Mention.createForPlayer(player.getUserId())).getValue(),
+                name
+            )
+        );
+    }
+
+    /**
      * Factory method for "new player max less than current player count"
      *
      * @return ExplorerRosterException

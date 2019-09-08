@@ -11,15 +11,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class CreateCharacterCommand extends RecordCommand
+public class CreateExplorerCommand extends RecordCommand
 {
     /**
-     * CreateCharacterCommand constructor
+     * Constructor
      *
      * @param processManager Process manager
      * @param logger         Logger
      */
-    CreateCharacterCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
+    CreateExplorerCommand(@NotNull ProcessManager processManager, @NotNull RegistryLogger logger)
     {
         super(
             processManager,

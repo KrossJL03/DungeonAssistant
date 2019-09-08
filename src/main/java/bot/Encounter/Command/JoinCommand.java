@@ -40,9 +40,10 @@ public class JoinCommand extends EncounterCommand
             {
                 {
                     add(new CommandParameter("ExplorerName", true));
+                    add(new CommandParameter("Nickname", false));
                 }
             },
-            "Join an encounter with your explorer.",
+            "Join an encounter with your explorer. Option to use a nickname for the battle.",
             false
         );
     }
@@ -56,8 +57,9 @@ public class JoinCommand extends EncounterCommand
         Player   player       = getPlayerFromEvent(event);
         String[] parameters   = getParametersFromEvent(event);
         String   explorerName = parameters[0];
+        String   nickname     = parameters.length > 1 ? parameters[1] : null;
+        Explorer explorer     = ExplorerManager.getMyExplorer(player.getUserId(), explorerName);
 
-        Explorer explorer = ExplorerManager.getMyExplorer(player.getUserId(), explorerName);
-        getEncounter().join(explorer);
+        getEncounter().join(explorer, nickname);
     }
 }

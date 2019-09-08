@@ -23,14 +23,6 @@ public class ExplorerManager
     )
     {
         PlayerManager.ensurePlayerExist(userId);
-        Player   owner    = PlayerRepository.getPlayer(userId);
-        Explorer explorer = ExplorerRepository.getExplorer(name);
-        if (explorer != null && !explorer.isOwner(owner)) {
-            throw NotYourExplorerException.createForNameTaken(
-                explorer.getName(),
-                explorer.getOwner().getName()
-            );
-        }
         Explorer.validateStats(name, hitpoints, strength, defense, agility, wisdom);
         ExplorerRepository.insertExplorer(
             userId,

@@ -15,6 +15,7 @@ import bot.Encounter.ProtectActionResultInterface;
 import bot.Player.Player;
 import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -41,8 +42,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * EncounteredExplorerInterface constructor
      *
      * @param explorer Explorer
+     * @param nickname Optional nickname
      */
-    public @NotNull EncounteredExplorer(@NotNull Explorer explorer)
+    public @NotNull EncounteredExplorer(@NotNull Explorer explorer, @Nullable String nickname)
     {
         this.agility = explorer.getAgility();
         this.currentActions = 0;
@@ -52,7 +54,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.isPresent = true;
         this.kills = new ArrayList<>();
         this.maxHp = explorer.getHitpoints();
-        this.name = explorer.getName();
+        this.name = nickname != null ? nickname : explorer.getName();
         this.owner = explorer.getOwner();
         this.slayer = new Slayer();
         this.strength = explorer.getStrength();

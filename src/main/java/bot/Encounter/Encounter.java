@@ -8,6 +8,7 @@ import bot.Hostile.Hostile;
 import bot.Player.Player;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -322,7 +323,7 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void join(@NotNull Explorer explorer) throws EncounterPhaseException
+    public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         if (currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createNotStarted();
@@ -330,7 +331,7 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer);
+        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer, nickname);
         explorerRoster.addExplorer(encounteredExplorer);
         if (currentPhase.isInitiativePhase()) {
             initiative.add(encounteredExplorer);
