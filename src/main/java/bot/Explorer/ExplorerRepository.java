@@ -206,7 +206,8 @@ class ExplorerRepository
                      " agility   INT  NOT NULL, " +
                      " defense   INT  NOT NULL, " +
                      " appLink   TEXT NOT NULL, " +
-                     " statsLInk TEXT NOT NULL  " +
+                     " statsLink TEXT NOT NULL, " +
+                     " unique (playerId, name)  " +
                      ")";
         ExplorerRepository.executeUpdate(sql);
     }

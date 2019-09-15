@@ -6,7 +6,6 @@ import bot.Encounter.Phase.EncounterPhaseFactory;
 import bot.Explorer.Explorer;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
-import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +55,7 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        String                      capitalNickname       = WordUtils.capitalizeFully(nickname);
+        String                      capitalNickname       = Capitalizer.nameCaseIfLowerCase(nickname);
         EncounteredHostileInterface newEncounteredHostile = new EncounteredHostile(hostile, capitalNickname);
         String                      hostileSpecies        = hostile.getSpecies();
         String                      nicknameToLower       = nickname.toLowerCase();
@@ -342,7 +341,11 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer, nickname);
+        String capitalNickname = nickname != null
+                                 ? Capitalizer.nameCaseIfLowerCase(nickname)
+                                 : null;
+        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer, capitalNickname);
+
         explorerRoster.addExplorer(encounteredExplorer);
         if (currentPhase.isInitiativePhase()) {
             initiative.add(encounteredExplorer);
