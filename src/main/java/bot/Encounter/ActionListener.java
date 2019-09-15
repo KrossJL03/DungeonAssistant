@@ -171,12 +171,9 @@ class ActionListener
 
     /**
      * Log first death revival
-     *
-     * @param name      Name of fallen explorer
-     * @param hitpoints Amount of hitpoints healed
      */
-    void onUsePhoenixDown(@NotNull String name, int hitpoints)
+    void onUsePhoenixDown()
     {
-        logger.logFirstDeathRevived(name, hitpoints);
+        logger.logFirstDeathRevived();
     }
 }

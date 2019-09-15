@@ -94,7 +94,7 @@ public class SummaryMessageBuilder
             output.append(this.repeatString(SummaryMessage.EMPTY_HEALTH_ICON, emptyHealthBlocks));
         }
 
-        return isLowHealth(creature)
+        return creature.isBloodied()
                ? codeFormatter.makeRed(output.toString())
                : codeFormatter.makeGreen(output.toString());
     }
@@ -141,18 +141,6 @@ public class SummaryMessageBuilder
         } else {
             return String.format("%s [%s]", encounteredExplorer.getName(), encounteredExplorer.getOwner().getName());
         }
-    }
-
-    /**
-     * Is creature considered low health
-     *
-     * @param creature Creature
-     *
-     * @return boolean
-     */
-    private boolean isLowHealth(EncounteredCreatureInterface creature)
-    {
-        return creature.getCurrentHP() < (creature.getMaxHP() / 4);
     }
 
     /**

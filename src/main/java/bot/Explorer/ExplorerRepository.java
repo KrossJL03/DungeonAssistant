@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 class ExplorerRepository
 {
-
     private static String TABLE_NAME = "explorer";
 
     static void deleteExplorer(String playerId, String name) {
@@ -196,49 +195,6 @@ class ExplorerRepository
         return null;
     }
 
-    static Explorer getExplorer(String name) {
-        Connection connection = null;
-        Statement  statement  = null;
-        String sql = String.format(
-            "SELECT * FROM %s WHERE lower(name) = '%s'",
-            ExplorerRepository.TABLE_NAME,
-            name.toLowerCase()
-        );
-        try {
-            connection = DriverManager.getConnection(RegistryPaths.getDatabasePath());
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            if (resultSet != null) {
-                Player player = PlayerRepository.getPlayer(resultSet.getString("playerId"));
-                return new Explorer(
-                    resultSet.getString("name"),
-                    player,
-                    resultSet.getInt("hitpoints"),
-                    resultSet.getInt("strength"),
-                    resultSet.getInt("defense"),
-                    resultSet.getInt("agility"),
-                    resultSet.getInt("wisdom"),
-                    resultSet.getString("appLink"),
-                    resultSet.getString("statsLink")
-                );
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Throwable e) {
-                System.out.println("Failed to close");
-            }
-        }
-        return null;
-    }
-
     static void createTableIfNotExists() {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s", ExplorerRepository.TABLE_NAME) +
                      "(" +
@@ -250,8 +206,8 @@ class ExplorerRepository
                      " agility   INT  NOT NULL, " +
                      " defense   INT  NOT NULL, " +
                      " appLink   TEXT NOT NULL, " +
-                     " statsLInk TEXT NOT NULL, " +
-                     " PRIMARY KEY (name COLLATE NOCASE)" +
+                     " statsLink TEXT NOT NULL, " +
+                     " unique (playerId, name)  " +
                      ")";
         ExplorerRepository.executeUpdate(sql);
     }

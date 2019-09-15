@@ -1,11 +1,7 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.EncounteredCreatureInterface;
-import bot.Encounter.EncounteredHostileInterface;
-import bot.Encounter.HealActionResultInterface;
-import bot.Encounter.HurtActionResultInterface;
-import bot.Encounter.ModifyStatActionResultInterface;
+import bot.Encounter.*;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +10,13 @@ import java.util.ArrayList;
 
 public class EncounteredHostile implements EncounteredHostileInterface
 {
-    private Hostile hostile;
-    private Slayer  slayer;
-    private String  name;
     private int     attack;
     private int     attackRoll;
     private int     currentHp;
+    private Hostile hostile;
     private int     maxHp;
+    private String  name;
+    private Slayer  slayer;
 
     /**
      * EncounteredHostile constructor
@@ -97,28 +93,6 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
-    {
-        if (!isSlain()) {
-            throw EncounteredCreatureException.createLootWhenNotSlain(name);
-        }
-
-        ArrayList<LootRoll> lootRolls = new ArrayList<>();
-        int                 lootDie   = hostile.getLootPoolSize();
-
-        while (hostile.getLootRollCount() > lootRolls.size()) {
-            int  roll = (int) Math.floor(Math.random() * lootDie) + 1;
-            Loot loot = hostile.getLoot(roll);
-            lootRolls.add(new LootRoll(name, loot, lootDie, roll));
-        }
-
-        return lootRolls;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public @NotNull String getName()
     {
         return name;
@@ -140,6 +114,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
     public @NotNull String getSpecies()
     {
         return hostile.getSpecies();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull HealActionResultInterface healPercent(float percent)
+    {
+        return healPoints((int) Math.floor(maxHp * percent));
     }
 
     /**
@@ -170,27 +153,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPercent(float percent)
+    public @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException
     {
         if (isSlain()) {
-            slayer = null;
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
-        int hitpointsHealed = (int) Math.floor(maxHp * percent);
-        if (currentHp + hitpointsHealed > maxHp) {
-            hitpointsHealed = maxHp - currentHp;
-            currentHp = maxHp;
-        } else {
-            currentHp += hitpointsHealed;
-        }
-        return hitpointsHealed;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull HurtActionResultInterface hurt(int hitpoints)
-    {
         int hurtHp;
         if (this.currentHp - hitpoints < 0) {
             hurtHp = currentHp - hitpoints;
@@ -210,6 +178,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
     public boolean isActive()
     {
         return !this.isSlain();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBloodied()
+    {
+        return currentHp < (maxHp / 4);
     }
 
     /**
@@ -263,6 +240,28 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
+    {
+        if (!isSlain()) {
+            throw EncounteredCreatureException.createLootWhenNotSlain(name);
+        }
+
+        ArrayList<LootRoll> lootRolls = new ArrayList<>();
+        int                 lootDie   = hostile.getLootPoolSize();
+
+        while (hostile.getLootRollCount() > lootRolls.size()) {
+            int  roll = (int) Math.floor(Math.random() * lootDie) + 1;
+            Loot loot = hostile.getLoot(roll);
+            lootRolls.add(new LootRoll(name, loot, lootDie, roll));
+        }
+
+        return lootRolls;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setName(@NotNull String name)
     {
         this.name = name;
@@ -293,7 +292,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
      */
     @Override
     public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
+        throws EncounteredCreatureException
     {
+        if (isSlain()) {
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+        }
+
         if (currentHp > 0 && currentHp - damage < 1) {
             slayer = new Slayer(attacker.getName());
             currentHp = 0;

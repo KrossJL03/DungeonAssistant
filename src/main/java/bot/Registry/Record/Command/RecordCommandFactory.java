@@ -41,7 +41,7 @@ public class RecordCommandFactory implements CommandFactoryInterface
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
 
-        commands.add(new CreateCharacterCommand(processManager, registryLogger));
+        commands.add(new CreateExplorerCommand(processManager, registryLogger));
         commands.add(new DeleteCharacterCommand(processManager, registryLogger));
         commands.add(new RegisterPlayerCommand(processManager, registryLogger));
 

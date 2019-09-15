@@ -56,22 +56,13 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
         message.startCodeBlock(codeFormatter.getStyle());
 
         message.add(codeFormatter.makeGreen(
-            "?create character command has been renamed to ?create explorer"
+            "?join now allows you to set a nickname for your explorer"
         ));
         message.add(codeFormatter.makeGreen(
-            "Stats for the ?create explorer command have been reorganized to match the stat sheets"
-        ));
-        message.add(codeFormatter.makeGreen(
-            "?view characters has been renamed to ?view explorers"
-        ));
-        message.add(codeFormatter.makeGreen(
-            "?view explorers can be used to view all, yours, or another players explorers"
-        ));
-        message.add(codeFormatter.makeGreen(
-            "The ?guard command has been added for dodge turns. Find out more in ?help encounter"
+            "When using ?loot you will not recieve loot for hostiles that were bloodied (in the red) before you joined"
         ));
         message.addBreak();
-        message.add(codeFormatter.makeGrey("Last Update 2019-08-04"));
+        message.add(codeFormatter.makeGrey("Last Update 2019-09-15"));
         message.endCodeBlock();
 
         message.addBreak();

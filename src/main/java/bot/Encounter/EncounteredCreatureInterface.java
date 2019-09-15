@@ -52,6 +52,13 @@ public interface EncounteredCreatureInterface
     boolean isActive();
 
     /**
+     * Is the creature at low health
+     *
+     * @return boolean
+     */
+    boolean isBloodied();
+
+    /**
      * Does this name match the name of the creature
      *
      * @param name Name
@@ -81,9 +88,9 @@ public interface EncounteredCreatureInterface
      *
      * @param percent Percent of max hp to heal
      *
-     * @return int Hitpoints healed
+     * @return HealActionResultInterface
      */
-    int healPercent(float percent);
+    @NotNull HealActionResultInterface healPercent(float percent);
 
     /**
      * Hurt
@@ -91,8 +98,10 @@ public interface EncounteredCreatureInterface
      * @param hitpoints Hitpoints to hurt
      *
      * @return HurtActionResultInterface
+     *
+     * @throws EncounteredCreatureException If creature is slain
      */
-    @NotNull HurtActionResultInterface hurt(int hitpoints);
+    @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException;
 
     /**
      * Modify stat
@@ -130,6 +139,8 @@ public interface EncounteredCreatureInterface
      * Take damage
      *
      * @return damage taken
+     *
+     * @throws EncounteredCreatureException If creature is slain
      */
-    int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage);
+    int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage) throws EncounteredCreatureException;
 }

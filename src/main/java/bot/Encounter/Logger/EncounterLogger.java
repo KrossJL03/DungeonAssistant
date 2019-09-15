@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class EncounterLogger
 {
-    private static String NEWLINE      = System.getProperty("line.separator");
+    private static String NEWLINE = System.getProperty("line.separator");
 
     private ActionMessageBuilder      actionMessageBuilder;
     private PhaseChangeMessageBuilder phaseChangeMessageBuilder;
@@ -59,7 +59,7 @@ public class EncounterLogger
     public void logPhaseChange(PhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (!MyProperties.isAlphaTest && result.getNextPhase().isJoinPhase()) {
+        if (MyProperties.pingEveryone && result.getNextPhase().isJoinPhase()) {
             message = everyoneMention.getValue() + " " + message;
         }
         sendMessage(message);
@@ -137,21 +137,10 @@ public class EncounterLogger
 
     /**
      * Log first death revival
-     *
-     * @param name      Name of fallen explorer
-     * @param hitpoints Amount of hitpoints healed
      */
-    public void logFirstDeathRevived(@NotNull String name, int hitpoints)
+    public void logFirstDeathRevived()
     {
-        sendMessage(
-            "```ml" +
-            NEWLINE +
-            String.format("The guild leader in charge takes a phoenix feather out of their bag, reviving %s!", name) +
-            NEWLINE +
-            NEWLINE +
-            String.format("%s has been healed %d HP and has earned the \"Zombie\" title.", name, hitpoints) +
-            "```"
-        );
+        sendMessage("The guild leader in charge takes a phoenix feather out of their bag");
     }
 
     /**

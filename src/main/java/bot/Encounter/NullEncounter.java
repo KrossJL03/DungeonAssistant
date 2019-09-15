@@ -3,6 +3,7 @@ package bot.Encounter;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -80,7 +81,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void join(@NotNull Explorer explorer) throws EncounterPhaseException
+    public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
     }

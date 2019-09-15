@@ -6,13 +6,26 @@ import org.jetbrains.annotations.NotNull;
 public class EncounteredCreatureException extends RuntimeException implements CustomExceptionInterface
 {
     /**
-     * EncounteredCreatureException constructor
+     * Constructor.
      *
      * @param message Message
      */
     private @NotNull EncounteredCreatureException(@NotNull String message)
     {
         super(message);
+    }
+
+    /**
+     * Factory method of "is slain"
+     *
+     * @param slainName  Name of slain creature
+     * @param slayerName Slayer name
+     *
+     * @return HostileRosterException
+     */
+    static @NotNull EncounteredCreatureException createIsSlain(@NotNull String slainName, @NotNull String slayerName)
+    {
+        return new EncounteredCreatureException(String.format("%s was slain by %s", slainName, slayerName));
     }
 
     /**

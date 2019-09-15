@@ -1,5 +1,6 @@
 package bot.Encounter.Command;
 
+import bot.CommandParameter;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
@@ -9,17 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SkipCommand extends EncounterCommand
+public class ReviveCommand extends EncounterCommand
 {
     /**
-     * SkipCommand constructor
+     * Constructor
      *
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
      * @param dmChecker      Dungeon master checker
      */
-    SkipCommand(
+    ReviveCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -31,9 +32,14 @@ public class SkipCommand extends EncounterCommand
             holder,
             logger,
             dmChecker,
-            "skip",
-            new ArrayList<>(),
-            "Skip the current player's turn. Automatically fail all dodge attempts.",
+            "revive",
+            new ArrayList<CommandParameter>()
+            {
+                {
+                    add(new CommandParameter("TargetName", true));
+                }
+            },
+            "Revive an explorer to half health.",
             true
         );
     }
@@ -44,6 +50,9 @@ public class SkipCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        getEncounter().skipCurrentPlayerTurn();
+        String[] parameters = getParametersFromEvent(event);
+        String   targetName = parameters[0];
+
+        getHostileEncounter().revive(targetName);
     }
 }

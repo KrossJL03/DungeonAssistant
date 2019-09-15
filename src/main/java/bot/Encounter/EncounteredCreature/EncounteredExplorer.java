@@ -1,20 +1,11 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.DodgeResultInterface;
-import bot.Encounter.EncounteredCreatureInterface;
-import bot.Encounter.EncounteredExplorerInterface;
-import bot.Encounter.EncounteredHostileInterface;
-import bot.Encounter.GuardActionResultInterface;
-import bot.Encounter.GuardResultInterface;
-import bot.Encounter.HealActionResultInterface;
-import bot.Encounter.HurtActionResultInterface;
-import bot.Encounter.LootRollInterface;
-import bot.Encounter.ModifyStatActionResultInterface;
-import bot.Encounter.ProtectActionResultInterface;
-import bot.Player.Player;
+import bot.Encounter.*;
 import bot.Explorer.Explorer;
+import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -22,27 +13,28 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
 {
     private static int FINAL_BLOW_BONUS = 300;
 
-    private Player                                  owner;
-    private Slayer                                  slayer;
-    private ArrayList<EncounteredCreatureInterface> kills;
-    private LootActionResult                        loot;
-    private String                                  name;
     private int                                     agility;
     private int                                     currentActions;
     private int                                     currentHp;
     private int                                     defense;
-    private int                                     maxHp;
-    private int                                     strength;
-    private int                                     wisdom;
     private boolean                                 hasProtect;
     private boolean                                 isPresent;
+    private LootActionResult                        loot;
+    private int                                     maxHp;
+    private String                                  name;
+    private ArrayList<EncounteredCreatureInterface> opponents;
+    private Player                                  owner;
+    private Slayer                                  slayer;
+    private int                                     strength;
+    private int                                     wisdom;
 
     /**
      * EncounteredExplorerInterface constructor
      *
      * @param explorer Explorer
+     * @param nickname Optional nickname
      */
-    public @NotNull EncounteredExplorer(@NotNull Explorer explorer)
+    public @NotNull EncounteredExplorer(@NotNull Explorer explorer, @Nullable String nickname)
     {
         this.agility = explorer.getAgility();
         this.currentActions = 0;
@@ -50,9 +42,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.defense = explorer.getDefense();
         this.hasProtect = true;
         this.isPresent = true;
-        this.kills = new ArrayList<>();
         this.maxHp = explorer.getHitpoints();
-        this.name = explorer.getName();
+        this.name = nickname != null ? nickname : explorer.getName();
+        this.opponents = new ArrayList<>();
         this.owner = explorer.getOwner();
         this.slayer = new Slayer();
         this.strength = explorer.getStrength();
@@ -65,12 +57,13 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void addKill(@NotNull EncounteredCreatureInterface kill) throws EncounteredExplorerException
+    public void addOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
     {
         if (!isActive()) {
-            throw EncounteredExplorerException.createFailedToAddKill(name, kill.getName());
+            throw EncounteredExplorerException.createFailedToAddOpponent(name, opponent.getName());
+        } else if (!opponents.contains(opponent)) {
+            opponents.add(opponent);
         }
-        kills.add(kill);
     }
 
     /**
@@ -86,7 +79,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
 
         HitRoll hitRoll    = rollToHit();
         int     damageRoll = 0;
-
         if (hitRoll.isHit()) {
             damageRoll = hitRoll.isCrit() ? getCritDamage() : rollDamage();
             target.takeDamage(this, damageRoll);
@@ -104,6 +96,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             target.getMaxHP(),
             target.getSlayer()
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    {
+        return encounteredExplorer.getAgility() - this.agility;
     }
 
     /**
@@ -245,19 +246,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
-    {
-        if (!isSlain()) {
-            throw EncounteredCreatureException.createLootWhenNotSlain(name);
-        }
-
-        return new ArrayList<>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int getMaxActions()
     {
         return (int) Math.floor(agility / 10) + 1;
@@ -392,6 +380,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull HealActionResultInterface healPercent(float percent)
+    {
+        return healPoints((int) Math.floor(maxHp * percent));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
         boolean wasRevived = false;
@@ -416,29 +413,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int healPercent(float percent)
+    public @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException
     {
         if (isSlain()) {
-            slayer = new Slayer();
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
 
-        int hitpointsHealed = (int) Math.floor(getMaxHP() * percent);
-        if (currentHp + hitpointsHealed > getMaxHP()) {
-            hitpointsHealed = getMaxHP() - currentHp;
-            currentHp = getMaxHP();
-        } else {
-            currentHp += hitpointsHealed;
-        }
-
-        return hitpointsHealed;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull HurtActionResultInterface hurt(int hitpoints)
-    {
         int hurtHp;
         if (currentHp - hitpoints < 0) {
             hurtHp = currentHp;
@@ -458,6 +438,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public boolean isActive()
     {
         return !isSlain() && isPresent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBloodied()
+    {
+        return currentHp < (maxHp / 4);
     }
 
     /**
@@ -604,7 +593,16 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public void removeKill(@NotNull EncounteredCreatureInterface kill)
     {
-        kills.remove(kill);
+        opponents.remove(kill);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
+    {
+        opponents.remove(opponent);
     }
 
     /**
@@ -633,7 +631,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
         ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
-        for (EncounteredCreatureInterface kill : kills) {
+        for (EncounteredCreatureInterface kill : opponents) {
             lootRolls.addAll(kill.rollLoot());
             if (kill.getSlayer().isSlayer(this)) {
                 finalBlows.add(kill);
@@ -644,9 +642,22 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             owner,
             lootRolls,
             finalBlows,
-            kills.size(),
+            opponents.size(),
             finalBlows.size() * FINAL_BLOW_BONUS
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
+    {
+        if (!isSlain()) {
+            throw EncounteredCreatureException.createLootWhenNotSlain(name);
+        }
+
+        return new ArrayList<>();
     }
 
     /**
@@ -686,9 +697,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     @Override
     public int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
+        throws EncounteredCreatureException
     {
+        if (isSlain()) {
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+        }
+
         damage = damage - this.getEndurance();
-        damage = damage < 1 ? 1 : damage;
+        damage = Math.max(1, damage);
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = new Slayer(attacker.getName());
         }
@@ -715,15 +731,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void useAllActions()
     {
         this.currentActions = 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer)
-    {
-        return encounteredExplorer.getAgility() - this.agility;
     }
 
     /**
@@ -912,7 +919,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int takeGuardedDamage(@NotNull EncounteredCreatureInterface attacker, int damage)
     {
         damage = damage - getGuardEndurance();
-        damage = damage < 1 ? 1 : damage;
+        damage = Math.max(1, damage);
         if (this.currentHp > 0 && this.currentHp - damage < 0) {
             this.slayer = new Slayer(attacker.getName());
         }

@@ -42,8 +42,8 @@ public class HelpEncounterMessageBuilder extends HelpMessageBuilder
         message.add(textFormatter.makeBold("New to Battling?"));
         message.add("If you haven't participated in a battle before and don't know where to start, fear not! " +
                     "The process is really quite simple, " +
-                    "first thing you'll need to do is create a stat sheet for your explorer." +
-                    "Simply fill out the 'Equipment and Stat Sheet' for your explorer." +
+                    "first thing you'll need to do is create a stat sheet for your explorer. " +
+                    "Simply fill out the 'Equipment and Stat Sheet' for your explorer. " +
                     "But make sure you've read up about Stats and Effects " +
                     "so that know where you want your first 5 starting stats to go.");
         message.addBreak();

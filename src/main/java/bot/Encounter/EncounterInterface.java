@@ -4,6 +4,7 @@ import bot.Explorer.Explorer;
 import bot.Player.Player;
 import bot.ProcessInterface;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -66,10 +67,11 @@ public interface EncounterInterface extends ProcessInterface
      * Join encounter
      *
      * @param explorer Explorer
+     * @param nickname Optional nickname
      *
      * @throws EncounterPhaseException If encounter is over or has not started
      */
-    void join(@NotNull Explorer explorer) throws EncounterPhaseException;
+    void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException;
 
     /**
      * Kick
