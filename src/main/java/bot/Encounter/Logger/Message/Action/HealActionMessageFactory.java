@@ -32,6 +32,7 @@ class HealActionMessageFactory extends ActionMessageFactory
                 codeFormatter.makeCyan("Zombie")
             ));
         }
+        message.endCodeBlock();
 
         return message;
     }

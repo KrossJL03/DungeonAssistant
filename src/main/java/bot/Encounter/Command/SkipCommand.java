@@ -33,7 +33,7 @@ public class SkipCommand extends EncounterCommand
             dmChecker,
             "skip",
             new ArrayList<>(),
-            "Skip the current player's turn.",
+            "Skip the current player's turn. Automatically fail all dodge attempts.",
             true
         );
     }

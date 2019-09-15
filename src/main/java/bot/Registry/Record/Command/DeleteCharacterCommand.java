@@ -41,10 +41,6 @@ public class DeleteCharacterCommand extends RecordCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws RecordCommandException
     {
-        if (MyProperties.isBetaTest) {
-            throw RecordCommandException.createDisabledForTesting();
-        }
-
         ensureRecordingNotLocked();
 
         MessageChannel channel    = event.getChannel();

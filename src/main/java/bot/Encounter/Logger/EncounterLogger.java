@@ -59,7 +59,7 @@ public class EncounterLogger
     public void logPhaseChange(PhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (!MyProperties.isAlphaTest && result.getNextPhase().isJoinPhase()) {
+        if (MyProperties.pingEveryone && result.getNextPhase().isJoinPhase()) {
             message = everyoneMention.getValue() + " " + message;
         }
         sendMessage(message);

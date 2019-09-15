@@ -67,7 +67,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         Message message = new Message();
         message.add(String.format(
             "%s%s %s",
-            command instanceof AdditionalCommandInterface ? CommandListener.COMMAND_KEY : "",
+            command instanceof AdditionalCommandInterface ? "" : CommandListener.COMMAND_KEY,
             command.getCommandName(),
             parameterBuilder.toString().trim()
         ));

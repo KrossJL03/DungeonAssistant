@@ -41,7 +41,7 @@ public class SetTierCommand extends EncounterCommand
                     add(new CommandParameter("TierName", true));
                 }
             },
-            "Set tier. Current Tiers: Newbie",
+            "Set tier. Current Tiers: Rookie, Novice",
             true
         );
     }

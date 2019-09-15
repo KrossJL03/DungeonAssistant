@@ -2,6 +2,7 @@ package bot.Registry.Record.Command;
 
 import bot.Command;
 import bot.CommandParameter;
+import bot.MyProperties;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +39,7 @@ abstract class RecordCommand extends Command
      */
     final protected void ensureRecordingNotLocked()
     {
-        if (isDatabaseLocked()) {
+        if (!MyProperties.recordingEnabled | isDatabaseLocked()) {
             throw RecordCommandException.createCommandLocked();
         }
     }

@@ -68,7 +68,13 @@ public abstract class Command implements CommandInterface
     @Override
     public boolean isCommand(@NotNull String commandString)
     {
-        return commandString.toLowerCase().startsWith(commandName.toLowerCase());
+        String lowerCommandName   = commandName.toLowerCase();
+        String lowerCommandString = commandString.toLowerCase().trim();
+
+        boolean startsWithName = lowerCommandString.startsWith(lowerCommandName + " ");
+        boolean equalsName     = lowerCommandString.equals(lowerCommandName);
+
+        return startsWithName | equalsName;
     }
 
     /**
