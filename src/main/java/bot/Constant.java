@@ -6,7 +6,7 @@ public class Constant
 
     public static final int EXPLORER_MAX_AGILITY   = 20;
     public static final int EXPLORER_MAX_DEFENSE   = 20;
-    public static final int EXPLORER_MAX_HITPOINTS = 240;
+    public static final int EXPLORER_MAX_HITPOINTS = 275;
     public static final int EXPLORER_MAX_STRENGTH  = 20;
     public static final int EXPLORER_MAX_WISDOM    = 20;
 
