@@ -6,7 +6,7 @@ import bot.Encounter.EncounterHolder;
 import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Hostile.Hostile;
-import bot.Hostile.HostileManager;
+import bot.Hostile.HostileRepository;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +54,7 @@ public class AddHostileCommand extends EncounterCommand
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
         String[]                    parameters = getParametersFromEvent(event);
-        Hostile                     hostile    = HostileManager.getHostile(parameters[0]);
+        Hostile                     hostile    = HostileRepository.getHostile(parameters[0]);
         String                      name       = parameters.length > 1 ? parameters[1] : parameters[0];
         EncounteredHostileInterface result     = getHostileEncounter().addHostile(hostile, name);
         getLogger().logAddedHostile(result);

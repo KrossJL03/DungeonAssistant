@@ -1,7 +1,6 @@
 package bot.Encounter;
 
 import bot.Encounter.EncounteredCreature.EncounteredCreatureException;
-import bot.Encounter.EncounteredCreature.LootRoll;
 import bot.Encounter.EncounteredCreature.Slayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +44,35 @@ public interface EncounteredCreatureInterface
     @NotNull Slayer getSlayer();
 
     /**
+     * Heal by percent
+     *
+     * @param percent Percent of max hp to heal
+     *
+     * @return HealActionResultInterface
+     */
+    @NotNull HealActionResultInterface healPercent(float percent);
+
+    /**
+     * Heal by points
+     *
+     * @param hitpoints Hitpoints to heal
+     *
+     * @return HealActionResultInterface
+     */
+    @NotNull HealActionResultInterface healPoints(int hitpoints);
+
+    /**
+     * Hurt
+     *
+     * @param hitpoints Hitpoints to hurt
+     *
+     * @return HurtActionResultInterface
+     *
+     * @throws EncounteredCreatureException If creature is slain
+     */
+    @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException;
+
+    /**
      * Is active
      *
      * @return boolean
@@ -75,35 +103,6 @@ public interface EncounteredCreatureInterface
     boolean isSlain();
 
     /**
-     * Heal by points
-     *
-     * @param hitpoints Hitpoints to heal
-     *
-     * @return HealActionResultInterface
-     */
-    @NotNull HealActionResultInterface healPoints(int hitpoints);
-
-    /**
-     * Heal by percent
-     *
-     * @param percent Percent of max hp to heal
-     *
-     * @return HealActionResultInterface
-     */
-    @NotNull HealActionResultInterface healPercent(float percent);
-
-    /**
-     * Hurt
-     *
-     * @param hitpoints Hitpoints to hurt
-     *
-     * @return HurtActionResultInterface
-     *
-     * @throws EncounteredCreatureException If creature is slain
-     */
-    @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException;
-
-    /**
      * Modify stat
      *
      * @param statName     Name of stat to modify
@@ -119,21 +118,21 @@ public interface EncounteredCreatureInterface
     int rollDamage();
 
     /**
-     * Modify stat
-     *
-     * @param statName  Name of stat to modify
-     * @param statValue New stat value
-     */
-    @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue);
-
-    /**
      * Roll loot
      *
      * @return ArrayList<LootRoll>
      *
      * @throws EncounteredCreatureException When attempting to loot and not slain
      */
-    @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException;
+    @NotNull ArrayList<LootRollInterface> rollLoot() throws EncounteredCreatureException;
+
+    /**
+     * Modify stat
+     *
+     * @param statName  Name of stat to modify
+     * @param statValue New stat value
+     */
+    @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue);
 
     /**
      * Take damage

@@ -51,6 +51,7 @@ public class ReviewCommandFactory implements CommandFactoryInterface
         commands.add(new ViewHostilesCommand(processManager, registryLogger));
         commands.add(new ViewItemCommand(processManager, registryLogger));
         commands.add(new ViewItemsCommand(processManager, registryLogger));
+        commands.add(new RollLootCommand(processManager));
 
         commands.add(new HelpReviewCommand(processManager, privateLogger, new ArrayList<>(commands)));
 

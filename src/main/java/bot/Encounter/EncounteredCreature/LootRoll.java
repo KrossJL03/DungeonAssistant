@@ -19,7 +19,7 @@ public class LootRoll implements LootRollInterface
      * @param lootDie     Loot die
      * @param lootRoll    Loot roll
      */
-    @NotNull LootRoll(@NotNull String hostileName, @NotNull Loot loot, int lootDie, int lootRoll)
+    public @NotNull LootRoll(@NotNull String hostileName, @NotNull Loot loot, int lootDie, int lootRoll)
     {
         this.hostileName = hostileName;
         this.loot = loot;

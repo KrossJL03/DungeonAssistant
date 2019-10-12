@@ -1,19 +1,22 @@
 package bot.Hostile;
 
+import bot.Encounter.EncounteredCreature.LootRoll;
+import bot.Encounter.LootRollInterface;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Hostile
 {
-    private HashMap<Integer, Loot> lootList;
-    private String                 species;
     private int                    attack;
     private int                    attackCount;
     private int                    dangerLevel;
     private int                    hitpoints;
-    private int                    lootRollCount;
     private boolean                isViewable;
+    private HashMap<Integer, Loot> lootList;
+    private int                    lootRollCount;
+    private String                 species;
 
     /**
      * Constructor.
@@ -49,16 +52,6 @@ public class Hostile
     }
 
     /**
-     * Get attack count
-     *
-     * @return int
-     */
-    public int getAttackCount()
-    {
-        return attackCount;
-    }
-
-    /**
      * Get attack die
      *
      * @return int
@@ -66,16 +59,6 @@ public class Hostile
     public int getAttack()
     {
         return attack;
-    }
-
-    /**
-     * Get danger level
-     *
-     * @return int
-     */
-    public int getDangerLevel()
-    {
-        return dangerLevel;
     }
 
     /**
@@ -111,16 +94,6 @@ public class Hostile
     }
 
     /**
-     * Get amount of loot rolls
-     *
-     * @return int
-     */
-    public int getLootRollCount()
-    {
-        return lootRollCount;
-    }
-
-    /**
      * Get species name
      *
      * @return String
@@ -130,12 +103,56 @@ public class Hostile
         return species;
     }
 
+    public @NotNull ArrayList<LootRollInterface> rollLoot()
+    {
+        ArrayList<LootRollInterface> lootRolls = new ArrayList<>();
+        int                          lootDie   = getLootPoolSize();
+
+        while (getLootRollCount() > lootRolls.size()) {
+            int  roll = (int) Math.floor(Math.random() * lootDie) + 1;
+            Loot loot = getLoot(roll);
+            lootRolls.add(new LootRoll(species, loot, lootDie, roll));
+        }
+
+        return lootRolls;
+    }
+
+    /**
+     * Get attack count
+     *
+     * @return int
+     */
+    int getAttackCount()
+    {
+        return attackCount;
+    }
+
+    /**
+     * Get danger level
+     *
+     * @return int
+     */
+    int getDangerLevel()
+    {
+        return dangerLevel;
+    }
+
+    /**
+     * Get amount of loot rolls
+     *
+     * @return int
+     */
+    int getLootRollCount()
+    {
+        return lootRollCount;
+    }
+
     /**
      * Is hostile viewable
      *
      * @return boolean
      */
-    public boolean isViewable()
+    boolean isViewable()
     {
         return isViewable;
     }
