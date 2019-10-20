@@ -133,7 +133,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             int       hostileDamageRoll = encounteredHostile.getAttackRoll();
             DodgeRoll dodgeRoll         = rollToDodge();
 
-            if (dodgeRoll.isFail()) {
+            if (dodgeRoll.isFail() && !isSlain()) {
                 damageResisted = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
             }
 

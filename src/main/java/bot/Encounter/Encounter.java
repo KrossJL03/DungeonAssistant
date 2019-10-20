@@ -609,6 +609,9 @@ public class Encounter implements EncounterInterface
             handleEndOfAction();
         } else if (currentPhase.isDodgePhase()) {
             DodgeActionResultInterface result = currentExplorer.failToDodge(getActiveHostiles());
+            if (currentExplorer.isSlain() && hasPhoenixDown) {
+                usePhoenixDown(currentExplorer);
+            }
             listener.onAction(result);
             handleEndOfAction();
         }
