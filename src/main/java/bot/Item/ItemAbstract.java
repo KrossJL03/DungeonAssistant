@@ -1,69 +1,162 @@
 package bot.Item;
 
-import java.text.DateFormatSymbols;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ItemAbstract {
+abstract class ItemAbstract
+{
+    static String FIELD_BUY_VALUE          = "buyValue";
+    static String FIELD_IMAGE_URL          = "imageUrl";
+    static String FIELD_IS_BUYABLE         = "isBuyable";
+    static String FIELD_IS_CRAFTABLE       = "isCraftable";
+    static String FIELD_IS_EVENT_EXCLUSIVE = "isEventExclusive";
+    static String FIELD_IS_SEASONAL        = "isSeasonal";
+    static String FIELD_ITEM_SUBTYPE       = "itemSubtype";
+    static String FIELD_ITEM_TYPE          = "itemType";
+    static String FIELD_NAME               = "name";
+    static String FIELD_SELL_VALUE         = "sellValue";
 
-    private int    buyValue;
-    private int    sellValue;
-    private String description;
-    private String image;
-    private String name;
-    private String shortDescription;
-    private int    seasonalMonth;
+    private int     buyValue;
+    private String  imageUrl;
+    private boolean isBuyable;
+    private boolean isCraftable;
+    private boolean isEventExclusive;
+    private boolean isSeasonal;
+    private String  name;
+    private int     sellValue;
+    private String  subtype;
+    private String  type;
 
-    protected ItemAbstract(
-        String name,
-        String image,
-        String description,
-        String shortDescription,
+    /**
+     * Constructor.
+     *
+     * @param name             Name
+     * @param type             Item type
+     * @param subtype          Item subtype
+     * @param imageUrl         Image url
+     * @param buyValue         Buy value
+     * @param sellValue        Sell value
+     * @param isBuyable        Is the item buyable
+     * @param isCraftable      Is the item craftable
+     * @param isEventExclusive Is the item event exclusive
+     * @param isSeasonal       Is the item seasonal
+     */
+    ItemAbstract(
+        @NotNull String name,
+        @NotNull String type,
+        @Nullable String subtype,
+        @NotNull String imageUrl,
         int buyValue,
         int sellValue,
-        int seasonalMonth
-    ) {
+        boolean isBuyable,
+        boolean isCraftable,
+        boolean isEventExclusive,
+        boolean isSeasonal
+    )
+    {
         this.buyValue = buyValue;
-        this.description = description;
-        this.image = image;
+        this.imageUrl = imageUrl;
+        this.isBuyable = isBuyable;
+        this.isCraftable = isCraftable;
+        this.isEventExclusive = isEventExclusive;
+        this.isSeasonal = isSeasonal;
         this.name = name;
         this.sellValue = sellValue;
-        this.seasonalMonth = seasonalMonth;
-        this.shortDescription = shortDescription;
+        this.subtype = subtype;
+        this.type = type;
     }
 
-    public int getBuyValue() {
+    /**
+     * Get buy value
+     *
+     * @return int
+     */
+    int getBuyValue()
+    {
         return buyValue;
     }
 
-    public int getSellValue() {
-        return sellValue;
+    /**
+     * Get image url
+     *
+     * @return String
+     */
+    String getImageUrl()
+    {
+        return imageUrl;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getShortDescription() {
-        return this.shortDescription;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public String getName() {
+    /**
+     * Get name
+     *
+     * @return String
+     */
+    @NotNull String getName()
+    {
         return name;
     }
 
-    public String getSeasonalMonth() {
-        return this.seasonalMonth > 0 ? new DateFormatSymbols().getMonths()[this.seasonalMonth - 1] : "";
+    /**
+     * Get sell value
+     *
+     * @return int
+     */
+    int getSellValue()
+    {
+        return sellValue;
     }
 
-    public boolean isBuyable() {
-        return this.buyValue > 0;
+    /**
+     * Get subtype
+     *
+     * @return String
+     */
+    @Nullable String getSubtype() { return subtype; }
+
+    /**
+     * Get type
+     *
+     * @return String
+     */
+    @NotNull String getType() { return type; }
+
+    /**
+     * Is buyable
+     *
+     * @return boolean
+     */
+    boolean isBuyable()
+    {
+        return isBuyable;
     }
 
-    public boolean isSeasonal() {
-        return this.seasonalMonth != 0;
+    /**
+     * Is craftable
+     *
+     * @return boolean
+     */
+    boolean isCraftable()
+    {
+        return isCraftable;
     }
 
+    /**
+     * Is event exclusive
+     *
+     * @return boolean
+     */
+    boolean isEventExclusive()
+    {
+        return isEventExclusive;
+    }
+
+    /**
+     * Is seasonal
+     *
+     * @return boolean
+     */
+    boolean isSeasonal()
+    {
+        return isSeasonal;
+    }
 }

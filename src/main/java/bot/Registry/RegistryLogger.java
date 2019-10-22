@@ -3,19 +3,14 @@ package bot.Registry;
 import bot.Explorer.Explorer;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
-import bot.Item.Consumable.ConsumableItem;
-import bot.Item.ItemAbstract;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class RegistryLogger
 {
-    private static int    EMBED_COLOR = 0x62c4f9;
     private static String NEWLINE     = System.getProperty("line.separator");
 
     /**
@@ -137,67 +132,6 @@ public class RegistryLogger
             output.append(RegistryLogger.NEWLINE);
         }
         output.append(RegistryLogger.NEWLINE);
-        output.append("```");
-        logMessage(channel, output.toString());
-    }
-
-    /**
-     * Log item with details
-     *
-     * @param channel Channel to log message to
-     * @param item    Item to log
-     */
-    public void logItemDetails(MessageChannel channel, ItemAbstract item)
-    {
-        // todo convert to MessageBuilder
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(item.getName());
-        embed.setColor(new Color(RegistryLogger.EMBED_COLOR));
-        embed.setThumbnail(item.getImage());
-        embed.setDescription(item.getDescription());
-        embed.addField("Effect", item.getShortDescription(), false);
-        if (item.isBuyable()) {
-            embed.addField(
-                "Value",
-                String.format("%dc | %dc", item.getBuyValue(), item.getSellValue()),
-                true
-            );
-        }
-        if (item.isSeasonal()) {
-            embed.addField("Seasonal", item.getSeasonalMonth(), true);
-        }
-        if (item instanceof ConsumableItem) {
-            embed.addField(
-                "Usable Phase",
-                ((ConsumableItem) item).getUsablePhase(),
-                true
-            );
-        }
-        logEmbed(channel, embed.build());
-    }
-
-    /**
-     * Log list of items
-     *
-     * @param channel Channel to log message to
-     * @param items   Items to log
-     */
-    public void logItemList(MessageChannel channel, ArrayList<ConsumableItem> items)
-    {
-        StringBuilder output = new StringBuilder();
-        output.append("```md");
-        output.append(RegistryLogger.NEWLINE);
-        output.append("            ITEM DATABASE              ");
-        output.append(RegistryLogger.NEWLINE);
-        output.append("========================================");
-        output.append(RegistryLogger.NEWLINE);
-        for (ConsumableItem item : items) {
-            String description = item.getShortDescription();
-            output.append(String.format("< %s >", item.getName()));
-            output.append(RegistryLogger.NEWLINE);
-            output.append(String.format(">  %s", description));
-            output.append(RegistryLogger.NEWLINE);
-        }
         output.append("```");
         logMessage(channel, output.toString());
     }
