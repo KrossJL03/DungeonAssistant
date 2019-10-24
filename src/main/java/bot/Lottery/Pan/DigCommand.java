@@ -8,31 +8,36 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class PanRollSpecialCommand extends Command
+abstract class DigCommand extends Command
 {
-    private PanItemRoller   itemRoller;
-    private PanLogger       logger;
-    private PanRarityRoller rarityRoller;
+    private PanItemRoller itemRoller;
+    private PanLogger     logger;
+    private RarityRoller  rarityRoller;
 
     /**
      * Constructor.
      *
      * @param processManager Process manager
      * @param logger         Logger
+     * @param itemRoller     Item roller
      * @param rarityRoller   Rarity roller
+     * @param name           Command name
+     * @param description    Command description
      */
-    PanRollSpecialCommand(
+    DigCommand(
         @NotNull ProcessManager processManager,
         @NotNull PanLogger logger,
         @NotNull PanItemRoller itemRoller,
-        @NotNull PanRarityRoller rarityRoller
+        @NotNull RarityRoller rarityRoller,
+        @NotNull String name,
+        @NotNull String description
     )
     {
         super(
             processManager,
-            "roll specialPan",
+            name,
             new ArrayList<>(),
-            "Roll special pan."
+            description
         );
         this.itemRoller = itemRoller;
         this.logger = logger;
@@ -47,7 +52,7 @@ public class PanRollSpecialCommand extends Command
     public void handle(@NotNull MessageReceivedEvent event)
     {
         MessageChannel channel = event.getChannel();
-        PanRarity      rarity  = rarityRoller.rollSpecial();
+        PanRarity      rarity  = rarityRoller.roll();
         PanRollResult  result  = itemRoller.roll(rarity);
 
         logger.logItemRolled(channel, result);
