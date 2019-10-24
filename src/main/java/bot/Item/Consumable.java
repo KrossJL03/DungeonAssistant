@@ -11,7 +11,7 @@ class Consumable extends ItemAbstract
      */
     enum ConsumableType
     {
-        POTION, COMBAT, MULTIPLIER, VOUCHER
+        POTION, COMBAT, SUB_MODIFIER, TICKET, HEALING, PET_DYE, CUSTOMIZATION
     }
 
     /**

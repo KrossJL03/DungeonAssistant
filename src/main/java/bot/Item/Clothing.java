@@ -7,6 +7,14 @@ class Clothing extends ItemAbstract
     final static String ITEM_TYPE = "CLOTHING";
 
     /**
+     * Type of clothing
+     */
+    enum ClothingType
+    {
+        HAT, EYEWEAR, NECKWEAR, GLOVES, TOP, BOTTOM, BACK
+    }
+
+    /**
      * Constructor.
      *
      * @param name             Name

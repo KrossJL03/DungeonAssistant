@@ -32,7 +32,7 @@ public class ItemRegistry
     {
         String sql = String.format(
             "INSERT OR REPLACE INTO %s(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) " +
-            "VALUES('%s','%s','%s','%s',%d,%d,%s,%s,%s,%s,%d,%d,%d,%d,%d,%s)",
+            "VALUES(\"%s\",\"%s\",\"%s\",\"%s\",%d,%d,%s,%s,%s,%s,%d,%d,%d,%d,%d,%s)",
             TABLE_NAME,
             ItemAbstract.FIELD_NAME,
             ItemAbstract.FIELD_ITEM_TYPE,
