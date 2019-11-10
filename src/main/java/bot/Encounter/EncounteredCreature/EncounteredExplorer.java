@@ -85,6 +85,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (!hasActions()) {
             throw EncounteredExplorerException.createHasNoActions(name);
+        } else if (target.isSlain()) {
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
 
         HitRoll hitRoll    = rollToHit();
