@@ -208,13 +208,6 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void rejoin() throws EncounteredExplorerException;
 
     /**
-     * Remove kill
-     *
-     * @param encounterCreature Encountered creature
-     */
-    void removeKill(@NotNull EncounteredCreatureInterface encounterCreature);
-
-    /**
      * Remove opponent that is no longer eligible for loot
      *
      * @param opponent Opponent that was fought against

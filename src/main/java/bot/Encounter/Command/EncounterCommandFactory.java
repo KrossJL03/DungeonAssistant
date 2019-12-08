@@ -20,7 +20,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
     private ProcessManager       processManager;
 
     /**
-     * EncounterCommandFactory constructor.
+     * Constructor.
      *
      * @param processManager  Process manager
      * @param encounterHolder Encounter holder
@@ -41,6 +41,19 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         this.encounterLogger = encounterLogger;
         this.privateLogger = privateLogger;
         this.processManager = processManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull ArrayList<CommandInterface> createAdditionalCommands()
+    {
+        ArrayList<CommandInterface> commands = new ArrayList<>();
+
+        commands.add(new UseItemCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+
+        return commands;
     }
 
     /**
@@ -94,19 +107,6 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         ArrayList<CommandInterface> commands = new ArrayList<>(encounterCommands);
         encounterCommands.add(new UseItemCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         commands.add(new HelpEncounterCommand(processManager, dmChecker, privateLogger, encounterCommands));
-
-        return commands;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull ArrayList<CommandInterface> createAdditionalCommands()
-    {
-        ArrayList<CommandInterface> commands = new ArrayList<>();
-
-        commands.add(new UseItemCommand(processManager, encounterHolder, encounterLogger, dmChecker));
 
         return commands;
     }

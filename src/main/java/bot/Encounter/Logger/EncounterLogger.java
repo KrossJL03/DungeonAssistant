@@ -1,9 +1,15 @@
 package bot.Encounter.Logger;
 
-import bot.Encounter.*;
+import bot.Encounter.ActionResultInterface;
+import bot.Encounter.EncounteredExplorerInterface;
+import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
+import bot.Encounter.Logger.Message.Action.LootRollLineFactory;
 import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
+import bot.Encounter.LootRollInterface;
+import bot.Encounter.PhaseChangeResult;
+import bot.Encounter.TierInterface;
 import bot.MyProperties;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -16,11 +22,11 @@ public class EncounterLogger
     private static String NEWLINE = System.getProperty("line.separator");
 
     private ActionMessageBuilder      actionMessageBuilder;
-    private PhaseChangeMessageBuilder phaseChangeMessageBuilder;
-    private SummaryMessageBuilder     summaryMessageBuilder;
     private MessageChannel            channel;
     private Mention                   dmMention;
     private Mention                   everyoneMention;
+    private PhaseChangeMessageBuilder phaseChangeMessageBuilder;
+    private SummaryMessageBuilder     summaryMessageBuilder;
 
     /**
      * EncounterLogger constructor
@@ -49,21 +55,6 @@ public class EncounterLogger
     public void logAction(@NotNull ActionResultInterface result)
     {
         sendMessage(actionMessageBuilder.buildActionMessage(result, dmMention));
-    }
-
-    /**
-     * Log phase change
-     *
-     * @param result Phase change result
-     */
-    public void logPhaseChange(PhaseChangeResult result)
-    {
-        String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (MyProperties.pingEveryone && result.getNextPhase().isJoinPhase()) {
-            message = everyoneMention.getValue() + " " + message;
-        }
-        sendMessage(message);
-        logSummary(result.getExplorers(), result.getHostiles());
     }
 
     /**
@@ -156,7 +147,6 @@ public class EncounterLogger
         ));
     }
 
-
     /**
      * Log left encounter
      *
@@ -165,6 +155,21 @@ public class EncounterLogger
     public void logLeftEncounter(@NotNull String name)
     {
         sendMessage(String.format("%s has left the encounter", name));
+    }
+
+    /**
+     * Log phase change
+     *
+     * @param result Phase change result
+     */
+    public void logPhaseChange(PhaseChangeResult result)
+    {
+        String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
+        if (MyProperties.pingEveryone && result.getNextPhase().isJoinPhase()) {
+            message = everyoneMention.getValue() + " " + message;
+        }
+        sendMessage(message);
+        logSummary(result.getExplorers(), result.getHostiles());
     }
 
     /**

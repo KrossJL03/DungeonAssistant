@@ -1,7 +1,17 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.*;
+import bot.Encounter.DodgeResultInterface;
+import bot.Encounter.EncounteredCreatureInterface;
+import bot.Encounter.EncounteredExplorerInterface;
+import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.GuardActionResultInterface;
+import bot.Encounter.GuardResultInterface;
+import bot.Encounter.HealActionResultInterface;
+import bot.Encounter.HurtActionResultInterface;
+import bot.Encounter.LootRollInterface;
+import bot.Encounter.ModifyStatActionResultInterface;
+import bot.Encounter.ProtectActionResultInterface;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +85,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (!hasActions()) {
             throw EncounteredExplorerException.createHasNoActions(name);
+        } else if (target.isSlain()) {
+            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
 
         HitRoll hitRoll    = rollToHit();
@@ -123,7 +135,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             int       hostileDamageRoll = encounteredHostile.getAttackRoll();
             DodgeRoll dodgeRoll         = rollToDodge();
 
-            if (dodgeRoll.isFail()) {
+            if (dodgeRoll.isFail() && !isSlain()) {
                 damageResisted = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
             }
 
@@ -591,15 +603,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void removeKill(@NotNull EncounteredCreatureInterface kill)
-    {
-        opponents.remove(kill);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void removeOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
     {
         opponents.remove(opponent);
@@ -651,7 +654,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
+    public @NotNull ArrayList<LootRollInterface> rollLoot() throws EncounteredCreatureException
     {
         if (!isSlain()) {
             throw EncounteredCreatureException.createLootWhenNotSlain(name);

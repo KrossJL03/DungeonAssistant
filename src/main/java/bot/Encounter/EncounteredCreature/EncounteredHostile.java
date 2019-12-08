@@ -1,10 +1,16 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
-import bot.Encounter.*;
+import bot.Encounter.EncounteredCreatureInterface;
+import bot.Encounter.EncounteredHostileInterface;
+import bot.Encounter.HealActionResultInterface;
+import bot.Encounter.HurtActionResultInterface;
+import bot.Encounter.LootRollInterface;
+import bot.Encounter.ModifyStatActionResultInterface;
 import bot.Hostile.Hostile;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -24,14 +30,14 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * @param hostile Hostile
      * @param name    Name
      */
-    public EncounteredHostile(@NotNull Hostile hostile, @NotNull String name)
+    public EncounteredHostile(@NotNull Hostile hostile, @Nullable String name)
     {
         this.attack = hostile.getAttack();
         this.attackRoll = 0;
         this.currentHp = hostile.getHitpoints();
         this.maxHp = hostile.getHitpoints();
         this.hostile = hostile;
-        this.name = name;
+        this.name = name != null ? name : hostile.getSpecies();
         this.slayer = new Slayer();
     }
 
@@ -240,19 +246,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
+    public @NotNull ArrayList<LootRollInterface> rollLoot() throws EncounteredCreatureException
     {
         if (!isSlain()) {
             throw EncounteredCreatureException.createLootWhenNotSlain(name);
         }
 
-        ArrayList<LootRoll> lootRolls = new ArrayList<>();
-        int                 lootDie   = hostile.getLootPoolSize();
-
-        while (hostile.getLootRollCount() > lootRolls.size()) {
-            int  roll = (int) Math.floor(Math.random() * lootDie) + 1;
-            Loot loot = hostile.getLoot(roll);
-            lootRolls.add(new LootRoll(name, loot, lootDie, roll));
+        ArrayList<LootRollInterface> lootRolls = new ArrayList<>();
+        for (LootRollInterface lootRoll : hostile.rollLoot()) {
+            lootRolls.add(new LootRoll(name, lootRoll.getLoot(), lootRoll.getLootDie(), lootRoll.getLootRoll()));
         }
 
         return lootRolls;
