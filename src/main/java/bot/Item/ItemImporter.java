@@ -69,7 +69,8 @@ class ItemImporter
      */
     private void processRecord(Map<String, String> record)
     {
-        ItemAbstract item = itemFactory.createFromMap(record.get(ItemAbstract.FIELD_ITEM_TYPE), record);
+        itemRegistry.reset();
+        Item item = itemFactory.createFromMap(record);
         itemRegistry.insertItem(item);
     }
 }

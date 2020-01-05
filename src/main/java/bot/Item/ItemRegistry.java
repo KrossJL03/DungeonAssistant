@@ -7,68 +7,37 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class ItemRegistry
+class ItemRegistry
 {
     private static String TABLE_NAME = "item";
-
-    /**
-     * Helper method to create table
-     *
-     * @param args Default
-     */
-    public static void main(String[] args)
-    {
-        String sql = String.format("DROP TABLE %s", TABLE_NAME);
-        executeUpdate(sql);
-        createTableIfNotExists();
-    }
 
     /**
      * Insert item
      *
      * @param item Item to insert
      */
-    void insertItem(@NotNull ItemAbstract item)
+    void insertItem(@NotNull Item item)
     {
         String sql = String.format(
-            "INSERT OR REPLACE INTO %s(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) " +
-            "VALUES(\"%s\",\"%s\",\"%s\",\"%s\",%d,%d,%s,%s,%s,%s,%d,%d,%d,%d,%d,%s)",
+            "INSERT OR REPLACE INTO %s(%s,%s) " +
+            "VALUES(\"%s\",\"%s\")",
             TABLE_NAME,
-            ItemAbstract.FIELD_NAME,
-            ItemAbstract.FIELD_ITEM_TYPE,
-            ItemAbstract.FIELD_ITEM_SUBTYPE,
-            ItemAbstract.FIELD_IMAGE_URL,
-            ItemAbstract.FIELD_BUY_VALUE,
-            ItemAbstract.FIELD_SELL_VALUE,
-            ItemAbstract.FIELD_IS_BUYABLE,
-            ItemAbstract.FIELD_IS_CRAFTABLE,
-            ItemAbstract.FIELD_IS_EVENT_EXCLUSIVE,
-            ItemAbstract.FIELD_IS_SEASONAL,
-            Equipment.FIELD_STAT_VALUE_HP,
-            Equipment.FIELD_STAT_VALUE_STR,
-            Equipment.FIELD_STAT_VALUE_WIS,
-            Equipment.FIELD_STAT_VALUE_AGI,
-            Equipment.FIELD_STAT_VALUE_DEF,
-            Equipment.FIELD_ARMOR_SET_NAME,
+            Item.FIELD_NAME,
+            Item.FIELD_PAN_RARITY,
             item.getName(),
-            item.getType(),
-            item.getSubtype(),
-            item.getImageUrl(),
-            item.getBuyValue(),
-            item.getSellValue(),
-            item.isBuyable(),
-            item.isCraftable(),
-            item.isEventExclusive(),
-            item.isSeasonal(),
-            (item instanceof Equipment) ? ((Equipment) item).getHpStatValue() : null,
-            (item instanceof Equipment) ? ((Equipment) item).getStrStatValue() : null,
-            (item instanceof Equipment) ? ((Equipment) item).getWisStatValue() : null,
-            (item instanceof Equipment) ? ((Equipment) item).getAgiStatValue() : null,
-            (item instanceof Equipment) ? ((Equipment) item).getDefStatValue() : null,
-            (item instanceof Equipment) ? "'" + ((Equipment) item).getArmorSetName() + "'" : null
+            item.getPanRarity()
         );
 
         executeUpdate(sql);
+    }
+
+    /**
+     * Reset item table
+     */
+    void reset()
+    {
+        dropTable();
+        createTableIfNotExists();
     }
 
     /**
@@ -78,23 +47,19 @@ public class ItemRegistry
     {
         String sql = String.format("CREATE TABLE IF NOT EXISTS %s", TABLE_NAME) +
                      "(" +
-                     String.format(" %s TEXT PRIMARY KEY  NOT NULL, ", ItemAbstract.FIELD_NAME) +
-                     String.format(" %s TEXT              NOT NULL, ", ItemAbstract.FIELD_ITEM_TYPE) +
-                     String.format(" %s TEXT DEFAULT NULL         , ", ItemAbstract.FIELD_ITEM_SUBTYPE) +
-                     String.format(" %s TEXT              NOT NULL, ", ItemAbstract.FIELD_IMAGE_URL) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_BUY_VALUE) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_SELL_VALUE) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_IS_BUYABLE) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_IS_CRAFTABLE) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_IS_EVENT_EXCLUSIVE) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", ItemAbstract.FIELD_IS_SEASONAL) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", Equipment.FIELD_STAT_VALUE_HP) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", Equipment.FIELD_STAT_VALUE_STR) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", Equipment.FIELD_STAT_VALUE_WIS) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", Equipment.FIELD_STAT_VALUE_AGI) +
-                     String.format(" %s INT  DEFAULT 0    NOT NULL, ", Equipment.FIELD_STAT_VALUE_DEF) +
-                     String.format(" %s TEXT DEFAULT NULL           ", Equipment.FIELD_ARMOR_SET_NAME) +
+                     String.format(" %s TEXT PRIMARY KEY  NOT NULL, ", Item.FIELD_NAME) +
+                     String.format(" %s TEXT DEFAULT NULL           ", Item.FIELD_PAN_RARITY) +
                      ")";
+
+        executeUpdate(sql);
+    }
+
+    /**
+     * Drop table
+     */
+    private static void dropTable()
+    {
+        String sql = String.format("DROP TABLE %s", TABLE_NAME);
 
         executeUpdate(sql);
     }
