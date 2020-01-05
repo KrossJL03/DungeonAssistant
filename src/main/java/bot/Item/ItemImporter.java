@@ -35,6 +35,8 @@ class ItemImporter
      */
     int importItems(MessageReceivedEvent event)
     {
+        itemRegistry.reset();
+
         int count = 0;
         for (Attachment attachment : event.getMessage().getAttachments()) {
             count += processAttachment(attachment);
@@ -69,7 +71,6 @@ class ItemImporter
      */
     private void processRecord(Map<String, String> record)
     {
-        itemRegistry.reset();
         Item item = itemFactory.createFromMap(record);
         itemRegistry.insertItem(item);
     }

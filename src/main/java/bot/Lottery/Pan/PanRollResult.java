@@ -4,29 +4,22 @@ import org.jetbrains.annotations.NotNull;
 
 class PanRollResult
 {
-    private String itemLink;
-    private String itemName;
-    private String rarityName;
     private int    itemDie;
+    private String itemName;
     private int    itemRoll;
     private int    rarityDie;
+    private String rarityName;
     private int    rarityRoll;
 
     /**
      * Constructor.
      *
-     * @param item    Item
-     * @param rarity  Rarity
-     * @param itemDie Item die
+     * @param item   Item
+     * @param rarity Rarity
      */
-    PanRollResult(
-        @NotNull PanItem item,
-        @NotNull PanRarity rarity,
-        int itemDie
-    )
+    PanRollResult(@NotNull PanItem item, @NotNull PanRarity rarity)
     {
-        this.itemDie = itemDie;
-        this.itemLink = item.getLink();
+        this.itemDie = item.getDie();
         this.itemName = item.getName();
         this.itemRoll = item.getRoll();
         this.rarityDie = rarity.getDie();
@@ -42,16 +35,6 @@ class PanRollResult
     int getItemDie()
     {
         return itemDie;
-    }
-
-    /**
-     * Get item link
-     *
-     * @return String
-     */
-    @NotNull String getItemLink()
-    {
-        return itemLink;
     }
 
     /**

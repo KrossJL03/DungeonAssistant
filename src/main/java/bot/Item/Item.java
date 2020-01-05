@@ -3,10 +3,10 @@ package bot.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class Item
+public class Item
 {
-    static String FIELD_NAME       = "name";
-    static String FIELD_PAN_RARITY = "panRarity";
+    public static String FIELD_NAME       = "name";
+    public static String FIELD_PAN_RARITY = "panRarity";
 
     private String name;
     private String panRarity;

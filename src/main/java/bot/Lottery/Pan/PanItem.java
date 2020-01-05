@@ -1,39 +1,35 @@
 package bot.Lottery.Pan;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 class PanItem
 {
-    private String link;
+    private int    die;
     private String name;
-    private String rarityName;
     private int    roll;
 
     /**
      * Constructor.
      *
-     * @param name       Name of item
-     * @param rarityName Item rarity
-     * @param roll       Roll for item within rarity
-     * @param link       A link for the item
+     * @param name Name of item
+     * @param die  Die rolled to get item roll
+     * @param roll Roll for item within rarity
      */
-    PanItem(@NotNull String name, @NotNull String rarityName, int roll, @Nullable String link)
+    PanItem(@NotNull String name, int die, int roll)
     {
-        this.link = link;
+        this.die = die;
         this.name = name;
-        this.rarityName = rarityName;
         this.roll = roll;
     }
 
     /**
-     * Get link
+     * Get die
      *
-     * @return String
+     * @return int
      */
-    @Nullable String getLink()
+    int getDie()
     {
-        return link;
+        return die;
     }
 
     /**
@@ -44,16 +40,6 @@ class PanItem
     @NotNull String getName()
     {
         return name;
-    }
-
-    /**
-     * Get rarity name
-     *
-     * @return String
-     */
-    @NotNull String getRarityName()
-    {
-        return rarityName;
     }
 
     /**
