@@ -66,7 +66,7 @@ public class LootRollLineFactory
             output.append(String.format(
                 "x%d %s from %s",
                 loot.getQuantity(),
-                codeFormatter.makeYellow(loot.getItem()),
+                loot.getItem(),
                 codeFormatter.makeRed(roll.getKillName())
             ));
         }
