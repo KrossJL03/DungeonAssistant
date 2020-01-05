@@ -90,7 +90,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new LeaveCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new LootCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new ProtectCommand(processManager, encounterHolder, encounterLogger, dmChecker));
-        encounterCommands.add(new RejoinCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+//        encounterCommands.add(new RejoinCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new RemoveCreatureCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new SetMaxPlayerCountCommand(
             processManager,
