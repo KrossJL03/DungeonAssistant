@@ -31,4 +31,16 @@ public class CommandException extends RuntimeException implements EncounterExcep
             )
         );
     }
+
+    /**
+     * Factory method for "not a mod"
+     *
+     * @param formattedCommand Formatted command
+     *
+     * @return CommandException
+     */
+    static @NotNull CommandException createNotMod(String formattedCommand)
+    {
+        return new CommandException(String.format("Only mods can use the `%s` command", formattedCommand));
+    }
 }

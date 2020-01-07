@@ -45,9 +45,11 @@ class PanLogger
             result.getItemRoll(),
             result.getItemName()
         ));
+        message.add(codeFormatter.makeGrey(String.format(
+            "rp!giveitem %s 1",
+            result.getItemName()
+        )));
         message.endCodeBlock();
-//        message.add(textFormatter.makeLinkPreviewless(result.getItemLink()));
-
 
         logMessage(channel, message.getAsString());
     }

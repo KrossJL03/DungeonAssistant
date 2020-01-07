@@ -2,6 +2,7 @@ package bot;
 
 import bot.Player.Player;
 import bot.Player.PlayerRepository;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,10 +10,10 @@ import java.util.ArrayList;
 
 public abstract class Command implements CommandInterface
 {
-    private ProcessManager              processManager;
-    private ArrayList<CommandParameter> parameters;
     private String                      commandName;
     private String                      description;
+    private ArrayList<CommandParameter> parameters;
+    private ProcessManager              processManager;
 
     /**
      * HelpCommand constructor
@@ -157,6 +158,20 @@ public abstract class Command implements CommandInterface
     }
 
     /**
+     * Verify that the author is a mod
+     *
+     * @param author The author of the command
+     *
+     * @throws CommandException If not a mod
+     */
+    final protected void verifyMod(@NotNull User author) throws CommandException
+    {
+        if (!PlayerRepository.isModPlayer(author.getId())) {
+            throw CommandException.createNotMod(getFormattedCommand());
+        }
+    }
+
+    /**
      * Get formatted command
      *
      * @return String
@@ -168,7 +183,7 @@ public abstract class Command implements CommandInterface
             parameterBuilder.append(parameter.getFormatted());
             parameterBuilder.append(" ");
         }
-        return String.format("`%s%s %s`", CommandListener.COMMAND_KEY, commandName, parameterBuilder.toString().trim());
+        return String.format("`%s%s %s`", MyProperties.COMMAND_PREFIX, commandName, parameterBuilder.toString().trim());
     }
 
     /**

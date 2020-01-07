@@ -6,6 +6,7 @@ import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.Message.*;
 import bot.Encounter.PhaseChangeResult;
 import bot.MessageInterface;
+import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,9 +48,9 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
         message.add(textFormatter.makeBold("DODGE TURN!"));
         message.add(String.format(
             "Please %s to try to avoid the attack, or %s to sacrifice yourself to save someone else. Ex: %s",
-            textFormatter.makeCode(String.format("%sdodge", CommandListener.COMMAND_KEY)),
-            textFormatter.makeCode(String.format("%sprotect [CharacterName]", CommandListener.COMMAND_KEY)),
-            textFormatter.makeCode(String.format("%sprotect Cocoa", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%sdodge", MyProperties.COMMAND_PREFIX)),
+            textFormatter.makeCode(String.format("%sprotect [CharacterName]", MyProperties.COMMAND_PREFIX)),
+            textFormatter.makeCode(String.format("%sprotect Cocoa", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(
             "To use items use %s and the DM will be pinged to help out. Ex: %s",
@@ -58,7 +59,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
         ));
         message.add(String.format(
             "To use abilities to automatically skip a dodge round use %s to have the DM assist you.",
-            textFormatter.makeCode(String.format("%sdodgePass", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%sdodgePass", MyProperties.COMMAND_PREFIX))
         ));
 
         message.startCodeBlock(codeFormatter.getStyle());

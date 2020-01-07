@@ -13,10 +13,12 @@ class PanItemRoller
      */
     @NotNull PanRollResult roll(@NotNull PanRarity rarity)
     {
-        int     itemDie = PanItemRegistry.getItemCountByRarity(rarity);
-        PanItem item    = PanItemRegistry.getItemByRarityAndRoll(rarity, rollItemDie(itemDie));
+        int     itemDie  = PanItemRegistry.getItemCountByRarity(rarity);
+        int     itemRoll = rollItemDie(itemDie);
+        String  itemName = PanItemRegistry.getItemNameByRarityAndRoll(rarity, itemRoll);
+        PanItem item     = new PanItem(itemName, itemDie, itemRoll);
 
-        return new PanRollResult(item, rarity, itemDie);
+        return new PanRollResult(item, rarity);
     }
 
     /**

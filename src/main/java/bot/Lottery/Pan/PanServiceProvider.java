@@ -6,11 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class PanServiceProvider
 {
-    private PanCommandFactory commandFactory;
-    private PanItemRoller     itemRoller;
-    private PanLogger         panLogger;
-    private ProcessManager    processManager;
-    private PanRarityRoller   rarityRoller;
+    private BasicRarityRoller   basicRarityRoller;
+    private CommandFactory      commandFactory;
+    private PanItemRoller       itemRoller;
+    private PanLogger           panLogger;
+    private ProcessManager      processManager;
+    private SpecialRarityRoller specialRarityRoller;
 
     /**
      * Constructor.
@@ -19,10 +20,11 @@ public class PanServiceProvider
      */
     public PanServiceProvider(@NotNull ProcessManager processManager)
     {
+        this.basicRarityRoller = new BasicRarityRoller();
         this.itemRoller = new PanItemRoller();
         this.panLogger = new PanLogger();
         this.processManager = processManager;
-        this.rarityRoller = new PanRarityRoller();
+        this.specialRarityRoller = new SpecialRarityRoller();
 
         init();
     }
@@ -42,6 +44,12 @@ public class PanServiceProvider
      */
     private void init()
     {
-        this.commandFactory = new PanCommandFactory(processManager, panLogger, itemRoller, rarityRoller);
+        this.commandFactory = new CommandFactory(
+            processManager,
+            panLogger,
+            itemRoller,
+            basicRarityRoller,
+            specialRarityRoller
+        );
     }
 }

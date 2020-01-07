@@ -4,6 +4,7 @@ import bot.CommandListener;
 import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.PhaseChangeResult;
 import bot.MessageInterface;
+import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +47,7 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         message.add(textFormatter.makeBold("LOOT TURN!"));
         message.add(String.format(
             "Please use %s to harvest materials from the hostiles.",
-            textFormatter.makeCode(String.format("%sloot", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%sloot", MyProperties.COMMAND_PREFIX))
         ));
         message.add("There is no turn order and if you are unable to roll now you may do so later.");
 
