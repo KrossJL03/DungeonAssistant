@@ -12,7 +12,7 @@ public class Main
             commandProvider.getAdditionalCommands()
         );
 
-        JDA api = new JDABuilder(MyProperties.token).build();
+        JDA api = new JDABuilder(MyProperties.TOKEN).build();
         api.addEventListener(commandListener);
     }
 }

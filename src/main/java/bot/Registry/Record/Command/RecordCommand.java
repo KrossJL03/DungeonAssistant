@@ -39,7 +39,7 @@ abstract class RecordCommand extends Command
      */
     final protected void ensureRecordingNotLocked()
     {
-        if (!MyProperties.recordingEnabled | isDatabaseLocked()) {
+        if (!MyProperties.BOOL_RECORDING_ENABLED | isDatabaseLocked()) {
             throw RecordCommandException.createCommandLocked();
         }
     }

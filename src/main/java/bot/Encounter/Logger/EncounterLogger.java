@@ -4,10 +4,8 @@ import bot.Encounter.ActionResultInterface;
 import bot.Encounter.EncounteredExplorerInterface;
 import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.Action.LootRollLineFactory;
 import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
-import bot.Encounter.LootRollInterface;
 import bot.Encounter.PhaseChangeResult;
 import bot.Encounter.TierInterface;
 import bot.MyProperties;
@@ -165,7 +163,7 @@ public class EncounterLogger
     public void logPhaseChange(PhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (MyProperties.pingEveryone && result.getNextPhase().isJoinPhase()) {
+        if (MyProperties.BOOL_PING_EVERYONE && result.getNextPhase().isJoinPhase()) {
             message = everyoneMention.getValue() + " " + message;
         }
         sendMessage(message);
