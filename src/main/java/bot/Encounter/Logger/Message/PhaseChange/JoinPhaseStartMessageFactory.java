@@ -5,6 +5,7 @@ import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.PhaseChangeResult;
 import bot.Encounter.TierInterface;
 import bot.MessageInterface;
+import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,12 +46,12 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         message.addNewLine();
         message.add(String.format(
             "To bring a character to battle, use %s.",
-            textFormatter.makeCode(String.format("%sjoin [CharacterName]", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%sjoin [CharacterName]", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(
             "Only characters registered prior to the battle may join. " +
             "The %s command cannot be used while a battle is in progress.",
-            textFormatter.makeCode(String.format("%screate character", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%screate character", MyProperties.COMMAND_PREFIX))
         ));
         message.add(
             "You may join a battle at any time before the battle has ended and as long as there are slots open!"

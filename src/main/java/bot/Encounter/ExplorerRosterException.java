@@ -2,6 +2,7 @@ package bot.Encounter;
 
 import bot.CommandListener;
 import bot.Encounter.Logger.Mention;
+import bot.MyProperties;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
             String.format(
                 "%s You are currently active in this encounter. There is not need to `%srejoin`.",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -89,7 +90,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
             String.format(
                 "%s You have already left. You can't leave again unless you `%srejoin` first",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -121,7 +122,7 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
         return new ExplorerRosterException(
             String.format(
                 "Wait, I don't know how many players to have. DM could you tell me using `%smaxPlayers`?",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }

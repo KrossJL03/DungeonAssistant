@@ -4,6 +4,7 @@ import bot.CommandListener;
 import bot.Encounter.EncounterPhaseInterface;
 import bot.Encounter.PhaseChangeResult;
 import bot.MessageInterface;
+import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,8 +43,8 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
         message.add(textFormatter.makeBold("ATTACK TURN!"));
         message.add(String.format(
             "Please use %s to attack. Ex: %s",
-            textFormatter.makeCode(String.format("%sattack [HostileName]", CommandListener.COMMAND_KEY)),
-            textFormatter.makeCode(String.format("%sattack Stanley", CommandListener.COMMAND_KEY))
+            textFormatter.makeCode(String.format("%sattack [HostileName]", MyProperties.COMMAND_PREFIX)),
+            textFormatter.makeCode(String.format("%sattack Stanley", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(
             "To use items use %s and the DM will be pinged to help out. Ex: %s",

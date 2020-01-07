@@ -183,7 +183,7 @@ public abstract class Command implements CommandInterface
             parameterBuilder.append(parameter.getFormatted());
             parameterBuilder.append(" ");
         }
-        return String.format("`%s%s %s`", CommandListener.COMMAND_KEY, commandName, parameterBuilder.toString().trim());
+        return String.format("`%s%s %s`", MyProperties.COMMAND_PREFIX, commandName, parameterBuilder.toString().trim());
     }
 
     /**

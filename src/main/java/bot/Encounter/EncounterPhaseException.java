@@ -1,6 +1,7 @@
 package bot.Encounter;
 
 import bot.CommandListener;
+import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
 class EncounterPhaseException extends RuntimeException implements EncounterExceptionInterface
@@ -25,7 +26,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "This encounter is over. If you'd like to start a new one use the `%screate encounter` command",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -40,7 +41,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "You can only `%sattack` during the %s turn",
-                CommandListener.COMMAND_KEY,
+                MyProperties.COMMAND_PREFIX,
                 EncounterPhaseInterface.ATTACK_PHASE
             )
         );
@@ -56,7 +57,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "You can only `%sdodge` during the %s turn",
-                CommandListener.COMMAND_KEY,
+                MyProperties.COMMAND_PREFIX,
                 EncounterPhaseInterface.DODGE_PHASE
             )
         );
@@ -82,7 +83,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "You can only `%sloot` during the %s turn",
-                CommandListener.COMMAND_KEY,
+                MyProperties.COMMAND_PREFIX,
                 EncounterPhaseInterface.LOOT_PHASE
             )
         );
@@ -98,7 +99,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "You can only `%spass` during the %s turn",
-                CommandListener.COMMAND_KEY,
+                MyProperties.COMMAND_PREFIX,
                 EncounterPhaseInterface.DODGE_PHASE
             )
         );
@@ -114,7 +115,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "You can only `%sprotect` during the %s turn",
-                CommandListener.COMMAND_KEY,
+                MyProperties.COMMAND_PREFIX,
                 EncounterPhaseInterface.DODGE_PHASE
             )
         );
@@ -170,7 +171,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "Uh, wait. Who are we fighting again? Tell me using `%saddHostile [species]`.",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -185,7 +186,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
         return new EncounterPhaseException(
             String.format(
                 "Wait, I don't know how many players to have. DM could you tell me using `%smaxPlayers`?",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }

@@ -3,6 +3,7 @@ package bot.Encounter.EncounteredCreature;
 import bot.CommandListener;
 import bot.Encounter.EncounterExceptionInterface;
 import bot.Encounter.Logger.Mention;
+import bot.MyProperties;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +32,7 @@ public class EncounteredExplorerException extends RuntimeException implements En
             String.format(
                 "%s You are currently active in this encounter. There is not need to `%srejoin`.",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -67,7 +68,7 @@ public class EncounteredExplorerException extends RuntimeException implements En
             String.format(
                 "%s You have already left. You can't leave again unless you `%srejoin` first",
                 (Mention.createForPlayer(player.getUserId())).getValue(),
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
@@ -116,7 +117,7 @@ public class EncounteredExplorerException extends RuntimeException implements En
         return new EncounteredExplorerException(
             String.format(
                 "You've already used your `%sprotect` for this encounter",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }

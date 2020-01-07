@@ -12,8 +12,6 @@ import java.util.ArrayList;
  */
 public class CommandListener extends ListenerAdapter
 {
-    public static String COMMAND_KEY = "?";
-
     private ArrayList<CommandInterface> commands;
     private ArrayList<CommandInterface> additionalCommands;
 
@@ -56,7 +54,7 @@ public class CommandListener extends ListenerAdapter
         String         input   = message.getContentRaw();
 
         try {
-            if (input.startsWith(CommandListener.COMMAND_KEY)) {
+            if (input.startsWith(MyProperties.COMMAND_PREFIX)) {
                 String commandString = input.substring(1).toLowerCase();
 
                 for (CommandInterface command : commands) {
@@ -81,7 +79,7 @@ public class CommandListener extends ListenerAdapter
             channel.sendMessage(
                 String.format(
                     "Could you say that again? I think I'm missing something... Check `%shelp`",
-                    CommandListener.COMMAND_KEY
+                    MyProperties.COMMAND_PREFIX
                 )
             ).queue();
         } catch (NumberFormatException e) {

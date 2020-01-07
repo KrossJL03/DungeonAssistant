@@ -2,6 +2,7 @@ package bot.Player;
 
 import bot.CommandListener;
 import bot.CustomExceptionInterface;
+import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
 class PlayerRepositoryException extends RuntimeException implements CustomExceptionInterface
@@ -26,7 +27,7 @@ class PlayerRepositoryException extends RuntimeException implements CustomExcept
         return new PlayerRepositoryException(
             String.format(
                 "Um... I'm sorry, do I know you? Try introducing yourself by saying `%shello` first.",
-                CommandListener.COMMAND_KEY
+                MyProperties.COMMAND_PREFIX
             )
         );
     }
