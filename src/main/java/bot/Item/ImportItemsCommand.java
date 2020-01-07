@@ -38,6 +38,7 @@ public class ImportItemsCommand extends Command
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws ItemException
     {
+        verifyMod(event.getAuthor());
         verifyAttachmentCount(event);
 
         MessageChannel channel = event.getChannel();
