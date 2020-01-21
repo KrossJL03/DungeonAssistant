@@ -1,6 +1,6 @@
 package bot.Lottery.Pan;
 
-import bot.Encounter.EncounterExceptionInterface;
+import bot.Battle.EncounterExceptionInterface;
 import org.jetbrains.annotations.NotNull;
 
 class PanException extends RuntimeException implements EncounterExceptionInterface

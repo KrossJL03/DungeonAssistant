@@ -1,4 +1,4 @@
-package bot.Encounter;
+package bot.Battle;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

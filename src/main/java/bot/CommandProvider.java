@@ -1,6 +1,6 @@
 package bot;
 
-import bot.Encounter.EncounterServiceProvider;
+import bot.Battle.EncounterServiceProvider;
 import bot.Item.ItemServiceProvider;
 import bot.Lottery.LotteryServiceProvider;
 import bot.Registry.RegistryServiceProvider;

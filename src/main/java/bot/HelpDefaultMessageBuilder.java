@@ -1,6 +1,6 @@
 package bot;
 
-import bot.Encounter.Logger.Message.DiffCodeFormatter;
+import bot.Battle.Logger.Message.DiffCodeFormatter;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 

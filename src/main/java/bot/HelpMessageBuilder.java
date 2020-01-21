@@ -1,6 +1,6 @@
 package bot;
 
-import bot.Encounter.AdditionalCommandInterface;
+import bot.Battle.AdditionalCommandInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

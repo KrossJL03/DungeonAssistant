@@ -1,6 +1,6 @@
 package bot.Lottery.Mofongo;
 
-import bot.Encounter.EncounterExceptionInterface;
+import bot.Battle.EncounterExceptionInterface;
 import org.jetbrains.annotations.NotNull;
 
 class MofongoException extends RuntimeException implements EncounterExceptionInterface

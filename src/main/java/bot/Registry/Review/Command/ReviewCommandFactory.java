@@ -2,11 +2,11 @@ package bot.Registry.Review.Command;
 
 import bot.CommandFactoryInterface;
 import bot.CommandInterface;
-import bot.Encounter.EncounterHolder;
-import bot.Encounter.Logger.EncounterLogger;
-import bot.Encounter.Logger.Message.Action.ActionMessageBuilder;
-import bot.Encounter.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
-import bot.Encounter.Logger.Message.Summary.SummaryMessageBuilder;
+import bot.Battle.EncounterHolder;
+import bot.Battle.Logger.EncounterLogger;
+import bot.Battle.Logger.Message.Action.ActionMessageBuilder;
+import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
+import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.PrivateLogger;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;

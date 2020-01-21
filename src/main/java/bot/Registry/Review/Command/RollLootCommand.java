@@ -2,8 +2,8 @@ package bot.Registry.Review.Command;
 
 import bot.Command;
 import bot.CommandParameter;
-import bot.Encounter.Logger.Message.Action.LootRollLineFactory;
-import bot.Encounter.LootRollInterface;
+import bot.Battle.Logger.Message.Action.LootRollLineFactory;
+import bot.Battle.LootRollInterface;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
 import bot.ProcessManager;

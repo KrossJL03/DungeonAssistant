@@ -1,6 +1,6 @@
 package bot;
 
-import bot.Encounter.EncounterExceptionInterface;
+import bot.Battle.EncounterExceptionInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandException extends RuntimeException implements EncounterExceptionInterface

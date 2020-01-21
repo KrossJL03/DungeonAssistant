@@ -1,4 +1,4 @@
-package bot.Encounter;
+package bot.Battle;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
