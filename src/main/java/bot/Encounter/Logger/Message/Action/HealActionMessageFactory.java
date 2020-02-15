@@ -1,5 +1,6 @@
 package bot.Encounter.Logger.Message.Action;
 
+import bot.Constant;
 import bot.Encounter.HealActionResultInterface;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -15,16 +16,19 @@ class HealActionMessageFactory extends ActionMessageFactory
      */
     public @NotNull MessageInterface createMessage(@NotNull HealActionResultInterface result)
     {
-        ActionMessage message = new ActionMessage();
+        ActionMessage message   = new ActionMessage();
+        int           currentHp = result.getCurrentHp();
+        int           maxHp     = result.getMaxHp();
 
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format(
-            "%s heals %d points! [%d/%d]",
+            "%s heals %d points! [%s/%s]",
             result.getName(),
             result.getHealedHp(),
-            result.getCurrentHp(),
-            result.getMaxHp()
+            currentHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : currentHp,
+            maxHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : maxHp
         ));
+
         if (result.wasTargetRevived()) {
             message.add(String.format(
                 "%s has been revived! They have earned the %s title.",
