@@ -226,7 +226,7 @@ public class Encounter implements EncounterInterface
             encounterCreature instanceof EncounteredHostileInterface
             && result.wasTargetRevived()
             && !encounterCreature.isBloodied()
-            ) {
+        ) {
             addOpponentToActiveExplorers(encounterCreature);
         }
 
@@ -253,8 +253,21 @@ public class Encounter implements EncounterInterface
     public void healAllHostiles(int hitpoints)
     {
         for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
-            this.heal(encounteredHostile.getName(), hitpoints);
+            heal(encounteredHostile.getName(), hitpoints);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void healAndGiveProtect(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    {
+        if (hitpoints > 0) {
+            heal(name, hitpoints);
+        }
+
+        giveProtectAction(name);
     }
 
     /**
@@ -372,7 +385,6 @@ public class Encounter implements EncounterInterface
         listener.onKick(encounteredExplorer.getOwner());
         handleEndOfAction();
     }
-
 
     /**
      * {@inheritDoc}
@@ -540,7 +552,7 @@ public class Encounter implements EncounterInterface
             encounterCreature instanceof EncounteredHostileInterface
             && result.wasTargetRevived()
             && !encounterCreature.isBloodied()
-            ) {
+        ) {
             addOpponentToActiveExplorers(encounterCreature);
         }
 
@@ -821,6 +833,25 @@ public class Encounter implements EncounterInterface
             }
         }
         throw EncounteredCreatureNotFoundException.createForHostile(name);
+    }
+
+    /**
+     * Give the explorer with this name a protect action
+     *
+     * @param name Explorer name
+     *
+     * @throws EncounterPhaseException If encounter is over
+     */
+    private void giveProtectAction(@NotNull String name) throws EncounterPhaseException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        }
+
+        EncounteredExplorerInterface explorer = explorerRoster.getExplorer(name);
+        explorer.giveProtectAction();
+
+        listener.onGiveProtectAction(explorer);
     }
 
     /**

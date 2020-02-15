@@ -47,6 +47,14 @@ public interface EncounterInterface extends ProcessInterface
     void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException;
 
     /**
+     * Heal hitpoints and give a protect action to the explorer with this name
+     *
+     * @param name      Explorer's name
+     * @param hitpoints Hitpoints to heal
+     */
+    void healAndGiveProtect(@NotNull String name, int hitpoints) throws EncounterPhaseException;
+
+    /**
      * Hurt encountered creature with given name by given amount of hitpoints
      *
      * @param name      Encountered creature name
@@ -143,6 +151,15 @@ public interface EncounterInterface extends ProcessInterface
     ) throws EncounterPhaseException;
 
     /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
+
+    /**
      * Skip current player turn
      *
      * @throws EncounterPhaseException If encounter is over
@@ -174,15 +191,6 @@ public interface EncounterInterface extends ProcessInterface
      *                                 If hostiles have not been added
      */
     void startJoinPhase() throws EncounterPhaseException;
-
-    /**
-     * Set tier
-     *
-     * @param tier Tier
-     *
-     * @throws EncounterPhaseException If not create phase
-     */
-    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
 
     /**
      * Use all current explorer actions
