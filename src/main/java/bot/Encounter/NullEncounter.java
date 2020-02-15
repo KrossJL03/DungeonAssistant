@@ -81,6 +81,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public boolean isOver()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
@@ -154,6 +163,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void skipCurrentPlayerTurn() throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
@@ -190,15 +208,6 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void useAllCurrentExplorerActions()
     {
         throw EncounterException.createNullEncounter();
@@ -209,6 +218,15 @@ public class NullEncounter implements EncounterInterface
      */
     @Override
     public void useCurrentExplorerAction()
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void useItemAction(Player player)
     {
         throw EncounterException.createNullEncounter();
     }

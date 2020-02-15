@@ -3,6 +3,7 @@ package bot.Encounter.Command;
 import bot.CommandParameter;
 import bot.Encounter.AdditionalCommandInterface;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
+import bot.Encounter.Encounter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
 import bot.Player.Player;
@@ -52,8 +53,13 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        Player player = getPlayerFromEvent(event);
+        Encounter encounter = getHostileEncounter();
 
-        getLogger().pingDmItemUsed(player);
+        if (!encounter.isOver()) {
+            Player player = getPlayerFromEvent(event);
+            encounter.useItemAction(player);
+
+            getLogger().pingDmItemUsed(player);
+        }
     }
 }

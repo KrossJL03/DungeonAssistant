@@ -333,6 +333,15 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public boolean isOver()
+    {
+        return currentPhase.isFinalPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         if (currentPhase.isCreatePhase()) {
@@ -747,6 +756,25 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createNotInitiativePhase();
         }
         EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        encounteredExplorer.useAction();
+        handleEndOfAction();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void useItemAction(Player player)
+    {
+        if (!currentPhase.isAttackPhase()) {
+            return;
+        }
+
+        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        if (!encounteredExplorer.isOwner(player)) {
+            throw NotYourTurnException.createNotYourTurn();
+        }
+
         encounteredExplorer.useAction();
         handleEndOfAction();
     }

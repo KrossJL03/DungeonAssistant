@@ -64,6 +64,13 @@ public interface EncounterInterface extends ProcessInterface
     boolean isNull();
 
     /**
+     * Is the encounter over
+     *
+     * @return boolean
+     */
+    boolean isOver();
+
+    /**
      * Join encounter
      *
      * @param explorer Explorer
@@ -143,6 +150,15 @@ public interface EncounterInterface extends ProcessInterface
     ) throws EncounterPhaseException;
 
     /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
+
+    /**
      * Skip current player turn
      *
      * @throws EncounterPhaseException If encounter is over
@@ -176,15 +192,6 @@ public interface EncounterInterface extends ProcessInterface
     void startJoinPhase() throws EncounterPhaseException;
 
     /**
-     * Set tier
-     *
-     * @param tier Tier
-     *
-     * @throws EncounterPhaseException If not create phase
-     */
-    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
-
-    /**
      * Use all current explorer actions
      */
     void useAllCurrentExplorerActions();
@@ -193,4 +200,11 @@ public interface EncounterInterface extends ProcessInterface
      * Use current explorer action
      */
     void useCurrentExplorerAction();
+
+    /**
+     * Use item action
+     *
+     * @param player Player who used the action
+     */
+    void useItemAction(Player player);
 }
