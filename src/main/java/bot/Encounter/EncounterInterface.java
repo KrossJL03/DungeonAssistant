@@ -47,6 +47,14 @@ public interface EncounterInterface extends ProcessInterface
     void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException;
 
     /**
+     * Heal hitpoints and give a protect action to the explorer with this name
+     *
+     * @param name      Explorer's name
+     * @param hitpoints Hitpoints to heal
+     */
+    void healAndGiveProtect(@NotNull String name, int hitpoints) throws EncounterPhaseException;
+
+    /**
      * Hurt encountered creature with given name by given amount of hitpoints
      *
      * @param name      Encountered creature name

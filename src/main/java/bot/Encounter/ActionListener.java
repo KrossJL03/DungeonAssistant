@@ -80,6 +80,16 @@ class ActionListener
     }
 
     /**
+     * Log on give protect action
+     *
+     * @param explorer Name of explorer
+     */
+    void onGiveProtectAction(EncounteredExplorerInterface explorer)
+    {
+        logger.logGiveProtectAction(explorer.getName());
+    }
+
+    /**
      * Log on kick
      *
      * @param owner Kicked player

@@ -140,6 +140,11 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     int getWisdom();
 
     /**
+     * Give this explorer a protect action
+     */
+    void giveProtectAction();
+
+    /**
      * Guard against encountered hostile attacks
      *
      * @param encounteredHostiles Encountered hostiles to guard against
