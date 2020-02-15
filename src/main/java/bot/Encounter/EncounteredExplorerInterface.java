@@ -63,6 +63,15 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
         throws EncounteredExplorerException;
 
     /**
+     * If the creature is listed as an active opponent then save them as a kill for loot
+     *
+     * @param opponent Opponent to add to kills
+     *
+     * @throws EncounteredExplorerException If opponent is not slain
+     */
+    void finalizeKill(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException;
+
+    /**
      * Get agility
      *
      * @return int

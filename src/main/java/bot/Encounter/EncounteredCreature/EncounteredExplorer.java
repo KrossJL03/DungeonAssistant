@@ -29,6 +29,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int                                     currentHp;
     private int                                     defense;
     private boolean                                 isPresent;
+    private ArrayList<EncounteredCreatureInterface> kills;
     private LootActionResult                        loot;
     private int                                     maxHp;
     private String                                  name;
@@ -52,6 +53,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.currentHp = explorer.getHitpoints();
         this.defense = explorer.getDefense();
         this.isPresent = true;
+        this.kills = new ArrayList<>();
         this.maxHp = explorer.getHitpoints();
         this.name = nickname != null ? nickname : explorer.getName();
         this.opponents = new ArrayList<>();
@@ -71,7 +73,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void addOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
     {
         if (!isActive()) {
-            throw EncounteredExplorerException.createFailedToAddOpponent(name, opponent.getName());
+            throw EncounteredExplorerException.createNotPresentForOpponent(name, opponent.getName());
         } else if (!opponents.contains(opponent)) {
             opponents.add(opponent);
         }
@@ -199,6 +201,22 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             slayer,
             true
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finalizeKill(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
+    {
+        if (!opponent.isSlain()) {
+            throw EncounteredExplorerException.createKillIsNotSlain(opponent.getName(), name);
+        }
+
+        if (isActive() && opponents.contains(opponent)) {
+            kills.add(opponent);
+            opponents.remove(opponent);
+        }
     }
 
     /**
@@ -650,18 +668,19 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
         ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
-        for (EncounteredCreatureInterface kill : opponents) {
+        for (EncounteredCreatureInterface kill : kills) {
             lootRolls.addAll(kill.rollLoot());
-            if (kill.getSlayer().isSlayer(this)) {
+            if (kill.wasSlainBy(this)) {
                 finalBlows.add(kill);
             }
         }
+
         loot = new LootActionResult(
             name,
             owner,
             lootRolls,
             finalBlows,
-            opponents.size(),
+            kills.size(),
             finalBlows.size() * FINAL_BLOW_BONUS
         );
     }
@@ -750,6 +769,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void useAllActions()
     {
         this.currentActions = 0;
+    }
+
+    @Override
+    public boolean wasSlainBy(@NotNull EncounteredCreatureInterface creature)
+    {
+        return slayer.isSlayer(creature);
     }
 
     /**
