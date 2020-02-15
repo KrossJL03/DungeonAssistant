@@ -1,6 +1,7 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
+import bot.CustomException;
 import bot.Encounter.EncounteredCreatureInterface;
 import bot.Encounter.EncounteredHostileInterface;
 import bot.Encounter.HealActionResultInterface;
@@ -8,7 +9,6 @@ import bot.Encounter.HurtActionResultInterface;
 import bot.Encounter.LootRollInterface;
 import bot.Encounter.ModifyStatActionResultInterface;
 import bot.Hostile.Hostile;
-import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,6 +137,10 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to heal must be a positive number.");
+        }
+
         boolean wasRevived = false;
         if (isSlain()) {
             slayer = new Slayer();
@@ -163,6 +167,8 @@ public class EncounteredHostile implements EncounteredHostileInterface
     {
         if (isSlain()) {
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+        } else if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to hurt must be a positive number.");
         }
 
         int hurtHp;

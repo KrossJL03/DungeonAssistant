@@ -1,6 +1,7 @@
 package bot.Encounter.EncounteredCreature;
 
 import bot.Constant;
+import bot.CustomException;
 import bot.Encounter.DodgeResultInterface;
 import bot.Encounter.EncounteredCreatureInterface;
 import bot.Encounter.EncounteredExplorerInterface;
@@ -412,6 +413,10 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to heal must be a positive number.");
+        }
+
         boolean wasRevived = false;
         if (isSlain()) {
             slayer = new Slayer();
@@ -438,6 +443,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (isSlain()) {
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+        } else if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to hurt must be a positive number.");
         }
 
         int hurtHp;
