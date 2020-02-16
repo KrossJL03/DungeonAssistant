@@ -4,6 +4,7 @@ import bot.Encounter.EncounteredCreature.EncounteredExplorerException;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public interface EncounteredExplorerInterface extends EncounteredCreatureInterface
@@ -82,6 +83,13 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      * @return int
      */
     int getDodgeDice();
+
+    /**
+     * Get the time the explorer joined the battle
+     *
+     * @return ZonedDateTime
+     */
+    @NotNull ZonedDateTime getJoinedAt();
 
     /**
      * Get loot

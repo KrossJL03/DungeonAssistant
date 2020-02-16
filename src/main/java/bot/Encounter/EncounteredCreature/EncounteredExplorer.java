@@ -17,6 +17,7 @@ import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class EncounteredExplorer implements EncounteredExplorerInterface
@@ -30,6 +31,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int                                     currentHp;
     private int                                     defense;
     private boolean                                 isPresent;
+    private ZonedDateTime                           joinedAt;
     private LootActionResult                        loot;
     private int                                     maxHp;
     private String                                  name;
@@ -53,6 +55,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.currentHp = explorer.getHitpoints();
         this.defense = explorer.getDefense();
         this.isPresent = true;
+        this.joinedAt = ZonedDateTime.now();
         this.maxHp = explorer.getHitpoints();
         this.name = nickname != null ? nickname : explorer.getName();
         this.opponents = new ArrayList<>();
@@ -118,7 +121,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
-        return encounteredExplorer.getAgility() - this.agility;
+        int difference = encounteredExplorer.getAgility() - agility;
+        if (difference == 0) {
+            difference = joinedAt.compareTo(encounteredExplorer.getJoinedAt());
+        }
+
+        return difference;
     }
 
     /**
@@ -255,6 +263,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public int getDodgeDice()
     {
         return ((int) Math.floor(agility / 2)) + 10;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull ZonedDateTime getJoinedAt()
+    {
+        return joinedAt;
     }
 
     /**
