@@ -59,7 +59,6 @@ class ExplorerRoster
         }
 
         explorerRoster.add(newExplorer);
-        explorerRoster.add(newExplorer);
         sort();
     }
 
