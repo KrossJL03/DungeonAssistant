@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class GiveProtectCommand extends EncounterCommand
+public class DmProtectCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -20,7 +20,7 @@ public class GiveProtectCommand extends EncounterCommand
      * @param logger         Encounter logger
      * @param dmChecker      Dungeon master checker
      */
-    GiveProtectCommand(
+    DmProtectCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -32,15 +32,15 @@ public class GiveProtectCommand extends EncounterCommand
             holder,
             logger,
             dmChecker,
-            "give protect",
+            "dmProtect",
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("Explorer", true));
+                    add(new CommandParameter("TargetName", true));
                     add(new CommandParameter("HP", false));
                 }
             },
-            "Give an explorer another protect action. Option to heal them by X HP.",
+            "Manually make the current explorer protect a target. Option to heal protector by X HP.",
             true
         );
     }
@@ -55,6 +55,6 @@ public class GiveProtectCommand extends EncounterCommand
         String   explorerName    = parameters[0];
         int      hitpointsHealed = parameters.length > 1 ? Integer.parseInt(parameters[1]) : 0;
 
-        getHostileEncounter().healAndGiveProtect(explorerName, hitpointsHealed);
+        getHostileEncounter().manualProtectAction(explorerName, hitpointsHealed);
     }
 }

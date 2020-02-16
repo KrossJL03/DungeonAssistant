@@ -261,19 +261,6 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void healAndGiveProtect(@NotNull String name, int hitpoints) throws EncounterPhaseException
-    {
-        if (hitpoints > 0) {
-            heal(name, hitpoints);
-        }
-
-        giveProtectAction(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
@@ -432,6 +419,22 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterPhaseException
+    {
+        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+
+        if (hitpoints > 0) {
+            heal(currentExplorer.getName(), hitpoints);
+        }
+        currentExplorer.giveProtectAction();
+
+        doProtect(currentExplorer, targetName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void modifyStat(
         @NotNull String name,
         @NotNull String statName,
@@ -477,12 +480,12 @@ public class Encounter implements EncounterInterface
     /**
      * Protect action
      *
-     * @param player Owner of current explorer
-     * @param name   Name of explorer to protect
+     * @param player     Owner of current explorer
+     * @param targetName Name of explorer to protect
      *
      * @throws EncounterPhaseException If not dodge phase
      */
-    public void protectAction(@NotNull Player player, @NotNull String name)
+    public void protectAction(@NotNull Player player, @NotNull String targetName)
         throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
@@ -496,18 +499,7 @@ public class Encounter implements EncounterInterface
             throw NotYourTurnException.createNotYourTurn();
         }
 
-        EncounteredExplorerInterface protectedCharacter = explorerRoster.getExplorer(name);
-        ProtectActionResultInterface result = currentExplorer.protect(
-            protectedCharacter,
-            getActiveHostiles()
-        );
-        listener.onAction(result);
-
-        if (currentExplorer.isSlain() && hasPhoenixDown) {
-            usePhoenixDown(currentExplorer);
-        }
-
-        handleEndOfAction();
+        doProtect(currentExplorer, targetName);
     }
 
     /**
@@ -561,7 +553,7 @@ public class Encounter implements EncounterInterface
             encounterCreature instanceof EncounteredHostileInterface
             && result.wasTargetRevived()
             && !encounterCreature.isBloodied()
-        ) {
+            ) {
             addOpponentToActiveExplorers(encounterCreature);
         }
 
@@ -806,6 +798,28 @@ public class Encounter implements EncounterInterface
     }
 
     /**
+     * Do protect
+     *
+     * @param protector  Explorer doing the protecting
+     * @param targetName Name of the protected target
+     */
+    private void doProtect(@NotNull EncounteredExplorerInterface protector, @NotNull String targetName)
+    {
+        EncounteredExplorerInterface protectedCharacter = explorerRoster.getExplorer(targetName);
+        ProtectActionResultInterface result = protector.protect(
+            protectedCharacter,
+            getActiveHostiles()
+        );
+        listener.onAction(result);
+
+        if (protector.isSlain() && hasPhoenixDown) {
+            usePhoenixDown(protector);
+        }
+
+        handleEndOfAction();
+    }
+
+    /**
      * Get active hostiles
      *
      * @return ArrayList<EncounteredHostileInterface>
@@ -861,25 +875,6 @@ public class Encounter implements EncounterInterface
             }
         }
         throw EncounteredCreatureNotFoundException.createForHostile(name);
-    }
-
-    /**
-     * Give the explorer with this name a protect action
-     *
-     * @param name Explorer name
-     *
-     * @throws EncounterPhaseException If encounter is over
-     */
-    private void giveProtectAction(@NotNull String name) throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
-
-        EncounteredExplorerInterface explorer = explorerRoster.getExplorer(name);
-        explorer.giveProtectAction();
-
-        listener.onGiveProtectAction(explorer);
     }
 
     /**

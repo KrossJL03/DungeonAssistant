@@ -52,7 +52,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void healAndGiveProtect(@NotNull String name, int hitpoints) throws EncounterException
+    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }
