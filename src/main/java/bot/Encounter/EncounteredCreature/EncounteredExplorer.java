@@ -79,7 +79,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (!isActive()) {
             throw EncounteredExplorerException.createNotPresentForOpponent(name, opponent.getName());
-        } else if (!opponents.contains(opponent)) {
+        } else if (!kills.contains(opponent) && !opponents.contains(opponent)) {
             opponents.add(opponent);
         }
     }

@@ -306,7 +306,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
         }
 
         if (currentHp > 0 && currentHp - damage < 1) {
-            slayers.add(new Slayer(attacker.getName()));
+            addSlayer(attacker.getName());
             currentHp = 0;
         } else {
             currentHp -= damage;
@@ -327,6 +327,23 @@ public class EncounteredHostile implements EncounteredHostileInterface
         }
 
         return false;
+    }
+
+    /**
+     * Add slayer
+     * Does not add slayer if slayer with the same name already exists
+     *
+     * @param slayerName Name of slayer
+     */
+    private void addSlayer(@NotNull String slayerName)
+    {
+        for (Slayer slayer : slayers) {
+            if (slayer.getName().equals(slayerName)) {
+                return;
+            }
+        }
+
+        slayers.add(new Slayer(slayerName));
     }
 
     /**
