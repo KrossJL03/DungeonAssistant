@@ -1,5 +1,6 @@
 package bot.Encounter.Logger.Message.Action;
 
+import bot.Constant;
 import bot.Encounter.CombatActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -119,10 +120,12 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
                 result.isTargetSlain() ? String.format(" by %s", result.getTargetSlayer().getName()) : ""
             );
         } else {
+            int currentHp = result.getTargetCurrentHp();
+            int maxHp     = result.getTargetMaxHp();
             return String.format(
-                "%d/%d health remaining",
-                result.getTargetCurrentHp(),
-                result.getTargetMaxHp()
+                "%s/%s health remaining",
+                currentHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : currentHp,
+                maxHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : maxHp
             );
         }
     }

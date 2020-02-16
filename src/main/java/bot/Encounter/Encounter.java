@@ -110,7 +110,7 @@ public class Encounter implements EncounterInterface
 
         AttackActionResultInterface result = currentExplorer.attack(encounteredHostile);
         if (result.isTargetSlain()) {
-            removeOpponentFromInactiveExplorers(encounteredHostile);
+            finalizeKillForExplorers(encounteredHostile);
         }
 
         listener.onAction(result);
@@ -278,7 +278,7 @@ public class Encounter implements EncounterInterface
         }
         if (encounterCreature.isSlain()) {
             if (encounterCreature instanceof EncounteredHostile) {
-                removeOpponentFromInactiveExplorers(encounterCreature);
+                finalizeKillForExplorers(encounterCreature);
             } else if (hasPhoenixDown && encounterCreature instanceof EncounteredExplorerInterface) {
                 usePhoenixDown((EncounteredExplorerInterface) encounterCreature);
             }
@@ -872,6 +872,18 @@ public class Encounter implements EncounterInterface
     }
 
     /**
+     * Finalize kill for explorers
+     *
+     * @param slainCreature Slain creature
+     */
+    private void finalizeKillForExplorers(@NotNull EncounteredCreatureInterface slainCreature)
+    {
+        for (EncounteredExplorerInterface explorer : explorerRoster.getAllExplorers()) {
+            explorer.finalizeKill(slainCreature);
+        }
+    }
+
+    /**
      * Get active hostiles
      *
      * @return ArrayList<EncounteredHostileInterface>
@@ -1051,21 +1063,6 @@ public class Encounter implements EncounterInterface
     {
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
             encounteredExplorer.removeOpponent(opponent);
-        }
-    }
-
-    /**
-     * Remove opponent from non-active explorers
-     * Players must be active prior to an opponent being bloodied and when they are slain in order to earn loot
-     *
-     * @param slainCreature Slain creature
-     */
-    private void removeOpponentFromInactiveExplorers(@NotNull EncounteredCreatureInterface slainCreature)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            if (!encounteredExplorer.isActive()) {
-                encounteredExplorer.removeOpponent(slainCreature);
-            }
         }
     }
 

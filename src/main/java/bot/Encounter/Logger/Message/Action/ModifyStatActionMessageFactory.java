@@ -1,7 +1,8 @@
 package bot.Encounter.Logger.Message.Action;
 
-import bot.MessageInterface;
+import bot.Constant;
 import bot.Encounter.ModifyStatActionResultInterface;
+import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
 class ModifyStatActionMessageFactory extends ActionMessageFactory
@@ -18,12 +19,14 @@ class ModifyStatActionMessageFactory extends ActionMessageFactory
         ActionMessage message = new ActionMessage();
 
         message.add(String.format(
-            "%s's %s has gone %s by %d, making it %d!",
+            "%s's %s has gone %s by %d, making it %s!",
             result.getCreatureName(),
             result.getStatName(),
             result.getStatMod() > 0 ? "up" : "down",
             result.getStatMod(),
-            result.getStatValue()
+            result.isHitpointStat() && result.getStatValue() > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS
+            ? "???"
+            : result.getStatValue()
         ));
 
         return message;
