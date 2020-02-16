@@ -233,6 +233,19 @@ abstract class Encounter implements EncounterInterface
     }
 
     /**
+     * Modify stat for all explorers
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    public void modifyStatForAllExplorers(@NotNull String statName, int statModifier)
+    {
+        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statModifier);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -291,6 +304,19 @@ abstract class Encounter implements EncounterInterface
         ModifyStatActionResultInterface result = target.setStat(statName, statValue);
         explorerRoster.sort();
         logger.logAction(result);
+    }
+
+    /**
+     * Set stat for all explorers
+     *
+     * @param statName  Stat name
+     * @param statValue Amount to modify stat
+     */
+    public void setStatForAllExplorers(@NotNull String statName, int statValue)
+    {
+        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statValue);
+        }
     }
 
     /**

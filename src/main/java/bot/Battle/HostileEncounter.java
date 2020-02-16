@@ -183,6 +183,19 @@ public class HostileEncounter extends Encounter
     }
 
     /**
+     * Modify stat for all hostiles
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    public void modifyStatForAllHostiles(@NotNull String statName, int statModifier)
+    {
+        for (EncounteredHostileInterface hostile : hostileRoster.getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statModifier);
+        }
+    }
+
+    /**
      * Pass action
      *
      * @throws EncounterPhaseException If encounter is over
@@ -240,6 +253,19 @@ public class HostileEncounter extends Encounter
             removeExplorer((EncounteredExplorerInterface) encounterCreature);
         } else {
             removeHostile((EncounteredHostileInterface) encounterCreature);
+        }
+    }
+
+    /**
+     * Set stat for all hostiles
+     *
+     * @param statName  Stat name
+     * @param statValue Stat value
+     */
+    public void setStatForAllHostiles(@NotNull String statName, int statValue)
+    {
+        for (EncounteredHostileInterface hostile : hostileRoster.getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statValue);
         }
     }
 
@@ -315,7 +341,7 @@ public class HostileEncounter extends Encounter
 
         AttackActionResultInterface result = explorer.attack(encounteredHostile);
         if (result.isTargetSlain()) {
-            removeOpponentFromInactiveExplorers(encounteredHostile);
+            finalizeKillForExplorers(encounteredHostile);
         }
 
         return result;
@@ -391,7 +417,7 @@ public class HostileEncounter extends Encounter
 
         if (target.isSlain()) {
             if (target instanceof EncounteredHostile) {
-                removeOpponentFromInactiveExplorers(target);
+                finalizeKillForExplorers(target);
             } else if (hasPhoenixDown && target instanceof EncounteredExplorerInterface) {
                 usePhoenixDown((EncounteredExplorerInterface) target);
             }
@@ -466,6 +492,18 @@ public class HostileEncounter extends Encounter
     }
 
     /**
+     * Finalize kill for explorers
+     *
+     * @param slainCreature Slain creature
+     */
+    private void finalizeKillForExplorers(@NotNull EncounteredCreatureInterface slainCreature)
+    {
+        for (EncounteredExplorerInterface explorer : getAllExplorers()) {
+            explorer.finalizeKill(slainCreature);
+        }
+    }
+
+    /**
      * Handle any additional post dodge related processes
      *
      * @param explorer Explorer
@@ -484,7 +522,9 @@ public class HostileEncounter extends Encounter
      */
     private void preRemoveHostile(@NotNull EncounteredHostileInterface hostile)
     {
-        removeOpponentFromAllExplorers(hostile);
+        for (EncounteredExplorerInterface encounteredExplorer : getAllExplorers()) {
+            encounteredExplorer.removeOpponent(hostile);
+        }
     }
 
     /**
@@ -503,33 +543,6 @@ public class HostileEncounter extends Encounter
         logger.logRemovedHostile(encounteredHostile.getName());
 
         handleEndOfAction();
-    }
-
-    /**
-     * Remove opponent from all explorers
-     *
-     * @param opponent Opponent to remove
-     */
-    private void removeOpponentFromAllExplorers(@NotNull EncounteredCreatureInterface opponent)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : getAllExplorers()) {
-            encounteredExplorer.removeOpponent(opponent);
-        }
-    }
-
-    /**
-     * Remove opponent from non-active explorers
-     * Players must be active prior to an opponent being bloodied and when they are slain in order to earn loot
-     *
-     * @param slainCreature Slain creature
-     */
-    private void removeOpponentFromInactiveExplorers(@NotNull EncounteredCreatureInterface slainCreature)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : getAllExplorers()) {
-            if (!encounteredExplorer.isActive()) {
-                encounteredExplorer.removeOpponent(slainCreature);
-            }
-        }
     }
 
     /**
