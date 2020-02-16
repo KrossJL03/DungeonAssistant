@@ -20,6 +20,27 @@ public interface CombatActionResultInterface extends ActionResultInterface
     int getDamageResisted();
 
     /**
+     * Get death min save roll
+     *
+     * @return int
+     */
+    int getDeathMinSaveRoll();
+
+    /**
+     * Get death save die
+     *
+     * @return int
+     */
+    int getDeathSaveDie();
+
+    /**
+     * Get death save roll
+     *
+     * @return int
+     */
+    int getDeathSaveRoll();
+
+    /**
      * Get target current hitpoints
      *
      * @return int
@@ -62,4 +83,18 @@ public interface CombatActionResultInterface extends ActionResultInterface
      * @return boolean
      */
     boolean isTargetSlain();
+
+    /**
+     * Did the target roll a death save
+     *
+     * @return boolean
+     */
+    boolean rolledDeathSave();
+
+    /**
+     * Did the target survive a death save
+     *
+     * @return boolean
+     */
+    boolean survivedDeathSave();
 }

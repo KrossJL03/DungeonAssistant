@@ -7,6 +7,7 @@ import bot.Battle.HurtActionResultInterface;
 import bot.Battle.LootRollInterface;
 import bot.Battle.ModifyStatActionResultInterface;
 import bot.Constant;
+import bot.CustomException;
 import bot.Hostile.Hostile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
     private Hostile hostile;
     private int     maxHp;
     private String  name;
-    private Slayer  slayer;
+    private ArrayList<Slayer> slayers;
     private String  species;
 
     /**
@@ -40,7 +41,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
         this.hostile = hostile;
         this.maxHp = hostile.getHitpoints();
         this.name = name != null ? name : hostile.getSpecies();
-        this.slayer = new Slayer();
+        this.slayers = new ArrayList<>();
         this.species = hostile.getSpecies();
     }
 
@@ -113,7 +114,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public @NotNull Slayer getSlayer()
     {
-        return slayer;
+        return slayers.isEmpty() ? new Slayer() : slayers.get(slayers.size() - 1);
     }
 
     /**
@@ -148,9 +149,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to heal must be a positive number.");
+        }
+
         boolean wasRevived = false;
         if (isSlain()) {
-            slayer = new Slayer();
             wasRevived = true;
         }
 
@@ -173,7 +177,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
     public @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException
     {
         if (isSlain()) {
-            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+            throw EncounteredCreatureException.createIsSlain(name, getSlayer().getName());
+        } else if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to hurt must be a positive number.");
         }
 
         boolean wasBloodied = isBloodied();
@@ -310,16 +316,48 @@ public class EncounteredHostile implements EncounteredHostileInterface
         throws EncounteredCreatureException
     {
         if (isSlain()) {
-            throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+            throw EncounteredCreatureException.createIsSlain(name, getSlayer().getName());
         }
 
         if (currentHp > 0 && currentHp - damage < 1) {
-            slayer = new Slayer(attacker.getName());
+            addSlayer(attacker.getName());
             currentHp = 0;
         } else {
             currentHp -= damage;
         }
         return damage;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean wasSlainBy(@NotNull EncounteredCreatureInterface creature)
+    {
+        for (Slayer slayer : slayers) {
+            if (slayer.isSlayer(creature)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Add slayer
+     * Does not add slayer if slayer with the same name already exists
+     *
+     * @param slayerName Name of slayer
+     */
+    private void addSlayer(@NotNull String slayerName)
+    {
+        for (Slayer slayer : slayers) {
+            if (slayer.getName().equals(slayerName)) {
+                return;
+            }
+        }
+
+        slayers.add(new Slayer(slayerName));
     }
 
     /**

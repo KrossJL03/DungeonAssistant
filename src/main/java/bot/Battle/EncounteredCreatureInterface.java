@@ -142,4 +142,13 @@ public interface EncounteredCreatureInterface
      * @throws EncounteredCreatureException If creature is slain
      */
     int takeDamage(@NotNull EncounteredCreatureInterface attacker, int damage) throws EncounteredCreatureException;
+
+    /**
+     * Was this creature slain by the given creature
+     *
+     * @param creature Creature to check as slayer
+     *
+     * @return boolean
+     */
+    boolean wasSlainBy(@NotNull EncounteredCreatureInterface creature);
 }

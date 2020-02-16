@@ -12,22 +12,28 @@ import bot.Battle.LootRollInterface;
 import bot.Battle.ModifyStatActionResultInterface;
 import bot.Battle.ProtectActionResultInterface;
 import bot.Constant;
+import bot.CustomException;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class EncounteredExplorer implements EncounteredExplorerInterface
 {
-    private static int FINAL_BLOW_BONUS = 300;
+    private static int BONUS_FINAL_BLOW = 300;
+    private static int DIE_DEATH_SAVE   = 100;
+    private static int DIE_HIT          = 20;
 
     private int                                     agility;
     private int                                     currentActions;
     private int                                     currentHp;
     private int                                     defense;
     private boolean                                 isPresent;
+    private ZonedDateTime                           joinedAt;
+    private ArrayList<EncounteredCreatureInterface> kills;
     private LootActionResult                        loot;
     private int                                     maxHp;
     private String                                  name;
@@ -51,6 +57,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.currentHp = explorer.getHitpoints();
         this.defense = explorer.getDefense();
         this.isPresent = true;
+        this.joinedAt = ZonedDateTime.now();
+        this.kills = new ArrayList<>();
         this.maxHp = explorer.getHitpoints();
         this.name = nickname != null ? nickname : explorer.getName();
         this.opponents = new ArrayList<>();
@@ -70,8 +78,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public void addOpponent(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
     {
         if (!isActive()) {
-            throw EncounteredExplorerException.createFailedToAddOpponent(name, opponent.getName());
-        } else if (!opponents.contains(opponent)) {
+            throw EncounteredExplorerException.createNotPresentForOpponent(name, opponent.getName());
+        } else if (!kills.contains(opponent) && !opponents.contains(opponent)) {
             opponents.add(opponent);
         }
     }
@@ -114,7 +122,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
-        return encounteredExplorer.getAgility() - this.agility;
+        int difference = encounteredExplorer.getAgility() - agility;
+        if (difference == 0) {
+            difference = joinedAt.compareTo(encounteredExplorer.getJoinedAt());
+        }
+
+        return difference;
     }
 
     /**
@@ -147,6 +160,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new DodgeActionResult(
@@ -156,7 +171,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp,
             maxHp,
             slayer,
-            false
+            false,
+            deathSaveRoll
         );
     }
 
@@ -172,8 +188,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
 
         ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
+            int damageResisted    = 0;
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
-            int damageResisted    = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
+
+            if (!isSlain()) {
+                damageResisted = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
+            }
 
             DodgeResult result = new DodgeResult(
                 encounteredHostile.getName(),
@@ -185,6 +205,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new DodgeActionResult(
@@ -194,8 +216,25 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp,
             maxHp,
             slayer,
-            true
+            true,
+            deathSaveRoll
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finalizeKill(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException
+    {
+        if (!opponent.isSlain()) {
+            throw EncounteredExplorerException.createKillIsNotSlain(opponent.getName(), name);
+        }
+
+        if (isActive() && opponents.contains(opponent)) {
+            kills.add(opponent);
+            opponents.remove(opponent);
+        }
     }
 
     /**
@@ -241,6 +280,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     public int getDodgeDice()
     {
         return ((int) Math.floor(agility / 2)) + 10;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull ZonedDateTime getJoinedAt()
+    {
+        return joinedAt;
     }
 
     /**
@@ -363,7 +411,11 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         ArrayList<GuardResultInterface> guardResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
-            int damageResisted    = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
+            int damageResisted    = 0;
+
+            if (!isSlain()) {
+                damageResisted = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
+            }
 
             GuardResultInterface result = new GuardResult(
                 encounteredHostile.getName(),
@@ -374,6 +426,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             guardResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new GuardActionResult(
@@ -382,7 +436,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             getGuardEndurance(),
             currentHp,
             maxHp,
-            slayer
+            slayer,
+            deathSaveRoll
         );
     }
 
@@ -410,6 +465,10 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public @NotNull HealActionResultInterface healPoints(int hitpoints)
     {
+        if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to heal must be a positive number.");
+        }
+
         boolean wasRevived = false;
         if (isSlain()) {
             slayer = new Slayer();
@@ -436,6 +495,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (isSlain()) {
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
+        } else if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to hurt must be a positive number.");
         }
 
         boolean wasBloodied = isBloodied();
@@ -589,10 +650,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         int damageResisted = 0;
 
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
-            int damage = takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
+            int damage = isSlain()
+                         ? encounteredHostile.getAttackRoll()
+                         : takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
             damageDealt += damage;
             damageResisted += encounteredHostile.getAttackRoll() - damage;
         }
+
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
 
         useAction();
         useProtectAction();
@@ -606,7 +671,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             damageResisted,
             currentHp,
             maxHp,
-            slayer
+            slayer,
+            deathSaveRoll
         );
     }
 
@@ -634,7 +700,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int rollDamage()
     {
-        return (int) Math.floor(Math.random() * this.getAttackDice()) + 1;
+        return roll(getAttackDice());
     }
 
     /**
@@ -645,19 +711,20 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
         ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
-        for (EncounteredCreatureInterface kill : opponents) {
+        for (EncounteredCreatureInterface kill : kills) {
             lootRolls.addAll(kill.rollLoot());
-            if (kill.getSlayer().isSlayer(this)) {
+            if (kill.wasSlainBy(this)) {
                 finalBlows.add(kill);
             }
         }
+
         loot = new LootActionResult(
             name,
             owner,
             lootRolls,
             finalBlows,
-            opponents.size(),
-            finalBlows.size() * FINAL_BLOW_BONUS
+            kills.size(),
+            finalBlows.size() * BONUS_FINAL_BLOW
         );
     }
 
@@ -747,6 +814,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.currentActions = 0;
     }
 
+    @Override
+    public boolean wasSlainBy(@NotNull EncounteredCreatureInterface creature)
+    {
+        return slayer.isSlayer(creature);
+    }
+
     /**
      * Get crit damage
      *
@@ -764,7 +837,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private int getEndurance()
     {
-        return (int) Math.floor(this.defense / 2);
+        return (int) Math.floor(defense / 2);
     }
 
     /**
@@ -775,6 +848,24 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int getGuardEndurance()
     {
         return (int) Math.floor(this.defense * .75);
+    }
+
+    /**
+     * Get min roll required to survive on a death save roll
+     *
+     * @return int
+     */
+    private int getMinDeathSave()
+    {
+        int minDeathSave = defense * 2;
+        if (defense > 9) {
+            minDeathSave += 5;
+        }
+        if (defense > 19) {
+            minDeathSave += 5;
+        }
+
+        return DIE_DEATH_SAVE - minDeathSave;
     }
 
     /**
@@ -914,14 +1005,53 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     /**
+     * Roll a die of the given size
+     *
+     * @param die Die to roll
+     *
+     * @return int
+     */
+    private int roll(int die)
+    {
+        return (int) Math.floor(Math.random() * die) + 1;
+    }
+
+    /**
+     * Roll death save
+     */
+    private @NotNull DeathSaveRoll rollDeathSave()
+    {
+        int roll = roll(DIE_DEATH_SAVE);
+
+        return new DeathSaveRoll(roll, DIE_DEATH_SAVE, getMinDeathSave());
+    }
+
+    /**
+     * Roll death saving throw if applicable
+     *
+     * @return DeathSaveRoll
+     */
+    private @Nullable DeathSaveRoll rollDeathSaveIfApplicable()
+    {
+        DeathSaveRoll deathSaveRoll = null;
+        if (isSlain()) {
+            deathSaveRoll = rollDeathSave();
+            if (deathSaveRoll.survived()) {
+                healPoints(1);
+            }
+        }
+
+        return deathSaveRoll;
+    }
+
+    /**
      * Roll to dodge
      *
      * @return DodgeRoll
      */
     private @NotNull DodgeRoll rollToDodge()
     {
-        int roll = (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
-        return new DodgeRoll(roll);
+        return new DodgeRoll(roll(getDodgeDice()));
     }
 
     /**
@@ -931,8 +1061,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private @NotNull HitRoll rollToHit()
     {
-        int roll = (int) Math.floor(Math.random() * 20) + 1;
-        return new HitRoll(roll, this.getMinCrit());
+        return new HitRoll(roll(DIE_HIT), DIE_HIT, getMinCrit());
     }
 
     /**

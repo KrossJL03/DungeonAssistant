@@ -3,17 +3,19 @@ package bot.Battle.EncounteredCreature;
 import bot.Battle.GuardActionResultInterface;
 import bot.Battle.GuardResultInterface;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public class GuardActionResult implements GuardActionResultInterface
 {
+    private DeathSaveRoll                   deathSaveRoll;
     private ArrayList<GuardResultInterface> guardResults;
-    private Slayer                          targetSlayer;
-    private String                          targetName;
     private int                             targetCurrentHp;
     private int                             targetDefense;
     private int                             targetMaxHp;
+    private String                          targetName;
+    private Slayer                          targetSlayer;
 
     /**
      * GuardActionResult constructor
@@ -31,9 +33,11 @@ public class GuardActionResult implements GuardActionResultInterface
         int targetDefense,
         int targetCurrentHp,
         int targetMaxHp,
-        @NotNull Slayer targetSlayer
+        @NotNull Slayer targetSlayer,
+        @Nullable DeathSaveRoll deathSaveRoll
     )
     {
+        this.deathSaveRoll = deathSaveRoll;
         this.guardResults = guardResults;
         this.targetCurrentHp = targetCurrentHp;
         this.targetDefense = targetDefense;
@@ -75,6 +79,33 @@ public class GuardActionResult implements GuardActionResultInterface
             totalDamageResisted += result.getDamageResisted();
         }
         return totalDamageResisted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathMinSaveRoll()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getMinSaveRoll() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveDie()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getDie() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveRoll()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getRoll() : -1;
     }
 
     /**
@@ -147,5 +178,23 @@ public class GuardActionResult implements GuardActionResultInterface
     public boolean isTargetSlain()
     {
         return targetCurrentHp < 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean rolledDeathSave()
+    {
+        return deathSaveRoll != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean survivedDeathSave()
+    {
+        return rolledDeathSave() && deathSaveRoll.survived();
     }
 }

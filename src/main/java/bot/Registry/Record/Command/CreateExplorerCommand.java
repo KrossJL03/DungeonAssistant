@@ -48,6 +48,8 @@ public class CreateExplorerCommand extends RecordCommand
     {
         ensureRecordingNotLocked();
 
+        updatePlayer(event);
+
         MessageChannel channel    = event.getChannel();
         String         authorId   = event.getAuthor().getId();
         String[]       parameters = getParametersFromEvent(event);

@@ -12,13 +12,6 @@ public interface ModifyStatActionResultInterface extends ActionResultInterface
     @NotNull String getCreatureName();
 
     /**
-     * Get stat name
-     *
-     * @return String
-     */
-    @NotNull String getStatName();
-
-    /**
      * Get stat mod
      *
      * @return int
@@ -26,9 +19,23 @@ public interface ModifyStatActionResultInterface extends ActionResultInterface
     int getStatMod();
 
     /**
+     * Get stat name
+     *
+     * @return String
+     */
+    @NotNull String getStatName();
+
+    /**
      * Get stat value
      *
      * @return int
      */
     int getStatValue();
+
+    /**
+     * Is the modified stat a hitpoints stat
+     *
+     * @return boolean
+     */
+    boolean isHitpointStat();
 }

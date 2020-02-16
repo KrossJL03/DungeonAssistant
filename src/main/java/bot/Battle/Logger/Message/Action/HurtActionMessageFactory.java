@@ -1,6 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
 import bot.Battle.HurtActionResultInterface;
+import bot.Constant;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,15 +16,18 @@ class HurtActionMessageFactory extends ActionMessageFactory
      */
     public @NotNull MessageInterface createMessage(@NotNull HurtActionResultInterface result)
     {
-        ActionMessage message = new ActionMessage();
+        ActionMessage message   = new ActionMessage();
+        int           currentHp = result.getCurrentHp();
+        int           maxHp     = result.getMaxHp();
 
         message.add(String.format(
-            "%s takes %d dmg! [%d/%d]",
+            "%s takes %d dmg! [%s/%s]",
             result.getName(),
             result.getHurtHp(),
-            result.getCurrentHp(),
-            result.getMaxHp()
+            currentHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : currentHp,
+            maxHp > Constant.HOSTILE_MAX_VISIBLE_HITPOINTS ? "???" : maxHp
         ));
+
         if (result.isSlain()) {
             message.add(String.format("%s was slain", result.getName()));
         }

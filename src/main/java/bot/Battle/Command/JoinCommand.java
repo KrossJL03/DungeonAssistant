@@ -54,6 +54,8 @@ public class JoinCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
+        updatePlayer(event);
+
         Player   player       = getPlayerFromEvent(event);
         String[] parameters   = getParametersFromEvent(event);
         String   explorerName = parameters[0];

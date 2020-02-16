@@ -1,18 +1,19 @@
 package bot.Battle.EncounteredCreature;
 
+import bot.CustomException;
 import bot.Battle.AttackActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class AttackActionResult implements AttackActionResultInterface
 {
-    private HitRoll hitRoll;
-    private Slayer  targetSlayer;
     private String  attackerName;
-    private String  targetName;
     private int     damageDie;
     private int     damageRoll;
+    private HitRoll hitRoll;
     private int     targetCurrentHp;
     private int     targetMaxHp;
+    private String  targetName;
+    private Slayer  targetSlayer;
 
     /**
      * AttackActionResult constructor
@@ -90,6 +91,42 @@ public class AttackActionResult implements AttackActionResultInterface
     public int getDamageRoll()
     {
         return damageRoll;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathMinSaveRoll()
+    {
+        throw new CustomException("Death saves are not rolled on the attack turn");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveDie()
+    {
+        throw new CustomException("Death saves are not rolled on the attack turn");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveRoll()
+    {
+        throw new CustomException("Death saves are not rolled on the attack turn");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getHitDie()
+    {
+        return hitRoll.getDie();
     }
 
     /**
@@ -189,5 +226,23 @@ public class AttackActionResult implements AttackActionResultInterface
     public boolean isTargetSlain()
     {
         return targetCurrentHp < 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean rolledDeathSave()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean survivedDeathSave()
+    {
+        throw new CustomException("Death saves are not rolled on the attack turn");
     }
 }

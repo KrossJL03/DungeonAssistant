@@ -1,13 +1,14 @@
 package bot.Battle.EncounteredCreature;
 
 import bot.Battle.ModifyStatActionResultInterface;
+import bot.Constant;
 import org.jetbrains.annotations.NotNull;
 
 class ModifyStatActionResult implements ModifyStatActionResultInterface
 {
     private String creatureName;
-    private String statName;
     private int    statMod;
+    private String statName;
     private int    statValue;
 
     /**
@@ -34,6 +35,7 @@ class ModifyStatActionResult implements ModifyStatActionResultInterface
     /**
      * {@inheritDoc}
      */
+    @Override
     public @NotNull String getCreatureName()
     {
         return creatureName;
@@ -42,14 +44,7 @@ class ModifyStatActionResult implements ModifyStatActionResultInterface
     /**
      * {@inheritDoc}
      */
-    public @NotNull String getStatName()
-    {
-        return statName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getStatMod()
     {
         return statMod;
@@ -58,8 +53,28 @@ class ModifyStatActionResult implements ModifyStatActionResultInterface
     /**
      * {@inheritDoc}
      */
+    @Override
+    public @NotNull String getStatName()
+    {
+        return statName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getStatValue()
     {
         return statValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isHitpointStat()
+    {
+        return statName.equals(Constant.HOSTILE_STAT_HITPOINTS) ||
+               statName.equals(Constant.EXPLORER_STAT_HITPOINTS_SHORT);
     }
 }

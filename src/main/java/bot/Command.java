@@ -1,6 +1,7 @@
 package bot;
 
 import bot.Player.Player;
+import bot.Player.PlayerManager;
 import bot.Player.PlayerRepository;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -155,6 +156,21 @@ public abstract class Command implements CommandInterface
     final protected void removeProcessToManager(@NotNull ProcessInterface process)
     {
         processManager.removeProcess(process);
+    }
+
+    /**
+     * Update player
+     *
+     * @param event Event
+     */
+    final protected void updatePlayer(@NotNull MessageReceivedEvent event)
+    {
+        String nickname = event.getMember().getNickname();
+        if (nickname == null) {
+            nickname = event.getAuthor().getName();
+        }
+
+        PlayerManager.savePlayer(event.getAuthor().getId(), nickname);
     }
 
     /**

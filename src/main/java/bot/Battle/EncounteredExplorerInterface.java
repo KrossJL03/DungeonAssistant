@@ -4,6 +4,7 @@ import bot.Battle.EncounteredCreature.EncounteredExplorerException;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public interface EncounteredExplorerInterface extends EncounteredCreatureInterface
@@ -63,6 +64,15 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
         throws EncounteredExplorerException;
 
     /**
+     * If the creature is listed as an active opponent then save them as a kill for loot
+     *
+     * @param opponent Opponent to add to kills
+     *
+     * @throws EncounteredExplorerException If opponent is not slain
+     */
+    void finalizeKill(@NotNull EncounteredCreatureInterface opponent) throws EncounteredExplorerException;
+
+    /**
      * Get agility
      *
      * @return int
@@ -82,6 +92,13 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      * @return int
      */
     int getDodgeDice();
+
+    /**
+     * Get the time the explorer joined the battle
+     *
+     * @return ZonedDateTime
+     */
+    @NotNull ZonedDateTime getJoinedAt();
 
     /**
      * Get loot

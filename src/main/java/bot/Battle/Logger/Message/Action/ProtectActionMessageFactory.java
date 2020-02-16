@@ -32,6 +32,7 @@ class ProtectActionMessageFactory extends CombatActionMessageFactory
         }
 
         message.add(getDamageDealtLine(result, true));
+        addDeathSaveIfApplicable(message, result);
         message.add(getTargetStatusLine(result));
         message.endCodeBlock();
 

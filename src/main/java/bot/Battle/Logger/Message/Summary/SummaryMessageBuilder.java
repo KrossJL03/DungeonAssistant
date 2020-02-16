@@ -196,7 +196,7 @@ public class SummaryMessageBuilder
         } else if (encounteredExplorer.isSlain()) {
             Slayer slayer = encounteredExplorer.getSlayer();
             return codeFormatter.makeGrey(String.format(
-                "%s was knocked out %s",
+                "%s was defeated %s",
                 encounteredExplorer.getName(),
                 slayer.exists() ? String.format("by %s", slayer.getName()) : ""
             ));
