@@ -6,6 +6,46 @@ import org.jetbrains.annotations.NotNull;
 abstract class CombatActionMessageFactory extends ActionMessageFactory
 {
     /**
+     * Add death saving throw text to message if applicable
+     *
+     * @param message Message
+     * @param result  Action result
+     */
+    final protected void addDeathSaveIfApplicable(
+        @NotNull ActionMessage message,
+        @NotNull CombatActionResultInterface result
+    )
+    {
+        if (result.rolledDeathSave()) {
+            message.add(String.format(
+                "%s takes %s damage & struggles not to %s!! %s",
+                result.getTargetName(),
+                codeFormatter.makeRed("lethal"),
+                codeFormatter.makeRed("collapse"),
+                codeFormatter.makeGrey(String.format("success %d", result.getDeathMinSaveRoll()))
+            ));
+            message.addBreak();
+            message.add(String.format(
+                "%d %s %s!",
+                result.getDeathSaveRoll(),
+                ActionMessage.DOUBLE_ARROW,
+                result.survivedDeathSave()
+                ? "Success"
+                : codeFormatter.makeRed("FAIL")
+            ));
+            message.addBreak();
+
+            if (result.survivedDeathSave()) {
+                message.add(String.format(
+                    "%s remains %s through sheer might!!",
+                    result.getTargetName(),
+                    codeFormatter.makeCyan("standing")
+                ));
+            }
+        }
+    }
+
+    /**
      * Get damage dealt line
      *
      * @param result            Action result
@@ -42,34 +82,6 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
     }
 
     /**
-     * Get death saving throw line
-     *
-     * @param result Action result
-     *
-     * @return String
-     */
-    final protected String getDeathSavingThrowLine(@NotNull CombatActionResultInterface result)
-    {
-        if (result.rolledDeathSave()) {
-            return String.format(
-                "" +
-                "d%s %s" +
-                "%d %s %s!" +
-                "",
-                result.getDeathSaveDie(),
-                codeFormatter.makeRed("death save die"),
-                result.getDeathSaveRoll(),
-                ActionMessage.DOUBLE_ARROW,
-                result.survivedDeathSave()
-                ? codeFormatter.makeYellow("Success")
-                : codeFormatter.makeRed("FAIL")
-            );
-        } else {
-            return "";
-        }
-    }
-
-    /**
      * Get "hit for full damage" line
      *
      * @param name Target name
@@ -98,7 +110,7 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
             return String.format(
                 "%s was %s%s!!",
                 result.getTargetName(),
-                codeFormatter.makeRed(result.isTargetExplorer() ? "knocked out" : "slain"),
+                codeFormatter.makeRed(result.isTargetExplorer() ? "defeated" : "slain"),
                 result.isTargetSlain() ? String.format(" by %s", result.getTargetSlayer().getName()) : ""
             );
         } else {

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class EncounteredExplorer implements EncounteredExplorerInterface
 {
-    private static int DEATH_SAVE_DIE   = 50;
+    private static int DEATH_SAVE_DIE   = 100;
     private static int FINAL_BLOW_BONUS = 300;
     private static int HIT_DIE          = 50;
 
@@ -179,8 +179,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
 
         ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
+            int damageResisted    = 0;
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
-            int damageResisted    = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
+
+            if (!isSlain()) {
+                damageResisted = hostileDamageRoll - takeDamage(encounteredHostile, hostileDamageRoll);
+            }
 
             DodgeResult result = new DodgeResult(
                 encounteredHostile.getName(),
@@ -373,7 +377,11 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         ArrayList<GuardResultInterface> guardResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
-            int damageResisted    = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
+            int damageResisted    = 0;
+
+            if (!isSlain()) {
+                damageResisted = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
+            }
 
             GuardResultInterface result = new GuardResult(
                 encounteredHostile.getName(),
@@ -586,7 +594,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         int damageResisted = 0;
 
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
-            int damage = takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
+            int damage = isSlain()
+                         ? encounteredHostile.getAttackRoll()
+                         : takeDamage(encounteredHostile, encounteredHostile.getAttackRoll());
             damageDealt += damage;
             damageResisted += encounteredHostile.getAttackRoll() - damage;
         }
@@ -796,29 +806,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private int getMinDeathSave()
     {
-        if (defense < 1) {
-            return 0;
-        } else if (defense < 4) {
-            return 1;
-        } else if (defense < 6) {
-            return 2;
-        } else if (defense < 8) {
-            return 3;
-        } else if (defense < 10) {
-            return 4;
-        } else if (defense < 11) {
-            return 10;
-        } else if (defense < 14) {
-            return 11;
-        } else if (defense < 16) {
-            return 12;
-        } else if (defense < 18) {
-            return 13;
-        } else if (defense < 20) {
-            return 14;
-        } else {
-            return 20;
+        int minDeathSave = defense * 2;
+        if (defense > 9) {
+            minDeathSave += 5;
         }
+        if (defense > 19) {
+            minDeathSave += 5;
+        }
+
+        return DEATH_SAVE_DIE - minDeathSave;
     }
 
     /**

@@ -53,7 +53,7 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
 
         message.addBreak();
         message.add(getDamageDealtLine(result, true));
-        message.add(getDeathSavingThrowLine(result));
+        addDeathSaveIfApplicable(message, result);
         message.add(getTargetStatusLine(result));
         message.endCodeBlock();
 

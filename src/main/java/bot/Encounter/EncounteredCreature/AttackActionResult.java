@@ -97,7 +97,7 @@ public class AttackActionResult implements AttackActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDeathSaveDie()
+    public int getDeathMinSaveRoll()
     {
         throw new CustomException("Death saves are not rolled on the attack turn");
     }

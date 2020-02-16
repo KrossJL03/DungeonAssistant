@@ -832,6 +832,7 @@ public class Encounter implements EncounterInterface
                 activeHostiles.add(encounteredHostile);
             }
         }
+
         return activeHostiles;
     }
 
@@ -855,6 +856,7 @@ public class Encounter implements EncounterInterface
                 return creature;
             }
         }
+
         throw EncounteredCreatureNotFoundException.createForCreature(name);
     }
 

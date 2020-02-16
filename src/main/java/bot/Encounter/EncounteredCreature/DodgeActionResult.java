@@ -90,9 +90,9 @@ public class DodgeActionResult implements DodgeActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDeathSaveDie()
+    public int getDeathMinSaveRoll()
     {
-        return rolledDeathSave() ? deathSaveRoll.getDie() : -1;
+        return rolledDeathSave() ? deathSaveRoll.getMinSaveRoll() : -1;
     }
 
     /**

@@ -3,7 +3,7 @@ package bot.Encounter.EncounteredCreature;
 class DeathSaveRoll
 {
     private int die;
-    private int minPassRoll;
+    private int minSaveRoll;
     private int roll;
 
     /**
@@ -11,12 +11,12 @@ class DeathSaveRoll
      *
      * @param roll        Roll
      * @param die         Die
-     * @param minPassRoll Minimum roll required to pass
+     * @param minSaveRoll Minimum roll required to pass
      */
-    DeathSaveRoll(int roll, int die, int minPassRoll)
+    DeathSaveRoll(int roll, int die, int minSaveRoll)
     {
         this.die = die;
-        this.minPassRoll = minPassRoll;
+        this.minSaveRoll = minSaveRoll;
         this.roll = roll;
     }
 
@@ -28,6 +28,16 @@ class DeathSaveRoll
     int getDie()
     {
         return die;
+    }
+
+    /**
+     * Get min save roll
+     *
+     * @return int
+     */
+    int getMinSaveRoll()
+    {
+        return minSaveRoll;
     }
 
     /**
@@ -47,6 +57,6 @@ class DeathSaveRoll
      */
     boolean survived()
     {
-        return roll >= minPassRoll;
+        return roll >= minSaveRoll;
     }
 }

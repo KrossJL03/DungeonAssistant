@@ -85,9 +85,9 @@ public class GuardActionResult implements GuardActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDeathSaveDie()
+    public int getDeathMinSaveRoll()
     {
-        return rolledDeathSave() ? deathSaveRoll.getDie() : -1;
+        return rolledDeathSave() ? deathSaveRoll.getMinSaveRoll() : -1;
     }
 
     /**
