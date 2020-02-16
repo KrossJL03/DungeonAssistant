@@ -1,10 +1,12 @@
 package bot.Encounter.EncounteredCreature;
 
-class HitRoll {
+class HitRoll
+{
 
-    private static int HIT_ROLL_MISS = 5;
     private static int HIT_ROLL_FAIL = 1;
+    private static int HIT_ROLL_MISS = 5;
 
+    private int die;
     private int minCrit;
     private int roll;
 
@@ -12,11 +14,24 @@ class HitRoll {
      * HitRoll constructor
      *
      * @param roll    Roll
+     * @param die     Die
      * @param minCrit Min crit
      */
-    HitRoll(int roll, int minCrit) {
+    HitRoll(int roll, int die, int minCrit)
+    {
+        this.die = die;
         this.minCrit = minCrit;
         this.roll = roll;
+    }
+
+    /**
+     * Get die
+     *
+     * @return int
+     */
+    int getDie()
+    {
+        return die;
     }
 
     /**
@@ -24,8 +39,9 @@ class HitRoll {
      *
      * @return int
      */
-    int getRoll() {
-        return this.roll;
+    int getRoll()
+    {
+        return roll;
     }
 
     /**
@@ -33,8 +49,9 @@ class HitRoll {
      *
      * @return boolean
      */
-    boolean isCrit() {
-        return this.roll >= this.minCrit;
+    boolean isCrit()
+    {
+        return roll >= minCrit;
     }
 
     /**
@@ -42,8 +59,9 @@ class HitRoll {
      *
      * @return boolean
      */
-    boolean isFail() {
-        return this.roll <= HIT_ROLL_FAIL;
+    boolean isFail()
+    {
+        return roll <= HIT_ROLL_FAIL;
     }
 
     /**
@@ -51,7 +69,8 @@ class HitRoll {
      *
      * @return boolean
      */
-    boolean isHit() {
-        return this.roll > HIT_ROLL_MISS;
+    boolean isHit()
+    {
+        return roll > HIT_ROLL_MISS;
     }
 }

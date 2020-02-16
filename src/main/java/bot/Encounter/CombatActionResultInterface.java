@@ -27,6 +27,13 @@ public interface CombatActionResultInterface extends ActionResultInterface
     int getDeathMinSaveRoll();
 
     /**
+     * Get death save die
+     *
+     * @return int
+     */
+    int getDeathSaveDie();
+
+    /**
      * Get death save roll
      *
      * @return int

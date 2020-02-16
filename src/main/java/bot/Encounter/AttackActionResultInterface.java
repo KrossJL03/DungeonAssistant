@@ -26,6 +26,13 @@ public interface AttackActionResultInterface extends CombatActionResultInterface
     int getDamageRoll();
 
     /**
+     * Get hit die
+     *
+     * @return int
+     */
+    int getHitDie();
+
+    /**
      * Get hit roll
      *
      * @return int

@@ -29,7 +29,8 @@ class AttackActionMessageFactory extends CombatActionMessageFactory
             codeFormatter.makeRed(result.getTargetName())
         ));
         message.add(String.format(
-            "d20 %s rolled %d [%s]",
+            "d%d %s rolled %d [%s]",
+            result.getHitDie(),
             codeFormatter.makeCyan("hit dice"),
             result.getHitRoll(),
             codeFormatter.makeYellow(result.getHitTypeString()).toUpperCase()

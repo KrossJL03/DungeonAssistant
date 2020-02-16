@@ -21,9 +21,9 @@ import java.util.ArrayList;
 
 public class EncounteredExplorer implements EncounteredExplorerInterface
 {
-    private static int DEATH_SAVE_DIE   = 100;
-    private static int FINAL_BLOW_BONUS = 300;
-    private static int HIT_DIE          = 50;
+    private static int BONUS_FINAL_BLOW = 300;
+    private static int DIE_DEATH_SAVE   = 100;
+    private static int DIE_HIT          = 20;
 
     private int                                     agility;
     private int                                     currentActions;
@@ -679,7 +679,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             lootRolls,
             finalBlows,
             opponents.size(),
-            finalBlows.size() * FINAL_BLOW_BONUS
+            finalBlows.size() * BONUS_FINAL_BLOW
         );
     }
 
@@ -814,7 +814,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             minDeathSave += 5;
         }
 
-        return DEATH_SAVE_DIE - minDeathSave;
+        return DIE_DEATH_SAVE - minDeathSave;
     }
 
     /**
@@ -970,9 +970,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private @NotNull DeathSaveRoll rollDeathSave()
     {
-        int roll = roll(DEATH_SAVE_DIE);
+        int roll = roll(DIE_DEATH_SAVE);
 
-        return new DeathSaveRoll(roll, DEATH_SAVE_DIE, getMinDeathSave());
+        return new DeathSaveRoll(roll, DIE_DEATH_SAVE, getMinDeathSave());
     }
 
     /**
@@ -1010,7 +1010,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private @NotNull HitRoll rollToHit()
     {
-        return new HitRoll(roll(HIT_DIE), getMinCrit());
+        return new HitRoll(roll(DIE_HIT), DIE_HIT, getMinCrit());
     }
 
     /**

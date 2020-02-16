@@ -18,10 +18,15 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
     {
         if (result.rolledDeathSave()) {
             message.add(String.format(
-                "%s takes %s damage & struggles not to %s!! %s",
+                "%s takes %s damage & struggles not to %s!!",
                 result.getTargetName(),
                 codeFormatter.makeRed("lethal"),
-                codeFormatter.makeRed("collapse"),
+                codeFormatter.makeRed("collapse")
+            ));
+            message.add(String.format(
+                "d%d %s %s",
+                result.getDeathSaveDie(),
+                codeFormatter.makeRed("save die"),
                 codeFormatter.makeGrey(String.format("success %d", result.getDeathMinSaveRoll()))
             ));
             message.addBreak();
