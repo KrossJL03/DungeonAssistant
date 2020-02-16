@@ -143,16 +143,6 @@ public class EncounterLogger
     }
 
     /**
-     * Log number of actions remaining for player
-     *
-     * @param name Explorer name
-     */
-    public void logGiveProtectAction(@NotNull String name)
-    {
-        sendMessage(String.format("%s has been given an extra protect action!", name));
-    }
-
-    /**
      * Log kicked player
      *
      * @param player Kicked player
