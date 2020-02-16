@@ -29,13 +29,13 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int                                     currentActions;
     private int                                     currentHp;
     private int                                     defense;
-    private boolean                                 hasProtect;
     private boolean                                 isPresent;
     private LootActionResult                        loot;
     private int                                     maxHp;
     private String                                  name;
     private ArrayList<EncounteredCreatureInterface> opponents;
     private Player                                  owner;
+    private int                                     protectActions;
     private Slayer                                  slayer;
     private int                                     strength;
     private int                                     wisdom;
@@ -52,12 +52,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         this.currentActions = 0;
         this.currentHp = explorer.getHitpoints();
         this.defense = explorer.getDefense();
-        this.hasProtect = true;
         this.isPresent = true;
         this.maxHp = explorer.getHitpoints();
         this.name = nickname != null ? nickname : explorer.getName();
         this.opponents = new ArrayList<>();
         this.owner = explorer.getOwner();
+        this.protectActions = 1;
         this.slayer = new Slayer();
         this.strength = explorer.getStrength();
         this.wisdom = explorer.getWisdom();
@@ -353,6 +353,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         return this.wisdom;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void giveProtectAction()
+    {
+        ++protectActions;
+    }
+
     @Override
     public @NotNull GuardActionResultInterface guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
         throws EncounteredExplorerException
@@ -563,7 +572,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (!hasActions()) {
             throw EncounteredExplorerException.createHasNoActions(name);
-        } else if (!hasProtect) {
+        } else if (!hasProtectActions()) {
             throw EncounteredExplorerException.createProtectAlreadyUsed();
         } else if (equals(recipient)) {
             throw EncounteredExplorerException.createProtectYourself();
@@ -585,7 +594,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
 
         useAction();
-        useProtect();
+        useProtectAction();
         recipient.useAction();
 
         return new ProtectActionResult(
@@ -813,6 +822,16 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     /**
+     * Does this explorer have any protect actions available
+     *
+     * @return boolean
+     */
+    private boolean hasProtectActions()
+    {
+        return protectActions > 0;
+    }
+
+    /**
      * Modify agility
      *
      * @param statModifier Agility modifier
@@ -1020,8 +1039,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     /**
      * Use protect
      */
-    private void useProtect()
+    private void useProtectAction()
     {
-        this.hasProtect = false;
+        if (!hasProtectActions()) {
+            throw EncounteredExplorerException.createProtectAlreadyUsed();
+        }
+
+        protectActions--;
     }
 }

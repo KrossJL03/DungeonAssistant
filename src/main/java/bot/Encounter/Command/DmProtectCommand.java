@@ -1,28 +1,26 @@
 package bot.Encounter.Command;
 
 import bot.CommandParameter;
-import bot.Encounter.AdditionalCommandInterface;
 import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
-import bot.Encounter.Encounter;
 import bot.Encounter.EncounterHolder;
 import bot.Encounter.Logger.EncounterLogger;
-import bot.Player.Player;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class UseItemCommand extends EncounterCommand implements AdditionalCommandInterface
+public class DmProtectCommand extends EncounterCommand
 {
     /**
-     * UseItemCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param holder         Encounter holder
      * @param logger         Encounter logger
+     * @param dmChecker      Dungeon master checker
      */
-    UseItemCommand(
+    DmProtectCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
@@ -34,16 +32,16 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
             holder,
             logger,
             dmChecker,
-            "rp!use",
+            "dmProtect",
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("ItemName", true));
-                    add(new CommandParameter("Amount", true));
+                    add(new CommandParameter("TargetName", true));
+                    add(new CommandParameter("HP", false));
                 }
             },
-            "Use an item through rp!bot. The DM will be pinged to activate the item.",
-            false
+            "Manually make the current explorer protect a target. Option to heal protector by X HP.",
+            true
         );
     }
 
@@ -53,13 +51,10 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        Encounter encounter = getHostileEncounter();
+        String[] parameters      = getParametersFromEvent(event);
+        String   explorerName    = parameters[0];
+        int      hitpointsHealed = parameters.length > 1 ? Integer.parseInt(parameters[1]) : 0;
 
-        if (!encounter.isOver()) {
-            Player player = getPlayerFromEvent(event);
-            encounter.useItemAction(player);
-
-            getLogger().pingDmItemUsed(player);
-        }
+        getHostileEncounter().manualProtectAction(explorerName, hitpointsHealed);
     }
 }

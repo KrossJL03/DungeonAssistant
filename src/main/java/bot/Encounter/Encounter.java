@@ -226,7 +226,7 @@ public class Encounter implements EncounterInterface
             encounterCreature instanceof EncounteredHostileInterface
             && result.wasTargetRevived()
             && !encounterCreature.isBloodied()
-            ) {
+        ) {
             addOpponentToActiveExplorers(encounterCreature);
         }
 
@@ -253,7 +253,7 @@ public class Encounter implements EncounterInterface
     public void healAllHostiles(int hitpoints)
     {
         for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
-            this.heal(encounteredHostile.getName(), hitpoints);
+            heal(encounteredHostile.getName(), hitpoints);
         }
     }
 
@@ -333,6 +333,15 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public boolean isOver()
+    {
+        return currentPhase.isFinalPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         if (currentPhase.isCreatePhase()) {
@@ -373,7 +382,6 @@ public class Encounter implements EncounterInterface
         handleEndOfAction();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -405,6 +413,22 @@ public class Encounter implements EncounterInterface
         EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(player);
         LootActionResultInterface    result              = encounteredExplorer.getLoot();
         listener.onAction(result);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterPhaseException
+    {
+        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+
+        if (hitpoints > 0) {
+            heal(currentExplorer.getName(), hitpoints);
+        }
+        currentExplorer.giveProtectAction();
+
+        doProtect(currentExplorer, targetName);
     }
 
     /**
@@ -456,12 +480,12 @@ public class Encounter implements EncounterInterface
     /**
      * Protect action
      *
-     * @param player Owner of current explorer
-     * @param name   Name of explorer to protect
+     * @param player     Owner of current explorer
+     * @param targetName Name of explorer to protect
      *
      * @throws EncounterPhaseException If not dodge phase
      */
-    public void protectAction(@NotNull Player player, @NotNull String name)
+    public void protectAction(@NotNull Player player, @NotNull String targetName)
         throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
@@ -475,18 +499,7 @@ public class Encounter implements EncounterInterface
             throw NotYourTurnException.createNotYourTurn();
         }
 
-        EncounteredExplorerInterface protectedCharacter = explorerRoster.getExplorer(name);
-        ProtectActionResultInterface result = currentExplorer.protect(
-            protectedCharacter,
-            getActiveHostiles()
-        );
-        listener.onAction(result);
-
-        if (currentExplorer.isSlain() && hasPhoenixDown) {
-            usePhoenixDown(currentExplorer);
-        }
-
-        handleEndOfAction();
+        doProtect(currentExplorer, targetName);
     }
 
     /**
@@ -752,6 +765,25 @@ public class Encounter implements EncounterInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void useItemAction(Player player)
+    {
+        if (!currentPhase.isAttackPhase()) {
+            return;
+        }
+
+        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        if (!encounteredExplorer.isOwner(player)) {
+            throw NotYourTurnException.createNotYourTurn();
+        }
+
+        encounteredExplorer.useAction();
+        handleEndOfAction();
+    }
+
+    /**
      * Add opponent to active explorers
      *
      * @param opponent Opponent
@@ -763,6 +795,28 @@ public class Encounter implements EncounterInterface
                 encounteredExplorer.addOpponent(opponent);
             }
         }
+    }
+
+    /**
+     * Do protect
+     *
+     * @param protector  Explorer doing the protecting
+     * @param targetName Name of the protected target
+     */
+    private void doProtect(@NotNull EncounteredExplorerInterface protector, @NotNull String targetName)
+    {
+        EncounteredExplorerInterface protectedCharacter = explorerRoster.getExplorer(targetName);
+        ProtectActionResultInterface result = protector.protect(
+            protectedCharacter,
+            getActiveHostiles()
+        );
+        listener.onAction(result);
+
+        if (protector.isSlain() && hasPhoenixDown) {
+            usePhoenixDown(protector);
+        }
+
+        handleEndOfAction();
     }
 
     /**

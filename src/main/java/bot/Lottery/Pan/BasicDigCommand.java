@@ -20,7 +20,7 @@ class BasicDigCommand extends DigCommand
             logger,
             itemRoller,
             rarityRoller,
-            "dig",
+            "roll pan",
             "Dig for treasure in Pan's Scavenger Hunt."
         );
     }
