@@ -39,7 +39,7 @@ public class AttackPhaseEndMessageFactory implements PhaseChangeMessageFactoryIn
         PhaseChangeMessage message = new PhaseChangeMessage();
 
         message.add(textFormatter.makeBold("ATTACK TURN IS OVER!"));
-        message.add("You may take this time to RP amongst yourselves. The DODGE turn will begin shortly.");
+        message.add("The next turn will begin shortly.");
 
         return message;
     }

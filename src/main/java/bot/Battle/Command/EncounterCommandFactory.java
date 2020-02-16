@@ -91,6 +91,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new EndTurnCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new HealCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new HurtCommand(processManager, encounterHolder, encounterLogger, dmChecker));
+        encounterCommands.add(new DmProtectCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new JoinCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new KickCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new LeaveCommand(processManager, encounterHolder, encounterLogger, dmChecker));

@@ -51,9 +51,6 @@ class MofongoLogger
                 item.getName()
             ));
             message.endCodeBlock();
-            if (item.hasLink()) {
-                message.add(textFormatter.makeLinkPreviewless(item.getLink()));
-            }
         } else {
             message.endCodeBlock();
         }
@@ -82,11 +79,6 @@ class MofongoLogger
         }
 
         message.endCodeBlock();
-        for (MofongoItem item : result.getItems()) {
-            if (item.hasLink()) {
-                message.add(textFormatter.makeLinkPreviewless(item.getLink()));
-            }
-        }
 
         logMessage(channel, message.getAsString());
     }

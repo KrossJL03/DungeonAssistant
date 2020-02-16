@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 class ExplorerRoster
 {
+    private static int DEFAULT_SIZE = 21;
+
     private ArrayList<EncounteredExplorerInterface> explorerRoster;
     private ArrayList<Player>                       kickedPlayers;
     private int                                     maxPlayerCount;
@@ -20,7 +22,7 @@ class ExplorerRoster
     {
         this.explorerRoster = new ArrayList<>();
         this.kickedPlayers = new ArrayList<>();
-        this.maxPlayerCount = 21;
+        this.maxPlayerCount = DEFAULT_SIZE;
         this.tier = new DefaultTier();
     }
 
