@@ -1,10 +1,10 @@
 package bot.Battle.Command;
 
-import bot.CommandFactoryInterface;
-import bot.CommandInterface;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
 import bot.Battle.Logger.EncounterLogger;
+import bot.CommandFactoryInterface;
+import bot.CommandInterface;
 import bot.PrivateLogger;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +71,12 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         encounterCommands.add(new AddHostileCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new AttackCommand(processManager, encounterHolder, encounterLogger, dmChecker));
         encounterCommands.add(new CreateHostileEncounterCommand(
+            processManager,
+            encounterHolder,
+            encounterLogger,
+            dmChecker
+        ));
+        encounterCommands.add(new CreatePvpCommand(
             processManager,
             encounterHolder,
             encounterLogger,

@@ -7,6 +7,13 @@ import java.util.ArrayList;
 interface EncounterRosterDataInterface
 {
     /**
+     * Get creatures
+     *
+     * @return ArrayList<EncounteredCreatureInterface>
+     */
+    @NotNull ArrayList<EncounteredCreatureInterface> getCreatures();
+
+    /**
      * Get current player count
      *
      * @return int
@@ -14,23 +21,9 @@ interface EncounterRosterDataInterface
     int getCurrentPlayerCount();
 
     /**
-     * Get encountered explorers
-     *
-     * @return ArrayList<EncounteredExplorerInterface>
-     */
-    @NotNull ArrayList<EncounteredExplorerInterface> getExplorers();
-
-    /**
      * Get max player count
      *
      * @return int
      */
     int getMaxPlayerCount();
-
-    /**
-     * Get encountered hostiles
-     *
-     * @return ArrayList<EncounteredHostileInterface>
-     */
-    @NotNull ArrayList<EncounteredHostileInterface> getHostiles();
 }

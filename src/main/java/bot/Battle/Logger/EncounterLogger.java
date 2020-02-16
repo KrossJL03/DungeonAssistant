@@ -1,6 +1,7 @@
 package bot.Battle.Logger;
 
 import bot.Battle.ActionResultInterface;
+import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.EncounteredHostileInterface;
 import bot.Battle.Logger.Message.Action.ActionMessageBuilder;
@@ -167,7 +168,7 @@ public class EncounterLogger
             message = everyoneMention.getValue() + " " + message;
         }
         sendMessage(message);
-        logSummary(result.getExplorers(), result.getHostiles());
+        logSummary(result.getCreatures());
     }
 
     /**
@@ -228,15 +229,11 @@ public class EncounterLogger
     /**
      * Log encounter summary
      *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
+     * @param creatures Creatures
      */
-    public void logSummary(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
-    )
+    public void logSummary(@NotNull ArrayList<EncounteredCreatureInterface> creatures)
     {
-        sendMessage(summaryMessageBuilder.buildSummary(encounteredExplorers, encounteredHostiles));
+        sendMessage(summaryMessageBuilder.buildSummary(creatures));
     }
 
     /**

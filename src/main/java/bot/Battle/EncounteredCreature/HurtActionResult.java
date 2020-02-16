@@ -5,25 +5,28 @@ import org.jetbrains.annotations.NotNull;
 
 class HurtActionResult implements HurtActionResultInterface
 {
-    private String name;
-    private int    currentHp;
-    private int    healedHp;
-    private int    maxHp;
+    private int     currentHp;
+    private int     healedHp;
+    private int     maxHp;
+    private String  name;
+    private boolean wasBloodied;
 
     /**
-     * HurtActionResult constructor
+     * Constructor.
      *
-     * @param name Name of hurt creature
-     * @param healedHp Amount of hitpoints hurt
-     * @param currentHp Current hitpoints of hurt creature
-     * @param maxHp Max hitpoints of hurt creature
+     * @param name        Name of hurt target
+     * @param healedHp    Amount of hitpoints hurt
+     * @param currentHp   Current hitpoints of hurt target
+     * @param maxHp       Max hitpoints of hurt target
+     * @param wasBloodied Ws the target bloodied before being hurt
      */
-    @NotNull HurtActionResult(@NotNull String name, int healedHp, int currentHp, int maxHp)
+    @NotNull HurtActionResult(@NotNull String name, int healedHp, int currentHp, int maxHp, boolean wasBloodied)
     {
         this.currentHp = currentHp;
         this.healedHp = healedHp;
         this.maxHp = maxHp;
         this.name = name;
+        this.wasBloodied = wasBloodied;
     }
 
     /**
@@ -39,7 +42,7 @@ class HurtActionResult implements HurtActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getHealedHp()
+    public int getHurtHp()
     {
         return healedHp;
     }
@@ -69,5 +72,14 @@ class HurtActionResult implements HurtActionResultInterface
     public boolean isSlain()
     {
         return currentHp < 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean wasBloodied()
+    {
+        return wasBloodied;
     }
 }

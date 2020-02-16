@@ -5,12 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-class InitiativeQueue
+class InitiativeQueue implements InitiativeTrackerInterface
 {
     private LinkedList<EncounteredExplorerInterface> queue;
 
     /**
-     * InitiativeQueue constructor (empty)
+     * Constructor (empty).
      */
     @NotNull InitiativeQueue()
     {
@@ -18,7 +18,7 @@ class InitiativeQueue
     }
 
     /**
-     * InitiativeQueue constructor
+     * Constructor.
      *
      * @param encounteredExplorers Encountered explorers
      */
@@ -29,45 +29,39 @@ class InitiativeQueue
     }
 
     /**
-     * Add encountered explorer
-     *
-     * @param encounteredExplorer Encountered explorer to add
+     * {@inheritDoc}
      */
-    void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    @Override
+    public void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
         queue.add(encounteredExplorer);
     }
 
     /**
-     * Get current explorer
-     *
-     * @return EncounteredExplorerInterface
-     *
-     * @throws InitiativeQueueException If the queue is empty
+     * {@inheritDoc}
      */
-    @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeQueueException
+    @Override
+    public @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeTrackerException
     {
         if (queue.isEmpty()) {
-            throw InitiativeQueueException.createEmptyQueue();
+            throw InitiativeTrackerException.createEmptyQueue();
         }
+
         return queue.peek();
     }
 
     /**
-     * Get next explorer
-     *
-     * @return EncounteredExplorerInterface
-     *
-     * @throws InitiativeQueueException If no next explorer exists
+     * {@inheritDoc}
      */
-    @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeQueueException
+    @Override
+    public @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeTrackerException
     {
         EncounteredExplorerInterface nextExplorer;
         do {
             queue.pop();
             nextExplorer = queue.peek();
             if (nextExplorer == null) {
-                throw InitiativeQueueException.createEmptyQueue();
+                throw InitiativeTrackerException.createEmptyQueue();
             }
         } while (!nextExplorer.isActive() || !nextExplorer.hasActions());
 
@@ -75,11 +69,10 @@ class InitiativeQueue
     }
 
     /**
-     * Remove explorer
-     *
-     * @param encounteredExplorer Encountered explorer to remove
+     * {@inheritDoc}
      */
-    void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    @Override
+    public void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
     {
         queue.remove(encounteredExplorer);
     }

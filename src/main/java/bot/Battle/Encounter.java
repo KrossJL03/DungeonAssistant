@@ -1,151 +1,67 @@
 package bot.Battle;
 
 import bot.Battle.EncounteredCreature.EncounteredExplorer;
-import bot.Battle.EncounteredCreature.EncounteredHostile;
+import bot.Battle.Logger.EncounterLogger;
+import bot.Battle.Logger.Mention;
 import bot.Battle.Phase.EncounterPhaseFactory;
 import bot.Explorer.Explorer;
-import bot.Hostile.Hostile;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class Encounter implements EncounterInterface
+abstract class Encounter implements EncounterInterface
 {
-    private EncounterPhaseInterface                currentPhase;
-    private ExplorerRoster                         explorerRoster;
-    private boolean                                hasPhoenixDown;
-    private ArrayList<EncounteredHostileInterface> hostiles;
-    private InitiativeQueue                        initiative;
-    private ActionListener                         listener;
+    protected EncounterPhaseInterface           currentPhase;
+    protected EncounterLogger                   logger;
+    private   ExplorerRoster                    explorerRoster;
+    private   InitiativeTrackerInterface        initiative;
+    private   InitiativeTrackerFactoryInterface initiativeFactory;
 
     /**
-     * Encounter constructor
+     * Constructor.
      *
-     * @param listener Action listener
+     * @param logger            Logger
+     * @param hostileRoster     Hostile roster
+     * @param initiativeFactory Initiative factory
      */
-    public Encounter(ActionListener listener)
+    Encounter(
+        @NotNull EncounterLogger logger,
+        @NotNull HostileRosterInterface hostileRoster,
+        @NotNull InitiativeTrackerFactoryInterface initiativeFactory
+    )
     {
         this.currentPhase = EncounterPhaseFactory.createCreatePhase();
         this.explorerRoster = new ExplorerRoster();
-        this.initiative = new InitiativeQueue();
-        this.hasPhoenixDown = true;
-        this.hostiles = new ArrayList<>();
-        this.listener = listener;
+        this.initiativeFactory = initiativeFactory;
+        this.logger = logger;
 
-        listener.onCreateEncounter();
-    }
+        this.initiative = initiativeFactory.createNull();
 
-    /**
-     * Add hostile
-     *
-     * @param hostile  Hostile
-     * @param nickname Nickname
-     *
-     * @return EncounteredHostileInterface
-     *
-     * @throws EncounterPhaseException If encounter is over
-     * @throws HostileRosterException  If nickname is in use
-     */
-    public @NotNull EncounteredHostileInterface addHostile(@NotNull Hostile hostile, @NotNull String nickname)
-        throws EncounterPhaseException, HostileRosterException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
-
-        String                      capitalNickname       = Capitalizer.nameCaseIfLowerCase(nickname);
-        EncounteredHostileInterface newEncounteredHostile = new EncounteredHostile(hostile, capitalNickname);
-        String                      hostileSpecies        = hostile.getSpecies();
-        String                      nicknameToLower       = nickname.toLowerCase();
-        if (hostileSpecies.toLowerCase().equals(nicknameToLower)) {
-            // todo clean up
-            int speciesCount = 0;
-            for (EncounteredHostileInterface encounteredHostile : hostiles) {
-                if (encounteredHostile.getSpecies().equals(newEncounteredHostile.getSpecies())) {
-                    if (encounteredHostile.getSpecies().equals(newEncounteredHostile.getName())) {
-                        encounteredHostile.setName(encounteredHostile.getName() + "A");
-                    }
-                    speciesCount++;
-                }
-            }
-            if (speciesCount > 0) {
-                char letter = (char) (65 + speciesCount);
-                newEncounteredHostile = new EncounteredHostile(hostile, hostile.getSpecies() + letter);
-            }
-        } else {
-            for (EncounteredHostileInterface hostileData : hostiles) {
-                if (hostileData.getName().toLowerCase().equals(nicknameToLower)) {
-                    throw HostileRosterException.createNicknameInUse(nickname);
-                }
-            }
-        }
-        hostiles.add(newEncounteredHostile);
-        return newEncounteredHostile;
+        logger.logCreateEncounter();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void attackAction(@NotNull Player player, @NotNull String hostileName)
+    public void attackAction(@NotNull Player player, @NotNull String targetName)
         throws EncounterPhaseException, NotYourTurnException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isAttackPhase()) {
+        assertNotFinalPhase();
+        if (!currentPhase.isAttackPhase()) {
             throw EncounterPhaseException.createNotAttackPhase();
         }
 
-        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
         if (!currentExplorer.isOwner(player)) {
             throw NotYourTurnException.createNotYourTurn();
         }
 
-        EncounteredHostileInterface encounteredHostile = getHostile(hostileName);
-        if (!encounteredHostile.isBloodied()) {
-            addOpponentToActiveExplorers(encounteredHostile);
-        }
+        AttackActionResultInterface result = doAttack(currentExplorer, targetName);
 
-        AttackActionResultInterface result = currentExplorer.attack(encounteredHostile);
-        if (result.isTargetSlain()) {
-            removeOpponentFromInactiveExplorers(encounteredHostile);
-        }
-
-        listener.onAction(result);
-        handleEndOfAction();
-    }
-
-    /**
-     * Dodge action
-     *
-     * @param player Player
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     * @throws NotYourTurnException    If it is not the player's turn
-     */
-    public void dodgeAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotDodgePhase();
-        }
-
-        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-
-        DodgeActionResultInterface result = currentExplorer.dodge(getActiveHostiles());
-
-        listener.onAction(result);
-
-        if (currentExplorer.isSlain() && hasPhoenixDown) {
-            usePhoenixDown(currentExplorer);
-        }
-
+        logger.logAction(result);
         handleEndOfAction();
     }
 
@@ -153,60 +69,9 @@ public class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
+    final public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
     {
         return explorerRoster.getAllExplorers();
-    }
-
-    /**
-     * Get all hostiles
-     *
-     * @return ArrayList<EncounteredHostileInterface>
-     */
-    public @NotNull ArrayList<EncounteredHostileInterface> getAllHostiles()
-    {
-        return new ArrayList<>(hostiles);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull String getEncounterType()
-    {
-        return "hostile";
-    }
-
-    /**
-     * Dodge action
-     *
-     * @param player Player
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     * @throws NotYourTurnException    If it is not the player's turn
-     */
-    public void guardAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotDodgePhase();
-        }
-
-        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-
-        GuardActionResultInterface result = currentExplorer.guard(getActiveHostiles());
-
-        listener.onAction(result);
-
-        if (currentExplorer.isSlain() && hasPhoenixDown) {
-            usePhoenixDown(currentExplorer);
-        }
-
-        handleEndOfAction();
     }
 
     /**
@@ -215,22 +80,14 @@ public class Encounter implements EncounterInterface
     @Override
     public void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredCreatureInterface encounterCreature = getCreature(name);
-        HealActionResultInterface    result            = encounterCreature.healPoints(hitpoints);
+        EncounteredCreatureInterface target = getCreature(name);
+        HealActionResultInterface    result = target.healPoints(hitpoints);
 
-        if (
-            encounterCreature instanceof EncounteredHostileInterface
-            && result.wasTargetRevived()
-            && !encounterCreature.isBloodied()
-            ) {
-            addOpponentToActiveExplorers(encounterCreature);
-        }
-
-        listener.onAction(result);
+        logger.logAction(result);
+        postHeal(target, result);
+        handleEndOfAction();
     }
 
     /**
@@ -246,44 +103,18 @@ public class Encounter implements EncounterInterface
     }
 
     /**
-     * Heal all active hostiles by a given amount
-     *
-     * @param hitpoints Hitpoints to heal
-     */
-    public void healAllHostiles(int hitpoints)
-    {
-        for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
-            this.heal(encounteredHostile.getName(), hitpoints);
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredCreatureInterface encounterCreature = getCreature(name);
-        boolean                      wasBloodied       = encounterCreature.isBloodied();
-        HurtActionResultInterface    result            = encounterCreature.hurt(hitpoints);
+        EncounteredCreatureInterface target = getCreature(name);
+        HurtActionResultInterface    result = target.hurt(hitpoints);
 
-        listener.onAction(result);
-
-        if (encounterCreature instanceof EncounteredHostileInterface && !wasBloodied) {
-            addOpponentToActiveExplorers(encounterCreature);
-        }
-        if (encounterCreature.isSlain()) {
-            if (encounterCreature instanceof EncounteredHostile) {
-                removeOpponentFromInactiveExplorers(encounterCreature);
-            } else if (hasPhoenixDown && encounterCreature instanceof EncounteredExplorerInterface) {
-                usePhoenixDown((EncounteredExplorerInterface) encounterCreature);
-            }
-        }
-
+        logger.logAction(result);
+        postHurt(target, result);
         handleEndOfAction();
     }
 
@@ -296,18 +127,6 @@ public class Encounter implements EncounterInterface
     {
         for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
             hurt(encounteredExplorer.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * Hurt all active hostiles by a given amount
-     *
-     * @param hitpoints Hitpoints to hurt
-     */
-    public void hurtAllHostiles(int hitpoints)
-    {
-        for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
-            hurt(encounteredHostile.getName(), hitpoints);
         }
     }
 
@@ -335,10 +154,11 @@ public class Encounter implements EncounterInterface
     @Override
     public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
+        assertNotFinalPhase();
         if (currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createNotStarted();
-        } else if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
+        } else if (!isAlwaysJoinable() && !currentPhase.isJoinPhase()) {
+            throw EncounterPhaseException.createNotJoinPhase(Mention.createForPlayer(explorer.getOwner().getUserId()));
         }
 
         String capitalNickname = nickname != null
@@ -353,7 +173,7 @@ public class Encounter implements EncounterInterface
         }
 
         JoinActionResultInterface result = new JoinActionResult(encounteredExplorer, explorerRoster.isFull());
-        listener.onAction(result);
+        logger.logAction(result);
     }
 
     /**
@@ -362,17 +182,14 @@ public class Encounter implements EncounterInterface
     @Override
     public void kick(@NotNull String name)
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(name);
-        explorerRoster.kick(encounteredExplorer);
-        encounteredExplorer.useAllActions();
-        listener.onKick(encounteredExplorer.getOwner());
+        EncounteredExplorerInterface target = explorerRoster.kick(name);
+        initiative.remove(target);
+        target.useAllActions();
+        logger.logKickedPlayer(target.getOwner());
         handleEndOfAction();
     }
-
 
     /**
      * {@inheritDoc}
@@ -380,31 +197,12 @@ public class Encounter implements EncounterInterface
     @Override
     public void leave(@NotNull Player player)
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.leave(player);
-        listener.onLeave(encounteredExplorer.getName());
+        EncounteredExplorerInterface target = explorerRoster.markAsLeft(player);
+        initiative.remove(target);
+        logger.logLeftEncounter(target.getName());
         handleEndOfAction();
-    }
-
-    /**
-     * Loot action
-     *
-     * @param player Player
-     *
-     * @throws EncounterPhaseException If not loot phase
-     */
-    public void lootAction(@NotNull Player player) throws EncounterPhaseException
-    {
-        if (!currentPhase.isLootPhase()) {
-            throw EncounterPhaseException.createNotLootPhase();
-        }
-
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.getExplorer(player);
-        LootActionResultInterface    result              = encounteredExplorer.getLoot();
-        listener.onAction(result);
     }
 
     /**
@@ -417,76 +215,12 @@ public class Encounter implements EncounterInterface
         int statModifier
     ) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredCreatureInterface    encounteredCreature = getCreature(name);
-        ModifyStatActionResultInterface result              = encounteredCreature.modifyStat(statName, statModifier);
+        EncounteredCreatureInterface    target = getCreature(name);
+        ModifyStatActionResultInterface result = target.modifyStat(statName, statModifier);
         explorerRoster.sort();
-        listener.onAction(result);
-    }
-
-    /**
-     * Pass action
-     *
-     * @throws EncounterPhaseException If encounter is over
-     *                                 If not passable phase
-     */
-    public void passAction() throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotPassablePhase();
-        }
-
-        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
-        encounteredExplorer.useAllActions();
-
-        listener.onDodgePassAction(
-            encounteredExplorer.getName(),
-            encounteredExplorer.getCurrentHP(),
-            encounteredExplorer.getMaxHP()
-        );
-
-        handleEndOfAction();
-    }
-
-    /**
-     * Protect action
-     *
-     * @param player Owner of current explorer
-     * @param name   Name of explorer to protect
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     */
-    public void protectAction(@NotNull Player player, @NotNull String name)
-        throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotProtectPhase();
-        }
-
-        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-
-        EncounteredExplorerInterface protectedCharacter = explorerRoster.getExplorer(name);
-        ProtectActionResultInterface result = currentExplorer.protect(
-            protectedCharacter,
-            getActiveHostiles()
-        );
-        listener.onAction(result);
-
-        if (currentExplorer.isSlain() && hasPhoenixDown) {
-            usePhoenixDown(currentExplorer);
-        }
-
-        handleEndOfAction();
+        logger.logAction(result);
     }
 
     /**
@@ -495,29 +229,14 @@ public class Encounter implements EncounterInterface
     @Override
     public void rejoin(@NotNull Player player)
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.rejoin(player);
+        EncounteredExplorerInterface encounteredExplorer = explorerRoster.markAsReturned(player);
         if (currentPhase.isInitiativePhase()) {
             initiative.add(encounteredExplorer);
         }
-        listener.onRejoin(encounteredExplorer.getName());
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeCreature(@NotNull String name) throws EncounterPhaseException
-    {
-        EncounteredCreatureInterface encounterCreature = getCreature(name);
-        if (encounterCreature instanceof EncounteredExplorerInterface) {
-            removeExplorer((EncounteredExplorerInterface) encounterCreature);
-        } else {
-            removeHostile((EncounteredHostileInterface) encounterCreature);
-        }
+        logger.logRejoinEncounter(encounteredExplorer.getName());
     }
 
     /**
@@ -529,22 +248,14 @@ public class Encounter implements EncounterInterface
      */
     public void revive(@NotNull String name) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredCreatureInterface encounterCreature = getCreature(name);
-        HealActionResultInterface    result            = encounterCreature.healPercent((float) 0.5);
+        EncounteredCreatureInterface target = getCreature(name);
+        HealActionResultInterface    result = target.healPercent((float) 0.5);
 
-        if (
-            encounterCreature instanceof EncounteredHostileInterface
-            && result.wasTargetRevived()
-            && !encounterCreature.isBloodied()
-            ) {
-            addOpponentToActiveExplorers(encounterCreature);
-        }
-
-        listener.onAction(result);
+        postRevive(target, result);
+        logger.logAction(result);
+        handleEndOfAction();
     }
 
     /**
@@ -553,12 +264,10 @@ public class Encounter implements EncounterInterface
     @Override
     public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
         explorerRoster.setMaxPlayerCount(maxPlayerCount);
-        listener.onSetMaxPlayers(maxPlayerCount);
+        logger.logSetMaxPlayers(maxPlayerCount);
     }
 
     /**
@@ -567,14 +276,12 @@ public class Encounter implements EncounterInterface
     @Override
     public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        assertNotFinalPhase();
 
-        EncounteredCreatureInterface    encounteredCreature = getCreature(name);
-        ModifyStatActionResultInterface result              = encounteredCreature.setStat(statName, statValue);
+        EncounteredCreatureInterface    target = getCreature(name);
+        ModifyStatActionResultInterface result = target.setStat(statName, statValue);
         explorerRoster.sort();
-        listener.onAction(result);
+        logger.logAction(result);
     }
 
     /**
@@ -586,35 +293,9 @@ public class Encounter implements EncounterInterface
         if (!currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createSetTierAfterCreatePhase();
         }
+
         explorerRoster.setTier(tier);
-        listener.onSetTier(tier);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void skipCurrentPlayerTurn() throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isInitiativePhase()) {
-            throw EncounterPhaseException.createNotInitiativePhase();
-        }
-
-        EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-        if (currentPhase.isAttackPhase()) {
-            currentExplorer.useAllActions();
-            listener.onAttackActionSkipped(currentExplorer.getName());
-            handleEndOfAction();
-        } else if (currentPhase.isDodgePhase()) {
-            DodgeActionResultInterface result = currentExplorer.failToDodge(getActiveHostiles());
-            if (currentExplorer.isSlain() && hasPhoenixDown) {
-                usePhoenixDown(currentExplorer);
-            }
-            listener.onAction(result);
-            handleEndOfAction();
-        }
+        logger.logSetTier(tier);
     }
 
     /**
@@ -623,13 +304,8 @@ public class Encounter implements EncounterInterface
     @Override
     public void startAttackPhase() throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (haveNoPlayersJoined()) {
-            throw EncounterException.createNoPlayersHaveJoined();
-        } else if (currentPhase.isAttackPhase()) {
+        assertCurrentPhaseIsChangable();
+        if (currentPhase.isAttackPhase()) {
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
         }
 
@@ -639,41 +315,7 @@ public class Encounter implements EncounterInterface
 
         EncounterPhaseInterface previousPhase = currentPhase;
         currentPhase = EncounterPhaseFactory.createAttackPhase();
-        initiative = new InitiativeQueue(explorerRoster.getActiveExplorers());
-        notifyListenerOfPhaseChange(previousPhase);
-    }
-
-    /**
-     * Start dodge phase
-     *
-     * @throws EncounterException      If no players have joined
-     * @throws EncounterPhaseException If the encounter is over
-     *                                 If the encounter has not started
-     *                                 If dodge phase is in progress
-     */
-    public void startDodgePhase() throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (haveNoPlayersJoined()) {
-            throw EncounterException.createNoPlayersHaveJoined();
-        } else if (currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        }
-
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.resetActions(true);
-        }
-
-        for (EncounteredHostileInterface encounteredHostile : getActiveHostiles()) {
-            encounteredHostile.attack();
-        }
-
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createDodgePhase();
-        initiative = new InitiativeQueue(explorerRoster.getActiveExplorers());
+        restartInitiative();
         notifyListenerOfPhaseChange(previousPhase);
     }
 
@@ -683,15 +325,14 @@ public class Encounter implements EncounterInterface
     @Override
     public void startEndPhaseForced()
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (currentPhase.isCreatePhase()) {
+        assertNotFinalPhase();
+        if (currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createNotStarted();
         }
 
         EncounterPhaseInterface previousPhase = currentPhase;
         currentPhase = EncounterPhaseFactory.createEndPhase();
-        initiative = new InitiativeQueue();
+        clearInitiative();
         notifyListenerOfPhaseChange(previousPhase);
     }
 
@@ -705,17 +346,15 @@ public class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         } else if (!currentPhase.isCreatePhase()) {
             throw EncounterPhaseException.createStartInProgressEncounter();
-        } else if (explorerRoster.getMaxPlayerCount() == 0) {
-            throw EncounterPhaseException.createStartWithoutMaxPlayers();
-        } else if (hasNoActiveHostiles()) {
-            throw EncounterPhaseException.createStartWithoutHostiles();
         } else if (currentPhase.isJoinPhase()) {
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
         }
 
+        preJoinPhase();
+
         EncounterPhaseInterface previousPhase = currentPhase;
         currentPhase = EncounterPhaseFactory.createJoinPhase();
-        initiative = new InitiativeQueue();
+        clearInitiative();
         notifyListenerOfPhaseChange(previousPhase);
     }
 
@@ -725,12 +364,9 @@ public class Encounter implements EncounterInterface
     @Override
     public void useAllCurrentExplorerActions()
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isInitiativePhase()) {
-            throw EncounterPhaseException.createNotInitiativePhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        assertInitiativePhase();
+
+        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer();
         encounteredExplorer.useAllActions();
         handleEndOfAction();
     }
@@ -741,44 +377,64 @@ public class Encounter implements EncounterInterface
     @Override
     public void useCurrentExplorerAction()
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isInitiativePhase()) {
-            throw EncounterPhaseException.createNotInitiativePhase();
-        }
-        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        assertInitiativePhase();
+
+        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer();
         encounteredExplorer.useAction();
         handleEndOfAction();
     }
 
     /**
-     * Add opponent to active explorers
-     *
-     * @param opponent Opponent
+     * Assert that the current phase is an initiative phase
      */
-    private void addOpponentToActiveExplorers(@NotNull EncounteredCreatureInterface opponent)
+    protected void assertInitiativePhase()
     {
-        if (opponent instanceof EncounteredHostileInterface) {
-            for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
-                encounteredExplorer.addOpponent(opponent);
-            }
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (!currentPhase.isInitiativePhase()) {
+            throw EncounterPhaseException.createNotInitiativePhase();
         }
     }
 
     /**
-     * Get active hostiles
-     *
-     * @return ArrayList<EncounteredHostileInterface>
+     * Assert the current phase is not a final phase
      */
-    private @NotNull ArrayList<EncounteredHostileInterface> getActiveHostiles()
+    final protected void assertNotFinalPhase()
     {
-        ArrayList<EncounteredHostileInterface> activeHostiles = new ArrayList<>();
-        for (EncounteredHostileInterface encounteredHostile : hostiles) {
-            if (!encounteredHostile.isSlain()) {
-                activeHostiles.add(encounteredHostile);
-            }
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
         }
-        return activeHostiles;
+    }
+
+    /**
+     * Clear initiative
+     */
+    final protected void clearInitiative()
+    {
+        initiative = initiativeFactory.createNull();
+    }
+
+    /**
+     * Do attack target
+     *
+     * @param explorer   The attacker
+     * @param targetName The name of the target
+     *
+     * @return AttackActionResultInterface
+     */
+    protected abstract @NotNull AttackActionResultInterface doAttack(
+        @NotNull EncounteredExplorerInterface explorer,
+        @NotNull String targetName
+    );
+
+    /**
+     * Get all active explorers
+     *
+     * @return ArrayList
+     */
+    final protected @NotNull ArrayList<EncounteredExplorerInterface> getActiveExplorers()
+    {
+        return explorerRoster.getActiveExplorers();
     }
 
     /**
@@ -790,72 +446,85 @@ public class Encounter implements EncounterInterface
      *
      * @throws EncounteredCreatureNotFoundException If creature with name not found
      */
-    private @NotNull EncounteredCreatureInterface getCreature(@NotNull String name)
+    final protected @NotNull EncounteredCreatureInterface getCreature(@NotNull String name)
         throws EncounteredCreatureNotFoundException
     {
-        ArrayList<EncounteredCreatureInterface> allCreatures = new ArrayList<>();
-        allCreatures.addAll(explorerRoster.getAllExplorers());
-        allCreatures.addAll(hostiles);
-        for (EncounteredCreatureInterface creature : allCreatures) {
+        for (EncounteredCreatureInterface creature : getAllCreatures()) {
             if (creature.isName(name)) {
                 return creature;
             }
         }
+
         throw EncounteredCreatureNotFoundException.createForCreature(name);
     }
 
     /**
-     * Get hostile
+     * Get current explorer
      *
-     * @param name Name of hostile to find
-     *
-     * @return EncounteredHostileInterface
-     *
-     * @throws EncounteredCreatureNotFoundException If hostile with name not found
+     * @return EncounteredExplorerInterface
      */
-    private @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
+    final protected @NotNull EncounteredExplorerInterface getCurrentExplorer()
     {
-        for (EncounteredHostileInterface encounteredHostile : hostiles) {
-            if (encounteredHostile.isName(name)) {
-                return encounteredHostile;
-            }
-        }
-        throw EncounteredCreatureNotFoundException.createForHostile(name);
+        return initiative.getCurrentExplorer();
+    }
+
+    /**
+     * Get encountered explorer by name
+     *
+     * @param name Name of explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    final protected @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name)
+    {
+        return explorerRoster.getExplorer(name);
+    }
+
+    /**
+     * Get encountered explorer by player
+     *
+     * @param player Owner of explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    final protected @NotNull EncounteredExplorerInterface getExplorer(@NotNull Player player)
+    {
+        return explorerRoster.getExplorer(player);
+    }
+
+    /**
+     * Get next explorer
+     *
+     * @return EncounteredExplorerInterface
+     */
+    final protected @NotNull EncounteredExplorerInterface getNextExplorer()
+    {
+        return initiative.getNextExplorer();
     }
 
     /**
      * Handle the end of an action
      */
-    private void handleEndOfAction()
-    {
-        if (!currentPhase.isJoinPhase()) {
-            if (hasNoActiveHostiles()) {
-                startLootPhase();
-            } else if (!explorerRoster.hasActiveExplorers()) {
-                startEndPhase();
-            } else if (currentPhase.isInitiativePhase()) {
-                EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
-                if (currentExplorer.isActive() && currentExplorer.hasActions()) {
-                    listener.onActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
-                } else {
-                    try {
-                        listener.onNextPlayerTurn(initiative.getNextExplorer());
-                    } catch (InitiativeQueueException exception) {
-                        startRpPhase();
-                    }
-                }
-            }
-        }
-    }
+    abstract protected void handleEndOfAction();
 
     /**
-     * Has active hostiles
+     * Has at least one active explorer
      *
      * @return boolean
      */
-    private boolean hasNoActiveHostiles()
+    final protected boolean hasAtLeastOneActiveExplorer()
     {
-        return getActiveHostiles().size() < 1;
+        return explorerRoster.hasAtLeastOneActiveExplorer();
+    }
+
+    /**
+     * Has multiple active explorer
+     *
+     * @return boolean
+     */
+    final protected boolean hasMultipleActiveExplorers()
+    {
+        return explorerRoster.hasMultipleActiveExplorers();
     }
 
     /**
@@ -863,9 +532,32 @@ public class Encounter implements EncounterInterface
      *
      * @return boolean
      */
-    private boolean haveNoPlayersJoined()
+    final protected boolean haveNoPlayersJoined()
     {
-        return currentPhase.isJoinPhase() && !explorerRoster.hasActiveExplorers();
+        return currentPhase.isJoinPhase() && !explorerRoster.hasAtLeastOneActiveExplorer();
+    }
+
+    /**
+     * Can players join this encounter at any time
+     */
+    abstract protected boolean isAlwaysJoinable();
+
+    /**
+     * Log action
+     *
+     * @param result Action result
+     */
+    final protected void logAction(@NotNull ActionResultInterface result)
+    {
+        logger.logAction(result);
+    }
+
+    /**
+     * Log phoenix down used
+     */
+    final protected void logPhoenixDownUsed()
+    {
+        logger.logFirstDeathRevived();
     }
 
     /**
@@ -873,157 +565,120 @@ public class Encounter implements EncounterInterface
      *
      * @param previousPhase Previous phase
      */
-    private void notifyListenerOfPhaseChange(EncounterPhaseInterface previousPhase)
+    final protected void notifyListenerOfPhaseChange(EncounterPhaseInterface previousPhase)
     {
         PhaseChangeResult result = new PhaseChangeResult(
             currentPhase,
             previousPhase,
+            getAllCreatures(),
             explorerRoster.getTier(),
-            explorerRoster.getAllExplorers(),
-            getAllHostiles(),
             explorerRoster.getMaxPlayerCount(),
             explorerRoster.getOpenSlotCount()
         );
 
-        listener.onPhaseChange(result);
+        logger.logPhaseChange(result);
 
         if (currentPhase.isInitiativePhase()) {
-            EncounteredExplorerInterface currentExplorer = initiative.getCurrentExplorer();
+            EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
             if (!currentExplorer.isActive() || !currentExplorer.hasActions()) {
-                currentExplorer = initiative.getNextExplorer();
+                currentExplorer = getNextExplorer();
             }
-            listener.onNextPlayerTurn(currentExplorer);
+            logger.pingPlayerTurn(currentExplorer);
         }
     }
 
     /**
-     * Remove encountered explorer from encounter
+     * Handle any additional post heal related processes
      *
-     * @param encounteredExplorer Explorer to remove
+     * @param target Target of healing
+     * @param result Result of healing
+     */
+    abstract protected void postHeal(
+        @NotNull EncounteredCreatureInterface target,
+        @NotNull HealActionResultInterface result
+    );
+
+    /**
+     * Handle any additional post hurt related processes
+     *
+     * @param target Target of hurting
+     * @param result Result of hurting
+     */
+    abstract protected void postHurt(
+        @NotNull EncounteredCreatureInterface target,
+        @NotNull HurtActionResultInterface result
+    );
+
+    /**
+     * Handle any additional post revive related processes
+     *
+     * @param target Target of reviving
+     * @param result Result of reviving
+     */
+    abstract protected void postRevive(
+        @NotNull EncounteredCreatureInterface target,
+        @NotNull HealActionResultInterface result
+    );
+
+    /**
+     * handle any additional pre join phase related processes
+     */
+    abstract protected void preJoinPhase();
+
+    /**
+     * Remove encountered explorer from battle
+     *
+     * @param target Explorer to remove
      *
      * @throws EncounterPhaseException If encounter is over
      */
-    private void removeExplorer(EncounteredExplorerInterface encounteredExplorer) throws EncounterPhaseException
+    final protected void removeExplorer(EncounteredExplorerInterface target) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        explorerRoster.remove(encounteredExplorer);
-        encounteredExplorer.useAllActions();
-        listener.onRemoveExplorer(encounteredExplorer.getName());
+        explorerRoster.remove(target);
+        initiative.remove(target);
+        target.useAllActions();
+        logger.logRemovedExplorer(target.getName());
         handleEndOfAction();
     }
 
     /**
-     * Remove encountered hostile from encounter
-     *
-     * @param encounteredHostile Hostile to remove
-     *
-     * @throws EncounterPhaseException If encounter is over
+     * Restart initiative
      */
-    private void removeHostile(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounterPhaseException
+    final protected void restartInitiative()
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
-
-        removeOpponentFromAllExplorers(encounteredHostile);
-        hostiles.remove(encounteredHostile);
-        listener.onRemoveHostile(encounteredHostile.getName());
-        handleEndOfAction();
-    }
-
-    /**
-     * Remove opponent from all explorers
-     *
-     * @param opponent Opponent to remove
-     */
-    private void removeOpponentFromAllExplorers(@NotNull EncounteredCreatureInterface opponent)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.removeOpponent(opponent);
-        }
-    }
-
-    /**
-     * Remove opponent from non-active explorers
-     * Players must be active prior to an opponent being bloodied and when they are slain in order to earn loot
-     *
-     * @param slainCreature Slain creature
-     */
-    private void removeOpponentFromInactiveExplorers(@NotNull EncounteredCreatureInterface slainCreature)
-    {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            if (!encounteredExplorer.isActive()) {
-                encounteredExplorer.removeOpponent(slainCreature);
-            }
-        }
+        initiative = initiativeFactory.create(explorerRoster.getActiveExplorers());
     }
 
     /**
      * Start end phase
      */
-    private void startEndPhase()
+    final protected void startEndPhase()
     {
         EncounterPhaseInterface previousPhase = currentPhase;
         currentPhase = EncounterPhaseFactory.createEndPhase();
-        initiative = new InitiativeQueue();
+        clearInitiative();
         notifyListenerOfPhaseChange(previousPhase);
     }
 
     /**
-     * Start loot phase
+     * Assert that the current phase can be changed
      *
-     * @throws EncounterPhaseException If loot phase is in progress
+     * @throws EncounterPhaseException If the battle is in it's final phase
+     *                                 If the battle is still in the create phase
+     * @throws EncounterException      If no players have joined
      */
-    private void startLootPhase() throws EncounterPhaseException
+    private void assertCurrentPhaseIsChangable() throws EncounterPhaseException, EncounterException
     {
-        if (currentPhase.isLootPhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (currentPhase.isCreatePhase()) {
+            throw EncounterPhaseException.createNotStarted();
+        } else if (haveNoPlayersJoined()) {
+            throw EncounterException.createNoPlayersHaveJoined();
         }
-
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createLootPhase();
-        initiative = new InitiativeQueue();
-
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.rollKillLoot();
-        }
-
-        notifyListenerOfPhaseChange(previousPhase);
-    }
-
-    /**
-     * Start RP phase
-     */
-    private void startRpPhase()
-    {
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createRpPhase();
-        initiative = new InitiativeQueue();
-        notifyListenerOfPhaseChange(previousPhase);
-    }
-
-    /**
-     * Revive slain explorer if they are the first explorer to be slain
-     *
-     * @param encounteredExplorer Encountered explorer
-     *
-     * @throws EncounterException If the encountered explorer is not slain
-     *                            If there is no phoenix down to be used
-     */
-    private void usePhoenixDown(@NotNull EncounteredExplorerInterface encounteredExplorer)
-    {
-        if (!encounteredExplorer.isSlain()) {
-            throw EncounterException.createReviveNonSlainExplorer(encounteredExplorer.getName());
-        } else if (!hasPhoenixDown) {
-            throw EncounterException.createUsedPhoenixDown(encounteredExplorer.getName());
-        }
-
-        hasPhoenixDown = false;
-        HealActionResultInterface result = encounteredExplorer.healPercent((float) 0.5);
-        listener.onUsePhoenixDown();
-        listener.onAction(result);
     }
 }

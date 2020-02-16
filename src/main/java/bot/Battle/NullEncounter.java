@@ -27,6 +27,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ArrayList<EncounteredCreatureInterface> getAllCreatures()
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
     {
         throw EncounterException.createNullEncounter();
@@ -36,7 +45,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getEncounterType()
+    public @NotNull String getBattleStyle()
     {
         throw EncounterException.createNullEncounter();
     }
@@ -154,6 +163,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void skipCurrentPlayerTurn() throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
@@ -182,15 +200,6 @@ public class NullEncounter implements EncounterInterface
      */
     @Override
     public void startJoinPhase() throws EncounterPhaseException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
     }

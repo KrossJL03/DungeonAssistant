@@ -22,16 +22,6 @@ public class EncounterHolder
     }
 
     /**
-     * Get encounter
-     *
-     * @return EncounterInterface
-     */
-    public @NotNull EncounterInterface getEncounter()
-    {
-        return encounter;
-    }
-
-    /**
      * Create hostile encounter
      *
      * @param channel Channel to set for logger
@@ -44,6 +34,32 @@ public class EncounterHolder
     {
         logger.setChannel(channel);
         logger.setDmMention(Mention.createForRole(dmId));
-        encounter = new Encounter(new ActionListener(logger));
+        encounter = new HostileEncounter(logger);
+    }
+
+    /**
+     * Create pvp
+     *
+     * @param channel Channel to set for logger
+     * @param dmId    Dungeon master id
+     */
+    public void createPvp(
+        @NotNull MessageChannel channel,
+        @NotNull String dmId
+    )
+    {
+        logger.setChannel(channel);
+        logger.setDmMention(Mention.createForRole(dmId));
+        encounter = new PlayerVsPlayer(logger);
+    }
+
+    /**
+     * Get encounter
+     *
+     * @return EncounterInterface
+     */
+    public @NotNull EncounterInterface getEncounter()
+    {
+        return encounter;
     }
 }

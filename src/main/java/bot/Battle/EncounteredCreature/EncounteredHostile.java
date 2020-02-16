@@ -1,12 +1,12 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Constant;
 import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredHostileInterface;
 import bot.Battle.HealActionResultInterface;
 import bot.Battle.HurtActionResultInterface;
 import bot.Battle.LootRollInterface;
 import bot.Battle.ModifyStatActionResultInterface;
+import bot.Constant;
 import bot.Hostile.Hostile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,10 +18,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
     private int     attack;
     private int     attackRoll;
     private int     currentHp;
+    private boolean hasNickname;
     private Hostile hostile;
     private int     maxHp;
     private String  name;
     private Slayer  slayer;
+    private String  species;
 
     /**
      * EncounteredHostile constructor
@@ -34,10 +36,12 @@ public class EncounteredHostile implements EncounteredHostileInterface
         this.attack = hostile.getAttack();
         this.attackRoll = 0;
         this.currentHp = hostile.getHitpoints();
-        this.maxHp = hostile.getHitpoints();
+        this.hasNickname = name != null;
         this.hostile = hostile;
+        this.maxHp = hostile.getHitpoints();
         this.name = name != null ? name : hostile.getSpecies();
         this.slayer = new Slayer();
+        this.species = hostile.getSpecies();
     }
 
     /**
@@ -118,7 +122,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
     @Override
     public @NotNull String getSpecies()
     {
-        return hostile.getSpecies();
+        return species;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasNickname()
+    {
+        return hasNickname;
     }
 
     /**
@@ -164,7 +176,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
 
-        int hurtHp;
+        boolean wasBloodied = isBloodied();
+        int     hurtHp;
+
         if (this.currentHp - hitpoints < 0) {
             hurtHp = currentHp - hitpoints;
             currentHp = 0;
@@ -173,7 +187,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
             currentHp -= hitpoints;
         }
 
-        return new HurtActionResult(name, hurtHp, currentHp, maxHp);
+        return new HurtActionResult(name, hurtHp, currentHp, maxHp, wasBloodied);
     }
 
     /**

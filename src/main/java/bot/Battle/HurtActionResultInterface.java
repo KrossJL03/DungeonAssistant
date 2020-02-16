@@ -16,7 +16,7 @@ public interface HurtActionResultInterface extends ActionResultInterface
      *
      * @return int
      */
-    int getHealedHp();
+    int getHurtHp();
 
     /**
      * Get max hitpoints of hurt creature
@@ -38,4 +38,11 @@ public interface HurtActionResultInterface extends ActionResultInterface
      * @return boolean
      */
     boolean isSlain();
+
+    /**
+     * Was the target bloodied before being hurt
+     *
+     * @return boolean
+     */
+    boolean wasBloodied();
 }

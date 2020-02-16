@@ -18,11 +18,12 @@ class HostileRosterException extends RuntimeException implements EncounterExcept
      * Factory method of "is slain"
      *
      * @param hostileName Nickname
-     * @param slayerName Slayer name
+     * @param slayerName  Slayer name
      *
      * @return HostileRosterException
      */
-    static @NotNull HostileRosterException createIsSlain(@NotNull String hostileName, @NotNull String slayerName) {
+    static @NotNull HostileRosterException createIsSlain(@NotNull String hostileName, @NotNull String slayerName)
+    {
         return new HostileRosterException(String.format("%s was slain by %s", hostileName, slayerName));
     }
 
@@ -36,5 +37,17 @@ class HostileRosterException extends RuntimeException implements EncounterExcept
     static @NotNull HostileRosterException createNicknameInUse(@NotNull String nickname)
     {
         return new HostileRosterException(String.format("There's already a hostile named %s in this battle", nickname));
+    }
+
+    /**
+     * Factory method of "is null"
+     *
+     * @return HostileRosterException
+     */
+    static @NotNull HostileRosterException createNullRoster()
+    {
+        return new HostileRosterException(
+            "This type of battle does not have hostiles. To play with hostiles create a different type of battle."
+        );
     }
 }

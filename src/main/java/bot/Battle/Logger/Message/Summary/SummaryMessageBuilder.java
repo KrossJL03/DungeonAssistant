@@ -1,10 +1,10 @@
 package bot.Battle.Logger.Message.Summary;
 
-import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredCreature.Slayer;
+import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.EncounteredHostileInterface;
-import bot.Battle.Logger.Message.*;
+import bot.Battle.Logger.Message.DiffCodeFormatter;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,26 +25,78 @@ public class SummaryMessageBuilder
     /**
      * Build summary message
      *
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostiles  Encountered hostiles
+     * @param creatures Creatures
      *
      * @return String
      */
-    public @NotNull String buildSummary(
-        @NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
+    public @NotNull String buildSummary(@NotNull ArrayList<EncounteredCreatureInterface> creatures)
+    {
+        ArrayList<EncounteredExplorerInterface> explorers = new ArrayList<>();
+        ArrayList<EncounteredHostileInterface>  hostiles  = new ArrayList<>();
+
+        for (EncounteredCreatureInterface creature : creatures) {
+            if (creature instanceof EncounteredExplorerInterface) {
+                explorers.add((EncounteredExplorerInterface) creature);
+            }
+            if (creature instanceof EncounteredHostileInterface) {
+                hostiles.add((EncounteredHostileInterface) creature);
+            }
+        }
+
+        if (hostiles.isEmpty()) {
+            return buildPvpSummary(explorers);
+        } else {
+            return buildHostileEncounterSummary(explorers, hostiles);
+        }
+    }
+
+    /**
+     * Add explorers to message
+     *
+     * @param message   Message
+     * @param explorers Explorers
+     */
+    private void addExplorers(
+        @NotNull SummaryMessage message,
+        @NotNull ArrayList<EncounteredExplorerInterface> explorers
+    )
+    {
+        message.addLine();
+        message.add("Explorers");
+        message.addLine();
+
+        for (EncounteredExplorerInterface encounteredExplorer : explorers) {
+            message.add(getNameLine(encounteredExplorer));
+            String healthBar = getHealthBarLine(encounteredExplorer);
+            if (!healthBar.isEmpty()) {
+                message.add(healthBar);
+            }
+        }
+    }
+
+    /**
+     * Build hostile encounter summary
+     *
+     * @param explorers Explorers
+     * @param hostiles  Hostiles
+     *
+     * @return String
+     */
+    private @NotNull String buildHostileEncounterSummary(
+        @NotNull ArrayList<EncounteredExplorerInterface> explorers,
+        @NotNull ArrayList<EncounteredHostileInterface> hostiles
     )
     {
         SummaryMessage message = new SummaryMessage();
 
         message.startCodeBlock(codeFormatter.getStyle());
-        message.add(WordUtils.capitalize("ENCOUNTER SUMMARY"));
+        message.add(WordUtils.capitalize("HOSTILE ENCOUNTER SUMMARY"));
         message.addBreak();
         message.addLine();
         message.add("Hostiles");
         message.addLine();
 
-        for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
+        for (EncounteredHostileInterface encounteredHostile : hostiles) {
             message.add(getNameLine(encounteredHostile));
             String healthBar = getHealthBarLine(encounteredHostile);
             if (!healthBar.isEmpty()) {
@@ -52,17 +104,27 @@ public class SummaryMessageBuilder
             }
         }
 
-        message.addLine();
-        message.add("Explorers");
-        message.addLine();
+        addExplorers(message, explorers);
+        message.endCodeBlock();
 
-        for (EncounteredExplorerInterface encounteredExplorer : encounteredExplorers) {
-            message.add(getNameLine(encounteredExplorer));
-            String healthBar = getHealthBarLine(encounteredExplorer);
-            if (!healthBar.isEmpty()) {
-                message.add(healthBar);
-            }
-        }
+        return message.getAsString();
+    }
+
+    /**
+     * Build pvp summary
+     *
+     * @param explorers Explorers
+     *
+     * @return String
+     */
+    private @NotNull String buildPvpSummary(@NotNull ArrayList<EncounteredExplorerInterface> explorers)
+    {
+        SummaryMessage message = new SummaryMessage();
+
+        message.startCodeBlock(codeFormatter.getStyle());
+        message.add(WordUtils.capitalize("PVP SUMMARY"));
+        message.addBreak();
+        addExplorers(message, explorers);
         message.endCodeBlock();
 
         return message.getAsString();

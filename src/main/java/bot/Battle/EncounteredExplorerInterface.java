@@ -179,7 +179,7 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @throws EncounteredExplorerException If explorer has already left
      */
-    void leave() throws EncounteredExplorerException;
+    void markAsNotPresent() throws EncounteredExplorerException;
 
     /**
      * Protect recipient from encountered hostile attacks
@@ -205,7 +205,7 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @throws EncounteredExplorerException If explorer is already present
      */
-    void rejoin() throws EncounteredExplorerException;
+    void markAsPresent() throws EncounteredExplorerException;
 
     /**
      * Remove opponent that is no longer eligible for loot

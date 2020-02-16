@@ -6,38 +6,34 @@ import java.util.ArrayList;
 
 public class PhaseChangeResult implements EncounterRosterDataInterface
 {
-    private ArrayList<EncounteredExplorerInterface> encounteredExplorers;
-    private ArrayList<EncounteredHostileInterface>  encounteredHostile;
+    private ArrayList<EncounteredCreatureInterface> creatures;
+    private int                                     currentPlayerCount;
+    private int                                     maxPlayerCount;
     private EncounterPhaseInterface                 nextPhase;
     private EncounterPhaseInterface                 previousPhase;
     private TierInterface                           tier;
-    private int                                     currentPlayerCount;
-    private int                                     maxPlayerCount;
 
     /**
-     * PhaseChangeResult constructor
+     * Constructor.
      *
-     * @param nextPhase            Next phase
-     * @param previousPhase        Previous phase
-     * @param tier                 Tier
-     * @param encounteredExplorers Encountered explorers
-     * @param encounteredHostile   Encountered hostiles
-     * @param maxPlayerCount       Max player count
-     * @param currentPlayerCount   Current player count
+     * @param nextPhase          Next phase
+     * @param previousPhase      Previous phase
+     * @param creatures          Creatures in the encounter
+     * @param tier               Tier
+     * @param maxPlayerCount     Max player count
+     * @param currentPlayerCount Current player count
      */
     PhaseChangeResult(
         EncounterPhaseInterface nextPhase,
         EncounterPhaseInterface previousPhase,
+        ArrayList<EncounteredCreatureInterface> creatures,
         TierInterface tier,
-        ArrayList<EncounteredExplorerInterface> encounteredExplorers,
-        ArrayList<EncounteredHostileInterface> encounteredHostile,
         int maxPlayerCount,
         int currentPlayerCount
     )
     {
+        this.creatures = creatures;
         this.currentPlayerCount = currentPlayerCount;
-        this.encounteredExplorers = encounteredExplorers;
-        this.encounteredHostile = encounteredHostile;
         this.maxPlayerCount = maxPlayerCount;
         this.nextPhase = nextPhase;
         this.previousPhase = previousPhase;
@@ -57,18 +53,9 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredExplorerInterface> getExplorers()
+    public @NotNull ArrayList<EncounteredCreatureInterface> getCreatures()
     {
-        return new ArrayList<>(encounteredExplorers);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull ArrayList<EncounteredHostileInterface> getHostiles()
-    {
-        return new ArrayList<>(encounteredHostile);
+        return new ArrayList<>(creatures);
     }
 
 

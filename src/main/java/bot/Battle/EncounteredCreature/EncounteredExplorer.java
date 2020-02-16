@@ -1,6 +1,5 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Constant;
 import bot.Battle.DodgeResultInterface;
 import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredExplorerInterface;
@@ -12,6 +11,7 @@ import bot.Battle.HurtActionResultInterface;
 import bot.Battle.LootRollInterface;
 import bot.Battle.ModifyStatActionResultInterface;
 import bot.Battle.ProtectActionResultInterface;
+import bot.Constant;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -85,8 +85,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     {
         if (!hasActions()) {
             throw EncounteredExplorerException.createHasNoActions(name);
-        } else if (target.isSlain()) {
-            throw EncounteredCreatureException.createIsSlain(target.getName(), target.getSlayer().getName());
         }
 
         HitRoll hitRoll    = rollToHit();
@@ -431,7 +429,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
         }
 
-        int hurtHp;
+        boolean wasBloodied = isBloodied();
+        int     hurtHp;
+
         if (currentHp - hitpoints < 0) {
             hurtHp = currentHp;
             currentHp = 0;
@@ -440,7 +440,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp -= hitpoints;
         }
 
-        return new HurtActionResult(name, hurtHp, currentHp, maxHp);
+        return new HurtActionResult(name, hurtHp, currentHp, maxHp, wasBloodied);
     }
 
     /**
@@ -501,12 +501,26 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public void leave() throws EncounteredExplorerException
+    public void markAsNotPresent() throws EncounteredExplorerException
     {
         if (!isPresent()) {
             throw EncounteredExplorerException.createHasAleadyLeft(owner);
         }
+
         isPresent = false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void markAsPresent() throws EncounteredExplorerException
+    {
+        if (isPresent()) {
+            throw EncounteredExplorerException.createCannotRejoinIfPresent(owner);
+        }
+
+        isPresent = true;
     }
 
     /**
@@ -585,18 +599,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             maxHp,
             slayer
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void rejoin() throws EncounteredExplorerException
-    {
-        if (isPresent()) {
-            throw EncounteredExplorerException.createCannotRejoinIfPresent(owner);
-        }
-        this.isPresent = true;
     }
 
     /**

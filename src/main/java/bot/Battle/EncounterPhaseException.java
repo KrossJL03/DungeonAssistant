@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Battle.Logger.Mention;
 import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,6 +74,21 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     }
 
     /**
+     * Factory method for "not join phase"
+     *
+     * @return EncounterPhaseException
+     */
+    static @NotNull EncounterPhaseException createNotJoinPhase(Mention mention)
+    {
+        return new EncounterPhaseException(
+            String.format(
+                "Sorry %s, looks like you missed your chance. It's too late to join this encounter.",
+                mention.getValue()
+            )
+        );
+    }
+
+    /**
      * Factory method for "not loot phase"
      *
      * @return EncounterPhaseException
@@ -141,16 +157,6 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     }
 
     /**
-     * Factory method for "start in progress encounter"
-     *
-     * @return EncounterPhaseException
-     */
-    static @NotNull EncounterPhaseException createStartInProgressEncounter()
-    {
-        return new EncounterPhaseException("Hold your Capra! This encounter is already in progress.");
-    }
-
-    /**
      * Factory method for "start current phase"
      *
      * @return EncounterPhaseException
@@ -158,6 +164,16 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     static @NotNull EncounterPhaseException createStartCurrentPhase(@NotNull String phase)
     {
         return new EncounterPhaseException(String.format("The %s turn is already in progress", phase));
+    }
+
+    /**
+     * Factory method for "start in progress encounter"
+     *
+     * @return EncounterPhaseException
+     */
+    static @NotNull EncounterPhaseException createStartInProgressEncounter()
+    {
+        return new EncounterPhaseException("Hold your Capra! This encounter is already in progress.");
     }
 
     /**

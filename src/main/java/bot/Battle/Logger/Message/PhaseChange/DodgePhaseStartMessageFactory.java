@@ -1,8 +1,9 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
 import bot.Battle.EncounterPhaseInterface;
+import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredHostileInterface;
-import bot.Battle.Logger.Message.*;
+import bot.Battle.Logger.Message.MLCodeFormatter;
 import bot.Battle.PhaseChangeResult;
 import bot.MessageInterface;
 import bot.MyProperties;
@@ -21,18 +22,6 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
     {
         this.codeFormatter = new MLCodeFormatter();
         this.textFormatter = new TextFormatter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
-    )
-    {
-        return nextPhase.isDodgePhase();
     }
 
     /**
@@ -64,15 +53,15 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format("%s attack the party!", codeFormatter.makeRed("Hostiles")));
         message.addNewLine();
-        for (EncounteredHostileInterface hostile : result.getHostiles()) {
-            if (!hostile.isSlain()) {
-                totalDamage += hostile.getAttackRoll();
+        for (EncounteredCreatureInterface creature : result.getCreatures()) {
+            if (creature instanceof EncounteredHostileInterface && !creature.isSlain()) {
+                totalDamage += ((EncounteredHostileInterface) creature).getAttackRoll();
                 message.add(String.format(
                     "d%-2d %s %2d dmg from %s!",
-                    hostile.getAttackDice(),
+                    creature.getAttackDice(),
                     PhaseChangeMessage.DOUBLE_ARROW,
-                    hostile.getAttackRoll(),
-                    codeFormatter.makeRed(hostile.getName())
+                    ((EncounteredHostileInterface) creature).getAttackRoll(),
+                    codeFormatter.makeRed(creature.getName())
                 ));
             }
         }
@@ -81,5 +70,17 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
         message.endCodeBlock();
 
         return message;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(
+        @NotNull EncounterPhaseInterface previousPhase,
+        @NotNull EncounterPhaseInterface nextPhase
+    )
+    {
+        return nextPhase.isDodgePhase();
     }
 }

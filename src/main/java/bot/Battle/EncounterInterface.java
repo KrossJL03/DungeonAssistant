@@ -23,6 +23,13 @@ public interface EncounterInterface extends ProcessInterface
         throws EncounterPhaseException, NotYourTurnException;
 
     /**
+     * Get all creatures
+     *
+     * @return ArrayList
+     */
+    @NotNull ArrayList<EncounteredCreatureInterface> getAllCreatures();
+
+    /**
      * Get all explorers
      *
      * @return ArrayList<EncounteredHostileInterface>
@@ -34,7 +41,7 @@ public interface EncounterInterface extends ProcessInterface
      *
      * @return String
      */
-    @NotNull String getEncounterType();
+    @NotNull String getBattleStyle();
 
     /**
      * Heal encountered creature with given name by given amount of hitpoints
@@ -143,6 +150,15 @@ public interface EncounterInterface extends ProcessInterface
     ) throws EncounterPhaseException;
 
     /**
+     * Set tier
+     *
+     * @param tier Tier
+     *
+     * @throws EncounterPhaseException If not create phase
+     */
+    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
+
+    /**
      * Skip current player turn
      *
      * @throws EncounterPhaseException If encounter is over
@@ -174,15 +190,6 @@ public interface EncounterInterface extends ProcessInterface
      *                                 If hostiles have not been added
      */
     void startJoinPhase() throws EncounterPhaseException;
-
-    /**
-     * Set tier
-     *
-     * @param tier Tier
-     *
-     * @throws EncounterPhaseException If not create phase
-     */
-    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
 
     /**
      * Use all current explorer actions

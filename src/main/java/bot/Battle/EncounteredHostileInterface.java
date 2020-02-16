@@ -32,6 +32,13 @@ public interface EncounteredHostileInterface extends EncounteredCreatureInterfac
     @NotNull String getSpecies();
 
     /**
+     * Does this hostile have a nickname
+     *
+     * @return boolean
+     */
+    boolean hasNickname();
+
+    /**
      * Set name
      *
      * @param name Name

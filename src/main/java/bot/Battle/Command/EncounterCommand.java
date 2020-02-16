@@ -1,8 +1,8 @@
 package bot.Battle.Command;
 
+import bot.Battle.HostileEncounter;
 import bot.Command;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
-import bot.Battle.Encounter;
 import bot.Battle.EncounterHolder;
 import bot.CommandParameter;
 import bot.Battle.EncounterInterface;
@@ -109,13 +109,14 @@ abstract class EncounterCommand extends Command
      *
      * @throws EncounterCommandException If encounter is not hostile encounter
      */
-    final protected @NotNull Encounter getHostileEncounter()
+    final protected @NotNull HostileEncounter getHostileEncounter()
     {
         EncounterInterface encounter = getEncounter();
-        if (encounter instanceof Encounter) {
-            return (Encounter) encounter;
+        if (encounter instanceof HostileEncounter) {
+            return (HostileEncounter) encounter;
         }
-        throw EncounterCommandException.createWrongEncounterType(getCommandName(), encounter.getEncounterType());
+
+        throw EncounterCommandException.createWrongEncounterType(getCommandName(), encounter.getBattleStyle());
     }
 
     /**

@@ -2,8 +2,6 @@ package bot.Battle.Command;
 
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.EncounterInterface;
-import bot.Battle.HostileEncounter;
 import bot.Battle.Logger.EncounterLogger;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -11,8 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ViewSummaryCommand extends EncounterCommand
+public class CreatePvpCommand extends EncounterCommand
 {
+    private EncounterHolder holder;
+
     /**
      * Constructor.
      *
@@ -21,23 +21,23 @@ public class ViewSummaryCommand extends EncounterCommand
      * @param logger         Encounter logger
      * @param dmChecker      Dungeon master checker
      */
-    ViewSummaryCommand(
+    CreatePvpCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
-    )
-    {
+    ){
         super(
             processManager,
             holder,
             logger,
             dmChecker,
-            "view summary",
+            "create pvp",
             new ArrayList<>(),
-            "View encounter summary.",
+            "Begin creating a new pvp style battle.",
             true
         );
+        this.holder = holder;
     }
 
     /**
@@ -46,7 +46,8 @@ public class ViewSummaryCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        EncounterInterface encounter = getEncounter();
-        getLogger().logSummary(encounter.getAllCreatures());
+        removeProcessToManager(holder.getEncounter());
+        holder.createPvp(event.getChannel(), getDungeonMaster(event).getId());
+        addProcessToManager(holder.getEncounter());
     }
 }

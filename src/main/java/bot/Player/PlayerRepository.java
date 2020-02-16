@@ -190,7 +190,7 @@ public class PlayerRepository
                      "(" +
                      String.format(" %s TEXT PRIMARY KEY NOT NULL,     ", COLUMN_USER_ID) +
                      String.format(" %s TEXT             NOT NULL,     ", COLUMN_NAME) +
-                     String.format(" %s INT              DEFAULT 0     ", COLUMN_CUMULUS) +
+                     String.format(" %s INT              DEFAULT 0,    ", COLUMN_CUMULUS) +
                      String.format(" %s BOOL             DEFAULT FALSE ", COLUMN_IS_MOD) +
                      ")";
         PlayerRepository.executeUpdate(sql);

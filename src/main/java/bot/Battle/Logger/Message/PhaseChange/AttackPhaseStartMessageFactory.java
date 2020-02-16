@@ -42,7 +42,7 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
         message.add(textFormatter.makeBold("ATTACK TURN!"));
         message.add(String.format(
             "Please use %s to attack. Ex: %s",
-            textFormatter.makeCode(String.format("%sattack [HostileName]", MyProperties.COMMAND_PREFIX)),
+            textFormatter.makeCode(String.format("%sattack [TargetName]", MyProperties.COMMAND_PREFIX)),
             textFormatter.makeCode(String.format("%sattack Stanley", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(

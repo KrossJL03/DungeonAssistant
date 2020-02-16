@@ -20,7 +20,7 @@ class HurtActionMessageFactory extends ActionMessageFactory
         message.add(String.format(
             "%s takes %d dmg! [%d/%d]",
             result.getName(),
-            result.getHealedHp(),
+            result.getHurtHp(),
             result.getCurrentHp(),
             result.getMaxHp()
         ));

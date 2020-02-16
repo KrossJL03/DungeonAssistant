@@ -36,7 +36,7 @@ public class AttackCommand extends EncounterCommand
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("CreatureName", true));
+                    add(new CommandParameter("TargetName", true));
                 }
             },
             "Attack a creature during the attack turn",
