@@ -452,6 +452,32 @@ public class Encounter implements EncounterInterface
     }
 
     /**
+     * Modify stat for all explorers
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    public void modifyStatForAllExplorers(@NotNull String statName, int statModifier)
+    {
+        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statModifier);
+        }
+    }
+
+    /**
+     * Modify stat for all hostiles
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    public void modifyStatForAllHostiles(@NotNull String statName, int statModifier)
+    {
+        for (EncounteredHostileInterface hostile : getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statModifier);
+        }
+    }
+
+    /**
      * Pass action
      *
      * @throws EncounterPhaseException If encounter is over
@@ -553,7 +579,7 @@ public class Encounter implements EncounterInterface
             encounterCreature instanceof EncounteredHostileInterface
             && result.wasTargetRevived()
             && !encounterCreature.isBloodied()
-            ) {
+        ) {
             addOpponentToActiveExplorers(encounterCreature);
         }
 
@@ -588,6 +614,32 @@ public class Encounter implements EncounterInterface
         ModifyStatActionResultInterface result              = encounteredCreature.setStat(statName, statValue);
         explorerRoster.sort();
         listener.onAction(result);
+    }
+
+    /**
+     * Set stat for all explorers
+     *
+     * @param statName  Stat name
+     * @param statValue Amount to modify stat
+     */
+    public void setStatForAllExplorers(@NotNull String statName, int statValue)
+    {
+        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statValue);
+        }
+    }
+
+    /**
+     * Set stat for all hostiles
+     *
+     * @param statName  Stat name
+     * @param statValue Stat value
+     */
+    public void setStatForAllHostiles(@NotNull String statName, int statValue)
+    {
+        for (EncounteredHostileInterface hostile : getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statValue);
+        }
     }
 
     /**

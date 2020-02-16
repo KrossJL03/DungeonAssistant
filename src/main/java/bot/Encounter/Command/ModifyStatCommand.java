@@ -41,8 +41,9 @@ public class ModifyStatCommand extends EncounterCommand
                     add(new CommandParameter("Amount", true));
                 }
             },
-            "Temporarily set a creature's stat to the amount for the duration of the encounter. " +
-            "Add '+' or '-' to the amount to increase or decrease the stat by the given amount.",
+            "Temporarily set a target or group's stat to the amount for the duration of the encounter. " +
+            "Add '+' or '-' to the amount to increase or decrease the stat by the given amount. " +
+            "Group options: pcs, hostiles.",
             true
         );
     }
@@ -56,17 +57,42 @@ public class ModifyStatCommand extends EncounterCommand
         String[] parameters  = getParametersFromEvent(event);
         String   targetName  = parameters[0];
         String   statName    = parameters[1];
-        String   boostString = parameters[2];
+        String   valueString = parameters[2];
+        boolean  isModify    = false;
+        int      valueInt;
 
-        if (boostString.startsWith("-")) {
-            int boostAmount = Integer.parseInt(boostString.substring(1).trim());
-            getEncounter().modifyStat(targetName, statName, 0 - boostAmount);
-        } else if (boostString.startsWith("+")) {
-            int boostAmount = Integer.parseInt(boostString.substring(1).trim());
-            getEncounter().modifyStat(targetName, statName, boostAmount);
+        if (valueString.startsWith("-")) {
+            valueInt = 0 - Integer.parseInt(valueString.substring(1).trim());
+            isModify = true;
+        } else if (valueString.startsWith("+")) {
+            valueInt = Integer.parseInt(valueString.substring(1).trim());
+            isModify = true;
         } else {
-            int statValue = Integer.parseInt(boostString.trim());
-            getEncounter().setStat(targetName, statName, statValue);
+            valueInt = Integer.parseInt(valueString.trim());
+        }
+
+        switch (targetName) {
+            case "pcs":
+                if (isModify) {
+                    getHostileEncounter().modifyStatForAllExplorers(statName, valueInt);
+                } else {
+                    getHostileEncounter().setStatForAllExplorers(statName, valueInt);
+                }
+                break;
+            case "hostiles":
+                if (isModify) {
+                    getHostileEncounter().modifyStatForAllHostiles(statName, valueInt);
+                } else {
+                    getHostileEncounter().setStatForAllHostiles(statName, valueInt);
+                }
+                break;
+            default:
+                if (isModify) {
+                    getHostileEncounter().modifyStat(targetName, statName, valueInt);
+                } else {
+                    getHostileEncounter().setStat(targetName, statName, valueInt);
+                }
+                break;
         }
     }
 }
