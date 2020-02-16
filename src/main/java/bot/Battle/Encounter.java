@@ -152,6 +152,15 @@ abstract class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public boolean isOver()
+    {
+        return currentPhase.isFinalPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
     {
         assertNotFinalPhase();
@@ -380,6 +389,25 @@ abstract class Encounter implements EncounterInterface
         assertInitiativePhase();
 
         EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer();
+        encounteredExplorer.useAction();
+        handleEndOfAction();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void useItemAction(@NotNull Player player)
+    {
+        if (!currentPhase.isAttackPhase()) {
+            return;
+        }
+
+        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
+        if (!encounteredExplorer.isOwner(player)) {
+            throw NotYourTurnException.createNotYourTurn();
+        }
+
         encounteredExplorer.useAction();
         handleEndOfAction();
     }

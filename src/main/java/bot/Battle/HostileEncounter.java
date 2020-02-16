@@ -167,6 +167,22 @@ public class HostileEncounter extends Encounter
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterPhaseException
+    {
+        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
+
+        if (hitpoints > 0) {
+            heal(currentExplorer.getName(), hitpoints);
+        }
+        currentExplorer.giveProtectAction();
+
+        doProtect(currentExplorer, targetName);
+    }
+
+    /**
      * Pass action
      *
      * @throws EncounterPhaseException If encounter is over
@@ -191,30 +207,26 @@ public class HostileEncounter extends Encounter
     /**
      * Protect action
      *
-     * @param player Owner of current explorer
-     * @param name   Name of explorer to protect
+     * @param player     Owner of current explorer
+     * @param targetName Name of explorer to protect
      *
      * @throws EncounterPhaseException If not dodge phase
      */
-    public void protectAction(@NotNull Player player, @NotNull String name)
+    public void protectAction(@NotNull Player player, @NotNull String targetName)
         throws EncounterPhaseException
     {
-        assertDodgePhase();
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (!currentPhase.isDodgePhase()) {
+            throw EncounterPhaseException.createNotProtectPhase();
+        }
 
         EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
         if (!currentExplorer.isOwner(player)) {
             throw NotYourTurnException.createNotYourTurn();
         }
 
-        EncounteredExplorerInterface protectedCharacter = getExplorer(name);
-        ProtectActionResultInterface result = currentExplorer.protect(
-            protectedCharacter,
-            hostileRoster.getActiveHostiles()
-        );
-
-        logger.logAction(result);
-        postDodgePhaseAction(currentExplorer);
-        handleEndOfAction();
+        doProtect(currentExplorer, targetName);
     }
 
     /**
@@ -432,6 +444,25 @@ public class HostileEncounter extends Encounter
         } else if (!currentPhase.isDodgePhase()) {
             throw EncounterPhaseException.createNotDodgePhase();
         }
+    }
+
+    /**
+     * Do protect
+     *
+     * @param protector  Explorer doing the protecting
+     * @param targetName Name of the protected target
+     */
+    private void doProtect(@NotNull EncounteredExplorerInterface protector, @NotNull String targetName)
+    {
+        EncounteredExplorerInterface protectedExplorer = getExplorer(targetName);
+        ProtectActionResultInterface result = protector.protect(
+            protectedExplorer,
+            hostileRoster.getActiveHostiles()
+        );
+
+        logger.logAction(result);
+        postDodgePhaseAction(protector);
+        handleEndOfAction();
     }
 
     /**
