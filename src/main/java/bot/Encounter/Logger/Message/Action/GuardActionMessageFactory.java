@@ -40,6 +40,7 @@ class GuardActionMessageFactory extends CombatActionMessageFactory
 
         message.addBreak();
         message.add(getDamageDealtLine(result, true));
+        message.add(getDeathSavingThrowLine(result));
         message.add(getTargetStatusLine(result));
         message.endCodeBlock();
 

@@ -3,18 +3,20 @@ package bot.Encounter.EncounteredCreature;
 import bot.Encounter.DodgeActionResultInterface;
 import bot.Encounter.DodgeResultInterface;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public class DodgeActionResult implements DodgeActionResultInterface
 {
+    private DeathSaveRoll                   deathSaveRoll;
     private ArrayList<DodgeResultInterface> dodgeResults;
-    private Slayer                          targetSlayer;
-    private String                          targetName;
+    private boolean                         isForcedFail;
     private int                             targetCurrentHp;
     private int                             targetDodgeDie;
     private int                             targetMaxHp;
-    private boolean                         isForcedFail;
+    private String                          targetName;
+    private Slayer                          targetSlayer;
 
     /**
      * DodgeActionResult constructor
@@ -26,6 +28,7 @@ public class DodgeActionResult implements DodgeActionResultInterface
      * @param targetMaxHp     Target max hp
      * @param targetSlayer    Target slayer
      * @param isForcedFail    Was this action a forced fail
+     * @param deathSaveRoll   Death save roll
      */
     @NotNull DodgeActionResult(
         @NotNull String targetName,
@@ -34,9 +37,11 @@ public class DodgeActionResult implements DodgeActionResultInterface
         int targetCurrentHp,
         int targetMaxHp,
         @NotNull Slayer targetSlayer,
-        boolean isForcedFail
+        boolean isForcedFail,
+        @Nullable DeathSaveRoll deathSaveRoll
     )
     {
+        this.deathSaveRoll = deathSaveRoll;
         this.dodgeResults = dodgeResults;
         this.isForcedFail = isForcedFail;
         this.targetCurrentHp = targetCurrentHp;
@@ -85,6 +90,24 @@ public class DodgeActionResult implements DodgeActionResultInterface
      * {@inheritDoc}
      */
     @Override
+    public int getDeathSaveDie()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getDie() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveRoll()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getRoll() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public @NotNull ArrayList<DodgeResultInterface> getDodgeResults()
     {
         return dodgeResults;
@@ -106,6 +129,15 @@ public class DodgeActionResult implements DodgeActionResultInterface
     public int getTargetCurrentHp()
     {
         return targetCurrentHp;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getTargetDodgeDie()
+    {
+        return targetDodgeDie;
     }
 
     /**
@@ -148,15 +180,6 @@ public class DodgeActionResult implements DodgeActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getTargetDodgeDie()
-    {
-        return targetDodgeDie;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isTargetExplorer()
     {
         return true;
@@ -169,5 +192,23 @@ public class DodgeActionResult implements DodgeActionResultInterface
     public boolean isTargetSlain()
     {
         return targetCurrentHp < 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean rolledDeathSave()
+    {
+        return deathSaveRoll != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean survivedDeathSave()
+    {
+        return rolledDeathSave() && deathSaveRoll.survived();
     }
 }

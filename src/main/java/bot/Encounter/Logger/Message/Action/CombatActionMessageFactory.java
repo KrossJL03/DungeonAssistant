@@ -42,6 +42,34 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
     }
 
     /**
+     * Get death saving throw line
+     *
+     * @param result Action result
+     *
+     * @return String
+     */
+    final protected String getDeathSavingThrowLine(@NotNull CombatActionResultInterface result)
+    {
+        if (result.rolledDeathSave()) {
+            return String.format(
+                "" +
+                "d%s %s" +
+                "%d %s %s!" +
+                "",
+                result.getDeathSaveDie(),
+                codeFormatter.makeRed("death save die"),
+                result.getDeathSaveRoll(),
+                ActionMessage.DOUBLE_ARROW,
+                result.survivedDeathSave()
+                ? codeFormatter.makeYellow("Success")
+                : codeFormatter.makeRed("FAIL")
+            );
+        } else {
+            return "";
+        }
+    }
+
+    /**
      * Get "hit for full damage" line
      *
      * @param name Target name
@@ -56,7 +84,6 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
             codeFormatter.makeRed("full")
         );
     }
-
 
     /**
      * Get target status line

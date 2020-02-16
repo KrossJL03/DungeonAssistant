@@ -3,42 +3,48 @@ package bot.Encounter.EncounteredCreature;
 import bot.Encounter.Logger.Mention;
 import bot.Encounter.ProtectActionResultInterface;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ProtectActionResult implements ProtectActionResultInterface
 {
-    private Slayer targetSlayer;
-    private String protectedName;
-    private String protectedOwnerId;
-    private String targetName;
-    private int    damageDealt;
-    private int    damageResisted;
-    private int    targetCurrentHp;
-    private int    targetMaxHp;
+    private int           damageDealt;
+    private int           damageResisted;
+    private DeathSaveRoll deathSaveRoll;
+    private String        protectedName;
+    private String        protectedOwnerId;
+    private int           targetCurrentHp;
+    private int           targetMaxHp;
+    private String        targetName;
+    private Slayer        targetSlayer;
 
     /**
      * ProtectActionResult constructor
      *
-     * @param targetName      Target name
-     * @param protectedName   Name of protected explorer
-     * @param protectedOwnerId  User id of protected owner
-     * @param damageDealt     Damage dealt to target
-     * @param damageResisted  Damage resisted by target
-     * @param targetCurrentHp Target current hp
-     * @param targetMaxHp     Target max hp
-     * @param targetSlayer    Target slayer
+     * @param targetName       Target name
+     * @param protectedName    Name of protected explorer
+     * @param protectedOwnerId User id of protected owner
+     * @param damageDealt      Damage dealt to target
+     * @param damageResisted   Damage resisted by target
+     * @param targetCurrentHp  Target current hp
+     * @param targetMaxHp      Target max hp
+     * @param targetSlayer     Target slayer
+     * @param deathSaveRoll    Death save roll
      */
     @NotNull ProtectActionResult(
-        String targetName,
+        @NotNull String targetName,
         @NotNull String protectedName,
         @NotNull String protectedOwnerId,
         int damageDealt,
         int damageResisted,
         int targetCurrentHp,
         int targetMaxHp,
-        @NotNull Slayer targetSlayer
-    ) {
+        @NotNull Slayer targetSlayer,
+        @Nullable DeathSaveRoll deathSaveRoll
+    )
+    {
         this.damageDealt = damageDealt;
         this.damageResisted = damageResisted;
+        this.deathSaveRoll = deathSaveRoll;
         this.protectedName = protectedName;
         this.protectedOwnerId = protectedOwnerId;
         this.targetCurrentHp = targetCurrentHp;
@@ -51,7 +57,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDamageDealt() {
+    public int getDamageDealt()
+    {
         return damageDealt;
     }
 
@@ -59,7 +66,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getDamageResisted() {
+    public int getDamageResisted()
+    {
         return damageResisted;
     }
 
@@ -67,7 +75,26 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getProtectedName() {
+    public int getDeathSaveDie()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getDie() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDeathSaveRoll()
+    {
+        return rolledDeathSave() ? deathSaveRoll.getRoll() : -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull String getProtectedName()
+    {
         return protectedName;
     }
 
@@ -75,7 +102,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Mention getProtectedOwnerMention() {
+    public @NotNull Mention getProtectedOwnerMention()
+    {
         return Mention.createForPlayer(protectedOwnerId);
     }
 
@@ -83,7 +111,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getTargetCurrentHp() {
+    public int getTargetCurrentHp()
+    {
         return targetCurrentHp;
     }
 
@@ -91,7 +120,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public int getTargetMaxHp() {
+    public int getTargetMaxHp()
+    {
         return targetMaxHp;
     }
 
@@ -99,7 +129,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String getTargetName() {
+    public @NotNull String getTargetName()
+    {
         return targetName;
     }
 
@@ -107,7 +138,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull Slayer getTargetSlayer() {
+    public @NotNull Slayer getTargetSlayer()
+    {
         return targetSlayer;
     }
 
@@ -115,7 +147,8 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isTargetExplorer() {
+    public boolean isTargetExplorer()
+    {
         return true;
     }
 
@@ -123,7 +156,26 @@ public class ProtectActionResult implements ProtectActionResultInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean isTargetSlain() {
+    public boolean isTargetSlain()
+    {
         return targetCurrentHp < 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean rolledDeathSave()
+    {
+        return deathSaveRoll != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean survivedDeathSave()
+    {
+        return rolledDeathSave() && deathSaveRoll.survived();
     }
 }

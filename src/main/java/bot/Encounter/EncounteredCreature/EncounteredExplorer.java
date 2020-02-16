@@ -21,7 +21,9 @@ import java.util.ArrayList;
 
 public class EncounteredExplorer implements EncounteredExplorerInterface
 {
+    private static int DEATH_SAVE_DIE   = 50;
     private static int FINAL_BLOW_BONUS = 300;
+    private static int HIT_DIE          = 50;
 
     private int                                     agility;
     private int                                     currentActions;
@@ -149,6 +151,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new DodgeActionResult(
@@ -158,7 +162,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp,
             maxHp,
             slayer,
-            false
+            false,
+            deathSaveRoll
         );
     }
 
@@ -187,6 +192,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             dodgeResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new DodgeActionResult(
@@ -196,7 +203,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             currentHp,
             maxHp,
             slayer,
-            true
+            true,
+            deathSaveRoll
         );
     }
 
@@ -367,6 +375,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             guardResults.add(result);
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
 
         return new GuardActionResult(
@@ -375,7 +385,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             getGuardEndurance(),
             currentHp,
             maxHp,
-            slayer
+            slayer,
+            deathSaveRoll
         );
     }
 
@@ -571,6 +582,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             damageResisted += encounteredHostile.getAttackRoll() - damage;
         }
 
+        DeathSaveRoll deathSaveRoll = rollDeathSaveIfApplicable();
+
         useAction();
         useProtect();
         recipient.useAction();
@@ -583,7 +596,8 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             damageResisted,
             currentHp,
             maxHp,
-            slayer
+            slayer,
+            deathSaveRoll
         );
     }
 
@@ -623,7 +637,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     @Override
     public int rollDamage()
     {
-        return (int) Math.floor(Math.random() * this.getAttackDice()) + 1;
+        return roll(getAttackDice());
     }
 
     /**
@@ -753,7 +767,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private int getEndurance()
     {
-        return (int) Math.floor(this.defense / 2);
+        return (int) Math.floor(defense / 2);
     }
 
     /**
@@ -764,6 +778,38 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int getGuardEndurance()
     {
         return (int) Math.floor(this.defense * .75);
+    }
+
+    /**
+     * Get min roll required to survive on a death save roll
+     *
+     * @return int
+     */
+    private int getMinDeathSave()
+    {
+        if (defense < 1) {
+            return 0;
+        } else if (defense < 4) {
+            return 1;
+        } else if (defense < 6) {
+            return 2;
+        } else if (defense < 8) {
+            return 3;
+        } else if (defense < 10) {
+            return 4;
+        } else if (defense < 11) {
+            return 10;
+        } else if (defense < 14) {
+            return 11;
+        } else if (defense < 16) {
+            return 12;
+        } else if (defense < 18) {
+            return 13;
+        } else if (defense < 20) {
+            return 14;
+        } else {
+            return 20;
+        }
     }
 
     /**
@@ -893,14 +939,53 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     /**
+     * Roll a die of the given size
+     *
+     * @param die Die to roll
+     *
+     * @return int
+     */
+    private int roll(int die)
+    {
+        return (int) Math.floor(Math.random() * die) + 1;
+    }
+
+    /**
+     * Roll death save
+     */
+    private @NotNull DeathSaveRoll rollDeathSave()
+    {
+        int roll = roll(DEATH_SAVE_DIE);
+
+        return new DeathSaveRoll(roll, DEATH_SAVE_DIE, getMinDeathSave());
+    }
+
+    /**
+     * Roll death saving throw if applicable
+     *
+     * @return DeathSaveRoll
+     */
+    private @Nullable DeathSaveRoll rollDeathSaveIfApplicable()
+    {
+        DeathSaveRoll deathSaveRoll = null;
+        if (isSlain()) {
+            deathSaveRoll = rollDeathSave();
+            if (deathSaveRoll.survived()) {
+                healPoints(1);
+            }
+        }
+
+        return deathSaveRoll;
+    }
+
+    /**
      * Roll to dodge
      *
      * @return DodgeRoll
      */
     private @NotNull DodgeRoll rollToDodge()
     {
-        int roll = (int) Math.floor(Math.random() * this.getDodgeDice()) + 1;
-        return new DodgeRoll(roll);
+        return new DodgeRoll(roll(getDodgeDice()));
     }
 
     /**
@@ -910,8 +995,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      */
     private @NotNull HitRoll rollToHit()
     {
-        int roll = (int) Math.floor(Math.random() * 20) + 1;
-        return new HitRoll(roll, this.getMinCrit());
+        return new HitRoll(roll(HIT_DIE), getMinCrit());
     }
 
     /**
