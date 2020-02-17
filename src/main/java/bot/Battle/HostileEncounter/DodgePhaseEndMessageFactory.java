@@ -1,20 +1,21 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.BattlePhase;
 import bot.Battle.BattlePhaseChangeResult;
-import bot.Battle.HostileEncounter.EncounterPhase;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
+import bot.Message;
 import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class AttackPhaseEndMessageFactory implements PhaseChangeMessageFactoryInterface
+public class DodgePhaseEndMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
     /**
-     * AttackPhaseEndMessageFactory constructor.
+     * Constructor.
      */
-    @NotNull AttackPhaseEndMessageFactory()
+    @NotNull DodgePhaseEndMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -25,9 +26,9 @@ public class AttackPhaseEndMessageFactory implements PhaseChangeMessageFactoryIn
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message = new PhaseChangeMessage();
+        Message message = new Message();
 
-        message.add(textFormatter.makeBold("ATTACK TURN IS OVER!"));
+        message.add(textFormatter.makeBold("DODGE TURN IS OVER!"));
         message.add("The next turn will begin shortly.");
 
         return message;
@@ -42,6 +43,6 @@ public class AttackPhaseEndMessageFactory implements PhaseChangeMessageFactoryIn
         @NotNull BattlePhase nextPhase
     )
     {
-        return previousPhase.isAttackPhase() && ((EncounterPhase) nextPhase).isRpPhase();
+        return ((EncounterPhase) previousPhase).isDodgePhase() && ((EncounterPhase) nextPhase).isRpPhase();
     }
 }

@@ -1,7 +1,6 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle;
 
-import bot.Battle.BattlePhase;
-import bot.Battle.BattlePhaseChangeResult;
+import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -12,9 +11,9 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
     private TextFormatter textFormatter;
 
     /**
-     * AttackPhaseStartMessageFactory constructor.
+     * Constructor.
      */
-    @NotNull AttackPhaseStartMessageFactory()
+    public AttackPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -25,7 +24,7 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message = new PhaseChangeMessage();
+        Message message = new Message();
 
         message.add(textFormatter.makeBold("ATTACK TURN!"));
         message.add(String.format(

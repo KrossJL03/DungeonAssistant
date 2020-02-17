@@ -1,7 +1,6 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle;
 
-import bot.Battle.BattlePhase;
-import bot.Battle.BattlePhaseChangeResult;
+import bot.Message;
 import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
@@ -11,9 +10,9 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
     private TextFormatter textFormatter;
 
     /**
-     * EndPhaseStartMessageFactory constructor.
+     * Constructor.
      */
-    @NotNull EndPhaseStartMessageFactory()
+    public EndPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -24,7 +23,7 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message = new PhaseChangeMessage();
+        Message message = new Message();
 
         message.add(textFormatter.makeBoldItalic("THE BATTLE IS OVER!!!"));
         message.addNewLine();

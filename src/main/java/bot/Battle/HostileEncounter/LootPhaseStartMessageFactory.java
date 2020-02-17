@@ -1,8 +1,9 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.BattlePhase;
 import bot.Battle.BattlePhaseChangeResult;
-import bot.Battle.HostileEncounter.EncounterPhase;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
+import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -13,9 +14,9 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     private TextFormatter textFormatter;
 
     /**
-     * LootPhaseStartMessageFactory constructor.
+     * Constructor.
      */
-    @NotNull LootPhaseStartMessageFactory()
+    LootPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -26,7 +27,7 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message = new PhaseChangeMessage();
+        Message message = new Message();
 
         message.add(textFormatter.makeBoldItalic("THE BATTLE IS OVER!!!"));
         message.addNewLine();

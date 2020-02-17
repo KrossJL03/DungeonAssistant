@@ -1,7 +1,6 @@
 package bot.Battle.HostileEncounter;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.Battle.Mention;
 import bot.Player.Player;
@@ -20,7 +19,7 @@ class EncounterLogger extends BattleLogger
     {
         super(
             new EncounterActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
+            new EncounterPhaseChangeMessageBuilder(),
             new SummaryMessageBuilder(),
             channel,
             dmMention

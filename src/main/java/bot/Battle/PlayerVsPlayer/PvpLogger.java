@@ -1,7 +1,6 @@
 package bot.Battle.PlayerVsPlayer;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.Battle.Mention;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -19,7 +18,7 @@ class PvpLogger extends BattleLogger
     {
         super(
             new PvpActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
+            new PvpPhaseChangeMessageBuilder(),
             new SummaryMessageBuilder(),
             channel,
             dmMention

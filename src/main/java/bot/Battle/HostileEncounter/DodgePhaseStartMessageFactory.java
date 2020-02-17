@@ -1,11 +1,11 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.BattlePhase;
-import bot.Battle.CombatCreature;
-import bot.Battle.HostileEncounter.EncounterPhase;
-import bot.Battle.HostileEncounter.EncounteredHostile;
-import bot.Battle.MLCodeFormatter;
 import bot.Battle.BattlePhaseChangeResult;
+import bot.Battle.CombatCreature;
+import bot.Battle.MLCodeFormatter;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
+import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -17,7 +17,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
     private TextFormatter   textFormatter;
 
     /**
-     * DodgePhaseStartMessageFactory constructor.
+     * Constructor.
      */
     @NotNull DodgePhaseStartMessageFactory()
     {
@@ -31,8 +31,8 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message     = new PhaseChangeMessage();
-        int                totalDamage = 0;
+        Message message     = new Message();
+        int     totalDamage = 0;
 
         message.add(textFormatter.makeBold("DODGE TURN!"));
         message.add(String.format(
@@ -60,7 +60,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
                 message.add(String.format(
                     "d%-2d %s %2d dmg from %s!",
                     creature.getAttackDice(),
-                    PhaseChangeMessage.DOUBLE_ARROW,
+                    Message.DOUBLE_ARROW,
                     ((EncounteredHostile) creature).getAttackRoll(),
                     codeFormatter.makeRed(creature.getName())
                 ));

@@ -1,8 +1,6 @@
-package bot.Battle.Logger.Message.PhaseChange;
+package bot.Battle;
 
-import bot.Battle.BattlePhase;
-import bot.Battle.BattlePhaseChangeResult;
-import bot.Battle.TierInterface;
+import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -15,7 +13,7 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     /**
      * Constructor.
      */
-    @NotNull JoinPhaseStartMessageFactory()
+    public JoinPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -26,8 +24,8 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        PhaseChangeMessage message = new PhaseChangeMessage();
-        TierInterface      tier    = result.getTier();
+        Message       message = new Message();
+        TierInterface tier    = result.getTier();
 
         message.add(textFormatter.makeBold("BATTLE TIME!"));
         message.addNewLine();
