@@ -18,12 +18,12 @@ interface EncounterRosterDataInterface
      *
      * @return int
      */
-    int getCurrentPlayerCount();
+    int getCurrentPartySize();
 
     /**
      * Get max player count
      *
      * @return int
      */
-    int getMaxPlayerCount();
+    int getMaxPartySize();
 }

@@ -6,32 +6,28 @@ import java.util.ArrayList;
 
 public class BattlePhaseChangeResult implements EncounterRosterDataInterface
 {
+    private BattleContext             battleContext;
     private ArrayList<CombatCreature> creatures;
-    private int                       currentPlayerCount;
-    private int                       maxPlayerCount;
     private BattlePhaseChange         phaseChange;
     private Tier                      tier;
 
     /**
      * Constructor.
      *
-     * @param phaseChange        Phase change
-     * @param creatures          Creatures in the encounter
-     * @param tier               Tier
-     * @param maxPlayerCount     Max player count
-     * @param currentPlayerCount Current player count
+     * @param phaseChange   Phase change
+     * @param battleContext Battle context
+     * @param creatures     Creatures in the encounter
+     * @param tier          Tier
      */
     BattlePhaseChangeResult(
         @NotNull BattlePhaseChange phaseChange,
+        @NotNull BattleContext battleContext,
         @NotNull ArrayList<CombatCreature> creatures,
-        @NotNull Tier tier,
-        int maxPlayerCount,
-        int currentPlayerCount
+        @NotNull Tier tier
     )
     {
+        this.battleContext = battleContext;
         this.creatures = creatures;
-        this.currentPlayerCount = currentPlayerCount;
-        this.maxPlayerCount = maxPlayerCount;
         this.phaseChange = phaseChange;
         this.tier = tier;
     }
@@ -49,24 +45,38 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
      * {@inheritDoc}
      */
     @Override
-    public int getCurrentPlayerCount()
+    public int getCurrentPartySize()
     {
-        return currentPlayerCount;
+        return battleContext.getCurrentPartySize();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getMaxPlayerCount()
+    public int getMaxPartySize()
     {
-        return maxPlayerCount;
+        return battleContext.getMaxPartySize();
+    }
+
+    /**
+     * Get tier
+     */
+    public @NotNull Tier getTier()
+    {
+        return tier;
+    }
+
+    /**
+     * Get battle type
+     */
+    @NotNull String getBattleType()
+    {
+        return battleContext.getType();
     }
 
     /**
      * Get next phase
-     *
-     * @return BattlePhase
      */
     @NotNull BattlePhase getNextPhase()
     {
@@ -75,8 +85,6 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
 
     /**
      * Get previous phase
-     *
-     * @return BattlePhase
      */
     @NotNull BattlePhase getPreviousPhase()
     {
@@ -84,12 +92,10 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     }
 
     /**
-     * Get tier
-     *
-     * @return Phase
+     * Is batle always joinable
      */
-    public @NotNull Tier getTier()
+    boolean isAlwaysJoinable()
     {
-        return tier;
+        return battleContext.isAlwaysJoinable();
     }
 }

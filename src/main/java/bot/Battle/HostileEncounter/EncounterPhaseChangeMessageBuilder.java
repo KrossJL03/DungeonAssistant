@@ -1,6 +1,5 @@
 package bot.Battle.HostileEncounter;
 
-import bot.Battle.AttackPhaseStartMessageFactory;
 import bot.Battle.EndPhaseStartMessageFactory;
 import bot.Battle.JoinPhaseStartMessageFactory;
 import bot.Battle.PhaseChangeMessageBuilder;
@@ -20,13 +19,13 @@ class EncounterPhaseChangeMessageBuilder extends PhaseChangeMessageBuilder
             {
                 {
                     // order matters
-                    new JoinPhaseStartMessageFactory();
-                    new EndPhaseStartMessageFactory();
-                    new LootPhaseStartMessageFactory();
-                    new AttackPhaseStartMessageFactory();
-                    new DodgePhaseStartMessageFactory();
-                    new AttackPhaseEndMessageFactory();
-                    new DodgePhaseEndMessageFactory();
+                    add(new JoinPhaseStartMessageFactory());
+                    add(new EndPhaseStartMessageFactory());
+                    add(new LootPhaseStartMessageFactory());
+                    add(new AttackPhaseStartMessageFactory());
+                    add(new DodgePhaseStartMessageFactory());
+                    add(new AttackPhaseEndMessageFactory());
+                    add(new DodgePhaseEndMessageFactory());
                 }
             }
         );

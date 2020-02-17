@@ -21,15 +21,15 @@ class EncounterActionMessageBuilder extends ActionMessageBuilder
             new ArrayList<ActionMessageFactory>()
             {
                 {
-                    new AttackActionMessageFactory();
-                    new DodgeActionMessageFactory();
-                    new GuardActionMessageFactory();
-                    new HealActionMessageFactory();
-                    new HurtActionMessageFactory();
-                    new JoinActionMessageFactory();
-                    new LootActionMessageFactory();
-                    new ModifyStatActionMessageFactory();
-                    new ProtectActionMessageFactory();
+                    add(new AttackActionMessageFactory());
+                    add(new DodgeActionMessageFactory());
+                    add(new GuardActionMessageFactory());
+                    add(new HealActionMessageFactory());
+                    add(new HurtActionMessageFactory());
+                    add(new JoinActionMessageFactory());
+                    add(new LootActionMessageFactory());
+                    add(new ModifyStatActionMessageFactory());
+                    add(new ProtectActionMessageFactory());
                 }
             }
         );

@@ -13,7 +13,7 @@ public abstract class Battle implements BattleInterface
 {
     protected BattleLogger                      logger;
     protected BattlePhaseManager                phaseManager;
-    private   ExplorerRosterInterface           explorerRoster;
+    private   ExplorerRoster                    explorerRoster;
     private   InitiativeTrackerInterface        initiative;
     private   InitiativeTrackerFactoryInterface initiativeFactory;
 
@@ -282,7 +282,7 @@ public abstract class Battle implements BattleInterface
     {
         phaseManager.assertNotFinalPhase();
 
-        explorerRoster.setMaxPlayerCount(maxPlayerCount);
+        explorerRoster.setMaxPartySize(maxPlayerCount);
         logger.logSetMaxPlayers(maxPlayerCount);
     }
 
@@ -334,13 +334,14 @@ public abstract class Battle implements BattleInterface
     public void startAttackPhase() throws BattlePhaseException
     {
         phaseManager.assertAttackPhaseMayStart();
-        assertPlayersHaveJoined();
+
+        preAttackPhase();
+
+        BattlePhaseChange result = phaseManager.startAttackPhase();
 
         for (CombatExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.resetActions(false);
         }
-
-        BattlePhaseChange result = phaseManager.startAttackPhase();
 
         restartInitiative();
         notifyListenerOfPhaseChange(result);
@@ -614,12 +615,18 @@ public abstract class Battle implements BattleInterface
      */
     final protected void notifyListenerOfPhaseChange(BattlePhaseChange phaseChange)
     {
+        BattleContext context = new BattleContext(
+            getBattleStyle(),
+            isAlwaysJoinable(),
+            explorerRoster.getMaxPartySize(),
+            explorerRoster.getCurrentPartySize()
+        );
+
         BattlePhaseChangeResult result = new BattlePhaseChangeResult(
             phaseChange,
+            context,
             getAllCreatures(),
-            explorerRoster.getTier(),
-            explorerRoster.getMaxPlayerCount(),
-            explorerRoster.getOpenSlotCount()
+            explorerRoster.getTier()
         );
 
         logger.logPhaseChange(result);
@@ -665,7 +672,12 @@ public abstract class Battle implements BattleInterface
     abstract protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result);
 
     /**
-     * handle any additional pre join phase related processes
+     * Handle any additional pre attack phase related processes
+     */
+    abstract protected void preAttackPhase();
+
+    /**
+     * Handle any additional pre join phase related processes
      */
     abstract protected void preJoinPhase();
 

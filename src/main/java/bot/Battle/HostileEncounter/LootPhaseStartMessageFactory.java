@@ -30,9 +30,9 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         Message message = new Message();
 
         message.add(textFormatter.makeBoldItalic("THE BATTLE IS OVER!!!"));
-        message.addNewLine();
+        message.addBreak();
         message.add("Great work everyone! You did it!");
-        message.addNewLine();
+        message.addBreak();
         message.add(textFormatter.makeBold("LOOT TURN!"));
         message.add(String.format(
             "Please use %s to harvest materials from the hostiles.",

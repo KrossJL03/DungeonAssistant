@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ExplorerRoster implements ExplorerRosterInterface
+public class ExplorerRoster
 {
     private static int DEFAULT_SIZE = 21;
 
     private ArrayList<CombatExplorer> explorerRoster;
     private ArrayList<Player>         kickedPlayers;
-    private int                       maxPlayerCount;
+    private int                       maxPartySize;
     private Tier                      tier;
 
     /**
@@ -21,8 +21,64 @@ public class ExplorerRoster implements ExplorerRosterInterface
     {
         this.explorerRoster = new ArrayList<>();
         this.kickedPlayers = new ArrayList<>();
-        this.maxPlayerCount = DEFAULT_SIZE;
+        this.maxPartySize = DEFAULT_SIZE;
         this.tier = Tier.createDefault();
+    }
+
+    /**
+     * Get all explorers
+     *
+     * @return ArrayList<CombatExplorer>
+     */
+    public @NotNull ArrayList<CombatExplorer> getAllExplorers()
+    {
+        return new ArrayList<>(explorerRoster);
+    }
+
+    /**
+     * Get amount of slots still available for new players
+     *
+     * @return int
+     */
+    public int getOpenSlotCount()
+    {
+        return maxPartySize - getCurrentPartySize();
+    }
+
+    /**
+     * Get tier
+     *
+     * @return Tier
+     */
+    public @NotNull Tier getTier()
+    {
+        return tier;
+    }
+
+    /**
+     * Remove explorer belonging to player
+     *
+     * @param explorer Explorer
+     *
+     * @throws ExplorerRosterException If explorer is not found
+     */
+    public void remove(@NotNull CombatExplorer explorer) throws ExplorerRosterException
+    {
+        if (!containsExplorer(explorer.getName())) {
+            throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
+        }
+
+        explorerRoster.remove(explorer);
+    }
+
+    /**
+     * Set tier
+     *
+     * @param tier Tier
+     */
+    public void setTier(@NotNull Tier tier)
+    {
+        this.tier = tier;
     }
 
     /**
@@ -37,9 +93,9 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *                                 If explorer does not fit tier
      *                                 If the explorers nickname is currently in use
      */
-    public void addExplorer(@NotNull CombatExplorer newExplorer) throws ExplorerRosterException
+    void addExplorer(@NotNull CombatExplorer newExplorer) throws ExplorerRosterException
     {
-        if (!isMaxPlayerCountSet()) {
+        if (!isMaxPartySizeSet()) {
             throw ExplorerRosterException.createMaxPlayersNotSet();
         }
 
@@ -68,7 +124,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @return ArrayList<CombatExplorer>
      */
-    public @NotNull ArrayList<CombatExplorer> getActiveExplorers()
+    @NotNull ArrayList<CombatExplorer> getActiveExplorers()
     {
         ArrayList<CombatExplorer> activeExplorers = new ArrayList<>();
         for (CombatExplorer explorer : explorerRoster) {
@@ -81,13 +137,13 @@ public class ExplorerRoster implements ExplorerRosterInterface
     }
 
     /**
-     * Get all explorers
+     * Get current party size
      *
-     * @return ArrayList<CombatExplorer>
+     * @return int
      */
-    public @NotNull ArrayList<CombatExplorer> getAllExplorers()
+    int getCurrentPartySize()
     {
-        return new ArrayList<>(explorerRoster);
+        return getPresentExplorers().size();
     }
 
     /**
@@ -99,7 +155,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @throws ExplorerRosterException Thrown when encountered explorer is not found
      */
-    public @NotNull CombatExplorer getExplorer(@NotNull String name) throws ExplorerRosterException
+    @NotNull CombatExplorer getExplorer(@NotNull String name) throws ExplorerRosterException
     {
         for (CombatExplorer explorer : explorerRoster) {
             if (explorer.isName(name)) {
@@ -119,7 +175,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @throws ExplorerRosterException Thrown when encountered explorer is not found
      */
-    public @NotNull CombatExplorer getExplorer(@NotNull Player player) throws ExplorerRosterException
+    @NotNull CombatExplorer getExplorer(@NotNull Player player) throws ExplorerRosterException
     {
         for (CombatExplorer explorer : explorerRoster) {
             if (explorer.isOwner(player)) {
@@ -135,29 +191,9 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @return int
      */
-    public int getMaxPlayerCount()
+    int getMaxPartySize()
     {
-        return maxPlayerCount;
-    }
-
-    /**
-     * Get amount of slots still available for new players
-     *
-     * @return int
-     */
-    public int getOpenSlotCount()
-    {
-        return maxPlayerCount - getPresentPlayerCount();
-    }
-
-    /**
-     * Get tier
-     *
-     * @return Tier
-     */
-    public @NotNull Tier getTier()
-    {
-        return tier;
+        return maxPartySize;
     }
 
     /**
@@ -165,7 +201,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @return bool
      */
-    public boolean hasAtLeastOneActiveExplorer()
+    boolean hasAtLeastOneActiveExplorer()
     {
         return getActivePlayerCount() > 0;
     }
@@ -175,7 +211,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @return bool
      */
-    public boolean hasMultipleActiveExplorers()
+    boolean hasMultipleActiveExplorers()
     {
         return getActivePlayerCount() > 1;
     }
@@ -185,9 +221,9 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @return bool
      */
-    public boolean isFull()
+    boolean isFull()
     {
-        return getPresentPlayerCount() >= maxPlayerCount;
+        return getCurrentPartySize() >= maxPartySize;
     }
 
     /**
@@ -197,7 +233,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @throws ExplorerRosterException If explorer is not in the roster
      */
-    public @NotNull CombatExplorer kick(@NotNull String name) throws ExplorerRosterException
+    @NotNull CombatExplorer kick(@NotNull String name) throws ExplorerRosterException
     {
         CombatExplorer explorer = getExplorer(name);
 
@@ -221,7 +257,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @throws ExplorerRosterException If encountered explorer has already left
      */
-    public @NotNull CombatExplorer markAsLeft(@NotNull Player player) throws ExplorerRosterException
+    @NotNull CombatExplorer markAsLeft(@NotNull Player player) throws ExplorerRosterException
     {
         CombatExplorer explorer = getExplorer(player);
         explorer.markAsNotPresent();
@@ -238,7 +274,7 @@ public class ExplorerRoster implements ExplorerRosterInterface
      *
      * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    public @NotNull CombatExplorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
+    @NotNull CombatExplorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
     {
         if (kickedPlayers.contains(player)) {
             throw ExplorerRosterException.createKickedPlayerReturns(player);
@@ -255,60 +291,34 @@ public class ExplorerRoster implements ExplorerRosterInterface
     }
 
     /**
-     * Remove explorer belonging to player
-     *
-     * @param explorer Explorer
-     *
-     * @throws ExplorerRosterException If explorer is not found
-     */
-    public void remove(@NotNull CombatExplorer explorer) throws ExplorerRosterException
-    {
-        if (!containsExplorer(explorer.getName())) {
-            throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
-        }
-
-        explorerRoster.remove(explorer);
-    }
-
-    /**
      * Set max player count
      *
-     * @param maxPlayerCount Max player count
+     * @param maxPartySize Max player count
      *
      * @throws ExplorerRosterException If new max player count is less than 1
      *                                 If present player count exceeds new limit
      */
-    public void setMaxPlayerCount(int maxPlayerCount) throws ExplorerRosterException
+    void setMaxPartySize(int maxPartySize) throws ExplorerRosterException
     {
-        if (maxPlayerCount < 1) {
+        if (maxPartySize < 1) {
             throw ExplorerRosterException.createMaxPlayerCountLessThanOne();
         }
 
-        int presentPlayerCount = getPresentPlayerCount();
-        if (maxPlayerCount < presentPlayerCount) {
+        int presentPlayerCount = getCurrentPartySize();
+        if (maxPartySize < presentPlayerCount) {
             throw ExplorerRosterException.createNewPlayerMaxLessThanCurrentPlayerCount(
-                maxPlayerCount,
+                maxPartySize,
                 presentPlayerCount
             );
         }
 
-        this.maxPlayerCount = maxPlayerCount;
-    }
-
-    /**
-     * Set tier
-     *
-     * @param tier Tier
-     */
-    public void setTier(@NotNull Tier tier)
-    {
-        this.tier = tier;
+        this.maxPartySize = maxPartySize;
     }
 
     /**
      * Sort roster
      */
-    public void sort()
+    void sort()
     {
         explorerRoster.sort(new ExplorerAgilityComparator());
     }
@@ -377,22 +387,12 @@ public class ExplorerRoster implements ExplorerRosterInterface
     }
 
     /**
-     * Get number of present players
-     *
-     * @return int
-     */
-    private int getPresentPlayerCount()
-    {
-        return getPresentExplorers().size();
-    }
-
-    /**
      * Has the max player count been set
      *
      * @return boolean
      */
-    private boolean isMaxPlayerCountSet()
+    private boolean isMaxPartySizeSet()
     {
-        return maxPlayerCount > 0;
+        return maxPartySize > 0;
     }
 }

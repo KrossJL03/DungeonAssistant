@@ -446,6 +446,15 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
+    protected void preAttackPhase()
+    {
+        assertPlayersHaveJoined();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void preJoinPhase() throws HostileEncounterException
     {
         if (!hostileRoster.isNull() && hostileRoster.hasActiveHostiles()) {

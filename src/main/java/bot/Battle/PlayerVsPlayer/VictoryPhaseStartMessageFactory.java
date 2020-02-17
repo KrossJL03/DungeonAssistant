@@ -1,18 +1,21 @@
-package bot.Battle;
+package bot.Battle.PlayerVsPlayer;
 
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
 import bot.Message;
 import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+public class VictoryPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
     /**
      * Constructor.
      */
-    public EndPhaseStartMessageFactory()
+    VictoryPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -25,9 +28,9 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
     {
         Message message = new Message();
 
-        message.add(textFormatter.makeBoldItalic("THE BATTLE IS OVER!!!"));
+        message.add(textFormatter.makeBold("IT'S OVER!!!"));
         message.addBreak();
-        message.add("Well... sorry guys. Looks like the hostiles were too much for you this time around.");
+        message.add("Congratulations!");
 
         return message;
     }
@@ -41,6 +44,6 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
         @NotNull BattlePhase nextPhase
     )
     {
-        return nextPhase.isEndPhase();
+        return nextPhase instanceof PvpPhase && ((PvpPhase) nextPhase).isVictoryPhase();
     }
 }

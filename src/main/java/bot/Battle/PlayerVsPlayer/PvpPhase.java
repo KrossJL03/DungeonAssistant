@@ -3,10 +3,10 @@ package bot.Battle.PlayerVsPlayer;
 import bot.Battle.BattlePhase;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 public class PvpPhase extends BattlePhase
 {
+    private static String VICTORY_PHASE = "VICTORY";
+
     /**
      * Constructor.
      *
@@ -33,5 +33,13 @@ public class PvpPhase extends BattlePhase
     public boolean isInitiativePhase()
     {
         return isAttackPhase();
+    }
+
+    /**
+     * Is victory phase
+     */
+    boolean isVictoryPhase()
+    {
+        return getPhaseName().equals(VICTORY_PHASE);
     }
 }

@@ -1,6 +1,5 @@
 package bot.Battle.PlayerVsPlayer;
 
-import bot.Battle.AttackPhaseStartMessageFactory;
 import bot.Battle.EndPhaseStartMessageFactory;
 import bot.Battle.JoinPhaseStartMessageFactory;
 import bot.Battle.PhaseChangeMessageBuilder;
@@ -20,9 +19,10 @@ class PvpPhaseChangeMessageBuilder extends PhaseChangeMessageBuilder
             {
                 {
                     // order matters
-                    new JoinPhaseStartMessageFactory();
-                    new EndPhaseStartMessageFactory();
-                    new AttackPhaseStartMessageFactory();
+                    add(new JoinPhaseStartMessageFactory());
+                    add(new EndPhaseStartMessageFactory());
+                    add(new AttackPhaseStartMessageFactory());
+                    add(new VictoryPhaseStartMessageFactory());
                 }
             }
         );

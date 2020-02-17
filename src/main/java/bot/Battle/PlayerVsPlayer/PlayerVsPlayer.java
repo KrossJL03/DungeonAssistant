@@ -8,6 +8,7 @@ import bot.Battle.HealActionResult;
 import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HurtActionResult;
 import bot.Battle.Mention;
+import bot.CustomException;
 import bot.Explorer.Explorer;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public class PlayerVsPlayer extends Battle
     @Override
     public @NotNull String getBattleStyle()
     {
-        return "pvp";
+        return "Player VS Player";
     }
 
     /**
@@ -154,6 +155,19 @@ public class PlayerVsPlayer extends Battle
     protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
     {
         // do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void preAttackPhase() throws CustomException
+    {
+        if (!hasMultipleActiveExplorers()) {
+            throw new CustomException(
+                "You can't have a Player VS Player fight with just one player. That's not how this works."
+            );
+        }
     }
 
     /**

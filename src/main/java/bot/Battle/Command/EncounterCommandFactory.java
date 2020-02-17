@@ -62,7 +62,7 @@ public class EncounterCommandFactory implements CommandFactoryInterface
         // order matters
         encounterCommands.add(new StartAttackPhaseCommand(processManager, encounterHolder, dmChecker));
         encounterCommands.add(new StartDodgePhaseCommand(processManager, encounterHolder, dmChecker));
-        encounterCommands.add(new StartEncounterCommand(processManager, encounterHolder, dmChecker));
+        encounterCommands.add(new StartBattleCommand(processManager, encounterHolder, dmChecker));
         encounterCommands.add(new AddHostileCommand(processManager, encounterHolder, dmChecker));
         encounterCommands.add(new AttackCommand(processManager, encounterHolder, dmChecker));
         encounterCommands.add(new CreateHostileEncounterCommand(processManager, encounterHolder, dmChecker));

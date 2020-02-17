@@ -39,7 +39,7 @@ class ExplorerRosterTest
         /////////////////////////////////////////////////
 
         // add 1 explorer when max count is set ///////////////
-        explorerRoster.setMaxPlayerCount(3);
+        explorerRoster.setMaxPartySize(3);
         explorerRoster.addExplorer(explorer1);
         assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
         expectedList.add(explorer1);
@@ -74,7 +74,7 @@ class ExplorerRosterTest
         /////////////////////////////////////////////////
 
         // add the same explorer twice ////////////////////////
-        explorerRoster.setMaxPlayerCount(5);
+        explorerRoster.setMaxPartySize(5);
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer1));
         assertEquals(expectedList, explorerRoster.getAllExplorers());
         /////////////////////////////////////////////////
@@ -95,7 +95,7 @@ class ExplorerRosterTest
         CombatExplorer            explorer3      = mockCombatExplorer();
         ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
-        explorerRoster.setMaxPlayerCount(3);
+        explorerRoster.setMaxPartySize(3);
         explorerRoster.addExplorer(explorer1);
         explorerRoster.addExplorer(explorer2);
         explorerRoster.addExplorer(explorer3);
@@ -139,7 +139,7 @@ class ExplorerRosterTest
         CombatExplorer            explorer3      = mockCombatExplorer();
         ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
-        explorerRoster.setMaxPlayerCount(3);
+        explorerRoster.setMaxPartySize(3);
 
         explorerRoster.addExplorer(explorer1);
         expectedList.add(explorer1);
@@ -170,7 +170,7 @@ class ExplorerRosterTest
         /////////////////////////////////////////////////
 
         // get an explorer that is in the roster ///////////////
-        explorerRoster.setMaxPlayerCount(1);
+        explorerRoster.setMaxPartySize(1);
         explorerRoster.addExplorer(explorer1);
         assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
         expectedList.add(explorer1);
@@ -193,14 +193,14 @@ class ExplorerRosterTest
     {
         ExplorerRoster explorerRoster = new ExplorerRoster();
 
-        explorerRoster.setMaxPlayerCount(3);
-        assertEquals(3, explorerRoster.getMaxPlayerCount());
+        explorerRoster.setMaxPartySize(3);
+        assertEquals(3, explorerRoster.getMaxPartySize());
 
-        explorerRoster.setMaxPlayerCount(10);
-        assertEquals(10, explorerRoster.getMaxPlayerCount());
+        explorerRoster.setMaxPartySize(10);
+        assertEquals(10, explorerRoster.getMaxPartySize());
 
-        explorerRoster.setMaxPlayerCount(2);
-        assertEquals(2, explorerRoster.getMaxPlayerCount());
+        explorerRoster.setMaxPartySize(2);
+        assertEquals(2, explorerRoster.getMaxPartySize());
     }
 
     @Test
@@ -211,7 +211,7 @@ class ExplorerRosterTest
         CombatExplorer explorer       = mockCombatExplorer();
         Player         p              = explorer.getOwner();
 
-        explorerRoster.setMaxPlayerCount(3);
+        explorerRoster.setMaxPartySize(3);
 
         // player attempts to leave that was not in the roster //
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.markAsLeft(p));
@@ -239,7 +239,7 @@ class ExplorerRosterTest
         CombatExplorer explorer2      = mockCombatExplorer();
         Player         p              = explorer1.getOwner();
 
-        explorerRoster.setMaxPlayerCount(1);
+        explorerRoster.setMaxPartySize(1);
 
         // player attempts to rejoin that was not in the roster //
 //        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.rejoin(p));
@@ -273,7 +273,7 @@ class ExplorerRosterTest
         CombatExplorer            explorer       = mockCombatExplorer();
         ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
-        explorerRoster.setMaxPlayerCount(2);
+        explorerRoster.setMaxPartySize(2);
 
         // remove an explorer that is not in the roster ////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.remove(explorer));
@@ -307,24 +307,24 @@ class ExplorerRosterTest
         CombatExplorer explorer3      = mockCombatExplorer();
 
         // set max player count ///////////////////////////////
-        explorerRoster.setMaxPlayerCount(3);
-        assertEquals(3, explorerRoster.getMaxPlayerCount());
+        explorerRoster.setMaxPartySize(3);
+        assertEquals(3, explorerRoster.getMaxPartySize());
         ///////////////////////////////////////////////////////
 
         // set max player count to less than 1 ////////////////
-        assertThrows(ExplorerRosterException.class, () -> explorerRoster.setMaxPlayerCount(0));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.setMaxPartySize(0));
         ///////////////////////////////////////////////////////
 
         // set max player count to more than current active players //
         explorerRoster.addExplorer(explorer1);
         explorerRoster.addExplorer(explorer2);
         explorerRoster.addExplorer(explorer3);
-        explorerRoster.setMaxPlayerCount(5);
-        assertEquals(5, explorerRoster.getMaxPlayerCount());
+        explorerRoster.setMaxPartySize(5);
+        assertEquals(5, explorerRoster.getMaxPartySize());
         //////////////////////////////////////////////////////////////
 
         // set max player count to less than current active players //
-        assertThrows(ExplorerRosterException.class, () -> explorerRoster.setMaxPlayerCount(2));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.setMaxPartySize(2));
         //////////////////////////////////////////////////////////////
     }
 
@@ -338,7 +338,7 @@ class ExplorerRosterTest
         CombatExplorer            explorer3      = mockCombatExplorer();
         ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
-        explorerRoster.setMaxPlayerCount(5);
+        explorerRoster.setMaxPartySize(5);
 
         explorerRoster.addExplorer(explorer1);
         explorerRoster.addExplorer(explorer2);

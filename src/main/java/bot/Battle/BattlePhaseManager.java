@@ -98,9 +98,10 @@ public class BattlePhaseManager
      */
     void assertJoinPhaseMayStart() throws CustomException
     {
-        assertInProgressPhase();
         if (phase.isJoinPhase()) {
             throw BattlePhaseException.createStartCurrentPhase(phase.getPhaseName());
+        } else if (!phase.isCreatePhase()) {
+            throw new CustomException("Um... we're kind of in the middle of a battle already.");
         }
     }
 

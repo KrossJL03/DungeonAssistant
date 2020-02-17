@@ -53,7 +53,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
 
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format("%s attack the party!", codeFormatter.makeRed("Hostiles")));
-        message.addNewLine();
+        message.addBreak();
         for (CombatCreature creature : result.getCreatures()) {
             if (creature instanceof EncounteredHostile && !creature.isSlain()) {
                 totalDamage += ((EncounteredHostile) creature).getAttackRoll();
@@ -66,7 +66,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
                 ));
             }
         }
-        message.addNewLine();
+        message.addBreak();
         message.add(String.format("combined attacks add up to %d dmg!!", totalDamage));
         message.endCodeBlock();
 

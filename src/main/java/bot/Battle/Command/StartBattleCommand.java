@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class StartEncounterCommand extends EncounterCommand
+public class StartBattleCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -17,7 +17,7 @@ public class StartEncounterCommand extends EncounterCommand
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    StartEncounterCommand(
+    StartBattleCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker

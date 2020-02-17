@@ -34,6 +34,15 @@ public class Message implements MessageInterface
     }
 
     /**
+     * Add new line
+     */
+    public void addLine()
+    {
+        stringBuilder.append(LINE);
+        stringBuilder.append(NEWLINE);
+    }
+
+    /**
      * End code block
      */
     public void endCodeBlock()
@@ -60,23 +69,6 @@ public class Message implements MessageInterface
     {
         stringBuilder.append(CODE_BRACKET);
         stringBuilder.append(codeStyle);
-        stringBuilder.append(NEWLINE);
-    }
-
-    /**
-     * Add new line
-     */
-    void addLine()
-    {
-        stringBuilder.append(LINE);
-        stringBuilder.append(NEWLINE);
-    }
-
-    /**
-     * Add new line
-     */
-    public void addNewLine()
-    {
         stringBuilder.append(NEWLINE);
     }
 }

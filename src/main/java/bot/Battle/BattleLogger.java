@@ -211,7 +211,9 @@ public class BattleLogger
      */
     void logSummary(@NotNull ArrayList<CombatCreature> creatures)
     {
-        sendMessage(summaryMessageBuilder.buildSummary(creatures));
+        for (String message : summaryMessageBuilder.buildSummary(creatures)) {
+            sendMessage(message);
+        }
     }
 
     /**

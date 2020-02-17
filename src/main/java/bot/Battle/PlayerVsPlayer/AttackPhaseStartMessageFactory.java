@@ -1,5 +1,8 @@
-package bot.Battle;
+package bot.Battle.PlayerVsPlayer;
 
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
 import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
@@ -13,7 +16,7 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
     /**
      * Constructor.
      */
-    public AttackPhaseStartMessageFactory()
+    AttackPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -27,15 +30,21 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
         Message message = new Message();
 
         message.add(textFormatter.makeBold("ATTACK TURN!"));
+        message.addBreak();
+        message.add("May the best chiot win!");
         message.add(String.format(
-            "Please use %s to attack. Ex: %s",
+            "%s Use %s to attack. Ex: %s",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND,
             textFormatter.makeCode(String.format("%sattack [TargetName]", MyProperties.COMMAND_PREFIX)),
             textFormatter.makeCode(String.format("%sattack Stanley", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(
-            "To use items use %s and the DM will be pinged to help out. Ex: %s",
-            textFormatter.makeCode("rp!use"),
-            textFormatter.makeCode("rp!use BreadLoaf")
+            "%s Items cannot be used in PVP battles.",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND
+        ));
+        message.add(String.format(
+            "%s Abilities cannot be used in PVP battles.",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND
         ));
 
         return message;

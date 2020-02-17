@@ -1,8 +1,7 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HostileEncounter.EncounteredHostile;
-import org.apache.commons.text.WordUtils;
+import bot.Message;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,68 +23,86 @@ public class SummaryMessageBuilder
      *
      * @param creatures Creatures
      *
-     * @return String
+     * @return ArrayList
      */
-    @NotNull String buildSummary(@NotNull ArrayList<CombatCreature> creatures)
+    @NotNull ArrayList<String> buildSummary(@NotNull ArrayList<CombatCreature> creatures)
     {
-        ArrayList<EncounteredExplorer> explorers = new ArrayList<>();
-        ArrayList<EncounteredHostile>  hostiles  = new ArrayList<>();
+        ArrayList<String>             messages  = new ArrayList<>();
+        ArrayList<CombatExplorer>     explorers = new ArrayList<>();
+        ArrayList<EncounteredHostile> hostiles  = new ArrayList<>();
 
         for (CombatCreature creature : creatures) {
-            if (creature instanceof EncounteredExplorer) {
-                explorers.add((EncounteredExplorer) creature);
+            if (creature instanceof CombatExplorer) {
+                explorers.add((CombatExplorer) creature);
             }
             if (creature instanceof EncounteredHostile) {
                 hostiles.add((EncounteredHostile) creature);
             }
         }
 
-        if (hostiles.isEmpty()) {
-            return buildPvpSummary(explorers);
-        } else {
-            return buildHostileEncounterSummary(explorers, hostiles);
+        if (!explorers.isEmpty()) {
+            messages.add(buildExplorerSummary(explorers));
         }
+        if (!hostiles.isEmpty()) {
+            messages.add(buildHostileSummary(hostiles));
+        }
+        if (messages.isEmpty()) {
+            messages.add(buildEmptySummary());
+        }
+
+        return messages;
     }
 
     /**
-     * Add explorers to message
+     * Build empty summary
+     */
+    private @NotNull String buildEmptySummary()
+    {
+        Message message = new Message();
+        message.startCodeBlock(codeFormatter.getStyle());
+        message.add("This battle is empty!");
+        message.endCodeBlock();
+
+        return message.getAsString();
+    }
+
+    /**
+     * Build explorer summary
      *
-     * @param message   Message
      * @param explorers Explorers
      */
-    private void addExplorers(@NotNull SummaryMessage message, @NotNull ArrayList<EncounteredExplorer> explorers)
+    private @NotNull String buildExplorerSummary(@NotNull ArrayList<CombatExplorer> explorers)
     {
+        Message message = new Message();
+
+        message.startCodeBlock(codeFormatter.getStyle());
         message.addLine();
         message.add("Explorers");
         message.addLine();
 
-        for (EncounteredExplorer explorer : explorers) {
+        for (CombatExplorer explorer : explorers) {
             message.add(getNameLine(explorer));
             String healthBar = getHealthBarLine(explorer);
             if (!healthBar.isEmpty()) {
                 message.add(healthBar);
             }
         }
+
+        message.endCodeBlock();
+
+        return message.getAsString();
     }
 
     /**
-     * Build hostile encounter summary
+     * Build hostile summary
      *
-     * @param explorers Explorers
-     * @param hostiles  Hostiles
-     *
-     * @return String
+     * @param hostiles Hostiles
      */
-    private @NotNull String buildHostileEncounterSummary(
-        @NotNull ArrayList<EncounteredExplorer> explorers,
-        @NotNull ArrayList<EncounteredHostile> hostiles
-    )
+    private @NotNull String buildHostileSummary(@NotNull ArrayList<EncounteredHostile> hostiles)
     {
-        SummaryMessage message = new SummaryMessage();
+        Message message = new Message();
 
         message.startCodeBlock(codeFormatter.getStyle());
-        message.add(WordUtils.capitalize("HOSTILE ENCOUNTER SUMMARY"));
-        message.addBreak();
         message.addLine();
         message.add("Hostiles");
         message.addLine();
@@ -98,27 +115,6 @@ public class SummaryMessageBuilder
             }
         }
 
-        addExplorers(message, explorers);
-        message.endCodeBlock();
-
-        return message.getAsString();
-    }
-
-    /**
-     * Build pvp summary
-     *
-     * @param explorers Explorers
-     *
-     * @return String
-     */
-    private @NotNull String buildPvpSummary(@NotNull ArrayList<EncounteredExplorer> explorers)
-    {
-        SummaryMessage message = new SummaryMessage();
-
-        message.startCodeBlock(codeFormatter.getStyle());
-        message.add(WordUtils.capitalize("PVP SUMMARY"));
-        message.addBreak();
-        addExplorers(message, explorers);
         message.endCodeBlock();
 
         return message.getAsString();
@@ -158,11 +154,11 @@ public class SummaryMessageBuilder
     /**
      * Get name line
      *
-     * @param hostile Encountered hostile
+     * @param hostile Hostile
      *
      * @return String
      */
-    private @NotNull String getNameLine(EncounteredHostile hostile)
+    private @NotNull String getNameLine(@NotNull EncounteredHostile hostile)
     {
         if (hostile.isSlain()) {
             Slayer slayer = hostile.getSlayer();
@@ -179,23 +175,23 @@ public class SummaryMessageBuilder
     /**
      * Get name line
      *
-     * @param encounteredExplorer Encountered explorer
+     * @param explorer Explorer
      *
      * @return String
      */
-    private @NotNull String getNameLine(EncounteredExplorer encounteredExplorer)
+    private @NotNull String getNameLine(@NotNull CombatExplorer explorer)
     {
-        if (!encounteredExplorer.isPresent()) {
-            return codeFormatter.makeGrey(String.format("%s has left", encounteredExplorer.getName()));
-        } else if (encounteredExplorer.isSlain()) {
-            Slayer slayer = encounteredExplorer.getSlayer();
+        if (!explorer.isPresent()) {
+            return codeFormatter.makeGrey(String.format("%s has left", explorer.getName()));
+        } else if (explorer.isSlain()) {
+            Slayer slayer = explorer.getSlayer();
             return codeFormatter.makeGrey(String.format(
                 "%s was defeated %s",
-                encounteredExplorer.getName(),
+                explorer.getName(),
                 slayer.exists() ? String.format("by %s", slayer.getName()) : ""
             ));
         } else {
-            return String.format("%s [%s]", encounteredExplorer.getName(), encounteredExplorer.getOwner().getName());
+            return String.format("%s [%s]", explorer.getName(), explorer.getOwner().getName());
         }
     }
 

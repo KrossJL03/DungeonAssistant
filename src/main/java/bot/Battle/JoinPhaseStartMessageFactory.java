@@ -28,29 +28,61 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         Tier    tier    = result.getTier();
 
         message.add(textFormatter.makeBold("BATTLE TIME!"));
-        message.addNewLine();
+        message.addBreak();
         message.add(String.format(
-            "To bring a character to battle, use %s.",
-            textFormatter.makeCode(String.format("%sjoin [CharacterName]", MyProperties.COMMAND_PREFIX))
+            "%s Use %s to join!",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND,
+            textFormatter.makeCode(String.format("%sjoin [CharacterName] <Nickname>", MyProperties.COMMAND_PREFIX))
         ));
         message.add(String.format(
-            "Only characters registered prior to the battle may join. " +
-            "The %s command cannot be used while a battle is in progress.",
+            "%s Use %s to register an explorer before a battle starts in order to participate.",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND,
             textFormatter.makeCode(String.format("%screate character", MyProperties.COMMAND_PREFIX))
         ));
-        message.add(
-            "You may join a battle at any time before the battle has ended and as long as there are slots open!"
-        );
-        message.addNewLine();
+        if (result.isAlwaysJoinable()) {
+            message.add(
+                "You may join a battle at any time before the battle ends and as long as there are slots open!"
+            );
+        }
+        message.addBreak();
         message.add(String.format(
-            "This dungeon has a max capacity of %s players. ",
-            textFormatter.makeBold(String.format("%d", result.getMaxPlayerCount()))
+            "%s %s %s",
+            MessageInterface.EMOJI_CROSSED_SWORDS,
+            textFormatter.makeBold("BATTLE TYPE |"),
+            result.getBattleType()
         ));
         message.add(String.format(
-            "Tier is set to %s! All explorers must have a stat point total between %s and %s",
-            textFormatter.makeBold(tier.getName()),
-            textFormatter.makeBold(tier.getMinStatPointTotal()),
-            textFormatter.makeBold(tier.getMaxStatPointTotal())
+            "%s %s %d players",
+            MessageInterface.EMOJI_WING_LEFT,
+            textFormatter.makeBold("DUNGEON CAP |"),
+            result.getMaxPartySize()
+        ));
+        message.add(String.format(
+            "%s %s %s",
+            MessageInterface.EMOJI_MEDAL,
+            textFormatter.makeBold("TIER |"),
+            tier.getName()
+        ));
+        message.addBreak();
+        message.add(String.format(
+            "%s %s",
+            MessageInterface.EMOJI_WARNING,
+            textFormatter.makeBold("Newbie Grace Period!")
+        ));
+        message.add(String.format(
+            "The first %s minutes are dedicated to new players!",
+            textFormatter.makeBold(String.format("%s minutes", MyProperties.NEWBIE_GRACE_PERIOD))
+        ));
+        message.add(String.format(
+            "%s If you have participated in less than %s you are welcome to join at this time! " +
+            "Take your time and please ask for help if needed!",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND,
+            textFormatter.makeBold(String.format("%d battles", MyProperties.NEWBIE_MAX_BATTLES))
+        ));
+        message.add(String.format(
+            "%s Any more experienced members who join during this time will be kicked. " +
+            "Make sure to wait until the DungeonMaster gives you the okay to join!",
+            MessageInterface.EMOJI_SMALL_ORANGE_DIAMOND
         ));
 
         return message;

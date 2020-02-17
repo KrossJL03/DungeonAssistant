@@ -21,11 +21,11 @@ class PvpActionMessageBuilder extends ActionMessageBuilder
             new ArrayList<ActionMessageFactory>()
             {
                 {
-                    new AttackActionMessageFactory();
-                    new HealActionMessageFactory();
-                    new HurtActionMessageFactory();
-                    new JoinActionMessageFactory();
-                    new ModifyStatActionMessageFactory();
+                    add(new AttackActionMessageFactory());
+                    add(new HealActionMessageFactory());
+                    add(new HurtActionMessageFactory());
+                    add(new JoinActionMessageFactory());
+                    add(new ModifyStatActionMessageFactory());
                 }
             }
         );
