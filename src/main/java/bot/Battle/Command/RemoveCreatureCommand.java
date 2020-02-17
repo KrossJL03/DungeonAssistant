@@ -1,9 +1,8 @@
 package bot.Battle.Command;
 
-import bot.CommandParameter;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.Logger.EncounterLogger;
+import bot.CommandParameter;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -13,24 +12,21 @@ import java.util.ArrayList;
 public class RemoveCreatureCommand extends EncounterCommand
 {
     /**
-     * RemoveCreatureCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param holder         Battle holder
-     * @param logger         Battle logger
      * @param dmChecker      Dungeon master checker
      */
     RemoveCreatureCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
-            logger,
             dmChecker,
             "remove",
             new ArrayList<CommandParameter>()
@@ -53,6 +49,6 @@ public class RemoveCreatureCommand extends EncounterCommand
     {
         String creatureName = getStringParameterFromEvent(event);
 
-        getEncounter().removeCreature(creatureName);
+        getBattle().remove(creatureName);
     }
 }

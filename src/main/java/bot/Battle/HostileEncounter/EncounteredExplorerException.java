@@ -1,9 +1,7 @@
 package bot.Battle.HostileEncounter;
 
-import bot.Battle.Logger.Mention;
 import bot.CustomException;
 import bot.MyProperties;
-import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class EncounteredExplorerException extends CustomException

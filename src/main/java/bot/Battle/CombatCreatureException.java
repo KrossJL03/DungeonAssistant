@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.Logger.Mention;
 import bot.CustomException;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;

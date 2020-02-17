@@ -1,10 +1,9 @@
 package bot.Battle.Command;
 
 import bot.Battle.AdditionalCommandInterface;
-import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.Battle;
+import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.Logger.EncounterLogger;
 import bot.CommandParameter;
 import bot.Player.Player;
 import bot.ProcessManager;
@@ -16,23 +15,21 @@ import java.util.ArrayList;
 public class UseItemCommand extends EncounterCommand implements AdditionalCommandInterface
 {
     /**
-     * UseItemCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param holder         Battle holder
-     * @param logger         Battle logger
+     * @param dmChecker      Dungeon master checker
      */
     UseItemCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
-            logger,
             dmChecker,
             "rp!use",
             new ArrayList<CommandParameter>()
@@ -58,8 +55,6 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
         if (!battle.isOver()) {
             Player player = getPlayerFromEvent(event);
             battle.useItemAction(player);
-
-            getLogger().pingDmItemUsed(player);
         }
     }
 }

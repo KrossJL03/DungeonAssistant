@@ -1,4 +1,4 @@
-package bot.Battle.Logger;
+package bot.Battle;
 
 import bot.CustomException;
 

@@ -11,10 +11,11 @@ import bot.Battle.EncounterException;
 import bot.Battle.HealActionResult;
 import bot.Battle.HurtActionResult;
 import bot.Battle.InitiativeTrackerException;
-import bot.Battle.Logger.EncounterLogger;
+import bot.Battle.Mention;
 import bot.Explorer.Explorer;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,16 +27,18 @@ public class HostileEncounter extends Battle
 
     private boolean                hasPhoenixDown;
     private HostileRosterInterface hostileRoster;
+    private EncounterLogger        logger;
     private EncounterPhaseManager  phaseManager;
 
     /**
      * Constructor.
      *
-     * @param logger Logger
+     * @param channel   Channel
+     * @param dmMention DM mention
      */
-    public HostileEncounter(@NotNull EncounterLogger logger)
+    public HostileEncounter(@NotNull MessageChannel channel, @NotNull Mention dmMention)
     {
-        super(logger, new InitiativeQueueFactory(), new EncounterPhaseManager());
+        super(new EncounterLogger(channel, dmMention), new InitiativeQueueFactory(), new EncounterPhaseManager());
 
         this.hasPhoenixDown = true;
         this.hostileRoster = new HostileRoster();
@@ -46,10 +49,8 @@ public class HostileEncounter extends Battle
      *
      * @param hostile  Hostile
      * @param nickname Nickname
-     *
-     * @return EncounteredHostile
      */
-    public @NotNull EncounteredHostile addHostile(@NotNull Hostile hostile, @NotNull String nickname)
+    public void addHostile(@NotNull Hostile hostile, @NotNull String nickname)
     {
         phaseManager.assertNotFinalPhase();
 
@@ -57,8 +58,7 @@ public class HostileEncounter extends Battle
         EncounteredHostile newHostile      = new EncounteredHostile(hostile, capitalNickname);
 
         hostileRoster.addHostile(newHostile);
-
-        return newHostile;
+        logger.logAddedHostile(newHostile);
     }
 
     /**
@@ -79,6 +79,16 @@ public class HostileEncounter extends Battle
         logger.logAction(result);
         postDodgePhaseAction(currentExplorer);
         handleEndOfAction();
+    }
+
+    /**
+     * Dodge pass request action
+     *
+     * @param player Player
+     */
+    public void dodgePassRequestAction(@NotNull Player player)
+    {
+        logger.pingDmDodgePass(player);
     }
 
     /**
@@ -246,7 +256,7 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
-    public void removeCreature(@NotNull String name)
+    public void remove(@NotNull String name)
     {
         CombatCreature creature = getCreature(name);
         if (creature instanceof EncounteredExplorer) {
@@ -294,8 +304,8 @@ public class HostileEncounter extends Battle
      * Start dodge phase
      *
      * @throws BattlePhaseException If the encounter is over
-     *                                 If the encounter has not started
-     *                                 If dodge phase is in progress
+     *                              If the encounter has not started
+     *                              If dodge phase is in progress
      */
     public void startDodgePhase() throws BattlePhaseException
     {
@@ -653,7 +663,7 @@ public class HostileEncounter extends Battle
 
         hasPhoenixDown = false;
         HealActionResult result = explorer.healPercent((float) 0.5);
-        logPhoenixDownUsed();
+        logger.logFirstDeathRevived();
         logAction(result);
     }
 }

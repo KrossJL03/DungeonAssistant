@@ -3,7 +3,6 @@ package bot.Battle.Command;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
 import bot.CommandParameter;
-import bot.Battle.Logger.EncounterLogger;
 import bot.Player.Player;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -14,23 +13,21 @@ import java.util.ArrayList;
 public class AttackCommand extends EncounterCommand
 {
     /**
-     * AttackCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param holder         Battle holder
-     * @param logger         Battle logger
      * @param dmChecker      Dungeon master checker
      */
     AttackCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
-    ){
+    )
+    {
         super(
             processManager,
             holder,
-            logger,
             dmChecker,
             "attack",
             new ArrayList<CommandParameter>()
@@ -54,6 +51,6 @@ public class AttackCommand extends EncounterCommand
         String[] parameters = getParametersFromEvent(event);
         String   targetName = parameters[0];
 
-        getEncounter().attackAction(player, targetName);
+        getBattle().attackAction(player, targetName);
     }
 }

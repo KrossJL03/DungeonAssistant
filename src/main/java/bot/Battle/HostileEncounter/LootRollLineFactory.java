@@ -1,7 +1,6 @@
-package bot.Battle.Logger.Message.Action;
+package bot.Battle.HostileEncounter;
 
-import bot.Battle.HostileEncounter.LootRoll;
-import bot.Battle.Logger.Message.MLCodeFormatter;
+import bot.Battle.MLCodeFormatter;
 import bot.Hostile.Loot;
 import bot.Message;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +55,7 @@ public class LootRollLineFactory
         output.append(String.format(
             "%3s %s %2d --> ",
             "d" + roll.getDie(),
-            ActionMessage.DOUBLE_ARROW,
+            Message.DOUBLE_ARROW,
             roll.getRoll()
         ));
 

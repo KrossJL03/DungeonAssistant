@@ -4,7 +4,7 @@ import bot.Battle.BattlePhase;
 import bot.Battle.CombatCreature;
 import bot.Battle.HostileEncounter.EncounterPhase;
 import bot.Battle.HostileEncounter.EncounteredHostile;
-import bot.Battle.Logger.Message.MLCodeFormatter;
+import bot.Battle.MLCodeFormatter;
 import bot.Battle.BattlePhaseChangeResult;
 import bot.MessageInterface;
 import bot.MyProperties;

@@ -7,8 +7,9 @@ import bot.Battle.CombatExplorer;
 import bot.Battle.HealActionResult;
 import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HurtActionResult;
-import bot.Battle.Logger.EncounterLogger;
+import bot.Battle.Mention;
 import bot.Explorer.Explorer;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,12 +19,10 @@ public class PlayerVsPlayer extends Battle
 {
     /**
      * Constructor.
-     *
-     * @param logger Logger
      */
-    public PlayerVsPlayer(@NotNull EncounterLogger logger)
+    public PlayerVsPlayer(@NotNull MessageChannel channel, @NotNull Mention dmMention)
     {
-        super(logger, new InitiativeCycleFactory(), new PvpPhaseManager());
+        super(new PvpLogger(channel, dmMention), new InitiativeCycleFactory(), new PvpPhaseManager());
     }
 
     /**
@@ -48,7 +47,7 @@ public class PlayerVsPlayer extends Battle
      * {@inheritDoc}
      */
     @Override
-    public void removeCreature(@NotNull String name)
+    public void remove(@NotNull String name)
     {
         CombatCreature creature = getCreature(name);
         if (creature instanceof EncounteredExplorer) {

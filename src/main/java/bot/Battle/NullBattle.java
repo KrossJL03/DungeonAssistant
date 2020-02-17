@@ -2,6 +2,7 @@ package bot.Battle;
 
 import bot.Explorer.Explorer;
 import bot.Player.Player;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Null Object Pattern implementation of Battle
  */
-public class NullEncounter implements EncounterInterface
+public class NullBattle implements BattleInterface
 {
     /**
      * {@inheritDoc}
@@ -61,7 +62,25 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void healAllExplorers(int hitpoints)
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void hurt(@NotNull String name, int hitpoints) throws EncounterException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hurtAllExplorers(int hitpoints)
     {
         throw EncounterException.createNullEncounter();
     }
@@ -124,6 +143,15 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
+    public void logSummary()
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void modifyStat(@NotNull String name, @NotNull String statName, int statModifier)
         throws EncounterException
     {
@@ -143,7 +171,16 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void removeCreature(@NotNull String name) throws EncounterException
+    public void remove(@NotNull String name) throws EncounterException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void revive(@NotNull String name)
     {
         throw EncounterException.createNullEncounter();
     }
@@ -206,7 +243,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void startJoinPhase() throws EncounterException
+    public void startJoinPhase(@NotNull MessageChannel channel) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }

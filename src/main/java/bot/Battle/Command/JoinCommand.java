@@ -1,9 +1,8 @@
 package bot.Battle.Command;
 
-import bot.CommandParameter;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.Logger.EncounterLogger;
+import bot.CommandParameter;
 import bot.Explorer.Explorer;
 import bot.Explorer.ExplorerManager;
 import bot.Player.Player;
@@ -16,24 +15,21 @@ import java.util.ArrayList;
 public class JoinCommand extends EncounterCommand
 {
     /**
-     * JoinCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param holder         Battle holder
-     * @param logger         Battle logger
      * @param dmChecker      Dungeon master checker
      */
     JoinCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
-            logger,
             dmChecker,
             "join",
             new ArrayList<CommandParameter>()
@@ -62,6 +58,6 @@ public class JoinCommand extends EncounterCommand
         String   nickname     = parameters.length > 1 ? parameters[1] : null;
         Explorer explorer     = ExplorerManager.getMyExplorer(player.getUserId(), explorerName);
 
-        getEncounter().join(explorer, nickname);
+        getBattle().join(explorer, nickname);
     }
 }

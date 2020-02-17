@@ -10,11 +10,11 @@ public interface EncounterHolderInterface
     void createHostileEncounter();
 
     /**
-     * Get encounter
+     * Get battle
      *
-     * @return EncounterInterface
+     * @return Battle
      */
-    @NotNull EncounterInterface getEncounter();
+    @NotNull Battle getBattle();
 
     /**
      * Is an active encounter currently in progress

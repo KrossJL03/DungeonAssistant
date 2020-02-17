@@ -1,6 +1,10 @@
-package bot.Battle.Logger.Message.Help;
+package bot.Battle;
 
-import bot.*;
+import bot.CommandInterface;
+import bot.HelpMessageBuilder;
+import bot.MarkdownCodeFormatter;
+import bot.Message;
+import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -10,9 +14,9 @@ public class HelpEncounterMessageBuilder extends HelpMessageBuilder
     private TextFormatter textFormatter;
 
     /**
-     * HelpEncounterMessageBuilder constructor.
+     * Constructor.
      */
-    public @NotNull HelpEncounterMessageBuilder()
+    @NotNull HelpEncounterMessageBuilder()
     {
         super(new MarkdownCodeFormatter());
         this.textFormatter = new TextFormatter();

@@ -2,7 +2,7 @@ package bot.Battle.HostileEncounter;
 
 import bot.Battle.ActionResultInterface;
 import bot.Battle.CombatCreature;
-import bot.Battle.Logger.Mention;
+import bot.Battle.Mention;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,61 +64,6 @@ public class LootActionResult implements ActionResultInterface
     }
 
     /**
-     * Get bonus for all final bows
-     *
-     * @return int
-     */
-    public int getFinalBlowBonus()
-    {
-        return finalBlowBonus;
-    }
-
-    /**
-     * Get list of names of final blows
-     *
-     * @return ArrayList
-     */
-    public @NotNull ArrayList<String> getFinalBlowNames()
-    {
-        ArrayList<String> finalBlowNames = new ArrayList<>();
-        for (CombatCreature finalBlow : finalBlows) {
-            finalBlowNames.add(finalBlow.getName());
-        }
-
-        return finalBlowNames;
-    }
-
-    /**
-     * Get kill count
-     *
-     * @return int
-     */
-    public int getKillCount()
-    {
-        return killCount;
-    }
-
-    /**
-     * Get loot roll count
-     *
-     * @return int
-     */
-    public int getLootRollCount()
-    {
-        return lootRolls.size();
-    }
-
-    /**
-     * Get individual loot rolls
-     *
-     * @return ArrayList
-     */
-    public ArrayList<LootRoll> getLootRolls()
-    {
-        return lootRolls;
-    }
-
-    /**
      * Get mention
      *
      * @return Mention
@@ -139,11 +84,66 @@ public class LootActionResult implements ActionResultInterface
     }
 
     /**
+     * Get bonus for all final bows
+     *
+     * @return int
+     */
+    int getFinalBlowBonus()
+    {
+        return finalBlowBonus;
+    }
+
+    /**
+     * Get list of names of final blows
+     *
+     * @return ArrayList
+     */
+    @NotNull ArrayList<String> getFinalBlowNames()
+    {
+        ArrayList<String> finalBlowNames = new ArrayList<>();
+        for (CombatCreature finalBlow : finalBlows) {
+            finalBlowNames.add(finalBlow.getName());
+        }
+
+        return finalBlowNames;
+    }
+
+    /**
+     * Get kill count
+     *
+     * @return int
+     */
+    int getKillCount()
+    {
+        return killCount;
+    }
+
+    /**
+     * Get loot roll count
+     *
+     * @return int
+     */
+    int getLootRollCount()
+    {
+        return lootRolls.size();
+    }
+
+    /**
+     * Get individual loot rolls
+     *
+     * @return ArrayList
+     */
+    ArrayList<LootRoll> getLootRolls()
+    {
+        return lootRolls;
+    }
+
+    /**
      * Has any final blows
      *
      * @return boolean
      */
-    public boolean hasFinalBlows()
+    boolean hasFinalBlows()
     {
         return finalBlows.size() > 0;
     }
@@ -153,7 +153,7 @@ public class LootActionResult implements ActionResultInterface
      *
      * @return boolean
      */
-    public boolean noLoot()
+    boolean noLoot()
     {
         return !isRolled;
     }

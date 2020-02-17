@@ -2,8 +2,6 @@ package bot.Battle.Command;
 
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.HostileEncounter.EncounteredHostile;
-import bot.Battle.Logger.EncounterLogger;
 import bot.CommandParameter;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
@@ -16,24 +14,21 @@ import java.util.ArrayList;
 public class AddHostileCommand extends EncounterCommand
 {
     /**
-     * AddHostileCommand constructor
+     * Constructor.
      *
      * @param processManager Processed manager
      * @param holder         Battle holder
-     * @param logger         Battle Logger
      * @param dmChecker      Dungeon master checker
      */
     AddHostileCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker
     )
     {
         super(
             processManager,
             holder,
-            logger,
             dmChecker,
             "addHostile",
             new ArrayList<CommandParameter>()
@@ -54,11 +49,10 @@ public class AddHostileCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[]           parameters = getParametersFromEvent(event);
-        Hostile            hostile    = HostileRepository.getHostile(parameters[0]);
-        String             name       = parameters.length > 1 ? parameters[1] : parameters[0];
-        EncounteredHostile result     = getHostileEncounter().addHostile(hostile, name);
+        String[] parameters = getParametersFromEvent(event);
+        Hostile  hostile    = HostileRepository.getHostile(parameters[0]);
+        String   name       = parameters.length > 1 ? parameters[1] : parameters[0];
 
-        getLogger().logAddedHostile(result);
+        getHostileEncounter().addHostile(hostile, name);
     }
 }

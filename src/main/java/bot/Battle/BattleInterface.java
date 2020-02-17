@@ -3,12 +3,13 @@ package bot.Battle;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import bot.ProcessInterface;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public interface EncounterInterface extends ProcessInterface
+public interface BattleInterface extends ProcessInterface
 {
     /**
      * Attack action
@@ -17,7 +18,7 @@ public interface EncounterInterface extends ProcessInterface
      * @param hostileName Hostile name
      *
      * @throws BattlePhaseException If not attack phase
-     * @throws NotYourTurnException    If it is not the player's turn
+     * @throws NotYourTurnException If it is not the player's turn
      */
     void attackAction(@NotNull Player player, @NotNull String hostileName)
         throws BattlePhaseException, NotYourTurnException;
@@ -54,6 +55,13 @@ public interface EncounterInterface extends ProcessInterface
     void heal(@NotNull String name, int hitpoints) throws BattlePhaseException;
 
     /**
+     * Heal all active explorers by a given amount
+     *
+     * @param hitpoints Hitpoints to heal
+     */
+    void healAllExplorers(int hitpoints);
+
+    /**
      * Hurt encountered creature with given name by given amount of hitpoints
      *
      * @param name      Encountered creature name
@@ -62,6 +70,13 @@ public interface EncounterInterface extends ProcessInterface
      * @throws BattlePhaseException If encounter is over
      */
     void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException;
+
+    /**
+     * Hurt all active explorers by a given amount
+     *
+     * @param hitpoints Hitpoints to hurt
+     */
+    void hurtAllExplorers(int hitpoints);
 
     /**
      * Is this a null encounter
@@ -102,6 +117,11 @@ public interface EncounterInterface extends ProcessInterface
     void leave(@NotNull Player player);
 
     /**
+     * Log summary
+     */
+    void logSummary();
+
+    /**
      * Modify stat
      *
      * @param name         Name of creature to modify stat for
@@ -124,13 +144,22 @@ public interface EncounterInterface extends ProcessInterface
     void rejoin(@NotNull Player player);
 
     /**
-     * Remove encountered creature from encounter
+     * Remove creature from encounter
      *
      * @param name Name of creature
      *
      * @throws BattlePhaseException If encounter is over
      */
-    void removeCreature(@NotNull String name) throws BattlePhaseException;
+    void remove(@NotNull String name) throws BattlePhaseException;
+
+    /**
+     * Revive an explorer and heal to half health
+     *
+     * @param name Encountered explorer name
+     *
+     * @throws BattlePhaseException If encounter is over
+     */
+    void revive(@NotNull String name);
 
     /**
      * Set max player count
@@ -169,17 +198,17 @@ public interface EncounterInterface extends ProcessInterface
      * Skip current player turn
      *
      * @throws BattlePhaseException If encounter is over
-     *                                 If not in initiative
+     *                              If not in initiative
      */
     void skipCurrentPlayerTurn() throws BattlePhaseException;
 
     /**
      * Start attack phase
      *
-     * @throws EncounterException      If no players have joined
+     * @throws EncounterException   If no players have joined
      * @throws BattlePhaseException If the encounter is over
-     *                                 If the encounter has not started
-     *                                 If attack phase is in progress
+     *                              If the encounter has not started
+     *                              If attack phase is in progress
      */
     void startAttackPhase() throws BattlePhaseException;
 
@@ -191,12 +220,14 @@ public interface EncounterInterface extends ProcessInterface
     /**
      * Start join phase
      *
+     * @param channel Channel encounter will be hosted in
+     *
      * @throws BattlePhaseException If encounter is over
-     *                                 If encounter has already started
-     *                                 If max players has not beet set
-     *                                 If hostiles have not been added
+     *                              If encounter has already started
+     *                              If max players has not beet set
+     *                              If hostiles have not been added
      */
-    void startJoinPhase() throws BattlePhaseException;
+    void startJoinPhase(@NotNull MessageChannel channel) throws BattlePhaseException;
 
     /**
      * Use all current explorer actions

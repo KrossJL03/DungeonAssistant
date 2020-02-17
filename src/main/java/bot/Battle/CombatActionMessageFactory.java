@@ -1,10 +1,10 @@
-package bot.Battle.Logger.Message.Action;
+package bot.Battle;
 
 import bot.Constant;
-import bot.Battle.CombatActionResultInterface;
+import bot.Message;
 import org.jetbrains.annotations.NotNull;
 
-abstract class CombatActionMessageFactory extends ActionMessageFactory
+abstract public class CombatActionMessageFactory extends ActionMessageFactory
 {
     /**
      * Add death saving throw text to message if applicable
@@ -12,10 +12,7 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
      * @param message Message
      * @param result  Action result
      */
-    final protected void addDeathSaveIfApplicable(
-        @NotNull ActionMessage message,
-        @NotNull CombatActionResultInterface result
-    )
+    final protected void addDeathSaveIfApplicable(@NotNull Message message, @NotNull CombatActionResultInterface result)
     {
         if (result.rolledDeathSave()) {
             message.add(String.format(
@@ -34,7 +31,7 @@ abstract class CombatActionMessageFactory extends ActionMessageFactory
             message.add(String.format(
                 "%d %s %s!",
                 result.getDeathSaveRoll(),
-                ActionMessage.DOUBLE_ARROW,
+                Message.DOUBLE_ARROW,
                 result.survivedDeathSave()
                 ? "Success"
                 : codeFormatter.makeRed("FAIL")

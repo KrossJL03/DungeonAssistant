@@ -1,17 +1,17 @@
 package bot.Battle;
 
 import bot.Battle.HostileEncounter.EncounterPhase;
-import bot.Battle.Logger.EncounterLogger;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public abstract class Battle implements EncounterInterface
+public abstract class Battle implements BattleInterface
 {
-    protected EncounterLogger                   logger;
+    protected BattleLogger                      logger;
     protected BattlePhaseManager                phaseManager;
     private   ExplorerRosterInterface           explorerRoster;
     private   InitiativeTrackerInterface        initiative;
@@ -25,7 +25,7 @@ public abstract class Battle implements EncounterInterface
      * @param phaseManager      Phase manager
      */
     protected Battle(
-        @NotNull EncounterLogger logger,
+        @NotNull BattleLogger logger,
         @NotNull InitiativeTrackerFactoryInterface initiativeFactory,
         @NotNull BattlePhaseManager phaseManager
     )
@@ -89,10 +89,9 @@ public abstract class Battle implements EncounterInterface
     }
 
     /**
-     * Heal all active explorers by a given amount
-     *
-     * @param hitpoints Hitpoints to heal
+     * {@inheritDoc}
      */
+    @Override
     public void healAllExplorers(int hitpoints)
     {
         for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
@@ -117,10 +116,9 @@ public abstract class Battle implements EncounterInterface
     }
 
     /**
-     * Hurt all active explorers by a given amount
-     *
-     * @param hitpoints Hitpoints to hurt
+     * {@inheritDoc}
      */
+    @Override
     public void hurtAllExplorers(int hitpoints)
     {
         for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
@@ -206,6 +204,14 @@ public abstract class Battle implements EncounterInterface
     }
 
     /**
+     * Log summary
+     */
+    public void logSummary()
+    {
+        logger.logSummary(getAllCreatures());
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -253,12 +259,9 @@ public abstract class Battle implements EncounterInterface
     }
 
     /**
-     * Revive an explorer and heal to half health
-     *
-     * @param name Encountered explorer name
-     *
-     * @throws BattlePhaseException If encounter is over
+     * {@inheritDoc}
      */
+    @Override
     public void revive(@NotNull String name) throws BattlePhaseException
     {
         phaseManager.assertNotFinalPhase();
@@ -357,9 +360,11 @@ public abstract class Battle implements EncounterInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param channel
      */
     @Override
-    public void startJoinPhase() throws BattlePhaseException
+    public void startJoinPhase(@NotNull MessageChannel channel) throws BattlePhaseException
     {
         phaseManager.assertJoinPhaseMayStart();
 
@@ -367,6 +372,7 @@ public abstract class Battle implements EncounterInterface
 
         BattlePhaseChange result = phaseManager.startJoinPhase();
 
+        logger.setChannel(channel);
         clearInitiative();
         notifyListenerOfPhaseChange(result);
     }
@@ -409,6 +415,7 @@ public abstract class Battle implements EncounterInterface
 
         CombatExplorer explorer = getCurrentExplorer(player);
 
+        logger.pingDmItemUsed(player);
         explorer.useAction();
         handleEndOfAction();
     }
@@ -598,14 +605,6 @@ public abstract class Battle implements EncounterInterface
     final protected void logAction(@NotNull ActionResultInterface result)
     {
         logger.logAction(result);
-    }
-
-    /**
-     * Log phoenix down used
-     */
-    final protected void logPhoenixDownUsed()
-    {
-        logger.logFirstDeathRevived();
     }
 
     /**

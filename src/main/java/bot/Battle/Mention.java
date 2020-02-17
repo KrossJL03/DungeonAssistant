@@ -1,6 +1,7 @@
-package bot.Battle.Logger;
+package bot.Battle;
 
-public class Mention {
+public class Mention
+{
 
     private String value;
 
@@ -9,7 +10,8 @@ public class Mention {
      *
      * @param value Mention as string
      */
-    private Mention(String value) {
+    private Mention(String value)
+    {
         this.value = value;
     }
 
@@ -18,8 +20,17 @@ public class Mention {
      *
      * @param userId Player user id
      */
-    public static Mention createForPlayer(String userId) {
+    public static Mention createForPlayer(String userId)
+    {
         return new Mention(String.format("<@%s>", userId));
+    }
+
+    /**
+     * Factory method for everyone
+     */
+    static Mention createForEveryone()
+    {
+        return new Mention("@everyone");
     }
 
     /**
@@ -27,7 +38,8 @@ public class Mention {
      *
      * @param id Role id
      */
-    public static Mention createForRole(String id) {
+    static Mention createForRole(String id)
+    {
         return new Mention(String.format("<@&%s>", id));
     }
 
@@ -36,14 +48,8 @@ public class Mention {
      *
      * @return String
      */
-    public String getValue() {
+    public String getValue()
+    {
         return value;
-    }
-
-    /**
-     * Factory method for everyone
-     */
-    static Mention createForEveryone() {
-        return new Mention("@everyone");
     }
 }

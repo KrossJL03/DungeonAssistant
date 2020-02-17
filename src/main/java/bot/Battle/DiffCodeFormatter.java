@@ -1,4 +1,4 @@
-package bot.Battle.Logger.Message;
+package bot.Battle;
 
 import bot.CodeFormatterInterface;
 import org.jetbrains.annotations.NotNull;

@@ -1,36 +1,55 @@
-package bot.Battle.Logger.Message.Action;
+package bot.Battle;
 
-import bot.Battle.CombatExplorer;
-import bot.Battle.JoinActionResult;
-import bot.Battle.Logger.Mention;
+import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
-class JoinActionMessageFactory extends ActionMessageFactory
+public class JoinActionMessageFactory extends ActionMessageFactory
 {
     /**
-     * Create message from join action result
-     *
-     * @param result Join action result
-     *
-     * @return MessageInterface
+     * {@inheritDoc}
      */
-    public @NotNull MessageInterface createMessage(@NotNull JoinActionResult result)
+    @Override
+    public @NotNull MessageInterface createMessage(@NotNull ActionResultInterface result, @NotNull Mention dmMention)
     {
-        ActionMessage message = new ActionMessage();
+        JoinActionResult joinActionResult = castResult(result);
+        Message          message          = new Message();
 
-        CombatExplorer explorer = result.getExplorer();
+        CombatExplorer explorer = joinActionResult.getExplorer();
         message.add(String.format(
             "%s: %s has been added! %s",
             (Mention.createForPlayer(explorer.getOwner().getUserId())).getValue(),
             explorer.getName(),
             getExplorerPrintout(explorer)
         ));
-        if (result.isRosterFull()) {
+        if (joinActionResult.isRosterFull()) {
             message.add("***THE ROSTER IS NOW FULL!***");
         }
 
         return message;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(@NotNull ActionResultInterface result)
+    {
+        return result instanceof JoinActionResult;
+    }
+
+    /**
+     * Cast result
+     *
+     * @param result Result to cast
+     *
+     * @return JoinActionResult
+     */
+    private JoinActionResult castResult(@NotNull ActionResultInterface result)
+    {
+        assertHandles(result);
+
+        return (JoinActionResult) result;
     }
 
     /**
@@ -46,15 +65,15 @@ class JoinActionMessageFactory extends ActionMessageFactory
         int    nameBuffer = (int) Math.floor(15 + explorer.getName().length() / 2);
         String output     = "";
         output += "```md";
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += nameBuffer < 29 ?
                   String.format("%" + nameBuffer + "s", explorer.getName()) :
                   explorer.getName();
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += "=============================";
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += "  HP | STR | WIS | AGI | DEF ";
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += String.format(
             "%4s | %2s  | %2s  | %2s  | %2s",
             explorer.getMaxHP(),
@@ -63,15 +82,15 @@ class JoinActionMessageFactory extends ActionMessageFactory
             explorer.getAgility(),
             explorer.getDefense()
         );
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += "=============================";
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += String.format("ATK Dice:  %2d  ", explorer.getAttackDice());
         output += String.format("Min Crit:   %2d", explorer.getMinCrit());
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += String.format("DOD Dice:  %2d  ", explorer.getDodgeDice());
         output += String.format("# of Turns: %2d", explorer.getMaxActions());
-        output += ActionMessage.NEWLINE;
+        output += Message.NEWLINE;
         output += "```";
         return output;
     }

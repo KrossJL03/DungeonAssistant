@@ -2,7 +2,7 @@ package bot.Battle.HostileEncounter;
 
 import bot.Battle.CombatActionResultInterface;
 import bot.Battle.DeathSaveRoll;
-import bot.Battle.Logger.Mention;
+import bot.Battle.Mention;
 import bot.Battle.Slayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,26 +101,6 @@ public class ProtectActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Get name of protected explorer
-     *
-     * @return String
-     */
-    public @NotNull String getProtectedName()
-    {
-        return protectedName;
-    }
-
-    /**
-     * Get mention for protected explorer's owner
-     *
-     * @return String
-     */
-    public @NotNull Mention getProtectedOwnerMention()
-    {
-        return Mention.createForPlayer(protectedOwnerId);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -190,5 +170,25 @@ public class ProtectActionResult implements CombatActionResultInterface
     public boolean survivedDeathSave()
     {
         return rolledDeathSave() && deathSaveRoll.survived();
+    }
+
+    /**
+     * Get name of protected explorer
+     *
+     * @return String
+     */
+    @NotNull String getProtectedName()
+    {
+        return protectedName;
+    }
+
+    /**
+     * Get mention for protected explorer's owner
+     *
+     * @return String
+     */
+    @NotNull Mention getProtectedOwnerMention()
+    {
+        return Mention.createForPlayer(protectedOwnerId);
     }
 }

@@ -17,7 +17,7 @@ public abstract class Command implements CommandInterface
     private ProcessManager              processManager;
 
     /**
-     * HelpCommand constructor
+     * Constructor.
      *
      * @param processManager Process manager
      * @param commandName    HelpCommand name

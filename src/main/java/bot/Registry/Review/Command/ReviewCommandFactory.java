@@ -2,11 +2,6 @@ package bot.Registry.Review.Command;
 
 import bot.CommandFactoryInterface;
 import bot.CommandInterface;
-import bot.Battle.EncounterHolder;
-import bot.Battle.Logger.EncounterLogger;
-import bot.Battle.Logger.Message.Action.ActionMessageBuilder;
-import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
-import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.PrivateLogger;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
@@ -42,6 +37,15 @@ public class ReviewCommandFactory implements CommandFactoryInterface
      * {@inheritDoc}
      */
     @Override
+    public @NotNull ArrayList<CommandInterface> createAdditionalCommands()
+    {
+        return new ArrayList<>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public @NotNull ArrayList<CommandInterface> createCommands()
     {
         ArrayList<CommandInterface> commands = new ArrayList<>();
@@ -54,25 +58,5 @@ public class ReviewCommandFactory implements CommandFactoryInterface
         commands.add(new HelpReviewCommand(processManager, privateLogger, new ArrayList<>(commands)));
 
         return commands;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull ArrayList<CommandInterface> createAdditionalCommands()
-    {
-        return new ArrayList<>();
-    }
-
-    private EncounterHolder getHolder()
-    {
-        // todo remove method
-        EncounterLogger logger = new EncounterLogger(
-            new ActionMessageBuilder(),
-            new PhaseChangeMessageBuilder(),
-            new SummaryMessageBuilder()
-        );
-        return new EncounterHolder(logger);
     }
 }

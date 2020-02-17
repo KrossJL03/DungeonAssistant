@@ -3,7 +3,7 @@ package bot.Battle.Logger.Message.Summary;
 import bot.Battle.CombatCreature;
 import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HostileEncounter.EncounteredHostile;
-import bot.Battle.Logger.Message.DiffCodeFormatter;
+import bot.Battle.DiffCodeFormatter;
 import bot.Battle.Slayer;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;

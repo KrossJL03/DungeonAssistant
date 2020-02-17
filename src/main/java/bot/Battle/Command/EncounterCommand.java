@@ -1,12 +1,11 @@
 package bot.Battle.Command;
 
-import bot.Battle.HostileEncounter.HostileEncounter;
-import bot.Command;
+import bot.Battle.BattleInterface;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
+import bot.Battle.HostileEncounter.HostileEncounter;
+import bot.Command;
 import bot.CommandParameter;
-import bot.Battle.EncounterInterface;
-import bot.Battle.Logger.EncounterLogger;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -18,15 +17,13 @@ abstract class EncounterCommand extends Command
 {
     private DungeonMasterChecker dmChecker;
     private EncounterHolder      holder;
-    private EncounterLogger      logger;
     private boolean              isDmExclusive;
 
     /**
-     * EncounterCommand constructor
+     * Constructor.
      *
      * @param processManager Processed manager
      * @param holder         Battle holder
-     * @param logger         Battle Logger
      * @param dmChecker      Dungeon master checker
      * @param commandName    HelpCommand name
      * @param parameters     Parameters
@@ -36,7 +33,6 @@ abstract class EncounterCommand extends Command
     protected EncounterCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull EncounterLogger logger,
         @NotNull DungeonMasterChecker dmChecker,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
@@ -48,7 +44,6 @@ abstract class EncounterCommand extends Command
         this.dmChecker = dmChecker;
         this.holder = holder;
         this.isDmExclusive = isDmExclusive;
-        this.logger = logger;
     }
 
     /**
@@ -79,6 +74,16 @@ abstract class EncounterCommand extends Command
     abstract protected void execute(MessageReceivedEvent event);
 
     /**
+     * Get battle
+     *
+     * @return BattleInterface
+     */
+    protected @NotNull BattleInterface getBattle()
+    {
+        return holder.getEncounter();
+    }
+
+    /**
      * Get dungeon master
      *
      * @param event Event
@@ -93,16 +98,6 @@ abstract class EncounterCommand extends Command
     }
 
     /**
-     * Get encounter
-     *
-     * @return EncounterInterface
-     */
-    protected @NotNull EncounterInterface getEncounter()
-    {
-        return holder.getEncounter();
-    }
-
-    /**
      * Get hostile encounter
      *
      * @return Battle
@@ -111,22 +106,12 @@ abstract class EncounterCommand extends Command
      */
     final protected @NotNull HostileEncounter getHostileEncounter()
     {
-        EncounterInterface encounter = getEncounter();
+        BattleInterface encounter = getBattle();
         if (encounter instanceof HostileEncounter) {
             return (HostileEncounter) encounter;
         }
 
         throw EncounterCommandException.createWrongEncounterType(getCommandName(), encounter.getBattleStyle());
-    }
-
-    /**
-     * Get logger
-     *
-     * @return EncounterLogger
-     */
-    final protected @NotNull EncounterLogger getLogger()
-    {
-        return logger;
     }
 
     /**
