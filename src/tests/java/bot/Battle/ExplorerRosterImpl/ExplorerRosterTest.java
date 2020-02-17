@@ -1,14 +1,21 @@
-package bot.Battle;
+package bot.Battle.ExplorerRosterImpl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import bot.Battle.EncounteredExplorerInterface;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ExplorerRosterTest
 {
@@ -53,8 +60,8 @@ class ExplorerRosterTest
 
         // add over max amount of explorers ///////////////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer4));
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer4.getName()));
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer4.getOwner()));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer4.getName()));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer4.getOwner()));
         assertEquals(expectedList, explorerRoster.getAllExplorers());
         /////////////////////////////////////////////////
 
@@ -148,6 +155,39 @@ class ExplorerRosterTest
     }
 
     @Test
+    @DisplayName("Get Explorer")
+    void getExplorerTest()
+    {
+        ExplorerRoster                          explorerRoster = new ExplorerRoster();
+        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
+        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
+        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+
+        // get an explorer from an empty roster ////////////////
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer1.getName()));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer1.getOwner()));
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+        /////////////////////////////////////////////////
+
+        // get an explorer that is in the roster ///////////////
+        explorerRoster.setMaxPlayerCount(1);
+        explorerRoster.addExplorer(explorer1);
+        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
+        expectedList.add(explorer1);
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+
+        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
+        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getOwner()));
+        /////////////////////////////////////////////////
+
+        // get an explorer that is not in the roster ////////////
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer2.getName()));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer2.getOwner()));
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+        /////////////////////////////////////////////////
+    }
+
+    @Test
     @DisplayName("Get Max Player Count")
     void getMaxPlayerCountTest()
     {
@@ -164,39 +204,6 @@ class ExplorerRosterTest
     }
 
     @Test
-    @DisplayName("Get Explorer")
-    void getExplorerTest()
-    {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
-
-        // get an explorer from an empty roster ////////////////
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer1.getName()));
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer1.getOwner()));
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-        /////////////////////////////////////////////////
-
-        // get an explorer that is in the roster ///////////////
-        explorerRoster.setMaxPlayerCount(1);
-        explorerRoster.addExplorer(explorer1);
-        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
-        expectedList.add(explorer1);
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-
-        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getName()));
-        assertEquals(explorer1, explorerRoster.getExplorer(explorer1.getOwner()));
-        /////////////////////////////////////////////////
-
-        // get an explorer that is not in the roster ////////////
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer2.getName()));
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.getExplorer(explorer2.getOwner()));
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-        /////////////////////////////////////////////////
-    }
-
-    @Test
     @DisplayName("Player Has Left")
     void playerHasLeftTest()
     {
@@ -207,7 +214,7 @@ class ExplorerRosterTest
         explorerRoster.setMaxPlayerCount(3);
 
         // player attempts to leave that was not in the roster //
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.markAsLeft(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.markAsLeft(p));
         /////////////////////////////////////////////////////////
 
         // player attempts to leave that was not present //
@@ -256,6 +263,38 @@ class ExplorerRosterTest
 //        explorerRoster.rejoin(p);
         verify(explorer1, times(1)).markAsPresent();
         ///////////////////////////////////////////////
+    }
+
+    @Test
+    @DisplayName("Remove Explorer")
+    void removeExplorerTest()
+    {
+        ExplorerRoster                          explorerRoster = new ExplorerRoster();
+        EncounteredExplorerInterface            explorer       = this.mockEncounteredExplorerInterface();
+        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+
+        explorerRoster.setMaxPlayerCount(2);
+
+        // remove an explorer that is not in the roster ////////
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.remove(explorer));
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+        /////////////////////////////////////////////////
+
+        // remove an explorer that is in the roster ////////////
+        explorerRoster.addExplorer(explorer);
+        assertEquals(explorer, explorerRoster.getExplorer(explorer.getName()));
+        expectedList.add(explorer);
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+
+        explorerRoster.remove(explorer);
+        expectedList.remove(explorer);
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+        /////////////////////////////////////////////////
+
+        // remove an explorer twice ////////////////////////////
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.remove(explorer));
+        assertEquals(expectedList, explorerRoster.getAllExplorers());
+        /////////////////////////////////////////////////
     }
 
     @Test
@@ -317,38 +356,6 @@ class ExplorerRosterTest
 
         explorerRoster.sort();
         assertEquals(expectedList, explorerRoster.getAllExplorers());
-    }
-
-    @Test
-    @DisplayName("Remove Explorer")
-    void removeExplorerTest()
-    {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer       = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
-
-        explorerRoster.setMaxPlayerCount(2);
-
-        // remove an explorer that is not in the roster ////////
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.remove(explorer));
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-        /////////////////////////////////////////////////
-
-        // remove an explorer that is in the roster ////////////
-        explorerRoster.addExplorer(explorer);
-        assertEquals(explorer, explorerRoster.getExplorer(explorer.getName()));
-        expectedList.add(explorer);
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-
-        explorerRoster.remove(explorer);
-        expectedList.remove(explorer);
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-        /////////////////////////////////////////////////
-
-        // remove an explorer twice ////////////////////////////
-        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.remove(explorer));
-        assertEquals(expectedList, explorerRoster.getAllExplorers());
-        /////////////////////////////////////////////////
     }
 
     /**

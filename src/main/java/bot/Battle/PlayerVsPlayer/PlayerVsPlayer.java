@@ -1,5 +1,11 @@
-package bot.Battle;
+package bot.Battle.PlayerVsPlayer;
 
+import bot.Battle.Encounter;
+import bot.Battle.EncounteredCreature.AttackActionResult;
+import bot.Battle.EncounteredCreature.HealActionResult;
+import bot.Battle.EncounteredCreature.HurtActionResult;
+import bot.Battle.EncounteredCreatureInterface;
+import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.Logger.EncounterLogger;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +18,9 @@ public class PlayerVsPlayer extends Encounter
      *
      * @param logger Logger
      */
-    PlayerVsPlayer(@NotNull EncounterLogger logger)
+    public PlayerVsPlayer(@NotNull EncounterLogger logger)
     {
-        super(logger, new NullHostileRoster(), new InitiativeCycleFactory());
+        super(logger, new InitiativeCycleFactory());
     }
 
     /**
@@ -39,7 +45,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    public void removeCreature(@NotNull String name) throws EncounterPhaseException
+    public void removeCreature(@NotNull String name)
     {
         EncounteredCreatureInterface encounterCreature = getCreature(name);
         if (encounterCreature instanceof EncounteredExplorerInterface) {
@@ -51,7 +57,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    public void skipCurrentPlayerTurn() throws EncounterPhaseException
+    public void skipCurrentPlayerTurn()
     {
         assertInitiativePhase();
 
@@ -67,12 +73,13 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected @NotNull AttackActionResultInterface doAttack(
+    protected @NotNull AttackActionResult doAttack(
         @NotNull EncounteredExplorerInterface explorer,
         @NotNull String targetName
     )
     {
         EncounteredExplorerInterface target = getExplorer(targetName);
+
         return explorer.attack(target);
     }
 
@@ -109,7 +116,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResultInterface result)
+    protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
     {
         // do nothing
     }
@@ -118,9 +125,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHurt(
-        @NotNull EncounteredCreatureInterface target, @NotNull HurtActionResultInterface result
-    )
+    protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResult result)
     {
         // do nothing
     }
@@ -129,7 +134,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResultInterface result)
+    protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
     {
         // do nothing
     }

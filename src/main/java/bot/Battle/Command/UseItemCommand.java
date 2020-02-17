@@ -1,10 +1,11 @@
 package bot.Battle.Command;
 
-import bot.CommandParameter;
 import bot.Battle.AdditionalCommandInterface;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
+import bot.Battle.Encounter;
 import bot.Battle.EncounterHolder;
 import bot.Battle.Logger.EncounterLogger;
+import bot.CommandParameter;
 import bot.Player.Player;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

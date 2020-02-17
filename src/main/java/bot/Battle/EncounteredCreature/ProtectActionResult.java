@@ -1,11 +1,11 @@
 package bot.Battle.EncounteredCreature;
 
+import bot.Battle.CombatActionResultInterface;
 import bot.Battle.Logger.Mention;
-import bot.Battle.ProtectActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ProtectActionResult implements ProtectActionResultInterface
+public class ProtectActionResult implements CombatActionResultInterface
 {
     private int           damageDealt;
     private int           damageResisted;
@@ -99,18 +99,20 @@ public class ProtectActionResult implements ProtectActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get name of protected explorer
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getProtectedName()
     {
         return protectedName;
     }
 
     /**
-     * {@inheritDoc}
+     * Get mention for protected explorer's owner
+     *
+     * @return String
      */
-    @Override
     public @NotNull Mention getProtectedOwnerMention()
     {
         return Mention.createForPlayer(protectedOwnerId);

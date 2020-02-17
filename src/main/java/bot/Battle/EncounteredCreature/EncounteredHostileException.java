@@ -1,9 +1,9 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.EncounterExceptionInterface;
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class EncounteredHostileException extends RuntimeException implements EncounterExceptionInterface
+class EncounteredHostileException extends CustomException
 {
     /**
      * EncounteredExplorerException constructor

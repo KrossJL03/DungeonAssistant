@@ -1,6 +1,6 @@
 package bot.Battle.Command;
 
-import bot.Battle.HostileEncounter;
+import bot.Battle.HostileEncounter.HostileEncounter;
 import bot.Command;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;

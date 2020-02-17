@@ -1,26 +1,25 @@
 package bot.Battle.EncounteredCreature;
 
+import bot.Battle.ActionResultInterface;
 import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.Logger.Mention;
-import bot.Battle.LootActionResultInterface;
-import bot.Battle.LootRollInterface;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class LootActionResult implements LootActionResultInterface
+public class LootActionResult implements ActionResultInterface
 {
-    private ArrayList<EncounteredCreatureInterface> finalBlows;
-    private ArrayList<LootRollInterface>            lootRolls;
-    private Player                                  owner;
-    private String                                  name;
     private int                                     finalBlowBonus;
-    private int                                     killCount;
+    private ArrayList<EncounteredCreatureInterface> finalBlows;
     private boolean                                 isRolled;
+    private int                                     killCount;
+    private ArrayList<LootRoll>                     lootRolls;
+    private String                                  name;
+    private Player                                  owner;
 
     /**
-     * LootActionResult constructor
+     * Empty constructor.
      *
      * @param name  Name
      * @param owner Owner
@@ -37,7 +36,7 @@ public class LootActionResult implements LootActionResultInterface
     }
 
     /**
-     * LootActionResult constructor
+     * Constructor.
      *
      * @param name           Name
      * @param owner          Owner
@@ -49,7 +48,7 @@ public class LootActionResult implements LootActionResultInterface
     @NotNull LootActionResult(
         @NotNull String name,
         @NotNull Player owner,
-        @NotNull ArrayList<LootRollInterface> lootRolls,
+        @NotNull ArrayList<LootRoll> lootRolls,
         @NotNull ArrayList<EncounteredCreatureInterface> finalBlows,
         int killCount,
         int finalBlowBonus
@@ -65,18 +64,20 @@ public class LootActionResult implements LootActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get bonus for all final bows
+     *
+     * @return int
      */
-    @Override
     public int getFinalBlowBonus()
     {
         return finalBlowBonus;
     }
 
     /**
-     * {@inheritDoc}
+     * Get list of names of final blows
+     *
+     * @return ArrayList
      */
-    @Override
     public @NotNull ArrayList<String> getFinalBlowNames()
     {
         ArrayList<String> finalBlowNames = new ArrayList<>();
@@ -87,63 +88,70 @@ public class LootActionResult implements LootActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get kill count
+     *
+     * @return int
      */
-    @Override
     public int getKillCount()
     {
         return killCount;
     }
 
     /**
-     * {@inheritDoc}
+     * Get loot roll count
+     *
+     * @return int
      */
-    @Override
     public int getLootRollCount()
     {
         return lootRolls.size();
     }
 
     /**
-     * {@inheritDoc}
+     * Get individual loot rolls
+     *
+     * @return ArrayList
      */
-    @Override
-    public ArrayList<LootRollInterface> getLootRolls()
+    public ArrayList<LootRoll> getLootRolls()
     {
         return lootRolls;
     }
 
     /**
-     * {@inheritDoc}
+     * Get mention
+     *
+     * @return Mention
      */
-    @Override
     public @NotNull Mention getMention()
     {
         return Mention.createForPlayer(owner.getUserId());
     }
 
     /**
-     * {@inheritDoc}
+     * Get name
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getName()
     {
         return name;
     }
 
     /**
-     * {@inheritDoc}
+     * Has any final blows
+     *
+     * @return boolean
      */
-    @Override
     public boolean hasFinalBlows()
     {
         return finalBlows.size() > 0;
     }
 
     /**
-     * {@inheritDoc}
+     * Has no loot
+     *
+     * @return boolean
      */
-    @Override
     public boolean noLoot()
     {
         return !isRolled;

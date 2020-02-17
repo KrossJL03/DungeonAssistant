@@ -1,6 +1,11 @@
 package bot.Battle;
 
+import bot.Battle.EncounteredCreature.AttackActionResult;
 import bot.Battle.EncounteredCreature.EncounteredExplorer;
+import bot.Battle.EncounteredCreature.HealActionResult;
+import bot.Battle.EncounteredCreature.HurtActionResult;
+import bot.Battle.EncounteredCreature.ModifyStatActionResult;
+import bot.Battle.ExplorerRosterImpl.ExplorerRoster;
 import bot.Battle.Logger.EncounterLogger;
 import bot.Battle.Logger.Mention;
 import bot.Battle.Phase.EncounterPhaseFactory;
@@ -11,11 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-abstract class Encounter implements EncounterInterface
+public abstract class Encounter implements EncounterInterface
 {
     protected EncounterPhaseInterface           currentPhase;
     protected EncounterLogger                   logger;
-    private   ExplorerRoster                    explorerRoster;
+    private   ExplorerRosterInterface           explorerRoster;
     private   InitiativeTrackerInterface        initiative;
     private   InitiativeTrackerFactoryInterface initiativeFactory;
 
@@ -23,12 +28,10 @@ abstract class Encounter implements EncounterInterface
      * Constructor.
      *
      * @param logger            Logger
-     * @param hostileRoster     Hostile roster
      * @param initiativeFactory Initiative factory
      */
-    Encounter(
+    protected Encounter(
         @NotNull EncounterLogger logger,
-        @NotNull HostileRosterInterface hostileRoster,
         @NotNull InitiativeTrackerFactoryInterface initiativeFactory
     )
     {
@@ -59,7 +62,7 @@ abstract class Encounter implements EncounterInterface
             throw NotYourTurnException.createNotYourTurn();
         }
 
-        AttackActionResultInterface result = doAttack(currentExplorer, targetName);
+        AttackActionResult result = doAttack(currentExplorer, targetName);
 
         logger.logAction(result);
         handleEndOfAction();
@@ -83,7 +86,7 @@ abstract class Encounter implements EncounterInterface
         assertNotFinalPhase();
 
         EncounteredCreatureInterface target = getCreature(name);
-        HealActionResultInterface    result = target.healPoints(hitpoints);
+        HealActionResult             result = target.healPoints(hitpoints);
 
         logger.logAction(result);
         postHeal(target, result);
@@ -111,7 +114,7 @@ abstract class Encounter implements EncounterInterface
         assertNotFinalPhase();
 
         EncounteredCreatureInterface target = getCreature(name);
-        HurtActionResultInterface    result = target.hurt(hitpoints);
+        HurtActionResult             result = target.hurt(hitpoints);
 
         logger.logAction(result);
         postHurt(target, result);
@@ -181,7 +184,7 @@ abstract class Encounter implements EncounterInterface
             encounteredExplorer.resetActions(currentPhase.isDodgePhase());
         }
 
-        JoinActionResultInterface result = new JoinActionResult(encounteredExplorer, explorerRoster.isFull());
+        JoinActionResult result = new JoinActionResult(encounteredExplorer, explorerRoster.isFull());
         logger.logAction(result);
     }
 
@@ -226,8 +229,8 @@ abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface    target = getCreature(name);
-        ModifyStatActionResultInterface result = target.modifyStat(statName, statModifier);
+        EncounteredCreatureInterface target = getCreature(name);
+        ModifyStatActionResult       result = target.modifyStat(statName, statModifier);
         explorerRoster.sort();
         logger.logAction(result);
     }
@@ -273,7 +276,7 @@ abstract class Encounter implements EncounterInterface
         assertNotFinalPhase();
 
         EncounteredCreatureInterface target = getCreature(name);
-        HealActionResultInterface    result = target.healPercent((float) 0.5);
+        HealActionResult             result = target.healPercent((float) 0.5);
 
         postRevive(target, result);
         logger.logAction(result);
@@ -300,8 +303,8 @@ abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface    target = getCreature(name);
-        ModifyStatActionResultInterface result = target.setStat(statName, statValue);
+        EncounteredCreatureInterface target = getCreature(name);
+        ModifyStatActionResult       result = target.setStat(statName, statValue);
         explorerRoster.sort();
         logger.logAction(result);
     }
@@ -429,13 +432,28 @@ abstract class Encounter implements EncounterInterface
             return;
         }
 
-        EncounteredExplorerInterface encounteredExplorer = initiative.getCurrentExplorer();
-        if (!encounteredExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
+        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
 
         encounteredExplorer.useAction();
         handleEndOfAction();
+    }
+
+    /**
+     * Assert that the current phase can be changed
+     *
+     * @throws EncounterPhaseException If the battle is in it's final phase
+     *                                 If the battle is still in the create phase
+     * @throws EncounterException      If no players have joined
+     */
+    final protected void assertCurrentPhaseIsChangable() throws EncounterPhaseException, EncounterException
+    {
+        if (currentPhase.isFinalPhase()) {
+            throw EncounterPhaseException.createFinalPhase();
+        } else if (currentPhase.isCreatePhase()) {
+            throw EncounterPhaseException.createNotStarted();
+        } else if (haveNoPlayersJoined()) {
+            throw EncounterException.createNoPlayersHaveJoined();
+        }
     }
 
     /**
@@ -447,6 +465,18 @@ abstract class Encounter implements EncounterInterface
             throw EncounterPhaseException.createFinalPhase();
         } else if (!currentPhase.isInitiativePhase()) {
             throw EncounterPhaseException.createNotInitiativePhase();
+        }
+    }
+
+    /**
+     * Assert that the current phase is the loot phase
+     *
+     * @throws EncounterPhaseException If not loot phase
+     */
+    final protected void assertLootPhase() throws EncounterPhaseException
+    {
+        if (!currentPhase.isLootPhase()) {
+            throw EncounterPhaseException.createNotLootPhase();
         }
     }
 
@@ -474,9 +504,9 @@ abstract class Encounter implements EncounterInterface
      * @param explorer   The attacker
      * @param targetName The name of the target
      *
-     * @return AttackActionResultInterface
+     * @return AttackActionResult
      */
-    protected abstract @NotNull AttackActionResultInterface doAttack(
+    protected abstract @NotNull AttackActionResult doAttack(
         @NotNull EncounteredExplorerInterface explorer,
         @NotNull String targetName
     );
@@ -520,6 +550,26 @@ abstract class Encounter implements EncounterInterface
     final protected @NotNull EncounteredExplorerInterface getCurrentExplorer()
     {
         return initiative.getCurrentExplorer();
+    }
+
+    /**
+     * Get current explorer
+     *
+     * @param player The player that should be the current explorer's owner
+     *
+     * @return EncounteredExplorerInterface
+     *
+     * @throws NotYourTurnException If the given player is not the owner of the current explorer
+     */
+    final protected @NotNull EncounteredExplorerInterface getCurrentExplorer(@NotNull Player player)
+        throws NotYourTurnException
+    {
+        EncounteredExplorerInterface explorer = initiative.getCurrentExplorer();
+        if (!explorer.isOwner(player)) {
+            throw NotYourTurnException.createNotYourTurn();
+        }
+
+        return explorer;
     }
 
     /**
@@ -582,16 +632,6 @@ abstract class Encounter implements EncounterInterface
     }
 
     /**
-     * Have players joined
-     *
-     * @return boolean
-     */
-    final protected boolean haveNoPlayersJoined()
-    {
-        return currentPhase.isJoinPhase() && !explorerRoster.hasAtLeastOneActiveExplorer();
-    }
-
-    /**
      * Can players join this encounter at any time
      */
     abstract protected boolean isAlwaysJoinable();
@@ -647,10 +687,7 @@ abstract class Encounter implements EncounterInterface
      * @param target Target of healing
      * @param result Result of healing
      */
-    abstract protected void postHeal(
-        @NotNull EncounteredCreatureInterface target,
-        @NotNull HealActionResultInterface result
-    );
+    abstract protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result);
 
     /**
      * Handle any additional post hurt related processes
@@ -658,10 +695,7 @@ abstract class Encounter implements EncounterInterface
      * @param target Target of hurting
      * @param result Result of hurting
      */
-    abstract protected void postHurt(
-        @NotNull EncounteredCreatureInterface target,
-        @NotNull HurtActionResultInterface result
-    );
+    abstract protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResult result);
 
     /**
      * Handle any additional post revive related processes
@@ -669,10 +703,7 @@ abstract class Encounter implements EncounterInterface
      * @param target Target of reviving
      * @param result Result of reviving
      */
-    abstract protected void postRevive(
-        @NotNull EncounteredCreatureInterface target,
-        @NotNull HealActionResultInterface result
-    );
+    abstract protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result);
 
     /**
      * handle any additional pre join phase related processes
@@ -719,20 +750,12 @@ abstract class Encounter implements EncounterInterface
     }
 
     /**
-     * Assert that the current phase can be changed
+     * Have players joined
      *
-     * @throws EncounterPhaseException If the battle is in it's final phase
-     *                                 If the battle is still in the create phase
-     * @throws EncounterException      If no players have joined
+     * @return boolean
      */
-    private void assertCurrentPhaseIsChangable() throws EncounterPhaseException, EncounterException
+    private boolean haveNoPlayersJoined()
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (haveNoPlayersJoined()) {
-            throw EncounterException.createNoPlayersHaveJoined();
-        }
+        return currentPhase.isJoinPhase() && !explorerRoster.hasAtLeastOneActiveExplorer();
     }
 }

@@ -1,5 +1,7 @@
-package bot.Battle;
+package bot.Battle.ExplorerRosterImpl;
 
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.ExplorerRosterImpl.ExplorerAgilityComparator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

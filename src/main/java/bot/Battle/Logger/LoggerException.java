@@ -1,8 +1,8 @@
 package bot.Battle.Logger;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 
-class LoggerException extends RuntimeException implements CustomExceptionInterface
+class LoggerException extends CustomException
 {
     /**
      * LoggerException constructor

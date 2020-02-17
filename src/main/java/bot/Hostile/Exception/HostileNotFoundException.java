@@ -1,9 +1,10 @@
 package bot.Hostile.Exception;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 import bot.MyProperties;
 
-public class HostileNotFoundException extends RuntimeException implements CustomExceptionInterface {
+public class HostileNotFoundException extends CustomException
+{
     private HostileNotFoundException(String message) {
         super(message);
     }

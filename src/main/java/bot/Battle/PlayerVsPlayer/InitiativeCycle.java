@@ -1,12 +1,15 @@
-package bot.Battle;
+package bot.Battle.PlayerVsPlayer;
 
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.InitiativeTrackerException;
+import bot.Battle.InitiativeTrackerInterface;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class InitiativeCycle implements InitiativeTrackerInterface
+class InitiativeCycle implements InitiativeTrackerInterface
 {
     private EncounteredExplorerInterface           currentExplorer;
     private Iterator<EncounteredExplorerInterface> cycle;

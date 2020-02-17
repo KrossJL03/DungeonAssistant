@@ -1,21 +1,20 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.GuardActionResultInterface;
-import bot.Battle.GuardResultInterface;
+import bot.Battle.CombatActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class GuardActionResult implements GuardActionResultInterface
+public class GuardActionResult implements CombatActionResultInterface
 {
-    private DeathSaveRoll                   deathSaveRoll;
-    private ArrayList<GuardResultInterface> guardResults;
-    private int                             targetCurrentHp;
-    private int                             targetDefense;
-    private int                             targetMaxHp;
-    private String                          targetName;
-    private Slayer                          targetSlayer;
+    private DeathSaveRoll          deathSaveRoll;
+    private ArrayList<GuardResult> guardResults;
+    private int                    targetCurrentHp;
+    private int                    targetDefense;
+    private int                    targetMaxHp;
+    private String                 targetName;
+    private Slayer                 targetSlayer;
 
     /**
      * GuardActionResult constructor
@@ -29,7 +28,7 @@ public class GuardActionResult implements GuardActionResultInterface
      */
     @NotNull GuardActionResult(
         @NotNull String targetName,
-        @NotNull ArrayList<GuardResultInterface> guardResults,
+        @NotNull ArrayList<GuardResult> guardResults,
         int targetDefense,
         int targetCurrentHp,
         int targetMaxHp,
@@ -47,9 +46,10 @@ public class GuardActionResult implements GuardActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get number of attacks
+     *
+     * @return int
      */
-    @Override
     public int getAttackCount()
     {
         return guardResults.size();
@@ -62,9 +62,10 @@ public class GuardActionResult implements GuardActionResultInterface
     public int getDamageDealt()
     {
         int totalDamageDealt = 0;
-        for (GuardResultInterface result : guardResults) {
+        for (GuardResult result : guardResults) {
             totalDamageDealt += result.getDamageDealt();
         }
+
         return totalDamageDealt;
     }
 
@@ -75,9 +76,10 @@ public class GuardActionResult implements GuardActionResultInterface
     public int getDamageResisted()
     {
         int totalDamageResisted = 0;
-        for (GuardResultInterface result : guardResults) {
+        for (GuardResult result : guardResults) {
             totalDamageResisted += result.getDamageResisted();
         }
+
         return totalDamageResisted;
     }
 
@@ -109,10 +111,11 @@ public class GuardActionResult implements GuardActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get individual guard results
+     *
+     * @return ArrayList<GuardResult>
      */
-    @Override
-    public @NotNull ArrayList<GuardResultInterface> getGuardResults()
+    public @NotNull ArrayList<GuardResult> getGuardResults()
     {
         return guardResults;
     }
@@ -127,9 +130,10 @@ public class GuardActionResult implements GuardActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get defense stat of target
+     *
+     * @return int
      */
-    @Override
     public int getTargetDefense()
     {
         return targetDefense;

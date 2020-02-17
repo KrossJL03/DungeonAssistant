@@ -2,7 +2,7 @@ package bot;
 
 import org.jetbrains.annotations.NotNull;
 
-public class CustomException extends RuntimeException implements CustomExceptionInterface
+public class CustomException extends RuntimeException
 {
     /**
      * Constructor.

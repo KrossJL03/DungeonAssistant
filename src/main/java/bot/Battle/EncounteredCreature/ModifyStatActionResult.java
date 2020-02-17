@@ -1,10 +1,10 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.ModifyStatActionResultInterface;
+import bot.Battle.ActionResultInterface;
 import bot.Constant;
 import org.jetbrains.annotations.NotNull;
 
-class ModifyStatActionResult implements ModifyStatActionResultInterface
+public class ModifyStatActionResult implements ActionResultInterface
 {
     private String creatureName;
     private int    statMod;
@@ -33,45 +33,50 @@ class ModifyStatActionResult implements ModifyStatActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get creature name
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getCreatureName()
     {
         return creatureName;
     }
 
     /**
-     * {@inheritDoc}
+     * Get stat mod
+     *
+     * @return int
      */
-    @Override
     public int getStatMod()
     {
         return statMod;
     }
 
     /**
-     * {@inheritDoc}
+     * Get stat name
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getStatName()
     {
         return statName;
     }
 
     /**
-     * {@inheritDoc}
+     * Get stat value
+     *
+     * @return int
      */
-    @Override
     public int getStatValue()
     {
         return statValue;
     }
 
     /**
-     * {@inheritDoc}
+     * Is the modified stat a hitpoints stat
+     *
+     * @return boolean
      */
-    @Override
     public boolean isHitpointStat()
     {
         return statName.equals(Constant.HOSTILE_STAT_HITPOINTS) ||

@@ -1,16 +1,8 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.DodgeResultInterface;
 import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.EncounteredHostileInterface;
-import bot.Battle.GuardActionResultInterface;
-import bot.Battle.GuardResultInterface;
-import bot.Battle.HealActionResultInterface;
-import bot.Battle.HurtActionResultInterface;
-import bot.Battle.LootRollInterface;
-import bot.Battle.ModifyStatActionResultInterface;
-import bot.Battle.ProtectActionResultInterface;
 import bot.Constant;
 import bot.CustomException;
 import bot.Explorer.Explorer;
@@ -95,25 +87,12 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             throw EncounteredExplorerException.createHasNoActions(name);
         }
 
-        HitRoll hitRoll    = rollToHit();
-        int     damageRoll = 0;
-        if (hitRoll.isHit()) {
-            damageRoll = hitRoll.isCrit() ? getCritDamage() : rollDamage();
-            target.takeDamage(this, damageRoll);
-        }
+        HitRoll    hitRoll    = rollToHit();
+        DamageRoll damageRoll = hitRoll.isHit() ? rollDamage(hitRoll, target) : null;
 
         useAction();
 
-        return new AttackActionResult(
-            name,
-            target.getName(),
-            hitRoll,
-            getAttackDice(),
-            damageRoll,
-            target.getCurrentHP(),
-            target.getMaxHP(),
-            target.getSlayer()
-        );
+        return new AttackActionResult(name, target, hitRoll, damageRoll);
     }
 
     /**
@@ -140,7 +119,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             throw EncounteredExplorerException.createHasNoActions(name);
         }
 
-        ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
+        ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int       damageResisted    = 0;
             int       hostileDamageRoll = encounteredHostile.getAttackRoll();
@@ -165,12 +144,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         useAction();
 
         return new DodgeActionResult(
-            name,
-            dodgeResults,
-            getDodgeDice(),
-            currentHp,
-            maxHp,
-            slayer,
+            this, dodgeResults,
             false,
             deathSaveRoll
         );
@@ -186,7 +160,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
             throw EncounteredExplorerException.createHasNoActions(name);
         }
 
-        ArrayList<DodgeResultInterface> dodgeResults = new ArrayList<>();
+        ArrayList<DodgeResult> dodgeResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int damageResisted    = 0;
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
@@ -210,12 +184,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
         useAction();
 
         return new DodgeActionResult(
-            name,
-            dodgeResults,
-            getDodgeDice(),
-            currentHp,
-            maxHp,
-            slayer,
+            this, dodgeResults,
             true,
             deathSaveRoll
         );
@@ -401,14 +370,14 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     }
 
     @Override
-    public @NotNull GuardActionResultInterface guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+    public @NotNull GuardActionResult guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
         throws EncounteredExplorerException
     {
         if (!hasActions()) {
             throw EncounteredExplorerException.createHasNoActions(name);
         }
 
-        ArrayList<GuardResultInterface> guardResults = new ArrayList<>();
+        ArrayList<GuardResult> guardResults = new ArrayList<>();
         for (EncounteredHostileInterface encounteredHostile : encounteredHostiles) {
             int hostileDamageRoll = encounteredHostile.getAttackRoll();
             int damageResisted    = 0;
@@ -417,7 +386,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
                 damageResisted = hostileDamageRoll - takeGuardedDamage(encounteredHostile, hostileDamageRoll);
             }
 
-            GuardResultInterface result = new GuardResult(
+            GuardResult result = new GuardResult(
                 encounteredHostile.getName(),
                 hostileDamageRoll,
                 damageResisted
@@ -454,7 +423,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HealActionResultInterface healPercent(float percent)
+    public @NotNull HealActionResult healPercent(float percent)
     {
         return healPoints((int) Math.floor(maxHp * percent));
     }
@@ -463,7 +432,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HealActionResultInterface healPoints(int hitpoints)
+    public @NotNull HealActionResult healPoints(int hitpoints)
     {
         if (hitpoints < 0) {
             throw new CustomException("The amount of HP to heal must be a positive number.");
@@ -491,7 +460,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException
+    public @NotNull HurtActionResult hurt(int hitpoints) throws EncounteredCreatureException
     {
         if (isSlain()) {
             throw EncounteredCreatureException.createIsSlain(name, slayer.getName());
@@ -597,7 +566,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier)
+    public @NotNull ModifyStatActionResult modifyStat(@NotNull String statName, int statModifier)
     {
         switch (statName.toLowerCase()) {
             case Constant.EXPLORER_STAT_AGILITY:
@@ -629,7 +598,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ProtectActionResultInterface protect(
+    public @NotNull ProtectActionResult protect(
         @NotNull EncounteredExplorerInterface recipient,
         @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     ) throws EncounteredExplorerException
@@ -698,19 +667,10 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int rollDamage()
-    {
-        return roll(getAttackDice());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void rollKillLoot()
     {
         ArrayList<EncounteredCreatureInterface> finalBlows = new ArrayList<>();
-        ArrayList<LootRollInterface>            lootRolls  = new ArrayList<>();
+        ArrayList<LootRoll>                     lootRolls  = new ArrayList<>();
         for (EncounteredCreatureInterface kill : kills) {
             lootRolls.addAll(kill.rollLoot());
             if (kill.wasSlainBy(this)) {
@@ -732,7 +692,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<LootRollInterface> rollLoot() throws EncounteredCreatureException
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
     {
         if (!isSlain()) {
             throw EncounteredCreatureException.createLootWhenNotSlain(name);
@@ -745,7 +705,7 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue)
+    public @NotNull ModifyStatActionResult setStat(@NotNull String statName, int statValue)
     {
         switch (statName.toLowerCase()) {
             case Constant.EXPLORER_STAT_AGILITY:
@@ -883,9 +843,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      *
      * @param statModifier Agility modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyAgility(int statModifier)
+    private @NotNull ModifyStatActionResult modifyAgility(int statModifier)
     {
         int moddedStatValue = agility + statModifier;
         if (moddedStatValue > Constant.EXPLORER_MAX_AGILITY ||
@@ -907,9 +867,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      *
      * @param statModifier Defense modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyDefense(int statModifier)
+    private @NotNull ModifyStatActionResult modifyDefense(int statModifier)
     {
         int moddedStatValue = defense + statModifier;
         if (moddedStatValue > Constant.EXPLORER_MAX_DEFENSE ||
@@ -931,9 +891,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      *
      * @param statModifier Hitpoints modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyHitpoints(int statModifier)
+    private @NotNull ModifyStatActionResult modifyHitpoints(int statModifier)
     {
         int moddedStatValue = maxHp + statModifier;
         if (moddedStatValue > Constant.EXPLORER_MAX_HITPOINTS ||
@@ -961,9 +921,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      *
      * @param statModifier Strength modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyStrength(int statModifier)
+    private @NotNull ModifyStatActionResult modifyStrength(int statModifier)
     {
         int moddedStatValue = strength + statModifier;
         if (moddedStatValue > Constant.EXPLORER_MAX_STRENGTH ||
@@ -985,9 +945,9 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      *
      * @param statModifier Wisdom modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyWisdom(int statModifier)
+    private @NotNull ModifyStatActionResult modifyWisdom(int statModifier)
     {
         int moddedStatValue = wisdom + statModifier;
         if (moddedStatValue > Constant.EXPLORER_MAX_WISDOM ||
@@ -1014,6 +974,34 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private int roll(int die)
     {
         return (int) Math.floor(Math.random() * die) + 1;
+    }
+
+    /**
+     * Roll attack die
+     *
+     * @return int
+     */
+    private int rollAttackDie()
+    {
+        return roll(getAttackDice());
+    }
+
+    /**
+     * Roll damage
+     *
+     * @return DamageRoll
+     */
+    private DamageRoll rollDamage(@NotNull HitRoll hitRoll, @NotNull EncounteredCreatureInterface target)
+    {
+        if (hitRoll.isHit()) {
+            throw new CustomException("Can't roll damage if you miss.");
+        }
+
+        int damageRoll     = hitRoll.isCrit() ? getCritDamage() : rollAttackDie();
+        int damageDealt    = target.takeDamage(this, damageRoll);
+        int damageResisted = damageRoll - damageDealt;
+
+        return new DamageRoll(getAttackDice(), damageRoll, damageDealt, damageResisted);
     }
 
     /**

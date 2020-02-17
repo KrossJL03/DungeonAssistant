@@ -1,9 +1,9 @@
 package bot.Registry.Review.Command;
 
+import bot.Battle.EncounteredCreature.LootRoll;
+import bot.Battle.Logger.Message.Action.LootRollLineFactory;
 import bot.Command;
 import bot.CommandParameter;
-import bot.Battle.Logger.Message.Action.LootRollLineFactory;
-import bot.Battle.LootRollInterface;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
 import bot.ProcessManager;
@@ -47,13 +47,13 @@ public class RollLootCommand extends Command
     @Override
     public void handle(@NotNull MessageReceivedEvent event)
     {
-        MessageChannel               channel = event.getChannel();
-        String[]                     parameters = getParametersFromEvent(event);
-        String                       species = parameters[0];
-        int                          rollCount = parameters.length > 1 ? Integer.parseInt(parameters[1]) : 1;
-        Hostile                      hostile = HostileRepository.getHostile(species);
-        ArrayList<LootRollInterface> rolls = new ArrayList<>();
-        LootRollLineFactory          factory = new LootRollLineFactory();
+        MessageChannel      channel    = event.getChannel();
+        String[]            parameters = getParametersFromEvent(event);
+        String              species    = parameters[0];
+        int                 rollCount  = parameters.length > 1 ? Integer.parseInt(parameters[1]) : 1;
+        Hostile             hostile    = HostileRepository.getHostile(species);
+        ArrayList<LootRoll> rolls      = new ArrayList<>();
+        LootRollLineFactory factory    = new LootRollLineFactory();
 
         // need a limit for discord character count limit
         if (rollCount > LIMIT) {

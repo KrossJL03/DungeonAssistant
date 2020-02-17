@@ -1,8 +1,9 @@
 package bot.Battle;
 
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class NotYourTurnException extends RuntimeException implements EncounterExceptionInterface
+class NotYourTurnException extends CustomException
 {
     // todo rename or move
 

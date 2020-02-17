@@ -1,4 +1,4 @@
-package bot.Encounter.EncounteredCreature;
+package bot.Battle.EncounteredCreature;
 
 class DeathSaveRoll
 {

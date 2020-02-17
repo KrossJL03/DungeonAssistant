@@ -102,14 +102,6 @@ public interface EncounterInterface extends ProcessInterface
     void leave(@NotNull Player player);
 
     /**
-     * Manual command to make the current explorer protect a target. Heals current explorer by given hitpoints.
-     *
-     * @param targetName Name of target to protect
-     * @param hitpoints  Hitpoints to heal
-     */
-    void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterPhaseException;
-
-    /**
      * Modify stat
      *
      * @param name         Name of creature to modify stat for

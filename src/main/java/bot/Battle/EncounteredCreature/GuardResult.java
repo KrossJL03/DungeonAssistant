@@ -1,13 +1,12 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.GuardResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class GuardResult implements GuardResultInterface
+public class GuardResult
 {
-    private String    attackerName;
-    private int       attackerDamageRoll;
-    private int       damageResisted;
+    private int    attackerDamageRoll;
+    private String attackerName;
+    private int    damageResisted;
 
     /**
      * GuardResult constructor
@@ -20,41 +19,50 @@ public class GuardResult implements GuardResultInterface
         @NotNull String attackerName,
         int attackerDamageRoll,
         int damageResisted
-    ) {
+    )
+    {
         this.attackerDamageRoll = attackerDamageRoll;
         this.attackerName = attackerName;
         this.damageResisted = damageResisted;
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage roll
+     *
+     * @return int
      */
-    @Override
-    public @NotNull String getAttackerName() {
-        return attackerName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getAttackerDamageRoll() {
+    public int getAttackerDamageRoll()
+    {
         return attackerDamageRoll;
     }
 
     /**
-     * {@inheritDoc}
+     * Get attacker name
+     *
+     * @return String
      */
-    @Override
-    public int getDamageDealt() {
+    public @NotNull String getAttackerName()
+    {
+        return attackerName;
+    }
+
+    /**
+     * Get damage dealt to target
+     *
+     * @return int
+     */
+    public int getDamageDealt()
+    {
         return attackerDamageRoll - damageResisted;
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage resisted by the target
+     *
+     * @return int
      */
-    @Override
-    public int getDamageResisted() {
+    public int getDamageResisted()
+    {
         return damageResisted;
     }
 }

@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.GuardActionResultInterface;
-import bot.Battle.GuardResultInterface;
+import bot.Battle.EncounteredCreature.GuardActionResult;
+import bot.Battle.EncounteredCreature.GuardResult;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ class GuardActionMessageFactory extends CombatActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull GuardActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull GuardActionResult result)
     {
         ActionMessage message = new ActionMessage();
 
@@ -31,8 +31,8 @@ class GuardActionMessageFactory extends CombatActionMessageFactory
             result.getTargetDefense()
         ));
         message.addBreak();
-        for (GuardResultInterface subActionData : result.getGuardResults()) {
-            message.add(getGuardResultLine(subActionData));
+        for (GuardResult subResult : result.getGuardResults()) {
+            message.add(getGuardResultLine(subResult));
         }
 
         message.addBreak();
@@ -54,7 +54,7 @@ class GuardActionMessageFactory extends CombatActionMessageFactory
      *
      * @return String
      */
-    private @NotNull String getGuardResultLine(@NotNull GuardResultInterface result)
+    private @NotNull String getGuardResultLine(@NotNull GuardResult result)
     {
         return String.format(
             "%2d %s %2d dmg from '%s'",

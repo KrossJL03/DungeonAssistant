@@ -2,13 +2,13 @@ package bot.Battle;
 
 import org.jetbrains.annotations.NotNull;
 
-public class JoinActionResult implements JoinActionResultInterface
+public class JoinActionResult implements ActionResultInterface
 {
     private EncounteredExplorerInterface encounteredExplorer;
     private boolean                      isRosterFull;
 
     /**
-     * JoinActionResult constructor
+     * Constructor.
      *
      * @param encounteredExplorer Encountered explorer that joined
      * @param isRosterFull        Is roster full
@@ -20,18 +20,20 @@ public class JoinActionResult implements JoinActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get explorer that joined
+     *
+     * @return EncounteredExplorerInterface
      */
-    @Override
     public @NotNull EncounteredExplorerInterface getExplorer()
     {
         return encounteredExplorer;
     }
 
     /**
-     * {@inheritDoc}
+     * Is the roster full
+     *
+     * @return boolean
      */
-    @Override
     public boolean isRosterFull()
     {
         return isRosterFull;

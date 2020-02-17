@@ -1,10 +1,14 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.InitiativeTrackerFactoryInterface;
+import bot.Battle.InitiativeTrackerInterface;
+import bot.Battle.NullInitiativeTracker;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class InitiativeCycleFactory implements InitiativeTrackerFactoryInterface
+public class InitiativeQueueFactory implements InitiativeTrackerFactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -12,7 +16,7 @@ public class InitiativeCycleFactory implements InitiativeTrackerFactoryInterface
     @Override
     public @NotNull InitiativeTrackerInterface create(@NotNull ArrayList<EncounteredExplorerInterface> explorers)
     {
-        return new InitiativeCycle(explorers);
+        return new InitiativeQueue(explorers);
     }
 
     /**

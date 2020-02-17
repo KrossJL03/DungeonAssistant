@@ -1,6 +1,21 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.Capitalizer;
+import bot.Battle.Encounter;
+import bot.Battle.EncounterPhaseException;
+import bot.Battle.EncounterPhaseInterface;
+import bot.Battle.EncounteredCreature.AttackActionResult;
+import bot.Battle.EncounteredCreature.DodgeActionResult;
 import bot.Battle.EncounteredCreature.EncounteredHostile;
+import bot.Battle.EncounteredCreature.GuardActionResult;
+import bot.Battle.EncounteredCreature.HealActionResult;
+import bot.Battle.EncounteredCreature.HurtActionResult;
+import bot.Battle.EncounteredCreature.LootActionResult;
+import bot.Battle.EncounteredCreature.ProtectActionResult;
+import bot.Battle.EncounteredCreatureInterface;
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.EncounteredHostileInterface;
+import bot.Battle.InitiativeTrackerException;
 import bot.Battle.Logger.EncounterLogger;
 import bot.Battle.Phase.EncounterPhaseFactory;
 import bot.Hostile.Hostile;
@@ -21,9 +36,9 @@ public class HostileEncounter extends Encounter
      *
      * @param logger Logger
      */
-    HostileEncounter(@NotNull EncounterLogger logger)
+    public HostileEncounter(@NotNull EncounterLogger logger)
     {
-        super(logger, new HostileRoster(), new InitiativeQueueFactory());
+        super(logger, new InitiativeQueueFactory());
 
         this.hasPhoenixDown = true;
         this.hostileRoster = new HostileRoster();
@@ -36,12 +51,8 @@ public class HostileEncounter extends Encounter
      * @param nickname Nickname
      *
      * @return EncounteredHostileInterface
-     *
-     * @throws EncounterPhaseException If encounter is over
-     * @throws HostileRosterException  If nickname is in use
      */
     public @NotNull EncounteredHostileInterface addHostile(@NotNull Hostile hostile, @NotNull String nickname)
-        throws EncounterPhaseException, HostileRosterException
     {
         assertNotFinalPhase();
 
@@ -57,20 +68,13 @@ public class HostileEncounter extends Encounter
      * Dodge action
      *
      * @param player Player
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     * @throws NotYourTurnException    If it is not the player's turn
      */
-    public void dodgeAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
+    public void dodgeAction(@NotNull Player player)
     {
         assertDodgePhase();
 
-        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-
-        DodgeActionResultInterface result = currentExplorer.dodge(hostileRoster.getActiveHostiles());
+        EncounteredExplorerInterface currentExplorer = getCurrentExplorer(player);
+        DodgeActionResult            result          = currentExplorer.dodge(hostileRoster.getActiveHostiles());
 
         logger.logAction(result);
         postDodgePhaseAction(currentExplorer);
@@ -104,20 +108,13 @@ public class HostileEncounter extends Encounter
      * Dodge action
      *
      * @param player Player
-     *
-     * @throws EncounterPhaseException If not dodge phase
-     * @throws NotYourTurnException    If it is not the player's turn
      */
-    public void guardAction(@NotNull Player player) throws EncounterPhaseException, NotYourTurnException
+    public void guardAction(@NotNull Player player)
     {
         assertDodgePhase();
 
-        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
-
-        GuardActionResultInterface result = currentExplorer.guard(hostileRoster.getActiveHostiles());
+        EncounteredExplorerInterface currentExplorer = getCurrentExplorer(player);
+        GuardActionResult            result          = currentExplorer.guard(hostileRoster.getActiveHostiles());
 
         logger.logAction(result);
         postDodgePhaseAction(currentExplorer);
@@ -152,25 +149,24 @@ public class HostileEncounter extends Encounter
      * Loot action
      *
      * @param player Player
-     *
-     * @throws EncounterPhaseException If not loot phase
      */
-    public void lootAction(@NotNull Player player) throws EncounterPhaseException
+    public void lootAction(@NotNull Player player)
     {
-        if (!currentPhase.isLootPhase()) {
-            throw EncounterPhaseException.createNotLootPhase();
-        }
+        assertLootPhase();
 
         EncounteredExplorerInterface encounteredExplorer = getExplorer(player);
-        LootActionResultInterface    result              = encounteredExplorer.getLoot();
+        LootActionResult             result              = encounteredExplorer.getLoot();
+
         logger.logAction(result);
     }
 
     /**
-     * {@inheritDoc}
+     * Manual command to make the current explorer protect a target. Heals current explorer by given hitpoints.
+     *
+     * @param targetName Name of target to protect
+     * @param hitpoints  Hitpoints to heal
      */
-    @Override
-    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterPhaseException
+    public void manualProtectAction(@NotNull String targetName, int hitpoints)
     {
         EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
 
@@ -197,11 +193,8 @@ public class HostileEncounter extends Encounter
 
     /**
      * Pass action
-     *
-     * @throws EncounterPhaseException If encounter is over
-     *                                 If not passable phase
      */
-    public void passAction() throws EncounterPhaseException
+    public void passAction()
     {
         assertDodgePhase();
 
@@ -222,22 +215,12 @@ public class HostileEncounter extends Encounter
      *
      * @param player     Owner of current explorer
      * @param targetName Name of explorer to protect
-     *
-     * @throws EncounterPhaseException If not dodge phase
      */
     public void protectAction(@NotNull Player player, @NotNull String targetName)
-        throws EncounterPhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotProtectPhase();
-        }
+        assertDodgePhase();
 
-        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
+        EncounteredExplorerInterface currentExplorer = getCurrentExplorer(player);
 
         doProtect(currentExplorer, targetName);
     }
@@ -246,7 +229,7 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    public void removeCreature(@NotNull String name) throws EncounterPhaseException
+    public void removeCreature(@NotNull String name)
     {
         EncounteredCreatureInterface encounterCreature = getCreature(name);
         if (encounterCreature instanceof EncounteredExplorerInterface) {
@@ -273,7 +256,7 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    public void skipCurrentPlayerTurn() throws EncounterPhaseException
+    public void skipCurrentPlayerTurn()
     {
         assertInitiativePhase();
 
@@ -283,7 +266,7 @@ public class HostileEncounter extends Encounter
             logger.logActionAttackSkipped(currentExplorer.getName());
             handleEndOfAction();
         } else if (currentPhase.isDodgePhase()) {
-            DodgeActionResultInterface result = currentExplorer.failToDodge(hostileRoster.getActiveHostiles());
+            DodgeActionResult result = currentExplorer.failToDodge(hostileRoster.getActiveHostiles());
             logger.logAction(result);
             postDodgePhaseAction(currentExplorer);
             handleEndOfAction();
@@ -293,22 +276,15 @@ public class HostileEncounter extends Encounter
     /**
      * Start dodge phase
      *
-     * @throws EncounterException      If no players have joined
      * @throws EncounterPhaseException If the encounter is over
      *                                 If the encounter has not started
      *                                 If dodge phase is in progress
      */
     public void startDodgePhase() throws EncounterPhaseException
     {
-        assertNotFinalPhase();
-        if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (haveNoPlayersJoined()) {
-            throw EncounterException.createNoPlayersHaveJoined();
-        } else if (currentPhase.isDodgePhase()) {
+        assertCurrentPhaseIsChangable();
+        if (currentPhase.isDodgePhase()) {
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        } else if (hostileRoster.isNull()) {
-            throw HostileRosterException.createNullRoster();
         }
 
         for (EncounteredExplorerInterface encounteredExplorer : getAllExplorers()) {
@@ -329,34 +305,22 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected @NotNull AttackActionResultInterface doAttack(
+    protected @NotNull AttackActionResult doAttack(
         @NotNull EncounteredExplorerInterface explorer,
         @NotNull String targetName
     )
     {
-        EncounteredHostileInterface encounteredHostile = getHostile(targetName);
+        EncounteredHostileInterface encounteredHostile = hostileRoster.getHostile(targetName);
         if (!encounteredHostile.isBloodied()) {
             addOpponentToActiveExplorers(encounteredHostile);
         }
 
-        AttackActionResultInterface result = explorer.attack(encounteredHostile);
+        AttackActionResult result = explorer.attack(encounteredHostile);
         if (result.isTargetSlain()) {
             finalizeKillForExplorers(encounteredHostile);
         }
 
         return result;
-    }
-
-    /**
-     * Get hostile by name
-     *
-     * @param name Name of hostile to find
-     *
-     * @return EncounteredHostileInterface
-     */
-    final protected @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
-    {
-        return hostileRoster.getHostile(name);
     }
 
     /**
@@ -398,7 +362,7 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResultInterface result)
+    protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
     {
         if (target instanceof EncounteredHostileInterface && result.wasTargetRevived() && !target.isBloodied()) {
             addOpponentToActiveExplorers(target);
@@ -409,7 +373,7 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResultInterface result)
+    protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResult result)
     {
         if (target instanceof EncounteredHostileInterface && !result.wasBloodied()) {
             addOpponentToActiveExplorers(target);
@@ -428,7 +392,7 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResultInterface result)
+    protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
     {
         if (target instanceof EncounteredHostileInterface && result.wasTargetRevived() && !target.isBloodied()) {
             addOpponentToActiveExplorers(target);
@@ -439,10 +403,10 @@ public class HostileEncounter extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void preJoinPhase()
+    protected void preJoinPhase() throws HostileEncounterException
     {
         if (!hostileRoster.isNull() && hostileRoster.hasActiveHostiles()) {
-            throw EncounterPhaseException.createStartWithoutHostiles();
+            throw HostileEncounterException.createStartWithoutHostiles();
         }
     }
 
@@ -463,7 +427,7 @@ public class HostileEncounter extends Encounter
     /**
      * Assert that the current phase is the dodge phase
      */
-    private void assertDodgePhase()
+    private void assertDodgePhase() throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
@@ -481,7 +445,7 @@ public class HostileEncounter extends Encounter
     private void doProtect(@NotNull EncounteredExplorerInterface protector, @NotNull String targetName)
     {
         EncounteredExplorerInterface protectedExplorer = getExplorer(targetName);
-        ProtectActionResultInterface result = protector.protect(
+        ProtectActionResult result = protector.protect(
             protectedExplorer,
             hostileRoster.getActiveHostiles()
         );
@@ -531,10 +495,8 @@ public class HostileEncounter extends Encounter
      * Remove encountered hostile from encounter
      *
      * @param encounteredHostile Hostile to remove
-     *
-     * @throws EncounterPhaseException If encounter is over
      */
-    private void removeHostile(@NotNull EncounteredHostileInterface encounteredHostile) throws EncounterPhaseException
+    private void removeHostile(@NotNull EncounteredHostileInterface encounteredHostile)
     {
         assertNotFinalPhase();
 
@@ -581,21 +543,22 @@ public class HostileEncounter extends Encounter
     /**
      * Revive slain explorer if they are the first explorer to be slain
      *
-     * @param encounteredExplorer Encountered explorer
+     * @param explorer Encountered explorer
      *
-     * @throws EncounterException If the encountered explorer is not slain
-     *                            If there is no phoenix down to be used
+     * @throws HostileEncounterException If the explorer is not slain
+     *                                   If there is no phoenix down to be used
      */
-    private void usePhoenixDown(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    private void usePhoenixDown(@NotNull EncounteredExplorerInterface explorer)
+        throws HostileEncounterException
     {
-        if (!encounteredExplorer.isSlain()) {
-            throw EncounterException.createReviveNonSlainExplorer(encounteredExplorer.getName());
+        if (!explorer.isSlain()) {
+            throw HostileEncounterException.createReviveNonSlainExplorer(explorer.getName());
         } else if (!hasPhoenixDown) {
-            throw EncounterException.createUsedPhoenixDown(encounteredExplorer.getName());
+            throw HostileEncounterException.createUsedPhoenixDown(explorer.getName());
         }
 
         hasPhoenixDown = false;
-        HealActionResultInterface result = encounteredExplorer.healPercent((float) 0.5);
+        HealActionResult result = explorer.healPercent((float) 0.5);
         logPhoenixDownUsed();
         logAction(result);
     }

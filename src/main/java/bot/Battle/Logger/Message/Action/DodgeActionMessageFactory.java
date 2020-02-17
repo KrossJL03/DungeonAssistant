@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.DodgeActionResultInterface;
-import bot.Battle.DodgeResultInterface;
+import bot.Battle.EncounteredCreature.DodgeActionResult;
+import bot.Battle.EncounteredCreature.DodgeResult;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull DodgeActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull DodgeActionResult result)
     {
         ActionMessage message = new ActionMessage();
 
@@ -38,11 +38,11 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
                 "d%d %s %s",
                 result.getTargetDodgeDie(),
                 codeFormatter.makeCyan("dodge dice"),
-                codeFormatter.makeGrey(String.format("success = %d", result.getMinSucessDodgeRoll()))
+                codeFormatter.makeGrey(String.format("success = %d", result.getMinSuccessDodgeRoll()))
             ));
             message.addBreak();
-            for (DodgeResultInterface subActionData : result.getDodgeResults()) {
-                message.add(getDodgeResultLine(subActionData));
+            for (DodgeResult subResult : result.getDodgeResults()) {
+                message.add(getDodgeResultLine(subResult));
             }
         }
 
@@ -67,7 +67,7 @@ class DodgeActionMessageFactory extends CombatActionMessageFactory
      *
      * @return String
      */
-    private @NotNull String getDodgeResultLine(@NotNull DodgeResultInterface result)
+    private @NotNull String getDodgeResultLine(@NotNull DodgeResult result)
     {
         StringBuilder output    = new StringBuilder();
         int           dodgeRoll = result.getTargetDodgeRoll();

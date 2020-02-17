@@ -1,17 +1,16 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.DodgeResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class DodgeResult implements DodgeResultInterface
+public class DodgeResult
 {
-    private DodgeRoll dodgeRoll;
-    private String    attackerName;
     private int       attackerDamageRoll;
+    private String    attackerName;
     private int       damageResisted;
+    private DodgeRoll dodgeRoll;
 
     /**
-     * DodgeResult constructor
+     * Constructor.
      *
      * @param attackerName       Attacker name
      * @param dodgeRoll          Dodge roll
@@ -23,7 +22,8 @@ public class DodgeResult implements DodgeResultInterface
         @NotNull DodgeRoll dodgeRoll,
         int attackerDamageRoll,
         int damageResisted
-    ) {
+    )
+    {
         this.attackerDamageRoll = attackerDamageRoll;
         this.attackerName = attackerName;
         this.damageResisted = damageResisted;
@@ -31,50 +31,62 @@ public class DodgeResult implements DodgeResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage roll
+     *
+     * @return int
      */
-    @Override
-    public @NotNull String getAttackerName() {
-        return attackerName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getAttackerDamageRoll() {
+    public int getAttackerDamageRoll()
+    {
         return attackerDamageRoll;
     }
 
     /**
-     * {@inheritDoc}
+     * Get attacker name
+     *
+     * @return String
      */
-    @Override
-    public int getDamageDealt() {
+    public @NotNull String getAttackerName()
+    {
+        return attackerName;
+    }
+
+    /**
+     * Get damage dealt to target
+     *
+     * @return int
+     */
+    public int getDamageDealt()
+    {
         return isSuccess() ? 0 : attackerDamageRoll - damageResisted;
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage resisted by the target
+     *
+     * @return int
      */
-    @Override
-    public int getDamageResisted() {
+    public int getDamageResisted()
+    {
         return damageResisted;
     }
 
     /**
-     * {@inheritDoc}
+     * Get dodge roll
+     *
+     * @return int
      */
-    @Override
-    public int getTargetDodgeRoll() {
+    public int getTargetDodgeRoll()
+    {
         return dodgeRoll.getRoll();
     }
 
     /**
-     * {@inheritDoc}
+     * Is successful dodge
+     *
+     * @return boolean
      */
-    @Override
-    public boolean isSuccess() {
+    public boolean isSuccess()
+    {
         return !dodgeRoll.isFail();
     }
 }

@@ -1,6 +1,15 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.*;
+import bot.Battle.ActionResultInterface;
+import bot.Battle.EncounteredCreature.AttackActionResult;
+import bot.Battle.EncounteredCreature.DodgeActionResult;
+import bot.Battle.EncounteredCreature.GuardActionResult;
+import bot.Battle.EncounteredCreature.HealActionResult;
+import bot.Battle.EncounteredCreature.HurtActionResult;
+import bot.Battle.EncounteredCreature.LootActionResult;
+import bot.Battle.EncounteredCreature.ModifyStatActionResult;
+import bot.Battle.EncounteredCreature.ProtectActionResult;
+import bot.Battle.JoinActionResult;
 import bot.Battle.Logger.Mention;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -48,24 +57,24 @@ public class ActionMessageBuilder
     {
         // todo make more SOLID
         MessageInterface message;
-        if (result instanceof AttackActionResultInterface) {
-            message = attackActionMessageFactory.createMessage((AttackActionResultInterface) result, dmMention);
-        } else if (result instanceof DodgeActionResultInterface) {
-            message = dodgeActionMessageFactory.createMessage((DodgeActionResultInterface) result);
-        } else if (result instanceof GuardActionResultInterface) {
-            message = guardActionMessageFactory.createMessage((GuardActionResultInterface) result);
-        } else if (result instanceof HealActionResultInterface) {
-            message = healActionMessageFactory.createMessage((HealActionResultInterface) result);
-        } else if (result instanceof HurtActionResultInterface) {
-            message = hurtActionMessageFactory.createMessage((HurtActionResultInterface) result);
-        } else if (result instanceof JoinActionResultInterface) {
-            message = joinActionMessageFactory.createMessage((JoinActionResultInterface) result);
-        } else if (result instanceof LootActionResultInterface) {
-            message = lootActionMessageFactory.createMessage((LootActionResultInterface) result);
-        } else if (result instanceof ModifyStatActionResultInterface) {
-            message = modifyStatActionMessageFactory.createMessage((ModifyStatActionResultInterface) result);
-        } else if (result instanceof ProtectActionResultInterface) {
-            message = protectActionMessageFactory.createMessage((ProtectActionResultInterface) result);
+        if (result instanceof AttackActionResult) {
+            message = attackActionMessageFactory.createMessage((AttackActionResult) result, dmMention);
+        } else if (result instanceof DodgeActionResult) {
+            message = dodgeActionMessageFactory.createMessage((DodgeActionResult) result);
+        } else if (result instanceof GuardActionResult) {
+            message = guardActionMessageFactory.createMessage((GuardActionResult) result);
+        } else if (result instanceof HealActionResult) {
+            message = healActionMessageFactory.createMessage((HealActionResult) result);
+        } else if (result instanceof HurtActionResult) {
+            message = hurtActionMessageFactory.createMessage((HurtActionResult) result);
+        } else if (result instanceof JoinActionResult) {
+            message = joinActionMessageFactory.createMessage((JoinActionResult) result);
+        } else if (result instanceof LootActionResult) {
+            message = lootActionMessageFactory.createMessage((LootActionResult) result);
+        } else if (result instanceof ModifyStatActionResult) {
+            message = modifyStatActionMessageFactory.createMessage((ModifyStatActionResult) result);
+        } else if (result instanceof ProtectActionResult) {
+            message = protectActionMessageFactory.createMessage((ProtectActionResult) result);
         } else {
             throw ActionMessageBuilderException.createActionNotSet();
         }

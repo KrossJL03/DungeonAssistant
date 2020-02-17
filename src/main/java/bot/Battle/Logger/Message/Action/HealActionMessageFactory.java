@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
+import bot.Battle.EncounteredCreature.HealActionResult;
 import bot.Constant;
-import bot.Battle.HealActionResultInterface;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +14,7 @@ class HealActionMessageFactory extends ActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull HealActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull HealActionResult result)
     {
         ActionMessage message   = new ActionMessage();
         int           currentHp = result.getCurrentHp();

@@ -1,5 +1,6 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.EncounteredHostileInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ public interface HostileRosterInterface
      *
      * @return EncounteredHostileInterface
      *
-     * @throws EncounteredCreatureNotFoundException If hostile with name not found
+     * @throws HostileRosterException If hostile with name not found
      */
-    @NotNull EncounteredHostileInterface getHostile(@NotNull String name);
+    @NotNull EncounteredHostileInterface getHostile(@NotNull String name) throws HostileRosterException;
 
     /**
      * Has active hostiles
@@ -57,7 +58,7 @@ public interface HostileRosterInterface
      *
      * @param hostile Hostile to remove
      *
-     * @throws EncounteredCreatureNotFoundException If hostile is not in roster
+     * @throws HostileRosterException If hostile is not in roster
      */
-    void remove(@NotNull EncounteredHostileInterface hostile) throws EncounteredCreatureNotFoundException;
+    void remove(@NotNull EncounteredHostileInterface hostile) throws HostileRosterException;
 }

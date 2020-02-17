@@ -1,9 +1,9 @@
-package bot.Encounter.Command;
+package bot.Battle.Command;
 
+import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
+import bot.Battle.EncounterHolder;
+import bot.Battle.Logger.EncounterLogger;
 import bot.CommandParameter;
-import bot.Encounter.DungeonMasterChecker.DungeonMasterChecker;
-import bot.Encounter.EncounterHolder;
-import bot.Encounter.Logger.EncounterLogger;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;

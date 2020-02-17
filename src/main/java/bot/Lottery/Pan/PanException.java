@@ -1,9 +1,9 @@
 package bot.Lottery.Pan;
 
-import bot.Battle.EncounterExceptionInterface;
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class PanException extends RuntimeException implements EncounterExceptionInterface
+class PanException extends CustomException
 {
     /**
      * Constructor

@@ -1,65 +1,68 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.LootRollInterface;
 import bot.Hostile.Loot;
 import org.jetbrains.annotations.NotNull;
 
-public class LootRoll implements LootRollInterface
+public class LootRoll
 {
-    private Loot   loot;
+    private int    die;
     private String hostileName;
-    private int    lootDie;
-    private int    lootRoll;
+    private Loot   loot;
+    private int    roll;
 
     /**
      * LootRoll constructor
      *
      * @param hostileName Hostile name
      * @param loot        Loot
-     * @param lootDie     Loot die
-     * @param lootRoll    Loot roll
+     * @param die         Loot die
+     * @param roll        Loot roll
      */
-    public @NotNull LootRoll(@NotNull String hostileName, @NotNull Loot loot, int lootDie, int lootRoll)
+    public @NotNull LootRoll(@NotNull String hostileName, @NotNull Loot loot, int die, int roll)
     {
+        this.die = die;
         this.hostileName = hostileName;
         this.loot = loot;
-        this.lootDie = lootDie;
-        this.lootRoll = lootRoll;
+        this.roll = roll;
     }
 
     /**
-     * {@inheritDoc}
+     * Get die
+     *
+     * @return int
      */
-    @Override
+    public int getDie()
+    {
+        return die;
+    }
+
+    /**
+     * Get kill name
+     *
+     * @return String
+     */
     public @NotNull String getKillName()
     {
         return hostileName;
     }
 
     /**
-     * {@inheritDoc}
+     * Get loot
+     *
+     * @return Loot
      */
-    @Override
     public @NotNull Loot getLoot()
     {
         return loot;
     }
 
     /**
-     * {@inheritDoc}
+     * Get roll
+     *
+     * @return int
      */
-    @Override
-    public int getLootDie()
+    public int getRoll()
     {
-        return lootDie;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getLootRoll()
-    {
-        return lootRoll;
+        return roll;
     }
 }

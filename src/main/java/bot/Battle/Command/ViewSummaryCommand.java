@@ -3,7 +3,6 @@ package bot.Battle.Command;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
 import bot.Battle.EncounterInterface;
-import bot.Battle.HostileEncounter;
 import bot.Battle.Logger.EncounterLogger;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

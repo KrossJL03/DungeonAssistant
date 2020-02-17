@@ -1,11 +1,10 @@
 package bot.Player;
 
-import bot.CommandListener;
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
-class PlayerRepositoryException extends RuntimeException implements CustomExceptionInterface
+class PlayerRepositoryException extends CustomException
 {
     /**
      * PlayerRepositoryException constructor

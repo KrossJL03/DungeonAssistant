@@ -1,12 +1,15 @@
-package bot.Battle;
+package bot.Battle.ExplorerRosterImpl;
 
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.ExplorerRosterInterface;
 import bot.Battle.Tier.DefaultTier;
+import bot.Battle.TierInterface;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-class ExplorerRoster
+public class ExplorerRoster implements ExplorerRosterInterface
 {
     private static int DEFAULT_SIZE = 21;
 
@@ -18,7 +21,7 @@ class ExplorerRoster
     /**
      * Constructor.
      */
-    ExplorerRoster()
+    public ExplorerRoster()
     {
         this.explorerRoster = new ArrayList<>();
         this.kickedPlayers = new ArrayList<>();
@@ -38,7 +41,7 @@ class ExplorerRoster
      *                                 If explorer does not fit tier
      *                                 If the explorers nickname is currently in use
      */
-    void addExplorer(@NotNull EncounteredExplorerInterface newExplorer) throws ExplorerRosterException
+    public void addExplorer(@NotNull EncounteredExplorerInterface newExplorer) throws ExplorerRosterException
     {
         if (!isMaxPlayerCountSet()) {
             throw ExplorerRosterException.createMaxPlayersNotSet();
@@ -69,12 +72,12 @@ class ExplorerRoster
      *
      * @return ArrayList<EncounteredExplorerInterface>
      */
-    @NotNull ArrayList<EncounteredExplorerInterface> getActiveExplorers()
+    public @NotNull ArrayList<EncounteredExplorerInterface> getActiveExplorers()
     {
         ArrayList<EncounteredExplorerInterface> activeExplorers = new ArrayList<>();
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (encounteredExplorer.isActive()) {
-                activeExplorers.add(encounteredExplorer);
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isActive()) {
+                activeExplorers.add(explorer);
             }
         }
 
@@ -82,27 +85,11 @@ class ExplorerRoster
     }
 
     /**
-     * Get active explorers
-     *
-     * @return ArrayList<EncounteredExplorerInterface>
-     */
-    @NotNull ArrayList<EncounteredExplorerInterface> getAliveExplores()
-    {
-        ArrayList<EncounteredExplorerInterface> aliveExplorers = new ArrayList<>();
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (!encounteredExplorer.isSlain()) {
-                aliveExplorers.add(encounteredExplorer);
-            }
-        }
-        return aliveExplorers;
-    }
-
-    /**
      * Get all explorers
      *
      * @return ArrayList<EncounteredExplorerInterface>
      */
-    @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
+    public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
     {
         return new ArrayList<>(explorerRoster);
     }
@@ -114,17 +101,17 @@ class ExplorerRoster
      *
      * @return EncounterCreatureInterface
      *
-     * @throws EncounteredCreatureNotFoundException Thrown when encountered explorer is not found
+     * @throws ExplorerRosterException Thrown when encountered explorer is not found
      */
-    @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name) throws EncounteredCreatureNotFoundException
+    public @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name) throws ExplorerRosterException
     {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster) {
-            if (encounteredExplorer.isName(name)) {
-                return encounteredExplorer;
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isName(name)) {
+                return explorer;
             }
         }
 
-        throw EncounteredCreatureNotFoundException.createForExplorer(name);
+        throw ExplorerRosterException.createExplorerNotFound(name);
     }
 
     /**
@@ -134,18 +121,17 @@ class ExplorerRoster
      *
      * @return EncounterCreatureInterface
      *
-     * @throws EncounteredCreatureNotFoundException Thrown when encountered explorer is not found
+     * @throws ExplorerRosterException Thrown when encountered explorer is not found
      */
-    @NotNull EncounteredExplorerInterface getExplorer(@NotNull Player player)
-        throws EncounteredCreatureNotFoundException
+    public @NotNull EncounteredExplorerInterface getExplorer(@NotNull Player player) throws ExplorerRosterException
     {
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (encounteredExplorer.isOwner(player)) {
-                return encounteredExplorer;
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isOwner(player)) {
+                return explorer;
             }
         }
 
-        throw EncounteredCreatureNotFoundException.createForExplorer(player);
+        throw ExplorerRosterException.createExplorerNotFound(player);
     }
 
     /**
@@ -153,7 +139,7 @@ class ExplorerRoster
      *
      * @return int
      */
-    int getMaxPlayerCount()
+    public int getMaxPlayerCount()
     {
         return maxPlayerCount;
     }
@@ -163,7 +149,7 @@ class ExplorerRoster
      *
      * @return int
      */
-    int getOpenSlotCount()
+    public int getOpenSlotCount()
     {
         return maxPlayerCount - getPresentPlayerCount();
     }
@@ -173,7 +159,7 @@ class ExplorerRoster
      *
      * @return TierInterface
      */
-    @NotNull TierInterface getTier()
+    public @NotNull TierInterface getTier()
     {
         return tier;
     }
@@ -183,7 +169,7 @@ class ExplorerRoster
      *
      * @return bool
      */
-    boolean hasAtLeastOneActiveExplorer()
+    public boolean hasAtLeastOneActiveExplorer()
     {
         return getActivePlayerCount() > 0;
     }
@@ -193,7 +179,7 @@ class ExplorerRoster
      *
      * @return bool
      */
-    boolean hasMultipleActiveExplorers()
+    public boolean hasMultipleActiveExplorers()
     {
         return getActivePlayerCount() > 1;
     }
@@ -203,7 +189,7 @@ class ExplorerRoster
      *
      * @return bool
      */
-    boolean isFull()
+    public boolean isFull()
     {
         return getPresentPlayerCount() >= maxPlayerCount;
     }
@@ -212,13 +198,15 @@ class ExplorerRoster
      * Kick explorer with the given name
      *
      * @param name Name of explorer to kick
+     *
+     * @throws ExplorerRosterException If explorer is not in the roster
      */
-    @NotNull EncounteredExplorerInterface kick(@NotNull String name)
+    public @NotNull EncounteredExplorerInterface kick(@NotNull String name) throws ExplorerRosterException
     {
         EncounteredExplorerInterface explorer = getExplorer(name);
 
         if (!explorerRoster.contains(explorer)) {
-            throw EncounteredCreatureNotFoundException.createForExplorer(explorer.getName());
+            throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
         }
 
         explorer.markAsNotPresent();
@@ -237,7 +225,7 @@ class ExplorerRoster
      *
      * @throws ExplorerRosterException If encountered explorer has already left
      */
-    @NotNull EncounteredExplorerInterface markAsLeft(@NotNull Player player) throws ExplorerRosterException
+    public @NotNull EncounteredExplorerInterface markAsLeft(@NotNull Player player) throws ExplorerRosterException
     {
         EncounteredExplorerInterface encounteredExplorer = getExplorer(player);
         if (!encounteredExplorer.isPresent()) {
@@ -258,16 +246,16 @@ class ExplorerRoster
      *
      * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    @NotNull EncounteredExplorerInterface markAsReturned(@NotNull Player player) throws ExplorerRosterException
+    public @NotNull EncounteredExplorerInterface markAsReturned(@NotNull Player player) throws ExplorerRosterException
     {
         if (kickedPlayers.contains(player)) {
             throw ExplorerRosterException.createKickedPlayerReturns(player);
         }
 
-        EncounteredExplorerInterface encounteredExplorer = this.getExplorer(player);
+        EncounteredExplorerInterface encounteredExplorer = getExplorer(player);
         if (encounteredExplorer.isPresent()) {
             throw ExplorerRosterException.createCannotRejoinIfPresent(player);
-        } else if (this.isFull()) {
+        } else if (isFull()) {
             // this error is thrown last because already present message takes precedence
             throw ExplorerRosterException.createFullRoster(player);
         }
@@ -278,19 +266,19 @@ class ExplorerRoster
     }
 
     /**
-     * Remove encountered explorer belonging to player
+     * Remove explorer belonging to player
      *
-     * @param encounteredExplorer Encountered explorer
+     * @param explorer Explorer
      *
-     * @throws EncounteredCreatureNotFoundException If encountered explorer is not found
+     * @throws ExplorerRosterException If explorer is not found
      */
-    void remove(@NotNull EncounteredExplorerInterface encounteredExplorer) throws EncounteredCreatureNotFoundException
+    public void remove(@NotNull EncounteredExplorerInterface explorer) throws ExplorerRosterException
     {
-        if (!containsExplorer(encounteredExplorer.getName())) {
-            throw EncounteredCreatureNotFoundException.createForExplorer(encounteredExplorer.getName());
+        if (!containsExplorer(explorer.getName())) {
+            throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
         }
 
-        this.explorerRoster.remove(encounteredExplorer);
+        explorerRoster.remove(explorer);
     }
 
     /**
@@ -298,15 +286,16 @@ class ExplorerRoster
      *
      * @param maxPlayerCount Max player count
      *
-     * @throws ExplorerRosterException If present player count exceeds new limit
+     * @throws ExplorerRosterException If new max player count is less than 1
+     *                                 If present player count exceeds new limit
      */
-    void setMaxPlayerCount(int maxPlayerCount) throws ExplorerRosterException
+    public void setMaxPlayerCount(int maxPlayerCount) throws ExplorerRosterException
     {
         if (maxPlayerCount < 1) {
             throw ExplorerRosterException.createMaxPlayerCountLessThanOne();
         }
 
-        int presentPlayerCount = this.getPresentPlayerCount();
+        int presentPlayerCount = getPresentPlayerCount();
         if (maxPlayerCount < presentPlayerCount) {
             throw ExplorerRosterException.createNewPlayerMaxLessThanCurrentPlayerCount(
                 maxPlayerCount,
@@ -322,7 +311,7 @@ class ExplorerRoster
      *
      * @param tier Tier
      */
-    void setTier(@NotNull TierInterface tier)
+    public void setTier(@NotNull TierInterface tier)
     {
         this.tier = tier;
     }
@@ -330,9 +319,9 @@ class ExplorerRoster
     /**
      * Sort roster
      */
-    void sort()
+    public void sort()
     {
-        this.explorerRoster.sort(new ExplorerAgilityComparator());
+        explorerRoster.sort(new ExplorerAgilityComparator());
     }
 
     /**
@@ -344,8 +333,8 @@ class ExplorerRoster
      */
     private boolean containsExplorer(@NotNull String name)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (encounteredExplorer.isName(name)) {
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isName(name)) {
                 return true;
             }
         }
@@ -362,8 +351,8 @@ class ExplorerRoster
      */
     private boolean containsPlayer(@NotNull Player player)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (encounteredExplorer.isOwner(player)) {
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isOwner(player)) {
                 return true;
             }
         }
@@ -378,7 +367,7 @@ class ExplorerRoster
      */
     private int getActivePlayerCount()
     {
-        return this.getActiveExplorers().size();
+        return getActiveExplorers().size();
     }
 
     /**
@@ -389,9 +378,9 @@ class ExplorerRoster
     private @NotNull ArrayList<EncounteredExplorerInterface> getPresentExplorers()
     {
         ArrayList<EncounteredExplorerInterface> presentExplorers = new ArrayList<>();
-        for (EncounteredExplorerInterface encounteredExplorer : this.explorerRoster) {
-            if (encounteredExplorer.isPresent()) {
-                presentExplorers.add(encounteredExplorer);
+        for (EncounteredExplorerInterface explorer : explorerRoster) {
+            if (explorer.isPresent()) {
+                presentExplorers.add(explorer);
             }
         }
 
@@ -405,7 +394,7 @@ class ExplorerRoster
      */
     private int getPresentPlayerCount()
     {
-        return this.getPresentExplorers().size();
+        return getPresentExplorers().size();
     }
 
     /**
@@ -415,6 +404,6 @@ class ExplorerRoster
      */
     private boolean isMaxPlayerCountSet()
     {
-        return this.maxPlayerCount > 0;
+        return maxPlayerCount > 0;
     }
 }

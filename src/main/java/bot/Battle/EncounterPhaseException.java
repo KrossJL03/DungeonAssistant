@@ -1,10 +1,11 @@
 package bot.Battle;
 
 import bot.Battle.Logger.Mention;
+import bot.CustomException;
 import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
-class EncounterPhaseException extends RuntimeException implements EncounterExceptionInterface
+public class EncounterPhaseException extends CustomException
 {
     /**
      * EncounterPhaseException constructor
@@ -21,7 +22,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
      *
      * @return EncounterPhaseException
      */
-    static @NotNull EncounterPhaseException createFinalPhase()
+    public static @NotNull EncounterPhaseException createFinalPhase()
     {
         return new EncounterPhaseException(
             String.format(
@@ -52,7 +53,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
      *
      * @return EncounterPhaseException
      */
-    static @NotNull EncounterPhaseException createNotDodgePhase()
+    public static @NotNull EncounterPhaseException createNotDodgePhase()
     {
         return new EncounterPhaseException(
             String.format(
@@ -161,7 +162,7 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
      *
      * @return EncounterPhaseException
      */
-    static @NotNull EncounterPhaseException createStartCurrentPhase(@NotNull String phase)
+    public static @NotNull EncounterPhaseException createStartCurrentPhase(@NotNull String phase)
     {
         return new EncounterPhaseException(String.format("The %s turn is already in progress", phase));
     }
@@ -174,21 +175,6 @@ class EncounterPhaseException extends RuntimeException implements EncounterExcep
     static @NotNull EncounterPhaseException createStartInProgressEncounter()
     {
         return new EncounterPhaseException("Hold your Capra! This encounter is already in progress.");
-    }
-
-    /**
-     * Factory method for "start without hostiles"
-     *
-     * @return EncounterPhaseException
-     */
-    static @NotNull EncounterPhaseException createStartWithoutHostiles()
-    {
-        return new EncounterPhaseException(
-            String.format(
-                "Uh, wait. Who are we fighting again? Tell me using `%saddHostile [species]`.",
-                MyProperties.COMMAND_PREFIX
-            )
-        );
     }
 
     /**

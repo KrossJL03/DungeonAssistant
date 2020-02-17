@@ -1,5 +1,8 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.InitiativeTrackerException;
+import bot.Battle.InitiativeTrackerInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

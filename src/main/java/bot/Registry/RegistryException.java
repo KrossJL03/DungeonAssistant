@@ -1,12 +1,12 @@
 package bot.Registry;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Registry exception
  */
-public class RegistryException extends RuntimeException implements CustomExceptionInterface
+public class RegistryException extends CustomException
 {
     /**
      * RegistryException constructor
@@ -46,7 +46,8 @@ public class RegistryException extends RuntimeException implements CustomExcepti
      *
      * @return RegistryException
      */
-    public static @NotNull RegistryException createFailedToRetrieve() {
+    public static @NotNull RegistryException createFailedToRetrieve()
+    {
         return new RegistryException("Uh, couldn't find what you're looking for...");
     }
 

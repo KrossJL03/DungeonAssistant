@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.AttackActionResultInterface;
+import bot.Battle.EncounteredCreature.AttackActionResult;
 import bot.Battle.Logger.Mention;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -15,10 +15,7 @@ class AttackActionMessageFactory extends CombatActionMessageFactory
      *
      * @return ActionMessage
      */
-    public @NotNull MessageInterface createMessage(
-        @NotNull AttackActionResultInterface result,
-        @NotNull Mention dmMention
-    )
+    public @NotNull MessageInterface createMessage(@NotNull AttackActionResult result, @NotNull Mention dmMention)
     {
         ActionMessage message = new ActionMessage();
 

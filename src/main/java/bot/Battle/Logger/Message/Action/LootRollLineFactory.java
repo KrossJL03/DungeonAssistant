@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
+import bot.Battle.EncounteredCreature.LootRoll;
 import bot.Battle.Logger.Message.MLCodeFormatter;
-import bot.Battle.LootRollInterface;
 import bot.Hostile.Loot;
 import bot.Message;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +27,12 @@ public class LootRollLineFactory
      *
      * @return String
      */
-    public @NotNull String getLootRollsMessage(@NotNull ArrayList<LootRollInterface> rolls)
+    public @NotNull String getLootRollsMessage(@NotNull ArrayList<LootRoll> rolls)
     {
         Message message = new Message();
         message.startCodeBlock(codeFormatter.getStyle());
 
-        for (LootRollInterface roll : rolls) {
+        for (LootRoll roll : rolls) {
             message.add(getLootRollLine(roll));
         }
 
@@ -48,16 +48,16 @@ public class LootRollLineFactory
      *
      * @return String
      */
-    @NotNull String getLootRollLine(@NotNull LootRollInterface roll)
+    @NotNull String getLootRollLine(@NotNull LootRoll roll)
     {
         StringBuilder output = new StringBuilder();
         Loot          loot   = roll.getLoot();
 
         output.append(String.format(
             "%3s %s %2d --> ",
-            "d" + roll.getLootDie(),
+            "d" + roll.getDie(),
             ActionMessage.DOUBLE_ARROW,
-            roll.getLootRoll()
+            roll.getRoll()
         ));
 
         if (loot.getItem() == null || loot.getItem().equals("null")) {

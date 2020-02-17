@@ -1,11 +1,14 @@
-package bot.Battle;
+package bot.Battle.ExplorerRosterImpl;
 
+import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.Logger.Mention;
+import bot.Battle.TierInterface;
+import bot.CustomException;
 import bot.MyProperties;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
-class ExplorerRosterException extends RuntimeException implements EncounterExceptionInterface
+class ExplorerRosterException extends CustomException
 {
     /**
      * ExplorerRosterException constructor
@@ -56,6 +59,34 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
                 encounteredExplorer.getName(),
                 tier.getName()
             )
+        );
+    }
+
+    /**
+     * Factory method for "explorer not found"
+     *
+     * @param name Explorer name
+     *
+     * @return ExplorerRosterException
+     */
+    static @NotNull ExplorerRosterException createExplorerNotFound(@NotNull String name)
+    {
+        return new ExplorerRosterException(
+            String.format("I can't find %s, are you sure they are part of this encounter?", name)
+        );
+    }
+
+    /**
+     * Factory method for "explorer not found"
+     *
+     * @param player Owner
+     *
+     * @return EncounteredCreatureNotFoundException
+     */
+    static @NotNull ExplorerRosterException createExplorerNotFound(@NotNull Player player)
+    {
+        return new ExplorerRosterException(
+            String.format("I could not find your character in this encounter %s", player.getName())
         );
     }
 
@@ -112,6 +143,16 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
     }
 
     /**
+     * Factory method for "max player count less than 1"
+     *
+     * @return ExplorerRosterException
+     */
+    static @NotNull ExplorerRosterException createMaxPlayerCountLessThanOne()
+    {
+        return new ExplorerRosterException("You can't have less than 1 player... that just doesn't work");
+    }
+
+    /**
      * Factory method for "max players not set"
      *
      * @return EncounterPhaseException
@@ -124,16 +165,6 @@ class ExplorerRosterException extends RuntimeException implements EncounterExcep
                 MyProperties.COMMAND_PREFIX
             )
         );
-    }
-
-    /**
-     * Factory method for "max player count less than 1"
-     *
-     * @return ExplorerRosterException
-     */
-    static @NotNull ExplorerRosterException createMaxPlayerCountLessThanOne()
-    {
-        return new ExplorerRosterException("You can't have less than 1 player... that just doesn't work");
     }
 
     /**

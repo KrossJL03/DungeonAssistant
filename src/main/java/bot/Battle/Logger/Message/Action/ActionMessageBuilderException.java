@@ -1,8 +1,8 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 
-class ActionMessageBuilderException extends RuntimeException implements CustomExceptionInterface
+class ActionMessageBuilderException extends CustomException
 {
     /**
      * PhaseChangeMessageBuilderException constructor
@@ -12,6 +12,16 @@ class ActionMessageBuilderException extends RuntimeException implements CustomEx
     private ActionMessageBuilderException(String message)
     {
         super(message);
+    }
+
+    /**
+     * Factory method for action not set exception
+     *
+     * @return ActionMessageBuilderException
+     */
+    static ActionMessageBuilderException createActionNotSet()
+    {
+        return new ActionMessageBuilderException("I don't know how to log that action");
     }
 
     /**
@@ -27,14 +37,5 @@ class ActionMessageBuilderException extends RuntimeException implements CustomEx
             "I can't seem to find %s's loot... That's a problem",
             explorerName
         ));
-    }
-
-    /**
-     * Factory method for action not set exception
-     *
-     * @return ActionMessageBuilderException
-     */
-    static ActionMessageBuilderException createActionNotSet() {
-        return new ActionMessageBuilderException("I don't know how to log that action");
     }
 }

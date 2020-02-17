@@ -1,6 +1,11 @@
 package bot.Battle;
 
+import bot.Battle.EncounteredCreature.AttackActionResult;
+import bot.Battle.EncounteredCreature.DodgeActionResult;
 import bot.Battle.EncounteredCreature.EncounteredExplorerException;
+import bot.Battle.EncounteredCreature.GuardActionResult;
+import bot.Battle.EncounteredCreature.LootActionResult;
+import bot.Battle.EncounteredCreature.ProtectActionResult;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,11 +28,11 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @param target Encountered creature that is being targeted by the attack
      *
-     * @return AttackActionResultInterface
+     * @return AttackActionResult
      *
      * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull AttackActionResultInterface attack(@NotNull EncounteredCreatureInterface target)
+    @NotNull AttackActionResult attack(@NotNull EncounteredCreatureInterface target)
         throws EncounteredExplorerException;
 
     /**
@@ -44,11 +49,11 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @param encounteredHostiles Encountered hostiles to dodge
      *
-     * @return DodgeActionResultInterface
+     * @return DodgeActionResult
      *
      * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull DodgeActionResultInterface dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+    @NotNull DodgeActionResult dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
         throws EncounteredExplorerException;
 
     /**
@@ -56,11 +61,11 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @param encounteredHostiles Encountered hostiles to dodge
      *
-     * @return DodgeActionResultInterface
+     * @return DodgeActionResult
      *
      * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull DodgeActionResultInterface failToDodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+    @NotNull DodgeActionResult failToDodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
         throws EncounteredExplorerException;
 
     /**
@@ -103,9 +108,9 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     /**
      * Get loot
      *
-     * @return LootActionResultInterface
+     * @return LootActionResult
      */
-    @NotNull LootActionResultInterface getLoot();
+    @NotNull LootActionResult getLoot();
 
     /**
      * Get max actions
@@ -166,11 +171,11 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *
      * @param encounteredHostiles Encountered hostiles to guard against
      *
-     * @return GuardActionResultInterface
+     * @return GuardActionResult
      *
      * @throws EncounteredExplorerException If explorer has no actions
      */
-    @NotNull GuardActionResultInterface guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
+    @NotNull GuardActionResult guard(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
         throws EncounteredExplorerException;
 
     /**
@@ -204,6 +209,13 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
     void markAsNotPresent() throws EncounteredExplorerException;
 
     /**
+     * Rejoin encounter
+     *
+     * @throws EncounteredExplorerException If explorer is already present
+     */
+    void markAsPresent() throws EncounteredExplorerException;
+
+    /**
      * Protect recipient from encountered hostile attacks
      *
      * @param recipient           Encountered explorer being protected
@@ -217,17 +229,10 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
      *                                      If recipient is slain
      *                                      If recipient has no actions
      */
-    @NotNull ProtectActionResultInterface protect(
+    @NotNull ProtectActionResult protect(
         @NotNull EncounteredExplorerInterface recipient,
         @NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles
     ) throws EncounteredExplorerException;
-
-    /**
-     * Rejoin encounter
-     *
-     * @throws EncounteredExplorerException If explorer is already present
-     */
-    void markAsPresent() throws EncounteredExplorerException;
 
     /**
      * Remove opponent that is no longer eligible for loot

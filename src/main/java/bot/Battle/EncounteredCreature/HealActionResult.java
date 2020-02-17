@@ -1,14 +1,14 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.HealActionResultInterface;
+import bot.Battle.ActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-class HealActionResult implements HealActionResultInterface
+public class HealActionResult implements ActionResultInterface
 {
-    private String  name;
     private int     currentHp;
     private int     healedHp;
     private int     maxHp;
+    private String  name;
     private boolean wasTargetRevived;
 
     /**
@@ -30,45 +30,50 @@ class HealActionResult implements HealActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get current hitpoints of healed creature
+     *
+     * @return int
      */
-    @Override
     public int getCurrentHp()
     {
         return currentHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get amount of hitpoints healed
+     *
+     * @return int
      */
-    @Override
     public int getHealedHp()
     {
         return healedHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get max hitpoints of healed creature
+     *
+     * @return int
      */
-    @Override
     public int getMaxHp()
     {
         return maxHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get name of healed creature
+     *
+     * @return int
      */
-    @Override
     public @NotNull String getName()
     {
         return name;
     }
 
     /**
-     * {@inheritDoc}
+     * Was the target revived
+     *
+     * @return int
      */
-    @Override
     public boolean wasTargetRevived()
     {
         return wasTargetRevived;

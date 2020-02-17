@@ -1,9 +1,9 @@
 package bot.Battle.Tier;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class TierException extends RuntimeException implements CustomExceptionInterface
+class TierException extends CustomException
 {
     /**
      * TierException constructor

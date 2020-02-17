@@ -1,8 +1,9 @@
 package bot.Battle;
 
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class EncounterException extends RuntimeException implements EncounterExceptionInterface
+class EncounterException extends CustomException
 {
     /**
      * EncounterException constructor
@@ -32,29 +33,5 @@ class EncounterException extends RuntimeException implements EncounterExceptionI
     static @NotNull EncounterException createNullEncounter()
     {
         return new EncounterException("There is no encounter being created, use `?create encounter` to start one.");
-    }
-
-    /**
-     * Factory method for "revive non-slain explorer"
-     *
-     * @param name Name of explorer
-     *
-     * @return EncounterException
-     */
-    static @NotNull EncounterException createReviveNonSlainExplorer(String name)
-    {
-        return new EncounterException("%s looks fine to me, I don't think they need any phoenix down");
-    }
-
-    /**
-     * Factory method for "used phoenix down"
-     *
-     * @param name Name of slain explorer
-     *
-     * @return EncounterException
-     */
-    static @NotNull EncounterException createUsedPhoenixDown(String name)
-    {
-        return new EncounterException("The guild leaders do not have any more phoenix down, %s cannot be revived");
     }
 }

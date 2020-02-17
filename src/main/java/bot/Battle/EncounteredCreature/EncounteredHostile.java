@@ -2,10 +2,6 @@ package bot.Battle.EncounteredCreature;
 
 import bot.Battle.EncounteredCreatureInterface;
 import bot.Battle.EncounteredHostileInterface;
-import bot.Battle.HealActionResultInterface;
-import bot.Battle.HurtActionResultInterface;
-import bot.Battle.LootRollInterface;
-import bot.Battle.ModifyStatActionResultInterface;
 import bot.Constant;
 import bot.CustomException;
 import bot.Hostile.Hostile;
@@ -16,15 +12,15 @@ import java.util.ArrayList;
 
 public class EncounteredHostile implements EncounteredHostileInterface
 {
-    private int     attack;
-    private int     attackRoll;
-    private int     currentHp;
-    private boolean hasNickname;
-    private Hostile hostile;
-    private int     maxHp;
-    private String  name;
+    private int               attack;
+    private int               attackRoll;
+    private int               currentHp;
+    private boolean           hasNickname;
+    private Hostile           hostile;
+    private int               maxHp;
+    private String            name;
     private ArrayList<Slayer> slayers;
-    private String  species;
+    private String            species;
 
     /**
      * EncounteredHostile constructor
@@ -138,7 +134,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HealActionResultInterface healPercent(float percent)
+    public @NotNull HealActionResult healPercent(float percent)
     {
         return healPoints((int) Math.floor(maxHp * percent));
     }
@@ -147,7 +143,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HealActionResultInterface healPoints(int hitpoints)
+    public @NotNull HealActionResult healPoints(int hitpoints)
     {
         if (hitpoints < 0) {
             throw new CustomException("The amount of HP to heal must be a positive number.");
@@ -174,7 +170,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull HurtActionResultInterface hurt(int hitpoints) throws EncounteredCreatureException
+    public @NotNull HurtActionResult hurt(int hitpoints) throws EncounteredCreatureException
     {
         if (isSlain()) {
             throw EncounteredCreatureException.createIsSlain(name, getSlayer().getName());
@@ -236,7 +232,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ModifyStatActionResultInterface modifyStat(@NotNull String statName, int statModifier)
+    public @NotNull ModifyStatActionResult modifyStat(@NotNull String statName, int statModifier)
     {
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
@@ -256,24 +252,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public int rollDamage()
-    {
-        return (int) Math.floor(Math.random() * getAttackDice()) + 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull ArrayList<LootRollInterface> rollLoot() throws EncounteredCreatureException
+    public @NotNull ArrayList<LootRoll> rollLoot() throws EncounteredCreatureException
     {
         if (!isSlain()) {
             throw EncounteredCreatureException.createLootWhenNotSlain(name);
         }
 
-        ArrayList<LootRollInterface> lootRolls = new ArrayList<>();
-        for (LootRollInterface lootRoll : hostile.rollLoot()) {
-            lootRolls.add(new LootRoll(name, lootRoll.getLoot(), lootRoll.getLootDie(), lootRoll.getLootRoll()));
+        ArrayList<LootRoll> lootRolls = new ArrayList<>();
+        for (LootRoll lootRoll : hostile.rollLoot()) {
+            lootRolls.add(new LootRoll(name, lootRoll.getLoot(), lootRoll.getDie(), lootRoll.getRoll()));
         }
 
         return lootRolls;
@@ -292,7 +279,7 @@ public class EncounteredHostile implements EncounteredHostileInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ModifyStatActionResultInterface setStat(@NotNull String statName, int statValue)
+    public @NotNull ModifyStatActionResult setStat(@NotNull String statName, int statValue)
     {
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
@@ -365,9 +352,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
      *
      * @param statModifier Attack modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyAttack(int statModifier)
+    private @NotNull ModifyStatActionResult modifyAttack(int statModifier)
     {
         int moddedStatValue = attack + statModifier;
         if (moddedStatValue < Constant.HOSTILE_MIN_ATTACK) {
@@ -387,9 +374,9 @@ public class EncounteredHostile implements EncounteredHostileInterface
      *
      * @param statModifier Hitpoints modifier
      *
-     * @return ModifyStatActionResultInterface
+     * @return ModifyStatActionResult
      */
-    private @NotNull ModifyStatActionResultInterface modifyHitpoints(int statModifier)
+    private @NotNull ModifyStatActionResult modifyHitpoints(int statModifier)
     {
         int moddedStatValue = maxHp + statModifier;
         if (moddedStatValue < Constant.HOSTILE_MIN_HITPOINTS) {
@@ -408,5 +395,15 @@ public class EncounteredHostile implements EncounteredHostileInterface
         }
 
         return new ModifyStatActionResult(name, Constant.HOSTILE_STAT_HITPOINTS, statModifier, maxHp);
+    }
+
+    /**
+     * Roll damage
+     *
+     * @return int
+     */
+    private int rollDamage()
+    {
+        return (int) Math.floor(Math.random() * getAttackDice()) + 1;
     }
 }

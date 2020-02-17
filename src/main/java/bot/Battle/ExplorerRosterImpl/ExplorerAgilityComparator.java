@@ -1,5 +1,6 @@
-package bot.Battle;
+package bot.Battle.ExplorerRosterImpl;
 
+import bot.Battle.EncounteredExplorerInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;

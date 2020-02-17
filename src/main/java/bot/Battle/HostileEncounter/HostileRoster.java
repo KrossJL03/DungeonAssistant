@@ -1,5 +1,6 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.EncounteredHostileInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ class HostileRoster implements HostileRosterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredHostileInterface getHostile(@NotNull String name)
+    public @NotNull EncounteredHostileInterface getHostile(@NotNull String name) throws HostileRosterException
     {
         for (EncounteredHostileInterface encounteredHostile : hostileRoster) {
             if (encounteredHostile.isName(name)) {
@@ -66,7 +67,7 @@ class HostileRoster implements HostileRosterInterface
             }
         }
 
-        throw EncounteredCreatureNotFoundException.createForHostile(name);
+        throw HostileRosterException.createHostileNotFound(name);
     }
 
     /**
@@ -88,10 +89,10 @@ class HostileRoster implements HostileRosterInterface
     /**
      * {@inheritDoc}
      */
-    public void remove(@NotNull EncounteredHostileInterface hostile) throws EncounteredCreatureNotFoundException
+    public void remove(@NotNull EncounteredHostileInterface hostile) throws HostileRosterException
     {
         if (!containsHostile(hostile.getName())) {
-            throw EncounteredCreatureNotFoundException.createForExplorer(hostile.getName());
+            throw HostileRosterException.createHostileNotFound(hostile.getName());
         }
 
         hostileRoster.remove(hostile);

@@ -1,14 +1,13 @@
 package bot.Explorer.Exception;
 
-import bot.CommandListener;
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 import bot.Explorer.Explorer;
 import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ExplorerNotFoundException extends RuntimeException implements CustomExceptionInterface
+public class ExplorerNotFoundException extends CustomException
 {
     private ExplorerNotFoundException(String message)
     {

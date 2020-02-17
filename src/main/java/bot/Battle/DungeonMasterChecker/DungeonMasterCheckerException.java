@@ -1,9 +1,9 @@
 package bot.Battle.DungeonMasterChecker;
 
-import bot.Battle.EncounterExceptionInterface;
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class DungeonMasterCheckerException extends RuntimeException implements EncounterExceptionInterface
+class DungeonMasterCheckerException extends CustomException
 {
     /**
      * DungeonMasterCheckerException constructor

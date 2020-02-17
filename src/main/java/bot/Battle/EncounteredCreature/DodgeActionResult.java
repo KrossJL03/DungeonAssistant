@@ -1,42 +1,34 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.DodgeActionResultInterface;
-import bot.Battle.DodgeResultInterface;
+import bot.Battle.CombatActionResultInterface;
+import bot.Battle.EncounteredExplorerInterface;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class DodgeActionResult implements DodgeActionResultInterface
+public class DodgeActionResult implements CombatActionResultInterface
 {
-    private DeathSaveRoll                   deathSaveRoll;
-    private ArrayList<DodgeResultInterface> dodgeResults;
-    private boolean                         isForcedFail;
-    private int                             targetCurrentHp;
-    private int                             targetDodgeDie;
-    private int                             targetMaxHp;
-    private String                          targetName;
-    private Slayer                          targetSlayer;
+    private DeathSaveRoll          deathSaveRoll;
+    private ArrayList<DodgeResult> dodgeResults;
+    private boolean                isForcedFail;
+    private int                    targetCurrentHp;
+    private int                    targetDodgeDie;
+    private int                    targetMaxHp;
+    private String                 targetName;
+    private Slayer                 targetSlayer;
 
     /**
-     * DodgeActionResult constructor
+     * Constructor.
      *
-     * @param targetName      Target name
-     * @param dodgeResults    Dodge results
-     * @param targetDodgeDie  Target dodge die
-     * @param targetCurrentHp Target current hp
-     * @param targetMaxHp     Target max hp
-     * @param targetSlayer    Target slayer
-     * @param isForcedFail    Was this action a forced fail
-     * @param deathSaveRoll   Death save roll
+     * @param target        Target
+     * @param dodgeResults  Dodge results
+     * @param isForcedFail  Was this action a forced fail
+     * @param deathSaveRoll Death save roll
      */
-    @NotNull DodgeActionResult(
-        @NotNull String targetName,
-        @NotNull ArrayList<DodgeResultInterface> dodgeResults,
-        int targetDodgeDie,
-        int targetCurrentHp,
-        int targetMaxHp,
-        @NotNull Slayer targetSlayer,
+    DodgeActionResult(
+        @NotNull EncounteredExplorerInterface target,
+        @NotNull ArrayList<DodgeResult> dodgeResults,
         boolean isForcedFail,
         @Nullable DeathSaveRoll deathSaveRoll
     )
@@ -44,17 +36,18 @@ public class DodgeActionResult implements DodgeActionResultInterface
         this.deathSaveRoll = deathSaveRoll;
         this.dodgeResults = dodgeResults;
         this.isForcedFail = isForcedFail;
-        this.targetCurrentHp = targetCurrentHp;
-        this.targetDodgeDie = targetDodgeDie;
-        this.targetMaxHp = targetMaxHp;
-        this.targetName = targetName;
-        this.targetSlayer = targetSlayer;
+        this.targetCurrentHp = target.getCurrentHP();
+        this.targetDodgeDie = target.getDodgeDice();
+        this.targetMaxHp = target.getMaxHP();
+        this.targetName = target.getName();
+        this.targetSlayer = target.getSlayer();
     }
 
     /**
-     * {@inheritDoc}
+     * Get number of attacks
+     *
+     * @return int
      */
-    @Override
     public int getAttackCount()
     {
         return dodgeResults.size();
@@ -67,9 +60,10 @@ public class DodgeActionResult implements DodgeActionResultInterface
     public int getDamageDealt()
     {
         int totalDamageDealt = 0;
-        for (DodgeResultInterface result : dodgeResults) {
+        for (DodgeResult result : dodgeResults) {
             totalDamageDealt += result.getDamageDealt();
         }
+
         return totalDamageDealt;
     }
 
@@ -80,9 +74,10 @@ public class DodgeActionResult implements DodgeActionResultInterface
     public int getDamageResisted()
     {
         int totalDamageResisted = 0;
-        for (DodgeResultInterface result : dodgeResults) {
+        for (DodgeResult result : dodgeResults) {
             totalDamageResisted += result.getDamageResisted();
         }
+
         return totalDamageResisted;
     }
 
@@ -114,19 +109,21 @@ public class DodgeActionResult implements DodgeActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get individual dodge results
+     *
+     * @return ArrayList<DodgeResult>
      */
-    @Override
-    public @NotNull ArrayList<DodgeResultInterface> getDodgeResults()
+    public @NotNull ArrayList<DodgeResult> getDodgeResults()
     {
         return dodgeResults;
     }
 
     /**
-     * {@inheritDoc}
+     * Get minimum roll needed for a successful dodge
+     *
+     * @return int
      */
-    @Override
-    public int getMinSucessDodgeRoll()
+    public int getMinSuccessDodgeRoll()
     {
         return DodgeRoll.DODGE_ROLL_PASS;
     }
@@ -141,9 +138,10 @@ public class DodgeActionResult implements DodgeActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get target dodge die
+     *
+     * @return int
      */
-    @Override
     public int getTargetDodgeDie()
     {
         return targetDodgeDie;
@@ -177,9 +175,10 @@ public class DodgeActionResult implements DodgeActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Was this action a forced fail
+     *
+     * @return boolean
      */
-    @Override
     public boolean isForceFail()
     {
         return isForcedFail;

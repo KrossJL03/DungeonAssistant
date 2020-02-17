@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.LootActionResultInterface;
-import bot.Battle.LootRollInterface;
+import bot.Battle.EncounteredCreature.LootActionResult;
+import bot.Battle.EncounteredCreature.LootRoll;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ class LootActionMessageFactory extends ActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull LootActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull LootActionResult result)
     {
         if (result.noLoot()) {
             throw ActionMessageBuilderException.createNoLoot(result.getName());
@@ -49,8 +49,8 @@ class LootActionMessageFactory extends ActionMessageFactory
         ));
 
         message.addBreak();
-        for (LootRollInterface subAction : result.getLootRolls()) {
-            message.add(lootRollLineFactory.getLootRollLine(subAction));
+        for (LootRoll subResult : result.getLootRolls()) {
+            message.add(lootRollLineFactory.getLootRollLine(subResult));
         }
         message.addBreak();
 

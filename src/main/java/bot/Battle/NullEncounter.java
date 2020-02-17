@@ -61,15 +61,6 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void manualProtectAction(@NotNull String targetName, int hitpoints) throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void hurt(@NotNull String name, int hitpoints) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
@@ -180,15 +171,6 @@ public class NullEncounter implements EncounterInterface
      */
     @Override
     public void setTier(@NotNull TierInterface tier) throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
     {
         throw EncounterException.createNullEncounter();
     }

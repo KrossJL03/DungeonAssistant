@@ -1,7 +1,6 @@
 package bot.Hostile;
 
 import bot.Battle.EncounteredCreature.LootRoll;
-import bot.Battle.LootRollInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -103,10 +102,15 @@ public class Hostile
         return species;
     }
 
-    public @NotNull ArrayList<LootRollInterface> rollLoot()
+    /**
+     * Roll loot
+     *
+     * @return ArrayList
+     */
+    public @NotNull ArrayList<LootRoll> rollLoot()
     {
-        ArrayList<LootRollInterface> lootRolls = new ArrayList<>();
-        int                          lootDie   = getLootPoolSize();
+        ArrayList<LootRoll> lootRolls = new ArrayList<>();
+        int                 lootDie   = getLootPoolSize();
 
         while (getLootRollCount() > lootRolls.size()) {
             int  roll = (int) Math.floor(Math.random() * lootDie) + 1;

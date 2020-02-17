@@ -2,7 +2,6 @@ package bot.Battle.EncounteredCreature;
 
 class HitRoll
 {
-
     private static int HIT_ROLL_FAIL = 1;
     private static int HIT_ROLL_MISS = 5;
 
@@ -11,7 +10,7 @@ class HitRoll
     private int roll;
 
     /**
-     * HitRoll constructor
+     * Constructor.
      *
      * @param roll    Roll
      * @param die     Die

@@ -1,7 +1,7 @@
 package bot.Battle.EncounteredCreature;
 
-class DodgeRoll {
-
+class DodgeRoll
+{
     static int DODGE_ROLL_PASS = 10;
 
     private int roll;
@@ -11,7 +11,8 @@ class DodgeRoll {
      *
      * @param roll Roll
      */
-    DodgeRoll(int roll) {
+    DodgeRoll(int roll)
+    {
         this.roll = roll;
     }
 
@@ -20,8 +21,9 @@ class DodgeRoll {
      *
      * @return int
      */
-    int getRoll() {
-        return this.roll;
+    int getRoll()
+    {
+        return roll;
     }
 
     /**
@@ -29,7 +31,8 @@ class DodgeRoll {
      *
      * @return boolean
      */
-    boolean isFail() {
-        return this.roll < DODGE_ROLL_PASS;
+    boolean isFail()
+    {
+        return roll < DODGE_ROLL_PASS;
     }
 }

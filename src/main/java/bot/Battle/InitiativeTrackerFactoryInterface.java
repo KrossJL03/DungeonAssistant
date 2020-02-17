@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-interface InitiativeTrackerFactoryInterface
+public interface InitiativeTrackerFactoryInterface
 {
     /**
      * Create initiative tracker

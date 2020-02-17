@@ -1,9 +1,11 @@
 package bot.Player.Exception;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 
-public class OutOfBoundsStatExecption extends RuntimeException implements CustomExceptionInterface {
-    public OutOfBoundsStatExecption(String message) {
+public class OutOfBoundsStatExecption extends CustomException
+{
+    public OutOfBoundsStatExecption(String message)
+    {
         super(message);
     }
 }

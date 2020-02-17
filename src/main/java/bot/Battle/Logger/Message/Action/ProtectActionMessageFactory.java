@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
+import bot.Battle.EncounteredCreature.ProtectActionResult;
 import bot.MessageInterface;
-import bot.Battle.ProtectActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
 class ProtectActionMessageFactory extends CombatActionMessageFactory
@@ -13,7 +13,7 @@ class ProtectActionMessageFactory extends CombatActionMessageFactory
      *
      * @return MessageInterface
      */
-    @NotNull MessageInterface createMessage(@NotNull ProtectActionResultInterface result)
+    @NotNull MessageInterface createMessage(@NotNull ProtectActionResult result)
     {
         ActionMessage message = new ActionMessage();
 

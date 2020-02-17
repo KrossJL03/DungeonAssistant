@@ -1,57 +1,53 @@
 package bot.Battle.EncounteredCreature;
 
+import bot.Battle.CombatActionResultInterface;
+import bot.Battle.EncounteredCreatureInterface;
+import bot.Battle.EncounteredExplorerInterface;
 import bot.CustomException;
-import bot.Battle.AttackActionResultInterface;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class AttackActionResult implements AttackActionResultInterface
+public class AttackActionResult implements CombatActionResultInterface
 {
-    private String  attackerName;
-    private int     damageDie;
-    private int     damageRoll;
-    private HitRoll hitRoll;
-    private int     targetCurrentHp;
-    private int     targetMaxHp;
-    private String  targetName;
-    private Slayer  targetSlayer;
+    private String     attackerName;
+    private DamageRoll damageRoll;
+    private HitRoll    hitRoll;
+    private boolean    isTargetExplorer;
+    private int        targetCurrentHp;
+    private int        targetMaxHp;
+    private String     targetName;
+    private Slayer     targetSlayer;
 
     /**
      * AttackActionResult constructor
      *
-     * @param attackerName    Attacker name
-     * @param targetName      Target name
-     * @param hitRoll         Roll to hit encountered hostile
-     * @param damageDie       Damage die rolled by encountered explorer
-     * @param damageRoll      Damage dealt to encountered hostile
-     * @param targetCurrentHp Target's current hitpoints
-     * @param targetMaxHp     Target's max hitpoints
-     * @param targetSlayer    Target's slayer
+     * @param attackerName Attacker name
+     * @param target       Target
+     * @param hitRoll      Roll to hit target
+     * @param damageRoll   Damage rolled by attacker
      */
     AttackActionResult(
         @NotNull String attackerName,
-        @NotNull String targetName,
+        @NotNull EncounteredCreatureInterface target,
         @NotNull HitRoll hitRoll,
-        int damageDie,
-        int damageRoll,
-        int targetCurrentHp,
-        int targetMaxHp,
-        @NotNull Slayer targetSlayer
+        @Nullable DamageRoll damageRoll
     )
     {
         this.attackerName = attackerName;
-        this.damageDie = damageDie;
         this.damageRoll = damageRoll;
         this.hitRoll = hitRoll;
-        this.targetCurrentHp = targetCurrentHp;
-        this.targetMaxHp = targetMaxHp;
-        this.targetName = targetName;
-        this.targetSlayer = targetSlayer;
+        this.isTargetExplorer = target instanceof EncounteredExplorerInterface;
+        this.targetCurrentHp = target.getCurrentHP();
+        this.targetMaxHp = target.getMaxHP();
+        this.targetName = target.getName();
+        this.targetSlayer = target.getSlayer();
     }
 
     /**
-     * {@inheritDoc}
+     * Get attacker name
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getAttackerName()
     {
         return attackerName;
@@ -63,16 +59,17 @@ public class AttackActionResult implements AttackActionResultInterface
     @Override
     public int getDamageDealt()
     {
-        return damageRoll; // todo update for PVP
+        return hasDamageRoll() ? damageRoll.getDamageDealt() : -1;
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage die
+     *
+     * @return int
      */
-    @Override
     public int getDamageDie()
     {
-        return damageDie;
+        return hasDamageRoll() ? damageRoll.getDie() : -1;
     }
 
     /**
@@ -81,16 +78,17 @@ public class AttackActionResult implements AttackActionResultInterface
     @Override
     public int getDamageResisted()
     {
-        return 0; // todo update for PVP
+        return hasDamageRoll() ? damageRoll.getDamageResisted() : -1;
     }
 
     /**
-     * {@inheritDoc}
+     * Get damage roll
+     *
+     * @return int
      */
-    @Override
     public int getDamageRoll()
     {
-        return damageRoll;
+        return hasDamageRoll() ? damageRoll.getRoll() : -1;
     }
 
     /**
@@ -121,27 +119,30 @@ public class AttackActionResult implements AttackActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get hit die
+     *
+     * @return int
      */
-    @Override
     public int getHitDie()
     {
         return hitRoll.getDie();
     }
 
     /**
-     * {@inheritDoc}
+     * Get hit roll
+     *
+     * @return int
      */
-    @Override
     public int getHitRoll()
     {
         return hitRoll.getRoll();
     }
 
     /**
-     * {@inheritDoc}
+     * Get hit type as string
+     *
+     * @return String
      */
-    @Override
     public @NotNull String getHitTypeString()
     {
         return isHit() ? (isCrit() ? "crit" : "hit") : (isFail() ? "fail" : "miss");
@@ -184,27 +185,30 @@ public class AttackActionResult implements AttackActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Is hit roll crit
+     *
+     * @return int
      */
-    @Override
     public boolean isCrit()
     {
         return hitRoll.isCrit();
     }
 
     /**
-     * {@inheritDoc}
+     * Is hit roll fail
+     *
+     * @return int
      */
-    @Override
     public boolean isFail()
     {
         return hitRoll.isFail();
     }
 
     /**
-     * {@inheritDoc}
+     * Is hit roll hit
+     *
+     * @return int
      */
-    @Override
     public boolean isHit()
     {
         return hitRoll.isHit();
@@ -216,7 +220,7 @@ public class AttackActionResult implements AttackActionResultInterface
     @Override
     public boolean isTargetExplorer()
     {
-        return false; // todo update for PVP
+        return isTargetExplorer;
     }
 
     /**
@@ -244,5 +248,15 @@ public class AttackActionResult implements AttackActionResultInterface
     public boolean survivedDeathSave()
     {
         throw new CustomException("Death saves are not rolled on the attack turn");
+    }
+
+    /**
+     * Has damage roll
+     *
+     * @return boolean
+     */
+    private boolean hasDamageRoll()
+    {
+        return damageRoll != null;
     }
 }

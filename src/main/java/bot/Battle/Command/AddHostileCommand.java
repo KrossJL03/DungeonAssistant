@@ -1,10 +1,10 @@
 package bot.Battle.Command;
 
-import bot.CommandParameter;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
 import bot.Battle.EncounteredHostileInterface;
 import bot.Battle.Logger.EncounterLogger;
+import bot.CommandParameter;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
 import bot.ProcessManager;

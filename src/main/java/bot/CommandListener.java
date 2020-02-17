@@ -12,8 +12,8 @@ import java.util.ArrayList;
  */
 public class CommandListener extends ListenerAdapter
 {
-    private ArrayList<CommandInterface> commands;
     private ArrayList<CommandInterface> additionalCommands;
+    private ArrayList<CommandInterface> commands;
 
     /**
      * CommandListener constructor.
@@ -82,15 +82,13 @@ public class CommandListener extends ListenerAdapter
                     MyProperties.COMMAND_PREFIX
                 )
             ).queue();
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException exception) {
             channel.sendMessage("I need a number and I could be wrong but I don't think that was a number...").queue();
-        } catch (Throwable e) {
-            if (e instanceof CustomExceptionInterface) {
-                channel.sendMessage(e.getMessage()).queue();
-            } else {
-                channel.sendMessage("Something went wrong, but I'm not sure what...").queue();
-                System.out.println(e.toString());
-            }
+        } catch (CustomException exception) {
+            channel.sendMessage(exception.getMessage()).queue();
+        } catch (Throwable exception) {
+            channel.sendMessage("Something went wrong, but I'm not sure what...").queue();
+            System.out.println(exception.toString());
         }
     }
 }

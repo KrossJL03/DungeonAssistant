@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.HurtActionResultInterface;
+import bot.Battle.EncounteredCreature.HurtActionResult;
 import bot.Constant;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ class HurtActionMessageFactory extends ActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull HurtActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull HurtActionResult result)
     {
         ActionMessage message   = new ActionMessage();
         int           currentHp = result.getCurrentHp();

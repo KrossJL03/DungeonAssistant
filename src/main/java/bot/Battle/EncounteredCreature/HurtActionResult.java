@@ -1,9 +1,9 @@
 package bot.Battle.EncounteredCreature;
 
-import bot.Battle.HurtActionResultInterface;
+import bot.Battle.ActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
-class HurtActionResult implements HurtActionResultInterface
+public class HurtActionResult implements ActionResultInterface
 {
     private int     currentHp;
     private int     healedHp;
@@ -30,54 +30,60 @@ class HurtActionResult implements HurtActionResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get current hitpoints of hurt creature
+     *
+     * @return int
      */
-    @Override
     public int getCurrentHp()
     {
         return currentHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get amount of hitpoints hurt
+     *
+     * @return int
      */
-    @Override
     public int getHurtHp()
     {
         return healedHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get max hitpoints of hurt creature
+     *
+     * @return int
      */
-    @Override
     public int getMaxHp()
     {
         return maxHp;
     }
 
     /**
-     * {@inheritDoc}
+     * Get name of hurt creature
+     *
+     * @return int
      */
-    @Override
     public @NotNull String getName()
     {
         return name;
     }
 
     /**
-     * {@inheritDoc}
+     * Is the hurt creature slain
+     *
+     * @return boolean
      */
-    @Override
     public boolean isSlain()
     {
         return currentHp < 1;
     }
 
     /**
-     * {@inheritDoc}
+     * Was the target bloodied before being hurt
+     *
+     * @return boolean
      */
-    @Override
     public boolean wasBloodied()
     {
         return wasBloodied;

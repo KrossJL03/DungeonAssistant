@@ -1,7 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.MessageInterface;
-import bot.Battle.ModifyStatActionResultInterface;
+import bot.Battle.EncounteredCreature.ModifyStatActionResult;
 import bot.Constant;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ class ModifyStatActionMessageFactory extends ActionMessageFactory
      *
      * @return MessageInterface
      */
-    public @NotNull MessageInterface createMessage(@NotNull ModifyStatActionResultInterface result)
+    public @NotNull MessageInterface createMessage(@NotNull ModifyStatActionResult result)
     {
         ActionMessage message = new ActionMessage();
 

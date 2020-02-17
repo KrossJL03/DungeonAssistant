@@ -1,8 +1,9 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
-class HostileRosterException extends RuntimeException implements EncounterExceptionInterface
+class HostileRosterException extends CustomException
 {
     /**
      * HostileRosterException constructor
@@ -12,6 +13,20 @@ class HostileRosterException extends RuntimeException implements EncounterExcept
     private @NotNull HostileRosterException(@NotNull String message)
     {
         super(message);
+    }
+
+    /**
+     * Factory method for "hostile not found"
+     *
+     * @param name Hostile name
+     *
+     * @return EncounteredCreatureNotFoundException
+     */
+    static @NotNull HostileRosterException createHostileNotFound(@NotNull String name)
+    {
+        return new HostileRosterException(
+            String.format("I don't see any hostiles named %s in this encounter", name)
+        );
     }
 
     /**

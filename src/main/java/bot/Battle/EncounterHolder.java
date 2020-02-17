@@ -1,7 +1,9 @@
 package bot.Battle;
 
+import bot.Battle.HostileEncounter.HostileEncounter;
 import bot.Battle.Logger.EncounterLogger;
 import bot.Battle.Logger.Mention;
+import bot.Battle.PlayerVsPlayer.PlayerVsPlayer;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 

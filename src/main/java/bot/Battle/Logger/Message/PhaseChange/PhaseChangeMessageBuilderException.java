@@ -1,8 +1,8 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.CustomExceptionInterface;
+import bot.CustomException;
 
-class PhaseChangeMessageBuilderException extends RuntimeException implements CustomExceptionInterface
+class PhaseChangeMessageBuilderException extends CustomException
 {
     /**
      * PhaseChangeMessageBuilderException constructor
