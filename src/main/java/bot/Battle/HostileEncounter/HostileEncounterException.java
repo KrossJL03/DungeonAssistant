@@ -34,7 +34,7 @@ class HostileEncounterException extends CustomException
     /**
      * Factory method for "start without hostiles"
      *
-     * @return EncounterPhaseException
+     * @return BattlePhaseException
      */
     static @NotNull HostileEncounterException createStartWithoutHostiles()
     {

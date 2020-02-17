@@ -23,7 +23,7 @@ public class PlayerVsPlayer extends Battle
      */
     public PlayerVsPlayer(@NotNull EncounterLogger logger)
     {
-        super(logger, new InitiativeCycleFactory());
+        super(logger, new InitiativeCycleFactory(), new PvpPhaseManager());
     }
 
     /**
@@ -62,10 +62,10 @@ public class PlayerVsPlayer extends Battle
     @Override
     public void skipCurrentPlayerTurn()
     {
-        assertInitiativePhase();
+        phaseManager.assertInitiativePhase();
 
         CombatExplorer explorer = getCurrentExplorer();
-        if (currentPhase.isAttackPhase()) {
+        if (phaseManager.isAttackPhase()) {
             explorer.useAllActions();
             logger.logActionAttackSkipped(explorer.getName());
             handleEndOfAction();
@@ -98,10 +98,10 @@ public class PlayerVsPlayer extends Battle
     @Override
     protected void handleEndOfAction()
     {
-        if (!currentPhase.isJoinPhase()) {
+        if (!phaseManager.isJoinPhase()) {
             if (!hasMultipleActiveExplorers()) {
                 startEndPhase();
-            } else if (currentPhase.isInitiativePhase()) {
+            } else if (phaseManager.isInitiativePhase()) {
                 CombatExplorer currentExplorer = getCurrentExplorer();
                 if (currentExplorer.isActive() && currentExplorer.hasActions()) {
                     logger.logActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
@@ -135,6 +135,15 @@ public class PlayerVsPlayer extends Battle
      */
     @Override
     protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result)
+    {
+        // do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void postJoin(@NotNull CombatExplorer explorer)
     {
         // do nothing
     }

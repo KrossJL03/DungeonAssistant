@@ -1,12 +1,19 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.Battle.EncounterPhaseInterface;
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
 import bot.MessageInterface;
-import bot.Battle.PhaseChangeResult;
 import org.jetbrains.annotations.NotNull;
 
 interface PhaseChangeMessageFactoryInterface
 {
+    /**
+     * Create message
+     *
+     * @param result Phase change result
+     */
+    @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result);
+
     /**
      * Does this factory handle this type of phase change
      *
@@ -16,14 +23,7 @@ interface PhaseChangeMessageFactoryInterface
      * @return boolean
      */
     boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
+        @NotNull BattlePhase previousPhase,
+        @NotNull BattlePhase nextPhase
     );
-
-    /**
-     * Create message
-     *
-     * @param result Phase change result
-     */
-    @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result);
 }

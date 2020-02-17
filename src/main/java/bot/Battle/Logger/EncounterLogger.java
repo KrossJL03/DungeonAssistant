@@ -3,12 +3,11 @@ package bot.Battle.Logger;
 import bot.Battle.ActionResultInterface;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
-import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HostileEncounter.EncounteredHostile;
 import bot.Battle.Logger.Message.Action.ActionMessageBuilder;
 import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhaseChangeResult;
 import bot.Battle.TierInterface;
 import bot.MyProperties;
 import bot.Player.Player;
@@ -172,7 +171,7 @@ public class EncounterLogger
      *
      * @param result Phase change result
      */
-    public void logPhaseChange(PhaseChangeResult result)
+    public void logPhaseChange(BattlePhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
         if (MyProperties.BOOL_PING_EVERYONE && result.getNextPhase().isJoinPhase()) {

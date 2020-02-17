@@ -1,7 +1,8 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.Battle.EncounterPhaseInterface;
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
+import bot.Battle.HostileEncounter.EncounterPhase;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -23,19 +24,7 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
-    )
-    {
-        return nextPhase.isLootPhase();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result)
+    public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
         PhaseChangeMessage message = new PhaseChangeMessage();
 
@@ -51,5 +40,17 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         message.add("There is no turn order and if you are unable to roll now you may do so later.");
 
         return message;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(
+        @NotNull BattlePhase previousPhase,
+        @NotNull BattlePhase nextPhase
+    )
+    {
+        return ((EncounterPhase) nextPhase).isLootPhase();
     }
 }

@@ -1,9 +1,7 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.HostileEncounter.EncounterPhase;
 import bot.Battle.Logger.EncounterLogger;
-import bot.Battle.Logger.Mention;
-import bot.Battle.Phase.EncounterPhaseFactory;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +11,8 @@ import java.util.ArrayList;
 
 public abstract class Battle implements EncounterInterface
 {
-    protected EncounterPhaseInterface           currentPhase;
     protected EncounterLogger                   logger;
+    protected BattlePhaseManager                phaseManager;
     private   ExplorerRosterInterface           explorerRoster;
     private   InitiativeTrackerInterface        initiative;
     private   InitiativeTrackerFactoryInterface initiativeFactory;
@@ -24,16 +22,18 @@ public abstract class Battle implements EncounterInterface
      *
      * @param logger            Logger
      * @param initiativeFactory Initiative factory
+     * @param phaseManager      Phase manager
      */
     protected Battle(
         @NotNull EncounterLogger logger,
-        @NotNull InitiativeTrackerFactoryInterface initiativeFactory
+        @NotNull InitiativeTrackerFactoryInterface initiativeFactory,
+        @NotNull BattlePhaseManager phaseManager
     )
     {
-        this.currentPhase = EncounterPhaseFactory.createCreatePhase();
         this.explorerRoster = new ExplorerRoster();
         this.initiativeFactory = initiativeFactory;
         this.logger = logger;
+        this.phaseManager = phaseManager;
 
         this.initiative = initiativeFactory.createNull();
 
@@ -45,11 +45,11 @@ public abstract class Battle implements EncounterInterface
      */
     @Override
     public void attackAction(@NotNull Player player, @NotNull String targetName)
-        throws EncounterPhaseException, NotYourTurnException
+        throws BattlePhaseException, NotYourTurnException
     {
-        assertNotFinalPhase();
-        if (!currentPhase.isAttackPhase()) {
-            throw EncounterPhaseException.createNotAttackPhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isAttackPhase()) {
+            throw EncounterException.createWrongPhase("attack", EncounterPhase.ATTACK_PHASE);
         }
 
         CombatExplorer currentExplorer = getCurrentExplorer();
@@ -76,9 +76,9 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    public void heal(@NotNull String name, int hitpoints) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatCreature   target = getCreature(name);
         HealActionResult result = target.healPoints(hitpoints);
@@ -104,9 +104,9 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException
+    public void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatCreature   target = getCreature(name);
         HurtActionResult result = target.hurt(hitpoints);
@@ -134,7 +134,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public boolean isLockingDatabase()
     {
-        return !currentPhase.isFinalPhase();
+        return !phaseManager.isFinalPhase();
     }
 
     /**
@@ -152,32 +152,25 @@ public abstract class Battle implements EncounterInterface
     @Override
     public boolean isOver()
     {
-        return currentPhase.isFinalPhase();
+        return phaseManager.isFinalPhase();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException
+    public void join(@NotNull Explorer explorer, @Nullable String nickname) throws BattlePhaseException
     {
-        assertNotFinalPhase();
-        if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (!isAlwaysJoinable() && !currentPhase.isJoinPhase()) {
-            throw EncounterPhaseException.createNotJoinPhase(Mention.createForPlayer(explorer.getOwner().getUserId()));
-        }
+        phaseManager.assertJoinablePhase(explorer, isAlwaysJoinable());
 
         String capitalNickname = nickname != null
                                  ? Capitalizer.nameCaseIfLowerCase(nickname)
                                  : null;
-        CombatExplorer newExplorer = createExplorer(explorer, nickname);
+        CombatExplorer newExplorer = createExplorer(explorer, capitalNickname);
 
         explorerRoster.addExplorer(newExplorer);
-        if (currentPhase.isInitiativePhase()) {
-            initiative.add(newExplorer);
-            newExplorer.resetActions(currentPhase.isDodgePhase());
-        }
+
+        postJoin(newExplorer);
 
         JoinActionResult result = new JoinActionResult(newExplorer, explorerRoster.isFull());
         logger.logAction(result);
@@ -189,7 +182,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void kick(@NotNull String name)
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatExplorer target = explorerRoster.kick(name);
         initiative.remove(target);
@@ -204,7 +197,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void leave(@NotNull Player player)
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatExplorer explorer = explorerRoster.markAsLeft(player);
         initiative.remove(explorer);
@@ -220,9 +213,9 @@ public abstract class Battle implements EncounterInterface
         @NotNull String name,
         @NotNull String statName,
         int statModifier
-    ) throws EncounterPhaseException
+    ) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatCreature         target = getCreature(name);
         ModifyStatActionResult result = target.modifyStat(statName, statModifier);
@@ -249,11 +242,11 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void rejoin(@NotNull Player player)
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatExplorer explorer = explorerRoster.markAsReturned(player);
-        if (currentPhase.isInitiativePhase()) {
-            initiative.add(explorer);
+        if (phaseManager.isInitiativePhase()) {
+            addToInitiative(explorer);
         }
 
         logger.logRejoinEncounter(explorer.getName());
@@ -264,11 +257,11 @@ public abstract class Battle implements EncounterInterface
      *
      * @param name Encountered explorer name
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    public void revive(@NotNull String name) throws EncounterPhaseException
+    public void revive(@NotNull String name) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatCreature   target = getCreature(name);
         HealActionResult result = target.healPercent((float) 0.5);
@@ -282,9 +275,9 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException
+    public void setMaxPlayerCount(int maxPlayerCount) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         explorerRoster.setMaxPlayerCount(maxPlayerCount);
         logger.logSetMaxPlayers(maxPlayerCount);
@@ -294,9 +287,9 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws EncounterPhaseException
+    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws BattlePhaseException
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         CombatCreature         target = getCreature(name);
         ModifyStatActionResult result = target.setStat(statName, statValue);
@@ -321,10 +314,10 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void setTier(@NotNull TierInterface tier) throws EncounterPhaseException
+    public void setTier(@NotNull TierInterface tier) throws BattlePhaseException
     {
-        if (!currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createSetTierAfterCreatePhase();
+        if (!phaseManager.isCreatePhase()) {
+            throw EncounterException.createSetTierAfterCreatePhase();
         }
 
         explorerRoster.setTier(tier);
@@ -335,21 +328,19 @@ public abstract class Battle implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public void startAttackPhase() throws EncounterPhaseException
+    public void startAttackPhase() throws BattlePhaseException
     {
-        assertCurrentPhaseIsChangable();
-        if (currentPhase.isAttackPhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        }
+        phaseManager.assertAttackPhaseMayStart();
+        assertPlayersHaveJoined();
 
         for (CombatExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.resetActions(false);
         }
 
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createAttackPhase();
+        BattlePhaseChange result = phaseManager.startAttackPhase();
+
         restartInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
@@ -358,37 +349,26 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void startEndPhaseForced()
     {
-        assertNotFinalPhase();
-        if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        }
+        BattlePhaseChange result = phaseManager.startEndPhase();
 
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createEndPhase();
         clearInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void startJoinPhase() throws EncounterPhaseException
+    public void startJoinPhase() throws BattlePhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createStartInProgressEncounter();
-        } else if (currentPhase.isJoinPhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        }
+        phaseManager.assertJoinPhaseMayStart();
 
         preJoinPhase();
 
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createJoinPhase();
+        BattlePhaseChange result = phaseManager.startJoinPhase();
+
         clearInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
@@ -397,7 +377,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void useAllCurrentExplorerActions()
     {
-        assertInitiativePhase();
+        phaseManager.assertInitiativePhase();
 
         CombatExplorer explorer = getCurrentExplorer();
         explorer.useAllActions();
@@ -410,7 +390,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void useCurrentExplorerAction()
     {
-        assertInitiativePhase();
+        phaseManager.assertInitiativePhase();
 
         CombatExplorer explorer = getCurrentExplorer();
         explorer.useAction();
@@ -423,7 +403,7 @@ public abstract class Battle implements EncounterInterface
     @Override
     public void useItemAction(@NotNull Player player)
     {
-        if (!currentPhase.isAttackPhase()) {
+        if (!phaseManager.isAttackPhase()) {
             return;
         }
 
@@ -434,54 +414,24 @@ public abstract class Battle implements EncounterInterface
     }
 
     /**
-     * Assert that the current phase can be changed
+     * Add explorer to initiative
      *
-     * @throws EncounterPhaseException If the battle is in it's final phase
-     *                                 If the battle is still in the create phase
-     * @throws EncounterException      If no players have joined
+     * @param explorer Explorer
      */
-    final protected void assertCurrentPhaseIsChangable() throws EncounterPhaseException, EncounterException
+    final protected void addToInitiative(@NotNull CombatExplorer explorer)
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (currentPhase.isCreatePhase()) {
-            throw EncounterPhaseException.createNotStarted();
-        } else if (haveNoPlayersJoined()) {
+        initiative.add(explorer);
+    }
+
+    /**
+     * Assert that players have joined
+     *
+     * @throws EncounterException If no players have joined
+     */
+    final protected void assertPlayersHaveJoined() throws BattlePhaseException, EncounterException
+    {
+        if (haveNoPlayersJoined()) {
             throw EncounterException.createNoPlayersHaveJoined();
-        }
-    }
-
-    /**
-     * Assert that the current phase is an initiative phase
-     */
-    protected void assertInitiativePhase()
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isInitiativePhase()) {
-            throw EncounterPhaseException.createNotInitiativePhase();
-        }
-    }
-
-    /**
-     * Assert that the current phase is the loot phase
-     *
-     * @throws EncounterPhaseException If not loot phase
-     */
-    final protected void assertLootPhase() throws EncounterPhaseException
-    {
-        if (!currentPhase.isLootPhase()) {
-            throw EncounterPhaseException.createNotLootPhase();
-        }
-    }
-
-    /**
-     * Assert the current phase is not a final phase
-     */
-    final protected void assertNotFinalPhase()
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
         }
     }
 
@@ -550,7 +500,7 @@ public abstract class Battle implements EncounterInterface
     /**
      * Get current explorer
      *
-     * @return EncounteredExplorer
+     * @return CombatExplorer
      */
     final protected @NotNull CombatExplorer getCurrentExplorer()
     {
@@ -661,13 +611,12 @@ public abstract class Battle implements EncounterInterface
     /**
      * Notify listener of phase change
      *
-     * @param previousPhase Previous phase
+     * @param phaseChange Phase change result
      */
-    final protected void notifyListenerOfPhaseChange(EncounterPhaseInterface previousPhase)
+    final protected void notifyListenerOfPhaseChange(BattlePhaseChange phaseChange)
     {
-        PhaseChangeResult result = new PhaseChangeResult(
-            currentPhase,
-            previousPhase,
+        BattlePhaseChangeResult result = new BattlePhaseChangeResult(
+            phaseChange,
             getAllCreatures(),
             explorerRoster.getTier(),
             explorerRoster.getMaxPlayerCount(),
@@ -676,7 +625,7 @@ public abstract class Battle implements EncounterInterface
 
         logger.logPhaseChange(result);
 
-        if (currentPhase.isInitiativePhase()) {
+        if (phaseManager.isInitiativePhase()) {
             CombatExplorer explorer = getCurrentExplorer();
             if (!explorer.isActive() || !explorer.hasActions()) {
                 explorer = getNextExplorer();
@@ -702,6 +651,13 @@ public abstract class Battle implements EncounterInterface
     abstract protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result);
 
     /**
+     * Handle any additional post join related processes
+     *
+     * @param explorer Explorer that has just joined
+     */
+    abstract protected void postJoin(@NotNull CombatExplorer explorer);
+
+    /**
      * Handle any additional post revive related processes
      *
      * @param target Target of reviving
@@ -719,13 +675,11 @@ public abstract class Battle implements EncounterInterface
      *
      * @param explorer Explorer to remove
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    final protected void removeExplorer(EncounteredExplorer explorer) throws EncounterPhaseException
+    final protected void removeExplorer(CombatExplorer explorer) throws BattlePhaseException
     {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        }
+        phaseManager.assertNotFinalPhase();
 
         explorerRoster.remove(explorer);
         initiative.remove(explorer);
@@ -747,10 +701,10 @@ public abstract class Battle implements EncounterInterface
      */
     final protected void startEndPhase()
     {
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createEndPhase();
+        BattlePhaseChange result = phaseManager.startEndPhase();
+
         clearInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
@@ -760,6 +714,6 @@ public abstract class Battle implements EncounterInterface
      */
     private boolean haveNoPlayersJoined()
     {
-        return currentPhase.isJoinPhase() && !explorerRoster.hasAtLeastOneActiveExplorer();
+        return phaseManager.isJoinPhase() && !explorerRoster.hasAtLeastOneActiveExplorer();
     }
 }

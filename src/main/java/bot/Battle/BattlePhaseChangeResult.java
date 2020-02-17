@@ -4,30 +4,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class PhaseChangeResult implements EncounterRosterDataInterface
+public class BattlePhaseChangeResult implements EncounterRosterDataInterface
 {
     private ArrayList<CombatCreature> creatures;
     private int                       currentPlayerCount;
     private int                       maxPlayerCount;
-    private EncounterPhaseInterface   nextPhase;
-    private EncounterPhaseInterface   previousPhase;
+    private BattlePhaseChange         phaseChange;
     private TierInterface             tier;
 
     /**
      * Constructor.
      *
-     * @param nextPhase          Next phase
-     * @param previousPhase      Previous phase
+     * @param phaseChange        Phase change
      * @param creatures          Creatures in the encounter
      * @param tier               Tier
      * @param maxPlayerCount     Max player count
      * @param currentPlayerCount Current player count
      */
-    PhaseChangeResult(
-        EncounterPhaseInterface nextPhase,
-        EncounterPhaseInterface previousPhase,
-        ArrayList<CombatCreature> creatures,
-        TierInterface tier,
+    BattlePhaseChangeResult(
+        @NotNull BattlePhaseChange phaseChange,
+        @NotNull ArrayList<CombatCreature> creatures,
+        @NotNull TierInterface tier,
         int maxPlayerCount,
         int currentPlayerCount
     )
@@ -35,8 +32,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
         this.creatures = creatures;
         this.currentPlayerCount = currentPlayerCount;
         this.maxPlayerCount = maxPlayerCount;
-        this.nextPhase = nextPhase;
-        this.previousPhase = previousPhase;
+        this.phaseChange = phaseChange;
         this.tier = tier;
     }
 
@@ -70,21 +66,21 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     /**
      * Get next phase
      *
-     * @return Phase
+     * @return BattlePhase
      */
-    public @NotNull EncounterPhaseInterface getNextPhase()
+    public @NotNull BattlePhase getNextPhase()
     {
-        return nextPhase;
+        return phaseChange.getNewPhase();
     }
 
     /**
      * Get previous phase
      *
-     * @return Phase
+     * @return BattlePhase
      */
-    public @NotNull EncounterPhaseInterface getPreviousPhase()
+    public @NotNull BattlePhase getPreviousPhase()
     {
-        return previousPhase;
+        return phaseChange.getOldPhase();
     }
 
     /**

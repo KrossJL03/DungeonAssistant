@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhaseChangeResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class PhaseChangeMessageBuilder
      *
      * @return String
      */
-    public String buildPhaseChangeMessage(PhaseChangeResult result)
+    public String buildPhaseChangeMessage(BattlePhaseChangeResult result)
     {
         for (PhaseChangeMessageFactoryInterface messageBuilder : messageBuilders) {
             if (messageBuilder.handles(result.getPreviousPhase(), result.getNextPhase())) {

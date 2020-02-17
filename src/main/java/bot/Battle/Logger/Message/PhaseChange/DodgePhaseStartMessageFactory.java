@@ -1,10 +1,11 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
+import bot.Battle.BattlePhase;
 import bot.Battle.CombatCreature;
-import bot.Battle.EncounterPhaseInterface;
+import bot.Battle.HostileEncounter.EncounterPhase;
 import bot.Battle.HostileEncounter.EncounteredHostile;
 import bot.Battle.Logger.Message.MLCodeFormatter;
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhaseChangeResult;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -28,7 +29,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
      * {@inheritDoc}
      */
     @Override
-    public @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result)
+    public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
         PhaseChangeMessage message     = new PhaseChangeMessage();
         int                totalDamage = 0;
@@ -77,10 +78,10 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
      */
     @Override
     public boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
+        @NotNull BattlePhase previousPhase,
+        @NotNull BattlePhase nextPhase
     )
     {
-        return nextPhase.isDodgePhase();
+        return ((EncounterPhase) nextPhase).isDodgePhase();
     }
 }

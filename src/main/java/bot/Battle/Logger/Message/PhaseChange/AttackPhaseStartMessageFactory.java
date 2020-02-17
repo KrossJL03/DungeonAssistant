@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.Battle.EncounterPhaseInterface;
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
@@ -23,19 +23,7 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
-    )
-    {
-        return nextPhase.isAttackPhase();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result)
+    public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
         PhaseChangeMessage message = new PhaseChangeMessage();
 
@@ -52,5 +40,17 @@ public class AttackPhaseStartMessageFactory implements PhaseChangeMessageFactory
         ));
 
         return message;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(
+        @NotNull BattlePhase previousPhase,
+        @NotNull BattlePhase nextPhase
+    )
+    {
+        return nextPhase.isAttackPhase();
     }
 }

@@ -117,7 +117,7 @@ class ExplorerRosterException extends CustomException
     /**
      * Factory method for "max players not set"
      *
-     * @return EncounterPhaseException
+     * @return BattlePhaseException
      */
     static @NotNull ExplorerRosterException createMaxPlayersNotSet()
     {

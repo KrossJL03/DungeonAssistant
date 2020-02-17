@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import bot.ProcessInterface;
@@ -17,11 +16,11 @@ public interface EncounterInterface extends ProcessInterface
      * @param player      Player
      * @param hostileName Hostile name
      *
-     * @throws EncounterPhaseException If not attack phase
+     * @throws BattlePhaseException If not attack phase
      * @throws NotYourTurnException    If it is not the player's turn
      */
     void attackAction(@NotNull Player player, @NotNull String hostileName)
-        throws EncounterPhaseException, NotYourTurnException;
+        throws BattlePhaseException, NotYourTurnException;
 
     /**
      * Get all creatures
@@ -50,9 +49,9 @@ public interface EncounterInterface extends ProcessInterface
      * @param name      Encountered creature name
      * @param hitpoints Hitpoints
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    void heal(@NotNull String name, int hitpoints) throws EncounterPhaseException;
+    void heal(@NotNull String name, int hitpoints) throws BattlePhaseException;
 
     /**
      * Hurt encountered creature with given name by given amount of hitpoints
@@ -60,9 +59,9 @@ public interface EncounterInterface extends ProcessInterface
      * @param name      Encountered creature name
      * @param hitpoints Hitpoints
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    void hurt(@NotNull String name, int hitpoints) throws EncounterPhaseException;
+    void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException;
 
     /**
      * Is this a null encounter
@@ -84,9 +83,9 @@ public interface EncounterInterface extends ProcessInterface
      * @param explorer Explorer
      * @param nickname Optional nickname
      *
-     * @throws EncounterPhaseException If encounter is over or has not started
+     * @throws BattlePhaseException If encounter is over or has not started
      */
-    void join(@NotNull Explorer explorer, @Nullable String nickname) throws EncounterPhaseException;
+    void join(@NotNull Explorer explorer, @Nullable String nickname) throws BattlePhaseException;
 
     /**
      * Kick
@@ -109,13 +108,13 @@ public interface EncounterInterface extends ProcessInterface
      * @param statName     Name of stat to modify
      * @param statModifier Modifier to apply to stat
      *
-     * @throws EncounterPhaseException If the encounter is over
+     * @throws BattlePhaseException If the encounter is over
      */
     void modifyStat(
         @NotNull String name,
         @NotNull String statName,
         int statModifier
-    ) throws EncounterPhaseException;
+    ) throws BattlePhaseException;
 
     /**
      * Player is rejoining
@@ -129,18 +128,18 @@ public interface EncounterInterface extends ProcessInterface
      *
      * @param name Name of creature
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    void removeCreature(@NotNull String name) throws EncounterPhaseException;
+    void removeCreature(@NotNull String name) throws BattlePhaseException;
 
     /**
      * Set max player count
      *
      * @param maxPlayerCount Max amount of players allowed for this encounter
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      */
-    void setMaxPlayerCount(int maxPlayerCount) throws EncounterPhaseException;
+    void setMaxPlayerCount(int maxPlayerCount) throws BattlePhaseException;
 
     /**
      * Set stat
@@ -149,40 +148,40 @@ public interface EncounterInterface extends ProcessInterface
      * @param statName  Name of stat to modify
      * @param statValue New stat value
      *
-     * @throws EncounterPhaseException If the encounter is over
+     * @throws BattlePhaseException If the encounter is over
      */
     void setStat(
         @NotNull String name,
         @NotNull String statName,
         int statValue
-    ) throws EncounterPhaseException;
+    ) throws BattlePhaseException;
 
     /**
      * Set tier
      *
      * @param tier Tier
      *
-     * @throws EncounterPhaseException If not create phase
+     * @throws BattlePhaseException If not create phase
      */
-    void setTier(@NotNull TierInterface tier) throws EncounterPhaseException;
+    void setTier(@NotNull TierInterface tier) throws BattlePhaseException;
 
     /**
      * Skip current player turn
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      *                                 If not in initiative
      */
-    void skipCurrentPlayerTurn() throws EncounterPhaseException;
+    void skipCurrentPlayerTurn() throws BattlePhaseException;
 
     /**
      * Start attack phase
      *
      * @throws EncounterException      If no players have joined
-     * @throws EncounterPhaseException If the encounter is over
+     * @throws BattlePhaseException If the encounter is over
      *                                 If the encounter has not started
      *                                 If attack phase is in progress
      */
-    void startAttackPhase() throws EncounterPhaseException;
+    void startAttackPhase() throws BattlePhaseException;
 
     /**
      * Start end phase on command
@@ -192,12 +191,12 @@ public interface EncounterInterface extends ProcessInterface
     /**
      * Start join phase
      *
-     * @throws EncounterPhaseException If encounter is over
+     * @throws BattlePhaseException If encounter is over
      *                                 If encounter has already started
      *                                 If max players has not beet set
      *                                 If hostiles have not been added
      */
-    void startJoinPhase() throws EncounterPhaseException;
+    void startJoinPhase() throws BattlePhaseException;
 
     /**
      * Use all current explorer actions

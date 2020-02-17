@@ -2,16 +2,16 @@ package bot.Battle.HostileEncounter;
 
 import bot.Battle.AttackActionResult;
 import bot.Battle.Battle;
+import bot.Battle.BattlePhaseChange;
+import bot.Battle.BattlePhaseException;
 import bot.Battle.Capitalizer;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
-import bot.Battle.EncounterPhaseException;
-import bot.Battle.EncounterPhaseInterface;
+import bot.Battle.EncounterException;
 import bot.Battle.HealActionResult;
 import bot.Battle.HurtActionResult;
 import bot.Battle.InitiativeTrackerException;
 import bot.Battle.Logger.EncounterLogger;
-import bot.Battle.Phase.EncounterPhaseFactory;
 import bot.Explorer.Explorer;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
@@ -26,6 +26,7 @@ public class HostileEncounter extends Battle
 
     private boolean                hasPhoenixDown;
     private HostileRosterInterface hostileRoster;
+    private EncounterPhaseManager  phaseManager;
 
     /**
      * Constructor.
@@ -34,7 +35,7 @@ public class HostileEncounter extends Battle
      */
     public HostileEncounter(@NotNull EncounterLogger logger)
     {
-        super(logger, new InitiativeQueueFactory());
+        super(logger, new InitiativeQueueFactory(), new EncounterPhaseManager());
 
         this.hasPhoenixDown = true;
         this.hostileRoster = new HostileRoster();
@@ -50,7 +51,7 @@ public class HostileEncounter extends Battle
      */
     public @NotNull EncounteredHostile addHostile(@NotNull Hostile hostile, @NotNull String nickname)
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         String             capitalNickname = Capitalizer.nameCaseIfLowerCase(nickname);
         EncounteredHostile newHostile      = new EncounteredHostile(hostile, capitalNickname);
@@ -67,7 +68,10 @@ public class HostileEncounter extends Battle
      */
     public void dodgeAction(@NotNull Player player)
     {
-        assertDodgePhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("dodge", EncounterPhase.DODGE_PHASE);
+        }
 
         EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
         DodgeActionResult   result          = currentExplorer.dodge(hostileRoster.getActiveHostiles());
@@ -107,7 +111,10 @@ public class HostileEncounter extends Battle
      */
     public void guardAction(@NotNull Player player)
     {
-        assertDodgePhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("guard", EncounterPhase.DODGE_PHASE);
+        }
 
         EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
         GuardActionResult   result          = currentExplorer.guard(hostileRoster.getActiveHostiles());
@@ -148,7 +155,10 @@ public class HostileEncounter extends Battle
      */
     public void lootAction(@NotNull Player player)
     {
-        assertLootPhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isLootPhase()) {
+            throw EncounterException.createWrongPhase("loot", EncounterPhase.LOOT_PHASE);
+        }
 
         EncounteredExplorer explorer = getEncounteredExplorer(player);
         LootActionResult    result   = explorer.getLoot();
@@ -164,6 +174,11 @@ public class HostileEncounter extends Battle
      */
     public void manualProtectAction(@NotNull String targetName, int hitpoints)
     {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
+        }
+
         EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer();
 
         if (hitpoints > 0) {
@@ -192,7 +207,10 @@ public class HostileEncounter extends Battle
      */
     public void passAction()
     {
-        assertDodgePhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("pass", EncounterPhase.DODGE_PHASE);
+        }
 
         CombatExplorer explorer = getCurrentEncounteredExplorer();
         explorer.useAllActions();
@@ -214,7 +232,10 @@ public class HostileEncounter extends Battle
      */
     public void protectAction(@NotNull Player player, @NotNull String targetName)
     {
-        assertDodgePhase();
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
+        }
 
         EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
 
@@ -254,14 +275,14 @@ public class HostileEncounter extends Battle
     @Override
     public void skipCurrentPlayerTurn()
     {
-        assertInitiativePhase();
+        phaseManager.assertInitiativePhase();
 
         EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer();
-        if (currentPhase.isAttackPhase()) {
+        if (phaseManager.isAttackPhase()) {
             currentExplorer.useAllActions();
             logger.logActionAttackSkipped(currentExplorer.getName());
             handleEndOfAction();
-        } else if (currentPhase.isDodgePhase()) {
+        } else if (phaseManager.isDodgePhase()) {
             DodgeActionResult result = currentExplorer.failToDodge(hostileRoster.getActiveHostiles());
             logger.logAction(result);
             postDodgePhaseAction(currentExplorer);
@@ -272,16 +293,16 @@ public class HostileEncounter extends Battle
     /**
      * Start dodge phase
      *
-     * @throws EncounterPhaseException If the encounter is over
+     * @throws BattlePhaseException If the encounter is over
      *                                 If the encounter has not started
      *                                 If dodge phase is in progress
      */
-    public void startDodgePhase() throws EncounterPhaseException
+    public void startDodgePhase() throws BattlePhaseException
     {
-        assertCurrentPhaseIsChangable();
-        if (currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        }
+        phaseManager.assertDodgePhaseMayStart();
+        assertPlayersHaveJoined();
+
+        BattlePhaseChange result = phaseManager.startDodgePhase();
 
         for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
             explorer.resetActions(true);
@@ -291,10 +312,8 @@ public class HostileEncounter extends Battle
             hostile.attack();
         }
 
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createDodgePhase();
         restartInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
@@ -331,12 +350,12 @@ public class HostileEncounter extends Battle
     @Override
     protected void handleEndOfAction()
     {
-        if (!currentPhase.isJoinPhase()) {
+        if (!phaseManager.isJoinPhase()) {
             if (!hostileRoster.hasActiveHostiles()) {
                 startLootPhase();
             } else if (!hasAtLeastOneActiveExplorer()) {
                 startEndPhase();
-            } else if (currentPhase.isInitiativePhase()) {
+            } else if (phaseManager.isInitiativePhase()) {
                 CombatExplorer currentExplorer = getCurrentEncounteredExplorer();
                 if (currentExplorer.isActive() && currentExplorer.hasActions()) {
                     logger.logActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
@@ -394,6 +413,18 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
+    protected void postJoin(@NotNull CombatExplorer explorer)
+    {
+        if (phaseManager.isInitiativePhase()) {
+            addToInitiative(explorer);
+            explorer.resetActions(phaseManager.isDodgePhase());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
     {
         if (target instanceof EncounteredHostile && result.wasTargetRevived() && !target.isBloodied()) {
@@ -425,18 +456,6 @@ public class HostileEncounter extends Battle
                     explorer.addOpponent((EncounteredHostile) opponent);
                 }
             }
-        }
-    }
-
-    /**
-     * Assert that the current phase is the dodge phase
-     */
-    private void assertDodgePhase() throws EncounterPhaseException
-    {
-        if (currentPhase.isFinalPhase()) {
-            throw EncounterPhaseException.createFinalPhase();
-        } else if (!currentPhase.isDodgePhase()) {
-            throw EncounterPhaseException.createNotDodgePhase();
         }
     }
 
@@ -577,7 +596,7 @@ public class HostileEncounter extends Battle
      */
     private void removeHostile(@NotNull EncounteredHostile hostile)
     {
-        assertNotFinalPhase();
+        phaseManager.assertNotFinalPhase();
 
         preRemoveHostile(hostile);
         hostileRoster.remove(hostile);
@@ -589,23 +608,19 @@ public class HostileEncounter extends Battle
     /**
      * Start loot phase
      *
-     * @throws EncounterPhaseException If loot phase is in progress
+     * @throws BattlePhaseException If loot phase is in progress
      */
-    private void startLootPhase() throws EncounterPhaseException
+    private void startLootPhase() throws BattlePhaseException
     {
-        if (currentPhase.isLootPhase()) {
-            throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
-        }
+        BattlePhaseChange result = phaseManager.startLootPhase();
 
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createLootPhase();
         clearInitiative();
 
         for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
             explorer.lootKills();
         }
 
-        notifyListenerOfPhaseChange(previousPhase);
+        notifyListenerOfPhaseChange(result);
     }
 
     /**
@@ -613,10 +628,11 @@ public class HostileEncounter extends Battle
      */
     private void startRpPhase()
     {
-        EncounterPhaseInterface previousPhase = currentPhase;
-        currentPhase = EncounterPhaseFactory.createRpPhase();
+        BattlePhaseChange result = phaseManager.startRpPhase();
+
         clearInitiative();
-        notifyListenerOfPhaseChange(previousPhase);
+
+        notifyListenerOfPhaseChange(result);
     }
 
     /**

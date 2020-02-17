@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
-import bot.Battle.EncounterPhaseInterface;
-import bot.Battle.PhaseChangeResult;
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
 import bot.Battle.TierInterface;
 import bot.MessageInterface;
 import bot.MyProperties;
@@ -13,7 +13,7 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     private TextFormatter textFormatter;
 
     /**
-     * JoinPhaseStartMessageFactory constructor.
+     * Constructor.
      */
     @NotNull JoinPhaseStartMessageFactory()
     {
@@ -24,19 +24,7 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull EncounterPhaseInterface previousPhase,
-        @NotNull EncounterPhaseInterface nextPhase
-    )
-    {
-        return nextPhase.isJoinPhase();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull MessageInterface createMessage(@NotNull PhaseChangeResult result)
+    public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
         PhaseChangeMessage message = new PhaseChangeMessage();
         TierInterface      tier    = result.getTier();
@@ -68,5 +56,17 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
         ));
 
         return message;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handles(
+        @NotNull BattlePhase previousPhase,
+        @NotNull BattlePhase nextPhase
+    )
+    {
+        return nextPhase.isJoinPhase();
     }
 }

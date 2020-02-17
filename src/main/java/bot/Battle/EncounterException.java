@@ -1,10 +1,12 @@
 package bot.Battle;
 
 import bot.CustomException;
+import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
-class EncounterException extends CustomException
+public class EncounterException extends CustomException
 {
+
     /**
      * EncounterException constructor
      *
@@ -13,6 +15,21 @@ class EncounterException extends CustomException
     private @NotNull EncounterException(@NotNull String message)
     {
         super(message);
+    }
+
+    /**
+     * Factory method for "wrong phase"
+     *
+     * @return EncounterException
+     */
+    public static @NotNull EncounterException createWrongPhase(@NotNull String command, @NotNull String phase)
+    {
+        return new EncounterException(String.format(
+            "You can only `%s%s` during the %s turn",
+            MyProperties.COMMAND_PREFIX,
+            command,
+            phase
+        ));
     }
 
     /**
@@ -33,5 +50,15 @@ class EncounterException extends CustomException
     static @NotNull EncounterException createNullEncounter()
     {
         return new EncounterException("There is no encounter being created, use `?create encounter` to start one.");
+    }
+
+    /**
+     * Factory method for "set tier after create phase"
+     *
+     * @return EncounterException
+     */
+    static @NotNull EncounterException createSetTierAfterCreatePhase()
+    {
+        return new EncounterException("Tier must be set before the encounter has started");
     }
 }
