@@ -10,7 +10,7 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     private int                       currentPlayerCount;
     private int                       maxPlayerCount;
     private BattlePhaseChange         phaseChange;
-    private TierInterface             tier;
+    private Tier                      tier;
 
     /**
      * Constructor.
@@ -24,7 +24,7 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     BattlePhaseChangeResult(
         @NotNull BattlePhaseChange phaseChange,
         @NotNull ArrayList<CombatCreature> creatures,
-        @NotNull TierInterface tier,
+        @NotNull Tier tier,
         int maxPlayerCount,
         int currentPlayerCount
     )
@@ -68,7 +68,7 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
      *
      * @return BattlePhase
      */
-    public @NotNull BattlePhase getNextPhase()
+    @NotNull BattlePhase getNextPhase()
     {
         return phaseChange.getNewPhase();
     }
@@ -78,7 +78,7 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
      *
      * @return BattlePhase
      */
-    public @NotNull BattlePhase getPreviousPhase()
+    @NotNull BattlePhase getPreviousPhase()
     {
         return phaseChange.getOldPhase();
     }
@@ -88,7 +88,7 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
      *
      * @return Phase
      */
-    public @NotNull TierInterface getTier()
+    public @NotNull Tier getTier()
     {
         return tier;
     }

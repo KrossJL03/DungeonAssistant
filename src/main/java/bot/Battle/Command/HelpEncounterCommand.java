@@ -1,7 +1,11 @@
 package bot.Battle.Command;
 
-import bot.*;
-import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
+import bot.Battle.DungeonMasterChecker;
+import bot.Command;
+import bot.CommandInterface;
+import bot.HelpCommandInterface;
+import bot.PrivateLogger;
+import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 

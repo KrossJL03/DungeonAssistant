@@ -1,8 +1,8 @@
 package bot.Battle.HostileEncounter;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.Battle.Mention;
+import bot.Battle.SummaryMessageBuilder;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;

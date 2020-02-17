@@ -1,10 +1,7 @@
-package bot.Battle.Logger.Message.Summary;
+package bot.Battle;
 
-import bot.Battle.CombatCreature;
 import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.HostileEncounter.EncounteredHostile;
-import bot.Battle.DiffCodeFormatter;
-import bot.Battle.Slayer;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +26,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    public @NotNull String buildSummary(@NotNull ArrayList<CombatCreature> creatures)
+    @NotNull String buildSummary(@NotNull ArrayList<CombatCreature> creatures)
     {
         ArrayList<EncounteredExplorer> explorers = new ArrayList<>();
         ArrayList<EncounteredHostile>  hostiles  = new ArrayList<>();

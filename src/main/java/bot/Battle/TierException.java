@@ -1,4 +1,4 @@
-package bot.Battle.Tier;
+package bot.Battle;
 
 import bot.CustomException;
 import org.jetbrains.annotations.NotNull;

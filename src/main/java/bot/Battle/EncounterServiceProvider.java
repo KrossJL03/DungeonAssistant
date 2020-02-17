@@ -1,7 +1,6 @@
 package bot.Battle;
 
 import bot.Battle.Command.EncounterCommandFactory;
-import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
 import bot.CommandFactoryInterface;
 import bot.PrivateLogger;
 import bot.ProcessManager;

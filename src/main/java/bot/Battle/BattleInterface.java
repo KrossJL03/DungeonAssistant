@@ -192,7 +192,7 @@ public interface BattleInterface extends ProcessInterface
      *
      * @throws BattlePhaseException If not create phase
      */
-    void setTier(@NotNull TierInterface tier) throws BattlePhaseException;
+    void setTier(@NotNull Tier tier) throws BattlePhaseException;
 
     /**
      * Skip current player turn

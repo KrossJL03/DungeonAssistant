@@ -207,7 +207,7 @@ public class NullBattle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void setTier(@NotNull TierInterface tier) throws EncounterException
+    public void setTier(@NotNull Tier tier) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }

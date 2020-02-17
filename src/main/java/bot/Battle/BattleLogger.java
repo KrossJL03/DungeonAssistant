@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
 import bot.MyProperties;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -195,7 +194,7 @@ public class BattleLogger
      *
      * @param tier Tier
      */
-    void logSetTier(@NotNull TierInterface tier)
+    void logSetTier(@NotNull Tier tier)
     {
         sendMessage(String.format(
             "%s tier has been set! [Stat Point Range: %d - %d]",

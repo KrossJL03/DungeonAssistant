@@ -25,10 +25,7 @@ class ExplorerRosterException extends CustomException
      *
      * @return RosterException
      */
-    static @NotNull ExplorerRosterException createDoesNotFitTier(
-        @NotNull CombatExplorer explorer,
-        @NotNull TierInterface tier
-    )
+    static @NotNull ExplorerRosterException createDoesNotFitTier(@NotNull CombatExplorer explorer, @NotNull Tier tier)
     {
         Player owner = explorer.getOwner();
         return new ExplorerRosterException(

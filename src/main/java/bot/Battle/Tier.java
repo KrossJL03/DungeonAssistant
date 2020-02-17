@@ -1,17 +1,18 @@
-package bot.Battle.Tier;
+package bot.Battle;
 
-import bot.Battle.CombatExplorer;
-import bot.Battle.TierInterface;
 import org.jetbrains.annotations.NotNull;
 
-class Tier implements TierInterface
+public class Tier
 {
+    private static int STAT_POINT_TOTAL_MAXIMUM = 100;
+    private static int STAT_POINT_TOTAL_MINIMUM = 0;
+
     private int    maxStatPointTotal;
     private int    minStatPointTotal;
     private String name;
 
     /**
-     * Tier constructor
+     * Constructor.
      *
      * @param name              Tier name
      * @param minStatPointTotal Min stat point total an explorer must have to fit this tier
@@ -37,39 +38,55 @@ class Tier implements TierInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Create default tier
+     *
+     * @return Tier
      */
-    @Override
-    public boolean fits(@NotNull CombatExplorer explorer)
+    static @NotNull Tier createDefault()
+    {
+        return new Tier("All", STAT_POINT_TOTAL_MINIMUM, STAT_POINT_TOTAL_MAXIMUM);
+    }
+
+    /**
+     * Get name
+     *
+     * @return String
+     */
+    public @NotNull String getName()
+    {
+        return name;
+    }
+
+    /**
+     * Does given explorer fit this tier
+     *
+     * @param explorer Explorer
+     *
+     * @return boolean
+     */
+    boolean fits(@NotNull CombatExplorer explorer)
     {
         int statPoints = explorer.getStatPoints();
         return statPoints >= minStatPointTotal && statPoints <= maxStatPointTotal;
     }
 
     /**
-     * {@inheritDoc}
+     * Get max stat points
+     *
+     * @return int
      */
-    @Override
-    public int getMaxStatPointTotal()
+    int getMaxStatPointTotal()
     {
         return maxStatPointTotal;
     }
 
     /**
-     * {@inheritDoc}
+     * Get min stat points
+     *
+     * @return int
      */
-    @Override
-    public int getMinStatPointTotal()
+    int getMinStatPointTotal()
     {
         return minStatPointTotal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull String getName()
-    {
-        return name;
     }
 }

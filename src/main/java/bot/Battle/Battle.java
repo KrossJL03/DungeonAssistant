@@ -317,7 +317,7 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void setTier(@NotNull TierInterface tier) throws BattlePhaseException
+    public void setTier(@NotNull Tier tier) throws BattlePhaseException
     {
         if (!phaseManager.isCreatePhase()) {
             throw EncounterException.createSetTierAfterCreatePhase();

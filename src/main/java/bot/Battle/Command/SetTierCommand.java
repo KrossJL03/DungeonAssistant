@@ -1,9 +1,9 @@
 package bot.Battle.Command;
 
-import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
+import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.Tier.TierRegistry;
-import bot.Battle.TierInterface;
+import bot.Battle.Tier;
+import bot.Battle.TierRegistry;
 import bot.CommandParameter;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -48,9 +48,9 @@ public class SetTierCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        String[]      parameters = getParametersFromEvent(event);
-        String        tierName   = parameters[0];
-        TierInterface tier       = TierRegistry.getTier(tierName);
+        String[] parameters = getParametersFromEvent(event);
+        String   tierName   = parameters[0];
+        Tier     tier       = TierRegistry.getTier(tierName);
 
         getBattle().setTier(tier);
     }

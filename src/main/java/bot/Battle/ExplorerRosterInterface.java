@@ -75,9 +75,9 @@ public interface ExplorerRosterInterface
     /**
      * Get tier
      *
-     * @return TierInterface
+     * @return Tier
      */
-    @NotNull TierInterface getTier();
+    @NotNull Tier getTier();
 
     /**
      * Does this roster have 1 or more active explorers
@@ -154,7 +154,7 @@ public interface ExplorerRosterInterface
      *
      * @param tier Tier
      */
-    void setTier(@NotNull TierInterface tier);
+    void setTier(@NotNull Tier tier);
 
     /**
      * Sort roster

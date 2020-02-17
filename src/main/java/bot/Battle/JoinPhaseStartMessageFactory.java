@@ -24,8 +24,8 @@ public class JoinPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
     @Override
     public @NotNull MessageInterface createMessage(@NotNull BattlePhaseChangeResult result)
     {
-        Message       message = new Message();
-        TierInterface tier    = result.getTier();
+        Message message = new Message();
+        Tier    tier    = result.getTier();
 
         message.add(textFormatter.makeBold("BATTLE TIME!"));
         message.addNewLine();
