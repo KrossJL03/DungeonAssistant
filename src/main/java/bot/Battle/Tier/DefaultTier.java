@@ -1,6 +1,6 @@
 package bot.Battle.Tier;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
 import bot.Battle.TierInterface;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +10,7 @@ public class DefaultTier implements TierInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean fits(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public boolean fits(@NotNull CombatExplorer explorer)
     {
         return true;
     }

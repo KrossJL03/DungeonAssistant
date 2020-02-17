@@ -1,9 +1,10 @@
 package bot.Battle.Logger;
 
 import bot.Battle.ActionResultInterface;
-import bot.Battle.EncounteredCreatureInterface;
-import bot.Battle.EncounteredExplorerInterface;
-import bot.Battle.EncounteredHostileInterface;
+import bot.Battle.CombatCreature;
+import bot.Battle.CombatExplorer;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.HostileEncounter.EncounteredHostile;
 import bot.Battle.Logger.Message.Action.ActionMessageBuilder;
 import bot.Battle.Logger.Message.PhaseChange.PhaseChangeMessageBuilder;
 import bot.Battle.Logger.Message.Summary.SummaryMessageBuilder;
@@ -106,7 +107,7 @@ public class EncounterLogger
      *
      * @param hostile Hostile
      */
-    public void logAddedHostile(@NotNull EncounteredHostileInterface hostile)
+    public void logAddedHostile(@NotNull EncounteredHostile hostile)
     {
         sendMessage(
             String.format(
@@ -122,7 +123,7 @@ public class EncounterLogger
      */
     public void logCreateEncounter()
     {
-        sendMessage("Encounter creation has started!");
+        sendMessage("Battle creation has started!");
     }
 
     /**
@@ -241,7 +242,7 @@ public class EncounterLogger
      *
      * @param creatures Creatures
      */
-    public void logSummary(@NotNull ArrayList<EncounteredCreatureInterface> creatures)
+    public void logSummary(@NotNull ArrayList<CombatCreature> creatures)
     {
         sendMessage(summaryMessageBuilder.buildSummary(creatures));
     }
@@ -283,7 +284,7 @@ public class EncounterLogger
      *
      * @param explorer Explorer
      */
-    public void pingPlayerTurn(@NotNull EncounteredExplorerInterface explorer)
+    public void pingPlayerTurn(@NotNull CombatExplorer explorer)
     {
         sendMessage(
             String.format(
@@ -321,7 +322,7 @@ public class EncounterLogger
      *
      * @return String
      */
-    private @NotNull String getHostilePrintout(@NotNull EncounteredHostileInterface hostile)
+    private @NotNull String getHostilePrintout(@NotNull EncounteredHostile hostile)
     {
         int    nameBuffer = (int) Math.floor(15 + hostile.getName().length() / 2);
         String output     = "";

@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import bot.ProcessInterface;
@@ -27,14 +28,14 @@ public interface EncounterInterface extends ProcessInterface
      *
      * @return ArrayList
      */
-    @NotNull ArrayList<EncounteredCreatureInterface> getAllCreatures();
+    @NotNull ArrayList<CombatCreature> getAllCreatures();
 
     /**
      * Get all explorers
      *
-     * @return ArrayList<EncounteredHostileInterface>
+     * @return ArrayList<EncounteredExplorer>
      */
-    @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers();
+    @NotNull ArrayList<CombatExplorer> getAllExplorers();
 
     /**
      * Get string value representing the type of encounter

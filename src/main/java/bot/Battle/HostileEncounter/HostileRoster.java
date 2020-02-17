@@ -1,14 +1,13 @@
 package bot.Battle.HostileEncounter;
 
-import bot.Battle.EncounteredHostileInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 class HostileRoster implements HostileRosterInterface
 {
-    private static int                                    BASE_CHAR = 65;
-    private        ArrayList<EncounteredHostileInterface> hostileRoster;
+    private static int                           BASE_CHAR = 65;
+    private        ArrayList<EncounteredHostile> hostileRoster;
 
     /**
      * Constructor.
@@ -21,7 +20,7 @@ class HostileRoster implements HostileRosterInterface
     /**
      * {@inheritDoc}
      */
-    public void addHostile(@NotNull EncounteredHostileInterface newHostile)
+    public void addHostile(@NotNull EncounteredHostile newHostile)
     {
         if (newHostile.hasNickname()) {
             assertUniqueNickname(newHostile.getName());
@@ -35,12 +34,12 @@ class HostileRoster implements HostileRosterInterface
     /**
      * {@inheritDoc}
      */
-    public @NotNull ArrayList<EncounteredHostileInterface> getActiveHostiles()
+    public @NotNull ArrayList<EncounteredHostile> getActiveHostiles()
     {
-        ArrayList<EncounteredHostileInterface> activeHostiles = new ArrayList<>();
-        for (EncounteredHostileInterface encounteredHostile : hostileRoster) {
-            if (!encounteredHostile.isSlain()) {
-                activeHostiles.add(encounteredHostile);
+        ArrayList<EncounteredHostile> activeHostiles = new ArrayList<>();
+        for (EncounteredHostile hostile : hostileRoster) {
+            if (!hostile.isSlain()) {
+                activeHostiles.add(hostile);
             }
         }
 
@@ -50,7 +49,7 @@ class HostileRoster implements HostileRosterInterface
     /**
      * {@inheritDoc}
      */
-    public @NotNull ArrayList<EncounteredHostileInterface> getAllHostiles()
+    public @NotNull ArrayList<EncounteredHostile> getAllHostiles()
     {
         return new ArrayList<>(hostileRoster);
     }
@@ -59,11 +58,11 @@ class HostileRoster implements HostileRosterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredHostileInterface getHostile(@NotNull String name) throws HostileRosterException
+    public @NotNull EncounteredHostile getHostile(@NotNull String name) throws HostileRosterException
     {
-        for (EncounteredHostileInterface encounteredHostile : hostileRoster) {
-            if (encounteredHostile.isName(name)) {
-                return encounteredHostile;
+        for (EncounteredHostile hostile : hostileRoster) {
+            if (hostile.isName(name)) {
+                return hostile;
             }
         }
 
@@ -89,7 +88,7 @@ class HostileRoster implements HostileRosterInterface
     /**
      * {@inheritDoc}
      */
-    public void remove(@NotNull EncounteredHostileInterface hostile) throws HostileRosterException
+    public void remove(@NotNull EncounteredHostile hostile) throws HostileRosterException
     {
         if (!containsHostile(hostile.getName())) {
             throw HostileRosterException.createHostileNotFound(hostile.getName());
@@ -106,7 +105,7 @@ class HostileRoster implements HostileRosterInterface
     private void assertUniqueNickname(@NotNull String nickname)
     {
         String nicknameToLower = nickname.toLowerCase();
-        for (EncounteredHostileInterface hostile : hostileRoster) {
+        for (EncounteredHostile hostile : hostileRoster) {
             if (hostile.getName().toLowerCase().equals(nicknameToLower)) {
                 throw HostileRosterException.createNicknameInUse(nickname);
             }
@@ -122,7 +121,7 @@ class HostileRoster implements HostileRosterInterface
      */
     private boolean containsHostile(@NotNull String name)
     {
-        for (EncounteredHostileInterface hostile : hostileRoster) {
+        for (EncounteredHostile hostile : hostileRoster) {
             if (hostile.isName(name)) {
                 return true;
             }
@@ -138,10 +137,10 @@ class HostileRoster implements HostileRosterInterface
      *
      * @return ArrayList
      */
-    private ArrayList<EncounteredHostileInterface> getHostilesWithoutNicknames(@NotNull String species)
+    private ArrayList<EncounteredHostile> getHostilesWithoutNicknames(@NotNull String species)
     {
-        ArrayList<EncounteredHostileInterface> hostiles = new ArrayList<>();
-        for (EncounteredHostileInterface hostile : hostileRoster) {
+        ArrayList<EncounteredHostile> hostiles = new ArrayList<>();
+        for (EncounteredHostile hostile : hostileRoster) {
             if (hostile.getSpecies().equals(species)) {
                 hostiles.add(hostile);
             }
@@ -155,11 +154,11 @@ class HostileRoster implements HostileRosterInterface
      *
      * @param newHostile New hostile to add
      */
-    private void handleSameSpecies(@NotNull EncounteredHostileInterface newHostile)
+    private void handleSameSpecies(@NotNull EncounteredHostile newHostile)
     {
         String species      = newHostile.getSpecies();
         int    speciesCount = 0;
-        for (EncounteredHostileInterface hostile : getHostilesWithoutNicknames(species)) {
+        for (EncounteredHostile hostile : getHostilesWithoutNicknames(species)) {
             char letter = (char) (BASE_CHAR + speciesCount++);
             hostile.setName(species + letter);
         }

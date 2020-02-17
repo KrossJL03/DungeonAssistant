@@ -1,7 +1,8 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.CombatActionResultInterface;
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.DeathSaveRoll;
+import bot.Battle.Slayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class DodgeActionResult implements CombatActionResultInterface
      * @param deathSaveRoll Death save roll
      */
     DodgeActionResult(
-        @NotNull EncounteredExplorerInterface target,
+        @NotNull EncounteredExplorer target,
         @NotNull ArrayList<DodgeResult> dodgeResults,
         boolean isForcedFail,
         @Nullable DeathSaveRoll deathSaveRoll

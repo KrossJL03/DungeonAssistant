@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.EncounteredCreature.Slayer;
 import org.jetbrains.annotations.NotNull;
 
 public interface CombatActionResultInterface extends ActionResultInterface

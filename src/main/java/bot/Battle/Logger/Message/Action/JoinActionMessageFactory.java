@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
 import bot.Battle.JoinActionResult;
 import bot.Battle.Logger.Mention;
 import bot.MessageInterface;
@@ -19,12 +19,12 @@ class JoinActionMessageFactory extends ActionMessageFactory
     {
         ActionMessage message = new ActionMessage();
 
-        EncounteredExplorerInterface encounteredExplorer = result.getExplorer();
+        CombatExplorer explorer = result.getExplorer();
         message.add(String.format(
             "%s: %s has been added! %s",
-            (Mention.createForPlayer(encounteredExplorer.getOwner().getUserId())).getValue(),
-            encounteredExplorer.getName(),
-            getExplorerPrintout(encounteredExplorer)
+            (Mention.createForPlayer(explorer.getOwner().getUserId())).getValue(),
+            explorer.getName(),
+            getExplorerPrintout(explorer)
         ));
         if (result.isRosterFull()) {
             message.add("***THE ROSTER IS NOW FULL!***");
@@ -40,7 +40,7 @@ class JoinActionMessageFactory extends ActionMessageFactory
      *
      * @return String
      */
-    private @NotNull String getExplorerPrintout(@NotNull EncounteredExplorerInterface explorer)
+    private @NotNull String getExplorerPrintout(@NotNull CombatExplorer explorer)
     {
         // todo cleanup using Message
         int    nameBuffer = (int) Math.floor(15 + explorer.getName().length() / 2);

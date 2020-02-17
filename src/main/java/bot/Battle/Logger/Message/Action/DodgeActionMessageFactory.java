@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredCreature.DodgeActionResult;
-import bot.Battle.EncounteredCreature.DodgeResult;
+import bot.Battle.HostileEncounter.DodgeActionResult;
+import bot.Battle.HostileEncounter.DodgeResult;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 

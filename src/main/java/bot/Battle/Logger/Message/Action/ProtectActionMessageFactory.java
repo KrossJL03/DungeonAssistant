@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredCreature.ProtectActionResult;
+import bot.Battle.HostileEncounter.ProtectActionResult;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 

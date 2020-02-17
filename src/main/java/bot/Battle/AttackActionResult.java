@@ -1,8 +1,6 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle;
 
-import bot.Battle.CombatActionResultInterface;
-import bot.Battle.EncounteredCreatureInterface;
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +26,7 @@ public class AttackActionResult implements CombatActionResultInterface
      */
     AttackActionResult(
         @NotNull String attackerName,
-        @NotNull EncounteredCreatureInterface target,
+        @NotNull CombatCreature target,
         @NotNull HitRoll hitRoll,
         @Nullable DamageRoll damageRoll
     )
@@ -36,7 +34,7 @@ public class AttackActionResult implements CombatActionResultInterface
         this.attackerName = attackerName;
         this.damageRoll = damageRoll;
         this.hitRoll = hitRoll;
-        this.isTargetExplorer = target instanceof EncounteredExplorerInterface;
+        this.isTargetExplorer = target instanceof EncounteredExplorer;
         this.targetCurrentHp = target.getCurrentHP();
         this.targetMaxHp = target.getMaxHP();
         this.targetName = target.getName();

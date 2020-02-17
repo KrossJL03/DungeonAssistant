@@ -2,7 +2,7 @@ package bot.Battle.Command;
 
 import bot.Battle.AdditionalCommandInterface;
 import bot.Battle.DungeonMasterChecker.DungeonMasterChecker;
-import bot.Battle.Encounter;
+import bot.Battle.Battle;
 import bot.Battle.EncounterHolder;
 import bot.Battle.Logger.EncounterLogger;
 import bot.CommandParameter;
@@ -19,8 +19,8 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
      * UseItemCommand constructor
      *
      * @param processManager Process manager
-     * @param holder         Encounter holder
-     * @param logger         Encounter logger
+     * @param holder         Battle holder
+     * @param logger         Battle logger
      */
     UseItemCommand(
         @NotNull ProcessManager processManager,
@@ -53,11 +53,11 @@ public class UseItemCommand extends EncounterCommand implements AdditionalComman
     @Override
     public void execute(@NotNull MessageReceivedEvent event) throws EncounterCommandException
     {
-        Encounter encounter = getHostileEncounter();
+        Battle battle = getHostileEncounter();
 
-        if (!encounter.isOver()) {
+        if (!battle.isOver()) {
             Player player = getPlayerFromEvent(event);
-            encounter.useItemAction(player);
+            battle.useItemAction(player);
 
             getLogger().pingDmItemUsed(player);
         }

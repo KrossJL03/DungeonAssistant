@@ -1,4 +1,4 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle.HostileEncounter;
 
 class DodgeRoll
 {

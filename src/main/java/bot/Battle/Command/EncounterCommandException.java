@@ -44,7 +44,7 @@ class EncounterCommandException extends CommandException
      * Factory method for "wrong encounter type"
      *
      * @param formattedCommand Formatted command
-     * @param encounterType    Encounter type
+     * @param encounterType    Battle type
      *
      * @return EncounterException
      */

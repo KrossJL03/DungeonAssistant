@@ -1,6 +1,5 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle;
 
-import bot.Battle.EncounteredCreatureInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class Slayer
@@ -12,7 +11,8 @@ public class Slayer
      *
      * @param name Slayer name
      */
-    @NotNull Slayer(String name)
+    @NotNull
+    public Slayer(String name)
     {
         this.name = name;
     }
@@ -20,7 +20,8 @@ public class Slayer
     /**
      * Slayer constructor (empty)
      */
-    @NotNull Slayer()
+    @NotNull
+    public Slayer()
     {
         this.name = "";
     }
@@ -52,7 +53,19 @@ public class Slayer
      *
      * @return boolean
      */
-    boolean isSlayer(EncounteredCreatureInterface slayer)
+    public boolean isSlayer(Slayer slayer)
+    {
+        return name.equals(slayer.getName());
+    }
+
+    /**
+     * Does the supplied potential slayer match this slayer
+     *
+     * @param slayer Potential slayer
+     *
+     * @return boolean
+     */
+    public boolean isSlayer(CombatCreature slayer)
     {
         return name.equals(slayer.getName());
     }

@@ -35,7 +35,7 @@ public class HelpEncounterMessageBuilder extends HelpMessageBuilder
     {
         Message message = new Message();
 
-        message.add(textFormatter.makeBold("Encounter Help Page"));
+        message.add(textFormatter.makeBold("Battle Help Page"));
         message.add("Welcome! You must be here to learn more about participating in encounters!");
         message.addBreak();
 

@@ -4,29 +4,29 @@ import org.jetbrains.annotations.NotNull;
 
 public class JoinActionResult implements ActionResultInterface
 {
-    private EncounteredExplorerInterface encounteredExplorer;
-    private boolean                      isRosterFull;
+    private CombatExplorer explorer;
+    private boolean        isRosterFull;
 
     /**
      * Constructor.
      *
-     * @param encounteredExplorer Encountered explorer that joined
-     * @param isRosterFull        Is roster full
+     * @param explorer     Explorer that joined
+     * @param isRosterFull Is roster full
      */
-    JoinActionResult(EncounteredExplorerInterface encounteredExplorer, boolean isRosterFull)
+    JoinActionResult(@NotNull CombatExplorer explorer, boolean isRosterFull)
     {
-        this.encounteredExplorer = encounteredExplorer;
+        this.explorer = explorer;
         this.isRosterFull = isRosterFull;
     }
 
     /**
      * Get explorer that joined
      *
-     * @return EncounteredExplorerInterface
+     * @return EncounteredExplorer
      */
-    public @NotNull EncounteredExplorerInterface getExplorer()
+    public @NotNull CombatExplorer getExplorer()
     {
-        return encounteredExplorer;
+        return explorer;
     }
 
     /**

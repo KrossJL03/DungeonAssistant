@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 public class PhaseChangeResult implements EncounterRosterDataInterface
 {
-    private ArrayList<EncounteredCreatureInterface> creatures;
-    private int                                     currentPlayerCount;
-    private int                                     maxPlayerCount;
-    private EncounterPhaseInterface                 nextPhase;
-    private EncounterPhaseInterface                 previousPhase;
-    private TierInterface                           tier;
+    private ArrayList<CombatCreature> creatures;
+    private int                       currentPlayerCount;
+    private int                       maxPlayerCount;
+    private EncounterPhaseInterface   nextPhase;
+    private EncounterPhaseInterface   previousPhase;
+    private TierInterface             tier;
 
     /**
      * Constructor.
@@ -26,7 +26,7 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
     PhaseChangeResult(
         EncounterPhaseInterface nextPhase,
         EncounterPhaseInterface previousPhase,
-        ArrayList<EncounteredCreatureInterface> creatures,
+        ArrayList<CombatCreature> creatures,
         TierInterface tier,
         int maxPlayerCount,
         int currentPlayerCount
@@ -44,20 +44,19 @@ public class PhaseChangeResult implements EncounterRosterDataInterface
      * {@inheritDoc}
      */
     @Override
-    public int getCurrentPlayerCount()
+    public @NotNull ArrayList<CombatCreature> getCreatures()
     {
-        return currentPlayerCount;
+        return new ArrayList<>(creatures);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredCreatureInterface> getCreatures()
+    public int getCurrentPlayerCount()
     {
-        return new ArrayList<>(creatures);
+        return currentPlayerCount;
     }
-
 
     /**
      * {@inheritDoc}

@@ -1,6 +1,6 @@
-package bot.Battle.ExplorerRosterImpl;
+package bot.Battle;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
@@ -25,13 +25,13 @@ class ExplorerRosterTest
     @DisplayName("Add Explorer")
     void addExplorerTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer3      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer4      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer5      = this.mockEncounteredExplorerInterface(explorer1.getOwner());
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer1      = mockCombatExplorer();
+        CombatExplorer            explorer2      = mockCombatExplorer();
+        CombatExplorer            explorer3      = mockCombatExplorer();
+        CombatExplorer            explorer4      = mockCombatExplorer();
+        CombatExplorer            explorer5      = this.mockCombatExplorer(explorer1.getOwner());
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         // max count is not set /////////////////////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer1));
@@ -89,11 +89,11 @@ class ExplorerRosterTest
     @DisplayName("Get Active Explorers")
     void getActiveExplorersTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer3      = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer1      = mockCombatExplorer();
+        CombatExplorer            explorer2      = mockCombatExplorer();
+        CombatExplorer            explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPlayerCount(3);
         explorerRoster.addExplorer(explorer1);
@@ -133,11 +133,11 @@ class ExplorerRosterTest
     @DisplayName("Get All Explorers")
     void getAllExplorersTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer3      = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer1      = mockCombatExplorer();
+        CombatExplorer            explorer2      = mockCombatExplorer();
+        CombatExplorer            explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPlayerCount(3);
 
@@ -158,10 +158,10 @@ class ExplorerRosterTest
     @DisplayName("Get Explorer")
     void getExplorerTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer1      = mockCombatExplorer();
+        CombatExplorer            explorer2      = mockCombatExplorer();
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         // get an explorer from an empty roster ////////////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer1.getName()));
@@ -207,9 +207,9 @@ class ExplorerRosterTest
     @DisplayName("Player Has Left")
     void playerHasLeftTest()
     {
-        ExplorerRoster               explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface explorer       = this.mockEncounteredExplorerInterface();
-        Player                       p              = explorer.getOwner();
+        ExplorerRoster explorerRoster = new ExplorerRoster();
+        CombatExplorer explorer       = mockCombatExplorer();
+        Player         p              = explorer.getOwner();
 
         explorerRoster.setMaxPlayerCount(3);
 
@@ -234,10 +234,10 @@ class ExplorerRosterTest
     @DisplayName("Player Has Rejoined")
     void playerHasRejoinedTest()
     {
-        ExplorerRoster               explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface explorer2      = this.mockEncounteredExplorerInterface();
-        Player                       p              = explorer1.getOwner();
+        ExplorerRoster explorerRoster = new ExplorerRoster();
+        CombatExplorer explorer1      = mockCombatExplorer();
+        CombatExplorer explorer2      = mockCombatExplorer();
+        Player         p              = explorer1.getOwner();
 
         explorerRoster.setMaxPlayerCount(1);
 
@@ -269,9 +269,9 @@ class ExplorerRosterTest
     @DisplayName("Remove Explorer")
     void removeExplorerTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer       = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer       = mockCombatExplorer();
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPlayerCount(2);
 
@@ -301,11 +301,10 @@ class ExplorerRosterTest
     @DisplayName("Set Max Player Count")
     void setMaxPlayerCountTest()
     {
-        ExplorerRoster               explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface explorer2      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface explorer3      = this.mockEncounteredExplorerInterface();
-
+        ExplorerRoster explorerRoster = new ExplorerRoster();
+        CombatExplorer explorer1      = mockCombatExplorer();
+        CombatExplorer explorer2      = mockCombatExplorer();
+        CombatExplorer explorer3      = mockCombatExplorer();
 
         // set max player count ///////////////////////////////
         explorerRoster.setMaxPlayerCount(3);
@@ -333,11 +332,11 @@ class ExplorerRosterTest
     @DisplayName("Sort")
     void sortTest()
     {
-        ExplorerRoster                          explorerRoster = new ExplorerRoster();
-        EncounteredExplorerInterface            explorer1      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer2      = this.mockEncounteredExplorerInterface();
-        EncounteredExplorerInterface            explorer3      = this.mockEncounteredExplorerInterface();
-        ArrayList<EncounteredExplorerInterface> expectedList   = new ArrayList<>();
+        ExplorerRoster            explorerRoster = new ExplorerRoster();
+        CombatExplorer            explorer1      = mockCombatExplorer();
+        CombatExplorer            explorer2      = mockCombatExplorer();
+        CombatExplorer            explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPlayerCount(5);
 
@@ -359,16 +358,16 @@ class ExplorerRosterTest
     }
 
     /**
-     * Mock EncounteredExplorerInterface
+     * Mock CombatExplorer
      *
-     * @return EncounteredExplorerInterface
+     * @return CombatExplorer
      */
     @NotNull
-    private EncounteredExplorerInterface mockEncounteredExplorerInterface()
+    private CombatExplorer mockCombatExplorer()
     {
-        EncounteredExplorerInterface mock      = mock(EncounteredExplorerInterface.class);
-        Player                       mockOwner = mock(Player.class);
-        String                       name      = "Name" + explorerCounter;
+        CombatExplorer mock      = mock(CombatExplorer.class);
+        Player         mockOwner = mock(Player.class);
+        String         name      = "Name" + explorerCounter;
         when(mock.getName()).thenReturn(name);
         when(mock.isName(name)).thenReturn(true);
         when(mock.getOwner()).thenReturn(mockOwner);
@@ -379,15 +378,15 @@ class ExplorerRosterTest
     }
 
     /**
-     * Mock EncounteredExplorerInterface
+     * Mock EncounteredExplorer
      *
-     * @return EncounteredExplorerInterface
+     * @return EncounteredExplorer
      */
     @NotNull
-    private EncounteredExplorerInterface mockEncounteredExplorerInterface(@NotNull Player owner)
+    private EncounteredExplorer mockCombatExplorer(@NotNull Player owner)
     {
-        EncounteredExplorerInterface mock = mock(EncounteredExplorerInterface.class);
-        String                       name = "Name" + explorerCounter;
+        EncounteredExplorer mock = mock(EncounteredExplorer.class);
+        String              name = "Name" + explorerCounter;
         when(mock.getName()).thenReturn(name);
         when(mock.getOwner()).thenReturn(owner);
         when(mock.isOwner(owner)).thenReturn(true);

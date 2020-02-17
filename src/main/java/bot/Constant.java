@@ -2,7 +2,7 @@ package bot;
 
 public class Constant
 {
-    // todo rename and move to proper location for Explorer/Hostile and/or EncounteredCreature
+    // todo rename and move to proper location for Explorer/Hostile and/or CombatCreature
 
     public static final int    EXPLORER_HITPOINT_STAT_MULTIPLIER = 10;
     public static final int    EXPLORER_MAX_AGILITY              = 20;

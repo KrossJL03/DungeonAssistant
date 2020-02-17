@@ -1,8 +1,6 @@
-package bot.Battle.ExplorerRosterImpl;
+package bot.Battle;
 
-import bot.Battle.EncounteredExplorerInterface;
 import bot.Battle.Logger.Mention;
-import bot.Battle.TierInterface;
 import bot.CustomException;
 import bot.MyProperties;
 import bot.Player.Player;
@@ -21,42 +19,24 @@ class ExplorerRosterException extends CustomException
     }
 
     /**
-     * Factory method for "cannot rejoin if present"
-     *
-     * @param player Owner
-     *
-     * @return ExplorerRosterException
-     */
-    static @NotNull ExplorerRosterException createCannotRejoinIfPresent(@NotNull Player player)
-    {
-        return new ExplorerRosterException(
-            String.format(
-                "%s You are currently active in this encounter. There is not need to `%srejoin`.",
-                (Mention.createForPlayer(player.getUserId())).getValue(),
-                MyProperties.COMMAND_PREFIX
-            )
-        );
-    }
-
-    /**
      * Factory method for "does not fit tier"
      *
-     * @param encounteredExplorer Encountered explorer
-     * @param tier                Tier
+     * @param explorer Explorer
+     * @param tier     Tier
      *
      * @return RosterException
      */
     static @NotNull ExplorerRosterException createDoesNotFitTier(
-        @NotNull EncounteredExplorerInterface encounteredExplorer,
+        @NotNull CombatExplorer explorer,
         @NotNull TierInterface tier
     )
     {
-        Player owner = encounteredExplorer.getOwner();
+        Player owner = explorer.getOwner();
         return new ExplorerRosterException(
             String.format(
                 "%s, %s does not fit the %s tier.",
                 (Mention.createForPlayer(owner.getUserId())).getValue(),
-                encounteredExplorer.getName(),
+                explorer.getName(),
                 tier.getName()
             )
         );
@@ -103,24 +83,6 @@ class ExplorerRosterException extends CustomException
             String.format(
                 "Uh oh, looks like the dungeon is full. Sorry %s.",
                 (Mention.createForPlayer(player.getUserId())).getValue()
-            )
-        );
-    }
-
-    /**
-     * Factory method for "has already left"
-     *
-     * @param player Owner
-     *
-     * @return ExplorerRosterException
-     */
-    static @NotNull ExplorerRosterException createHasAleadyLeft(@NotNull Player player)
-    {
-        return new ExplorerRosterException(
-            String.format(
-                "%s You have already left. You can't leave again unless you `%srejoin` first",
-                (Mention.createForPlayer(player.getUserId())).getValue(),
-                MyProperties.COMMAND_PREFIX
             )
         );
     }

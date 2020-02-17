@@ -1,6 +1,6 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredCreature.LootRoll;
+import bot.Battle.HostileEncounter.LootRoll;
 import bot.Battle.Logger.Message.MLCodeFormatter;
 import bot.Hostile.Loot;
 import bot.Message;

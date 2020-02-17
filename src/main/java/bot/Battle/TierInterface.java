@@ -4,17 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 public interface TierInterface
 {
-    int STAT_POINT_TOTAL_MINIMUM = 0;
     int STAT_POINT_TOTAL_MAXIMUM = 100;
+    int STAT_POINT_TOTAL_MINIMUM = 0;
 
     /**
-     * Does given encountered explorer fit this tier
+     * Does given explorer fit this tier
      *
-     * @param encounteredExplorer Encountered explorer
+     * @param explorer Explorer
      *
      * @return boolean
      */
-    boolean fits(@NotNull EncounteredExplorerInterface encounteredExplorer);
+    boolean fits(@NotNull CombatExplorer explorer);
 
     /**
      * Get max stat points

@@ -5,34 +5,34 @@ import org.jetbrains.annotations.NotNull;
 public interface InitiativeTrackerInterface
 {
     /**
-     * Add encountered explorer
+     * Add explorer
      *
-     * @param encounteredExplorer Encountered explorer to add
+     * @param explorer Encountered explorer to add
      */
-    void add(@NotNull EncounteredExplorerInterface encounteredExplorer);
+    void add(@NotNull CombatExplorer explorer);
 
     /**
      * Get current explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return EncounteredExplorer
      *
      * @throws InitiativeTrackerException If the queue is empty
      */
-    @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeTrackerException;
+    @NotNull CombatExplorer getCurrentExplorer() throws InitiativeTrackerException;
 
     /**
      * Get next explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return EncounteredExplorer
      *
      * @throws InitiativeTrackerException If no next explorer exists
      */
-    @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeTrackerException;
+    @NotNull CombatExplorer getNextExplorer() throws InitiativeTrackerException;
 
     /**
      * Remove explorer
      *
      * @param encounteredExplorer Encountered explorer to remove
      */
-    void remove(@NotNull EncounteredExplorerInterface encounteredExplorer);
+    void remove(@NotNull CombatExplorer encounteredExplorer);
 }

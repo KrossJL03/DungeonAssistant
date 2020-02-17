@@ -20,7 +20,7 @@ public class HelpEncounterCommand extends Command implements HelpCommandInterfac
      * @param processManager Process manager
      * @param dmChecker      Dungeon master checker
      * @param logger         Private logger
-     * @param commands       Encounter commands
+     * @param commands       Battle commands
      */
     HelpEncounterCommand(
         @NotNull ProcessManager processManager,

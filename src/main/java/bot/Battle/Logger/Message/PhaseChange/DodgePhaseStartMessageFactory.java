@@ -1,8 +1,8 @@
 package bot.Battle.Logger.Message.PhaseChange;
 
+import bot.Battle.CombatCreature;
 import bot.Battle.EncounterPhaseInterface;
-import bot.Battle.EncounteredCreatureInterface;
-import bot.Battle.EncounteredHostileInterface;
+import bot.Battle.HostileEncounter.EncounteredHostile;
 import bot.Battle.Logger.Message.MLCodeFormatter;
 import bot.Battle.PhaseChangeResult;
 import bot.MessageInterface;
@@ -53,14 +53,14 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
         message.startCodeBlock(codeFormatter.getStyle());
         message.add(String.format("%s attack the party!", codeFormatter.makeRed("Hostiles")));
         message.addNewLine();
-        for (EncounteredCreatureInterface creature : result.getCreatures()) {
-            if (creature instanceof EncounteredHostileInterface && !creature.isSlain()) {
-                totalDamage += ((EncounteredHostileInterface) creature).getAttackRoll();
+        for (CombatCreature creature : result.getCreatures()) {
+            if (creature instanceof EncounteredHostile && !creature.isSlain()) {
+                totalDamage += ((EncounteredHostile) creature).getAttackRoll();
                 message.add(String.format(
                     "d%-2d %s %2d dmg from %s!",
                     creature.getAttackDice(),
                     PhaseChangeMessage.DOUBLE_ARROW,
-                    ((EncounteredHostileInterface) creature).getAttackRoll(),
+                    ((EncounteredHostile) creature).getAttackRoll(),
                     codeFormatter.makeRed(creature.getName())
                 ));
             }

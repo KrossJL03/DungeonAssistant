@@ -1,5 +1,6 @@
 package bot.Battle.Logger.Message;
 
+import bot.Battle.Capitalizer;
 import bot.CodeFormatterInterface;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +61,8 @@ public class MLCodeFormatter implements CodeFormatterInterface
      */
     public @NotNull String makeYellow(@NotNull String text)
     {
-        return WordUtils.capitalizeFully(text);
+        return text.toLowerCase().equals(text)
+               ? WordUtils.capitalizeFully(text)
+               : Capitalizer.capitalizeFirstCharacter(text);
     }
 }

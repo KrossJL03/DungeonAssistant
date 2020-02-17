@@ -1,11 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.EncounteredCreature.AttackActionResult;
-import bot.Battle.EncounteredCreature.EncounteredExplorer;
-import bot.Battle.EncounteredCreature.HealActionResult;
-import bot.Battle.EncounteredCreature.HurtActionResult;
-import bot.Battle.EncounteredCreature.ModifyStatActionResult;
-import bot.Battle.ExplorerRosterImpl.ExplorerRoster;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.Logger.EncounterLogger;
 import bot.Battle.Logger.Mention;
 import bot.Battle.Phase.EncounterPhaseFactory;
@@ -16,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public abstract class Encounter implements EncounterInterface
+public abstract class Battle implements EncounterInterface
 {
     protected EncounterPhaseInterface           currentPhase;
     protected EncounterLogger                   logger;
@@ -30,7 +25,7 @@ public abstract class Encounter implements EncounterInterface
      * @param logger            Logger
      * @param initiativeFactory Initiative factory
      */
-    protected Encounter(
+    protected Battle(
         @NotNull EncounterLogger logger,
         @NotNull InitiativeTrackerFactoryInterface initiativeFactory
     )
@@ -57,7 +52,7 @@ public abstract class Encounter implements EncounterInterface
             throw EncounterPhaseException.createNotAttackPhase();
         }
 
-        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
+        CombatExplorer currentExplorer = getCurrentExplorer();
         if (!currentExplorer.isOwner(player)) {
             throw NotYourTurnException.createNotYourTurn();
         }
@@ -72,7 +67,7 @@ public abstract class Encounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    final public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers()
+    final public @NotNull ArrayList<CombatExplorer> getAllExplorers()
     {
         return explorerRoster.getAllExplorers();
     }
@@ -85,8 +80,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface target = getCreature(name);
-        HealActionResult             result = target.healPoints(hitpoints);
+        CombatCreature   target = getCreature(name);
+        HealActionResult result = target.healPoints(hitpoints);
 
         logger.logAction(result);
         postHeal(target, result);
@@ -100,8 +95,8 @@ public abstract class Encounter implements EncounterInterface
      */
     public void healAllExplorers(int hitpoints)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
-            heal(encounteredExplorer.getName(), hitpoints);
+        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
+            heal(explorer.getName(), hitpoints);
         }
     }
 
@@ -113,8 +108,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface target = getCreature(name);
-        HurtActionResult             result = target.hurt(hitpoints);
+        CombatCreature   target = getCreature(name);
+        HurtActionResult result = target.hurt(hitpoints);
 
         logger.logAction(result);
         postHurt(target, result);
@@ -128,8 +123,8 @@ public abstract class Encounter implements EncounterInterface
      */
     public void hurtAllExplorers(int hitpoints)
     {
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getActiveExplorers()) {
-            hurt(encounteredExplorer.getName(), hitpoints);
+        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
+            hurt(explorer.getName(), hitpoints);
         }
     }
 
@@ -176,15 +171,15 @@ public abstract class Encounter implements EncounterInterface
         String capitalNickname = nickname != null
                                  ? Capitalizer.nameCaseIfLowerCase(nickname)
                                  : null;
-        EncounteredExplorerInterface encounteredExplorer = new EncounteredExplorer(explorer, capitalNickname);
+        CombatExplorer newExplorer = createExplorer(explorer, nickname);
 
-        explorerRoster.addExplorer(encounteredExplorer);
+        explorerRoster.addExplorer(newExplorer);
         if (currentPhase.isInitiativePhase()) {
-            initiative.add(encounteredExplorer);
-            encounteredExplorer.resetActions(currentPhase.isDodgePhase());
+            initiative.add(newExplorer);
+            newExplorer.resetActions(currentPhase.isDodgePhase());
         }
 
-        JoinActionResult result = new JoinActionResult(encounteredExplorer, explorerRoster.isFull());
+        JoinActionResult result = new JoinActionResult(newExplorer, explorerRoster.isFull());
         logger.logAction(result);
     }
 
@@ -196,7 +191,7 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredExplorerInterface target = explorerRoster.kick(name);
+        CombatExplorer target = explorerRoster.kick(name);
         initiative.remove(target);
         target.useAllActions();
         logger.logKickedPlayer(target.getOwner());
@@ -211,9 +206,9 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredExplorerInterface target = explorerRoster.markAsLeft(player);
-        initiative.remove(target);
-        logger.logLeftEncounter(target.getName());
+        CombatExplorer explorer = explorerRoster.markAsLeft(player);
+        initiative.remove(explorer);
+        logger.logLeftEncounter(explorer.getName());
         handleEndOfAction();
     }
 
@@ -229,8 +224,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface target = getCreature(name);
-        ModifyStatActionResult       result = target.modifyStat(statName, statModifier);
+        CombatCreature         target = getCreature(name);
+        ModifyStatActionResult result = target.modifyStat(statName, statModifier);
         explorerRoster.sort();
         logger.logAction(result);
     }
@@ -243,7 +238,7 @@ public abstract class Encounter implements EncounterInterface
      */
     public void modifyStatForAllExplorers(@NotNull String statName, int statModifier)
     {
-        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
             modifyStat(explorer.getName(), statName, statModifier);
         }
     }
@@ -256,12 +251,12 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredExplorerInterface encounteredExplorer = explorerRoster.markAsReturned(player);
+        CombatExplorer explorer = explorerRoster.markAsReturned(player);
         if (currentPhase.isInitiativePhase()) {
-            initiative.add(encounteredExplorer);
+            initiative.add(explorer);
         }
 
-        logger.logRejoinEncounter(encounteredExplorer.getName());
+        logger.logRejoinEncounter(explorer.getName());
     }
 
     /**
@@ -275,8 +270,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface target = getCreature(name);
-        HealActionResult             result = target.healPercent((float) 0.5);
+        CombatCreature   target = getCreature(name);
+        HealActionResult result = target.healPercent((float) 0.5);
 
         postRevive(target, result);
         logger.logAction(result);
@@ -303,8 +298,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertNotFinalPhase();
 
-        EncounteredCreatureInterface target = getCreature(name);
-        ModifyStatActionResult       result = target.setStat(statName, statValue);
+        CombatCreature         target = getCreature(name);
+        ModifyStatActionResult result = target.setStat(statName, statValue);
         explorerRoster.sort();
         logger.logAction(result);
     }
@@ -317,7 +312,7 @@ public abstract class Encounter implements EncounterInterface
      */
     public void setStatForAllExplorers(@NotNull String statName, int statValue)
     {
-        for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
+        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
             modifyStat(explorer.getName(), statName, statValue);
         }
     }
@@ -347,8 +342,8 @@ public abstract class Encounter implements EncounterInterface
             throw EncounterPhaseException.createStartCurrentPhase(currentPhase.getPhaseName());
         }
 
-        for (EncounteredExplorerInterface encounteredExplorer : explorerRoster.getAllExplorers()) {
-            encounteredExplorer.resetActions(false);
+        for (CombatExplorer explorer : explorerRoster.getAllExplorers()) {
+            explorer.resetActions(false);
         }
 
         EncounterPhaseInterface previousPhase = currentPhase;
@@ -404,8 +399,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertInitiativePhase();
 
-        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer();
-        encounteredExplorer.useAllActions();
+        CombatExplorer explorer = getCurrentExplorer();
+        explorer.useAllActions();
         handleEndOfAction();
     }
 
@@ -417,8 +412,8 @@ public abstract class Encounter implements EncounterInterface
     {
         assertInitiativePhase();
 
-        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer();
-        encounteredExplorer.useAction();
+        CombatExplorer explorer = getCurrentExplorer();
+        explorer.useAction();
         handleEndOfAction();
     }
 
@@ -432,9 +427,9 @@ public abstract class Encounter implements EncounterInterface
             return;
         }
 
-        EncounteredExplorerInterface encounteredExplorer = getCurrentExplorer(player);
+        CombatExplorer explorer = getCurrentExplorer(player);
 
-        encounteredExplorer.useAction();
+        explorer.useAction();
         handleEndOfAction();
     }
 
@@ -499,6 +494,16 @@ public abstract class Encounter implements EncounterInterface
     }
 
     /**
+     * Create explorer
+     *
+     * @param explorer Explorer
+     * @param nickname Explorer nickname
+     *
+     * @return CombatExplorer
+     */
+    abstract protected CombatExplorer createExplorer(@NotNull Explorer explorer, @Nullable String nickname);
+
+    /**
      * Do attack target
      *
      * @param explorer   The attacker
@@ -507,7 +512,7 @@ public abstract class Encounter implements EncounterInterface
      * @return AttackActionResult
      */
     protected abstract @NotNull AttackActionResult doAttack(
-        @NotNull EncounteredExplorerInterface explorer,
+        @NotNull CombatExplorer explorer,
         @NotNull String targetName
     );
 
@@ -516,7 +521,7 @@ public abstract class Encounter implements EncounterInterface
      *
      * @return ArrayList
      */
-    final protected @NotNull ArrayList<EncounteredExplorerInterface> getActiveExplorers()
+    final protected @NotNull ArrayList<CombatExplorer> getActiveExplorers()
     {
         return explorerRoster.getActiveExplorers();
     }
@@ -530,10 +535,10 @@ public abstract class Encounter implements EncounterInterface
      *
      * @throws EncounteredCreatureNotFoundException If creature with name not found
      */
-    final protected @NotNull EncounteredCreatureInterface getCreature(@NotNull String name)
+    final protected @NotNull CombatCreature getCreature(@NotNull String name)
         throws EncounteredCreatureNotFoundException
     {
-        for (EncounteredCreatureInterface creature : getAllCreatures()) {
+        for (CombatCreature creature : getAllCreatures()) {
             if (creature.isName(name)) {
                 return creature;
             }
@@ -545,9 +550,9 @@ public abstract class Encounter implements EncounterInterface
     /**
      * Get current explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return EncounteredExplorer
      */
-    final protected @NotNull EncounteredExplorerInterface getCurrentExplorer()
+    final protected @NotNull CombatExplorer getCurrentExplorer()
     {
         return initiative.getCurrentExplorer();
     }
@@ -557,14 +562,13 @@ public abstract class Encounter implements EncounterInterface
      *
      * @param player The player that should be the current explorer's owner
      *
-     * @return EncounteredExplorerInterface
+     * @return CombatExplorer
      *
      * @throws NotYourTurnException If the given player is not the owner of the current explorer
      */
-    final protected @NotNull EncounteredExplorerInterface getCurrentExplorer(@NotNull Player player)
-        throws NotYourTurnException
+    final protected @NotNull CombatExplorer getCurrentExplorer(@NotNull Player player) throws NotYourTurnException
     {
-        EncounteredExplorerInterface explorer = initiative.getCurrentExplorer();
+        CombatExplorer explorer = initiative.getCurrentExplorer();
         if (!explorer.isOwner(player)) {
             throw NotYourTurnException.createNotYourTurn();
         }
@@ -577,9 +581,9 @@ public abstract class Encounter implements EncounterInterface
      *
      * @param name Name of explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return CombatExplorer
      */
-    final protected @NotNull EncounteredExplorerInterface getExplorer(@NotNull String name)
+    final protected @NotNull CombatExplorer getExplorer(@NotNull String name)
     {
         return explorerRoster.getExplorer(name);
     }
@@ -589,9 +593,9 @@ public abstract class Encounter implements EncounterInterface
      *
      * @param player Owner of explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return CombatExplorer
      */
-    final protected @NotNull EncounteredExplorerInterface getExplorer(@NotNull Player player)
+    final protected @NotNull CombatExplorer getExplorer(@NotNull Player player)
     {
         return explorerRoster.getExplorer(player);
     }
@@ -599,9 +603,9 @@ public abstract class Encounter implements EncounterInterface
     /**
      * Get next explorer
      *
-     * @return EncounteredExplorerInterface
+     * @return CombatExplorer
      */
-    final protected @NotNull EncounteredExplorerInterface getNextExplorer()
+    final protected @NotNull CombatExplorer getNextExplorer()
     {
         return initiative.getNextExplorer();
     }
@@ -673,11 +677,11 @@ public abstract class Encounter implements EncounterInterface
         logger.logPhaseChange(result);
 
         if (currentPhase.isInitiativePhase()) {
-            EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
-            if (!currentExplorer.isActive() || !currentExplorer.hasActions()) {
-                currentExplorer = getNextExplorer();
+            CombatExplorer explorer = getCurrentExplorer();
+            if (!explorer.isActive() || !explorer.hasActions()) {
+                explorer = getNextExplorer();
             }
-            logger.pingPlayerTurn(currentExplorer);
+            logger.pingPlayerTurn(explorer);
         }
     }
 
@@ -687,7 +691,7 @@ public abstract class Encounter implements EncounterInterface
      * @param target Target of healing
      * @param result Result of healing
      */
-    abstract protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result);
+    abstract protected void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result);
 
     /**
      * Handle any additional post hurt related processes
@@ -695,7 +699,7 @@ public abstract class Encounter implements EncounterInterface
      * @param target Target of hurting
      * @param result Result of hurting
      */
-    abstract protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResult result);
+    abstract protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result);
 
     /**
      * Handle any additional post revive related processes
@@ -703,7 +707,7 @@ public abstract class Encounter implements EncounterInterface
      * @param target Target of reviving
      * @param result Result of reviving
      */
-    abstract protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result);
+    abstract protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result);
 
     /**
      * handle any additional pre join phase related processes
@@ -713,20 +717,20 @@ public abstract class Encounter implements EncounterInterface
     /**
      * Remove encountered explorer from battle
      *
-     * @param target Explorer to remove
+     * @param explorer Explorer to remove
      *
      * @throws EncounterPhaseException If encounter is over
      */
-    final protected void removeExplorer(EncounteredExplorerInterface target) throws EncounterPhaseException
+    final protected void removeExplorer(EncounteredExplorer explorer) throws EncounterPhaseException
     {
         if (currentPhase.isFinalPhase()) {
             throw EncounterPhaseException.createFinalPhase();
         }
 
-        explorerRoster.remove(target);
-        initiative.remove(target);
-        target.useAllActions();
-        logger.logRemovedExplorer(target.getName());
+        explorerRoster.remove(explorer);
+        initiative.remove(explorer);
+        explorer.useAllActions();
+        logger.logRemovedExplorer(explorer.getName());
         handleEndOfAction();
     }
 

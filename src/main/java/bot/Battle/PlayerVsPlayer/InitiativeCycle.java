@@ -1,6 +1,6 @@
 package bot.Battle.PlayerVsPlayer;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
 import bot.Battle.InitiativeTrackerException;
 import bot.Battle.InitiativeTrackerInterface;
 import com.google.common.collect.Iterables;
@@ -11,15 +11,15 @@ import java.util.Iterator;
 
 class InitiativeCycle implements InitiativeTrackerInterface
 {
-    private EncounteredExplorerInterface           currentExplorer;
-    private Iterator<EncounteredExplorerInterface> cycle;
+    private CombatExplorer           currentExplorer;
+    private Iterator<CombatExplorer> cycle;
 
     /**
      * Constructor.
      *
-     * @param explorers Encountered explorers
+     * @param explorers Explorers
      */
-    @NotNull InitiativeCycle(@NotNull ArrayList<EncounteredExplorerInterface> explorers)
+    @NotNull InitiativeCycle(@NotNull ArrayList<CombatExplorer> explorers)
     {
         cycle = Iterables.cycle(explorers).iterator();
         currentExplorer = cycle.next();
@@ -29,7 +29,7 @@ class InitiativeCycle implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void add(@NotNull EncounteredExplorerInterface explorer)
+    public void add(@NotNull CombatExplorer explorer)
     {
         throw InitiativeTrackerException.createNotSupported();
     }
@@ -38,7 +38,7 @@ class InitiativeCycle implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getCurrentExplorer() throws InitiativeTrackerException
     {
         return currentExplorer;
     }
@@ -47,7 +47,7 @@ class InitiativeCycle implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getNextExplorer() throws InitiativeTrackerException
     {
         do {
             currentExplorer = cycle.next();
@@ -62,7 +62,7 @@ class InitiativeCycle implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void remove(@NotNull EncounteredExplorerInterface explorer)
+    public void remove(@NotNull CombatExplorer explorer)
     {
         throw InitiativeTrackerException.createNotSupported();
     }

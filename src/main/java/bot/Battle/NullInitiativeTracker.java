@@ -8,7 +8,7 @@ public class NullInitiativeTracker implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public void add(@NotNull CombatExplorer explorer)
     {
         throw InitiativeTrackerException.createEmptyQueue();
     }
@@ -17,7 +17,7 @@ public class NullInitiativeTracker implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getCurrentExplorer() throws InitiativeTrackerException
     {
         throw InitiativeTrackerException.createEmptyQueue();
     }
@@ -26,7 +26,7 @@ public class NullInitiativeTracker implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getNextExplorer() throws InitiativeTrackerException
     {
         throw InitiativeTrackerException.createEmptyQueue();
     }
@@ -35,7 +35,7 @@ public class NullInitiativeTracker implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public void remove(@NotNull CombatExplorer explorer)
     {
         throw InitiativeTrackerException.createEmptyQueue();
     }

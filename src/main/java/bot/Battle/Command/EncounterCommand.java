@@ -25,8 +25,8 @@ abstract class EncounterCommand extends Command
      * EncounterCommand constructor
      *
      * @param processManager Processed manager
-     * @param holder         Encounter holder
-     * @param logger         Encounter Logger
+     * @param holder         Battle holder
+     * @param logger         Battle Logger
      * @param dmChecker      Dungeon master checker
      * @param commandName    HelpCommand name
      * @param parameters     Parameters
@@ -105,7 +105,7 @@ abstract class EncounterCommand extends Command
     /**
      * Get hostile encounter
      *
-     * @return Encounter
+     * @return Battle
      *
      * @throws EncounterCommandException If encounter is not hostile encounter
      */

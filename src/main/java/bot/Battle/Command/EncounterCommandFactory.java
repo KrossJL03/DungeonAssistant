@@ -23,8 +23,8 @@ public class EncounterCommandFactory implements CommandFactoryInterface
      * Constructor.
      *
      * @param processManager  Process manager
-     * @param encounterHolder Encounter holder
-     * @param encounterLogger Encounter logger
+     * @param encounterHolder Battle holder
+     * @param encounterLogger Battle logger
      * @param privateLogger   Private logger
      * @param dmChecker       Dungeon master checker
      */

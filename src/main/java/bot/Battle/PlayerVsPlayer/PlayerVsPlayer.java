@@ -1,17 +1,20 @@
 package bot.Battle.PlayerVsPlayer;
 
-import bot.Battle.Encounter;
-import bot.Battle.EncounteredCreature.AttackActionResult;
-import bot.Battle.EncounteredCreature.HealActionResult;
-import bot.Battle.EncounteredCreature.HurtActionResult;
-import bot.Battle.EncounteredCreatureInterface;
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.AttackActionResult;
+import bot.Battle.Battle;
+import bot.Battle.CombatCreature;
+import bot.Battle.CombatExplorer;
+import bot.Battle.HealActionResult;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.HurtActionResult;
 import bot.Battle.Logger.EncounterLogger;
+import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class PlayerVsPlayer extends Encounter
+public class PlayerVsPlayer extends Battle
 {
     /**
      * Constructor.
@@ -27,7 +30,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredCreatureInterface> getAllCreatures()
+    public @NotNull ArrayList<CombatCreature> getAllCreatures()
     {
         return new ArrayList<>(getAllExplorers());
     }
@@ -47,9 +50,9 @@ public class PlayerVsPlayer extends Encounter
     @Override
     public void removeCreature(@NotNull String name)
     {
-        EncounteredCreatureInterface encounterCreature = getCreature(name);
-        if (encounterCreature instanceof EncounteredExplorerInterface) {
-            removeExplorer((EncounteredExplorerInterface) encounterCreature);
+        CombatCreature creature = getCreature(name);
+        if (creature instanceof EncounteredExplorer) {
+            removeExplorer((EncounteredExplorer) creature);
         }
     }
 
@@ -61,10 +64,10 @@ public class PlayerVsPlayer extends Encounter
     {
         assertInitiativePhase();
 
-        EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
+        CombatExplorer explorer = getCurrentExplorer();
         if (currentPhase.isAttackPhase()) {
-            currentExplorer.useAllActions();
-            logger.logActionAttackSkipped(currentExplorer.getName());
+            explorer.useAllActions();
+            logger.logActionAttackSkipped(explorer.getName());
             handleEndOfAction();
         }
     }
@@ -73,14 +76,20 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected @NotNull AttackActionResult doAttack(
-        @NotNull EncounteredExplorerInterface explorer,
-        @NotNull String targetName
-    )
+    protected CombatExplorer createExplorer(@NotNull Explorer explorer, @Nullable String nickname)
     {
-        EncounteredExplorerInterface target = getExplorer(targetName);
+        return new CombatExplorer(explorer, nickname);
+    }
 
-        return explorer.attack(target);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected @NotNull AttackActionResult doAttack(@NotNull CombatExplorer attacker, @NotNull String targetName)
+    {
+        CombatExplorer target = getExplorer(targetName);
+
+        return attacker.attack(target);
     }
 
     /**
@@ -93,7 +102,7 @@ public class PlayerVsPlayer extends Encounter
             if (!hasMultipleActiveExplorers()) {
                 startEndPhase();
             } else if (currentPhase.isInitiativePhase()) {
-                EncounteredExplorerInterface currentExplorer = getCurrentExplorer();
+                CombatExplorer currentExplorer = getCurrentExplorer();
                 if (currentExplorer.isActive() && currentExplorer.hasActions()) {
                     logger.logActionsRemaining(currentExplorer.getName(), currentExplorer.getRemainingActions());
                 } else {
@@ -116,7 +125,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
+    protected void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result)
     {
         // do nothing
     }
@@ -125,7 +134,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postHurt(@NotNull EncounteredCreatureInterface target, @NotNull HurtActionResult result)
+    protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result)
     {
         // do nothing
     }
@@ -134,7 +143,7 @@ public class PlayerVsPlayer extends Encounter
      * {@inheritDoc}
      */
     @Override
-    protected void postRevive(@NotNull EncounteredCreatureInterface target, @NotNull HealActionResult result)
+    protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
     {
         // do nothing
     }

@@ -1,4 +1,4 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle;
 
 import bot.Battle.ActionResultInterface;
 import org.jetbrains.annotations.NotNull;

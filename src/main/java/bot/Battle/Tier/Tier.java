@@ -1,14 +1,14 @@
 package bot.Battle.Tier;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
 import bot.Battle.TierInterface;
 import org.jetbrains.annotations.NotNull;
 
 class Tier implements TierInterface
 {
-    private String name;
     private int    maxStatPointTotal;
     private int    minStatPointTotal;
+    private String name;
 
     /**
      * Tier constructor
@@ -21,7 +21,7 @@ class Tier implements TierInterface
      *                       If max stat point total is out of bounds
      *                       If max stat point total is less than the min stat point total
      */
-    Tier(String name, int minStatPointTotal, int maxStatPointTotal) throws TierException
+    Tier(@NotNull String name, int minStatPointTotal, int maxStatPointTotal) throws TierException
     {
         if (minStatPointTotal < STAT_POINT_TOTAL_MINIMUM) {
             throw TierException.createMinOutOfBounds(STAT_POINT_TOTAL_MINIMUM, minStatPointTotal);
@@ -40,9 +40,9 @@ class Tier implements TierInterface
      * {@inheritDoc}
      */
     @Override
-    public boolean fits(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public boolean fits(@NotNull CombatExplorer explorer)
     {
-        int statPoints = encounteredExplorer.getStatPoints();
+        int statPoints = explorer.getStatPoints();
         return statPoints >= minStatPointTotal && statPoints <= maxStatPointTotal;
     }
 

@@ -1,6 +1,6 @@
 package bot.Hostile;
 
-import bot.Battle.EncounteredCreature.LootRoll;
+import bot.Battle.HostileEncounter.LootRoll;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

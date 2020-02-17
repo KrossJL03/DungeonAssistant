@@ -1,14 +1,14 @@
 package bot.Battle.Logger.Message.Action;
 
 import bot.Battle.ActionResultInterface;
-import bot.Battle.EncounteredCreature.AttackActionResult;
-import bot.Battle.EncounteredCreature.DodgeActionResult;
-import bot.Battle.EncounteredCreature.GuardActionResult;
-import bot.Battle.EncounteredCreature.HealActionResult;
-import bot.Battle.EncounteredCreature.HurtActionResult;
-import bot.Battle.EncounteredCreature.LootActionResult;
-import bot.Battle.EncounteredCreature.ModifyStatActionResult;
-import bot.Battle.EncounteredCreature.ProtectActionResult;
+import bot.Battle.AttackActionResult;
+import bot.Battle.HostileEncounter.DodgeActionResult;
+import bot.Battle.HostileEncounter.GuardActionResult;
+import bot.Battle.HealActionResult;
+import bot.Battle.HurtActionResult;
+import bot.Battle.HostileEncounter.LootActionResult;
+import bot.Battle.ModifyStatActionResult;
+import bot.Battle.HostileEncounter.ProtectActionResult;
 import bot.Battle.JoinActionResult;
 import bot.Battle.Logger.Mention;
 import bot.MessageInterface;

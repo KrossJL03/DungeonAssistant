@@ -1,58 +1,58 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.CombatActionResultInterface;
+import bot.Battle.DeathSaveRoll;
+import bot.Battle.Logger.Mention;
+import bot.Battle.Slayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
-public class GuardActionResult implements CombatActionResultInterface
+public class ProtectActionResult implements CombatActionResultInterface
 {
-    private DeathSaveRoll          deathSaveRoll;
-    private ArrayList<GuardResult> guardResults;
-    private int                    targetCurrentHp;
-    private int                    targetDefense;
-    private int                    targetMaxHp;
-    private String                 targetName;
-    private Slayer                 targetSlayer;
+    private int           damageDealt;
+    private int           damageResisted;
+    private DeathSaveRoll deathSaveRoll;
+    private String        protectedName;
+    private String        protectedOwnerId;
+    private int           targetCurrentHp;
+    private int           targetMaxHp;
+    private String        targetName;
+    private Slayer        targetSlayer;
 
     /**
-     * GuardActionResult constructor
+     * ProtectActionResult constructor
      *
-     * @param targetName      Target name
-     * @param guardResults    Guard results
-     * @param targetDefense   Target defense stat
-     * @param targetCurrentHp Target current hp
-     * @param targetMaxHp     Target max hp
-     * @param targetSlayer    Target slayer
+     * @param targetName       Target name
+     * @param protectedName    Name of protected explorer
+     * @param protectedOwnerId User id of protected owner
+     * @param damageDealt      Damage dealt to target
+     * @param damageResisted   Damage resisted by target
+     * @param targetCurrentHp  Target current hp
+     * @param targetMaxHp      Target max hp
+     * @param targetSlayer     Target slayer
+     * @param deathSaveRoll    Death save roll
      */
-    @NotNull GuardActionResult(
+    @NotNull ProtectActionResult(
         @NotNull String targetName,
-        @NotNull ArrayList<GuardResult> guardResults,
-        int targetDefense,
+        @NotNull String protectedName,
+        @NotNull String protectedOwnerId,
+        int damageDealt,
+        int damageResisted,
         int targetCurrentHp,
         int targetMaxHp,
         @NotNull Slayer targetSlayer,
         @Nullable DeathSaveRoll deathSaveRoll
     )
     {
+        this.damageDealt = damageDealt;
+        this.damageResisted = damageResisted;
         this.deathSaveRoll = deathSaveRoll;
-        this.guardResults = guardResults;
+        this.protectedName = protectedName;
+        this.protectedOwnerId = protectedOwnerId;
         this.targetCurrentHp = targetCurrentHp;
-        this.targetDefense = targetDefense;
         this.targetMaxHp = targetMaxHp;
         this.targetName = targetName;
         this.targetSlayer = targetSlayer;
-    }
-
-    /**
-     * Get number of attacks
-     *
-     * @return int
-     */
-    public int getAttackCount()
-    {
-        return guardResults.size();
     }
 
     /**
@@ -61,12 +61,7 @@ public class GuardActionResult implements CombatActionResultInterface
     @Override
     public int getDamageDealt()
     {
-        int totalDamageDealt = 0;
-        for (GuardResult result : guardResults) {
-            totalDamageDealt += result.getDamageDealt();
-        }
-
-        return totalDamageDealt;
+        return damageDealt;
     }
 
     /**
@@ -75,12 +70,7 @@ public class GuardActionResult implements CombatActionResultInterface
     @Override
     public int getDamageResisted()
     {
-        int totalDamageResisted = 0;
-        for (GuardResult result : guardResults) {
-            totalDamageResisted += result.getDamageResisted();
-        }
-
-        return totalDamageResisted;
+        return damageResisted;
     }
 
     /**
@@ -111,13 +101,23 @@ public class GuardActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Get individual guard results
+     * Get name of protected explorer
      *
-     * @return ArrayList<GuardResult>
+     * @return String
      */
-    public @NotNull ArrayList<GuardResult> getGuardResults()
+    public @NotNull String getProtectedName()
     {
-        return guardResults;
+        return protectedName;
+    }
+
+    /**
+     * Get mention for protected explorer's owner
+     *
+     * @return String
+     */
+    public @NotNull Mention getProtectedOwnerMention()
+    {
+        return Mention.createForPlayer(protectedOwnerId);
     }
 
     /**
@@ -127,16 +127,6 @@ public class GuardActionResult implements CombatActionResultInterface
     public int getTargetCurrentHp()
     {
         return targetCurrentHp;
-    }
-
-    /**
-     * Get defense stat of target
-     *
-     * @return int
-     */
-    public int getTargetDefense()
-    {
-        return targetDefense;
     }
 
     /**

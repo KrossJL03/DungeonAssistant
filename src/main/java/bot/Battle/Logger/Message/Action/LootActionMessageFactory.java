@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredCreature.LootActionResult;
-import bot.Battle.EncounteredCreature.LootRoll;
+import bot.Battle.HostileEncounter.LootActionResult;
+import bot.Battle.HostileEncounter.LootRoll;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 

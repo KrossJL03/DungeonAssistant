@@ -16,8 +16,8 @@ public class HurtCommand extends EncounterCommand
      * HurtCommand constructor
      *
      * @param processManager Process manager
-     * @param holder         Encounter holder
-     * @param logger         Encounter logger
+     * @param holder         Battle holder
+     * @param logger         Battle logger
      * @param dmChecker      Dungeon master checker
      */
     HurtCommand(

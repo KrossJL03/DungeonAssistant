@@ -1,6 +1,6 @@
 package bot.Battle.HostileEncounter;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
 import bot.Battle.InitiativeTrackerException;
 import bot.Battle.InitiativeTrackerInterface;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 class InitiativeQueue implements InitiativeTrackerInterface
 {
-    private LinkedList<EncounteredExplorerInterface> queue;
+    private LinkedList<CombatExplorer> queue;
 
     /**
      * Constructor (empty).
@@ -23,28 +23,28 @@ class InitiativeQueue implements InitiativeTrackerInterface
     /**
      * Constructor.
      *
-     * @param encounteredExplorers Encountered explorers
+     * @param explorers Explorers
      */
-    @NotNull InitiativeQueue(@NotNull ArrayList<EncounteredExplorerInterface> encounteredExplorers)
+    @NotNull InitiativeQueue(@NotNull ArrayList<CombatExplorer> explorers)
     {
         queue = new LinkedList<>();
-        queue.addAll(encounteredExplorers);
+        queue.addAll(explorers);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void add(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public void add(@NotNull CombatExplorer explorer)
     {
-        queue.add(encounteredExplorer);
+        queue.add(explorer);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getCurrentExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getCurrentExplorer() throws InitiativeTrackerException
     {
         if (queue.isEmpty()) {
             throw InitiativeTrackerException.createEmptyQueue();
@@ -57,9 +57,9 @@ class InitiativeQueue implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull EncounteredExplorerInterface getNextExplorer() throws InitiativeTrackerException
+    public @NotNull CombatExplorer getNextExplorer() throws InitiativeTrackerException
     {
-        EncounteredExplorerInterface nextExplorer;
+        CombatExplorer nextExplorer;
         do {
             queue.pop();
             nextExplorer = queue.peek();
@@ -75,8 +75,8 @@ class InitiativeQueue implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void remove(@NotNull EncounteredExplorerInterface encounteredExplorer)
+    public void remove(@NotNull CombatExplorer explorer)
     {
-        queue.remove(encounteredExplorer);
+        queue.remove(explorer);
     }
 }

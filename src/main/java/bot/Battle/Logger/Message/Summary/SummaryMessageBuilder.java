@@ -1,10 +1,10 @@
 package bot.Battle.Logger.Message.Summary;
 
-import bot.Battle.EncounteredCreature.Slayer;
-import bot.Battle.EncounteredCreatureInterface;
-import bot.Battle.EncounteredExplorerInterface;
-import bot.Battle.EncounteredHostileInterface;
+import bot.Battle.CombatCreature;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.HostileEncounter.EncounteredHostile;
 import bot.Battle.Logger.Message.DiffCodeFormatter;
+import bot.Battle.Slayer;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,17 +29,17 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    public @NotNull String buildSummary(@NotNull ArrayList<EncounteredCreatureInterface> creatures)
+    public @NotNull String buildSummary(@NotNull ArrayList<CombatCreature> creatures)
     {
-        ArrayList<EncounteredExplorerInterface> explorers = new ArrayList<>();
-        ArrayList<EncounteredHostileInterface>  hostiles  = new ArrayList<>();
+        ArrayList<EncounteredExplorer> explorers = new ArrayList<>();
+        ArrayList<EncounteredHostile>  hostiles  = new ArrayList<>();
 
-        for (EncounteredCreatureInterface creature : creatures) {
-            if (creature instanceof EncounteredExplorerInterface) {
-                explorers.add((EncounteredExplorerInterface) creature);
+        for (CombatCreature creature : creatures) {
+            if (creature instanceof EncounteredExplorer) {
+                explorers.add((EncounteredExplorer) creature);
             }
-            if (creature instanceof EncounteredHostileInterface) {
-                hostiles.add((EncounteredHostileInterface) creature);
+            if (creature instanceof EncounteredHostile) {
+                hostiles.add((EncounteredHostile) creature);
             }
         }
 
@@ -56,18 +56,15 @@ public class SummaryMessageBuilder
      * @param message   Message
      * @param explorers Explorers
      */
-    private void addExplorers(
-        @NotNull SummaryMessage message,
-        @NotNull ArrayList<EncounteredExplorerInterface> explorers
-    )
+    private void addExplorers(@NotNull SummaryMessage message, @NotNull ArrayList<EncounteredExplorer> explorers)
     {
         message.addLine();
         message.add("Explorers");
         message.addLine();
 
-        for (EncounteredExplorerInterface encounteredExplorer : explorers) {
-            message.add(getNameLine(encounteredExplorer));
-            String healthBar = getHealthBarLine(encounteredExplorer);
+        for (EncounteredExplorer explorer : explorers) {
+            message.add(getNameLine(explorer));
+            String healthBar = getHealthBarLine(explorer);
             if (!healthBar.isEmpty()) {
                 message.add(healthBar);
             }
@@ -83,8 +80,8 @@ public class SummaryMessageBuilder
      * @return String
      */
     private @NotNull String buildHostileEncounterSummary(
-        @NotNull ArrayList<EncounteredExplorerInterface> explorers,
-        @NotNull ArrayList<EncounteredHostileInterface> hostiles
+        @NotNull ArrayList<EncounteredExplorer> explorers,
+        @NotNull ArrayList<EncounteredHostile> hostiles
     )
     {
         SummaryMessage message = new SummaryMessage();
@@ -96,9 +93,9 @@ public class SummaryMessageBuilder
         message.add("Hostiles");
         message.addLine();
 
-        for (EncounteredHostileInterface encounteredHostile : hostiles) {
-            message.add(getNameLine(encounteredHostile));
-            String healthBar = getHealthBarLine(encounteredHostile);
+        for (EncounteredHostile hostile : hostiles) {
+            message.add(getNameLine(hostile));
+            String healthBar = getHealthBarLine(hostile);
             if (!healthBar.isEmpty()) {
                 message.add(healthBar);
             }
@@ -117,7 +114,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String buildPvpSummary(@NotNull ArrayList<EncounteredExplorerInterface> explorers)
+    private @NotNull String buildPvpSummary(@NotNull ArrayList<EncounteredExplorer> explorers)
     {
         SummaryMessage message = new SummaryMessage();
 
@@ -137,7 +134,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getHealthBarLine(EncounteredCreatureInterface creature)
+    private @NotNull String getHealthBarLine(CombatCreature creature)
     {
         StringBuilder output    = new StringBuilder();
         int           currentHP = creature.getCurrentHP();
@@ -164,21 +161,21 @@ public class SummaryMessageBuilder
     /**
      * Get name line
      *
-     * @param encounteredHostile Encountered hostile
+     * @param hostile Encountered hostile
      *
      * @return String
      */
-    private @NotNull String getNameLine(EncounteredHostileInterface encounteredHostile)
+    private @NotNull String getNameLine(EncounteredHostile hostile)
     {
-        if (encounteredHostile.isSlain()) {
-            Slayer slayer = encounteredHostile.getSlayer();
+        if (hostile.isSlain()) {
+            Slayer slayer = hostile.getSlayer();
             return codeFormatter.makeGrey(String.format(
                 "%s was slain %s",
-                encounteredHostile.getName(),
+                hostile.getName(),
                 slayer.exists() ? String.format(" by %s", slayer.getName()) : ""
             ));
         } else {
-            return encounteredHostile.getName();
+            return hostile.getName();
         }
     }
 
@@ -189,7 +186,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getNameLine(EncounteredExplorerInterface encounteredExplorer)
+    private @NotNull String getNameLine(EncounteredExplorer encounteredExplorer)
     {
         if (!encounteredExplorer.isPresent()) {
             return codeFormatter.makeGrey(String.format("%s has left", encounteredExplorer.getName()));

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 /**
- * Null Object Pattern implementation of Encounter
+ * Null Object Pattern implementation of Battle
  */
 public class NullEncounter implements EncounterInterface
 {
@@ -25,7 +25,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredCreatureInterface> getAllCreatures()
+    public @NotNull ArrayList<CombatCreature> getAllCreatures()
     {
         throw EncounterException.createNullEncounter();
     }
@@ -34,7 +34,7 @@ public class NullEncounter implements EncounterInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull ArrayList<EncounteredExplorerInterface> getAllExplorers() throws EncounterException
+    public @NotNull ArrayList<CombatExplorer> getAllExplorers() throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }

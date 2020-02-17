@@ -9,9 +9,9 @@ interface EncounterRosterDataInterface
     /**
      * Get creatures
      *
-     * @return ArrayList<EncounteredCreatureInterface>
+     * @return ArrayList<CombatCreature>
      */
-    @NotNull ArrayList<EncounteredCreatureInterface> getCreatures();
+    @NotNull ArrayList<CombatCreature> getCreatures();
 
     /**
      * Get current player count

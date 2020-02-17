@@ -1,7 +1,7 @@
 package bot.Battle.Logger.Message.Action;
 
-import bot.Battle.EncounteredCreature.GuardActionResult;
-import bot.Battle.EncounteredCreature.GuardResult;
+import bot.Battle.HostileEncounter.GuardActionResult;
+import bot.Battle.HostileEncounter.GuardResult;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 

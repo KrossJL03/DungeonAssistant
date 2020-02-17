@@ -15,7 +15,7 @@ public class EncounterHolder
     /**
      * EncounterHolder constructor
      *
-     * @param logger Encounter logger
+     * @param logger Battle logger
      */
     public EncounterHolder(EncounterLogger logger)
     {

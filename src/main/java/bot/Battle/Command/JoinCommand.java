@@ -19,8 +19,8 @@ public class JoinCommand extends EncounterCommand
      * JoinCommand constructor
      *
      * @param processManager Process manager
-     * @param holder         Encounter holder
-     * @param logger         Encounter logger
+     * @param holder         Battle holder
+     * @param logger         Battle logger
      * @param dmChecker      Dungeon master checker
      */
     JoinCommand(

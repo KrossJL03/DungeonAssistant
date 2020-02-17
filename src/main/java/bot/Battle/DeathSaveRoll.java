@@ -1,6 +1,6 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle;
 
-class DeathSaveRoll
+public class DeathSaveRoll
 {
     private int die;
     private int minSaveRoll;
@@ -25,7 +25,7 @@ class DeathSaveRoll
      *
      * @return int
      */
-    int getDie()
+    public int getDie()
     {
         return die;
     }
@@ -35,7 +35,7 @@ class DeathSaveRoll
      *
      * @return int
      */
-    int getMinSaveRoll()
+    public int getMinSaveRoll()
     {
         return minSaveRoll;
     }
@@ -45,7 +45,7 @@ class DeathSaveRoll
      *
      * @return int
      */
-    int getRoll()
+    public int getRoll()
     {
         return roll;
     }
@@ -55,7 +55,7 @@ class DeathSaveRoll
      *
      * @return boolean
      */
-    boolean survived()
+    public boolean survived()
     {
         return roll >= minSaveRoll;
     }

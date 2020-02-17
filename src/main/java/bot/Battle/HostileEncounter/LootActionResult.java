@@ -1,7 +1,7 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle.HostileEncounter;
 
 import bot.Battle.ActionResultInterface;
-import bot.Battle.EncounteredCreatureInterface;
+import bot.Battle.CombatCreature;
 import bot.Battle.Logger.Mention;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 public class LootActionResult implements ActionResultInterface
 {
-    private int                                     finalBlowBonus;
-    private ArrayList<EncounteredCreatureInterface> finalBlows;
-    private boolean                                 isRolled;
-    private int                                     killCount;
-    private ArrayList<LootRoll>                     lootRolls;
-    private String                                  name;
-    private Player                                  owner;
+    private int                       finalBlowBonus;
+    private ArrayList<CombatCreature> finalBlows;
+    private boolean                   isRolled;
+    private int                       killCount;
+    private ArrayList<LootRoll>       lootRolls;
+    private String                    name;
+    private Player                    owner;
 
     /**
      * Empty constructor.
@@ -49,7 +49,7 @@ public class LootActionResult implements ActionResultInterface
         @NotNull String name,
         @NotNull Player owner,
         @NotNull ArrayList<LootRoll> lootRolls,
-        @NotNull ArrayList<EncounteredCreatureInterface> finalBlows,
+        @NotNull ArrayList<CombatCreature> finalBlows,
         int killCount,
         int finalBlowBonus
     )
@@ -81,9 +81,10 @@ public class LootActionResult implements ActionResultInterface
     public @NotNull ArrayList<String> getFinalBlowNames()
     {
         ArrayList<String> finalBlowNames = new ArrayList<>();
-        for (EncounteredCreatureInterface finalBlow : finalBlows) {
+        for (CombatCreature finalBlow : finalBlows) {
             finalBlowNames.add(finalBlow.getName());
         }
+
         return finalBlowNames;
     }
 

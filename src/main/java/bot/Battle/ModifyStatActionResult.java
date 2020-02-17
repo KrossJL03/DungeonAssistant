@@ -1,4 +1,4 @@
-package bot.Battle.EncounteredCreature;
+package bot.Battle;
 
 import bot.Battle.ActionResultInterface;
 import bot.Constant;
@@ -19,7 +19,8 @@ public class ModifyStatActionResult implements ActionResultInterface
      * @param statMod      Amount stat was modified
      * @param statValue    Value of stat after modification
      */
-    @NotNull ModifyStatActionResult(
+    @NotNull
+    public ModifyStatActionResult(
         @NotNull String creatureName,
         @NotNull String statName,
         int statMod,

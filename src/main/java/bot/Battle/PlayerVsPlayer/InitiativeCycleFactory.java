@@ -1,6 +1,7 @@
 package bot.Battle.PlayerVsPlayer;
 
-import bot.Battle.EncounteredExplorerInterface;
+import bot.Battle.CombatExplorer;
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.InitiativeTrackerFactoryInterface;
 import bot.Battle.InitiativeTrackerInterface;
 import bot.Battle.NullInitiativeTracker;
@@ -14,7 +15,7 @@ public class InitiativeCycleFactory implements InitiativeTrackerFactoryInterface
      * {@inheritDoc}
      */
     @Override
-    public @NotNull InitiativeTrackerInterface create(@NotNull ArrayList<EncounteredExplorerInterface> explorers)
+    public @NotNull InitiativeTrackerInterface create(@NotNull ArrayList<CombatExplorer> explorers)
     {
         return new InitiativeCycle(explorers);
     }

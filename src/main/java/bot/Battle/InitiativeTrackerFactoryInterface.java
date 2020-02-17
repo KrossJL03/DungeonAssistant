@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Battle.HostileEncounter.EncounteredExplorer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public interface InitiativeTrackerFactoryInterface
      *
      * @return InitiativeTrackerInterface
      */
-    @NotNull InitiativeTrackerInterface create(@NotNull ArrayList<EncounteredExplorerInterface> explorers);
+    @NotNull InitiativeTrackerInterface create(@NotNull ArrayList<CombatExplorer> explorers);
 
     /**
      * Create null initiative tracker
