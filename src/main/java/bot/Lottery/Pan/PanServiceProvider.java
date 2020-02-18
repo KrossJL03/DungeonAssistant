@@ -1,17 +1,16 @@
 package bot.Lottery.Pan;
 
-import bot.CommandFactoryInterface;
+import bot.Command;
+import bot.CommandProviderInterface;
+import bot.PrivateLogger;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
 
-public class PanServiceProvider
+import java.util.ArrayList;
+
+public class PanServiceProvider implements CommandProviderInterface
 {
-    private BasicRarityRoller   basicRarityRoller;
-    private CommandFactory      commandFactory;
-    private PanItemRoller       itemRoller;
-    private PanLogger           panLogger;
-    private ProcessManager      processManager;
-    private SpecialRarityRoller specialRarityRoller;
+    private ArrayList<Command> commands;
 
     /**
      * Constructor.
@@ -20,36 +19,28 @@ public class PanServiceProvider
      */
     public PanServiceProvider(@NotNull ProcessManager processManager)
     {
-        this.basicRarityRoller = new BasicRarityRoller();
-        this.itemRoller = new PanItemRoller();
-        this.panLogger = new PanLogger();
-        this.processManager = processManager;
-        this.specialRarityRoller = new SpecialRarityRoller();
+        BasicRarityRoller   basicRarityRoller   = new BasicRarityRoller();
+        ItemImporter        itemImporter        = new ItemImporter(new ItemFactory(), new ItemRegistry());
+        PanItemRoller       itemRoller          = new PanItemRoller();
+        PanLogger           panLogger           = new PanLogger();
+        PrivateLogger       privateLogger       = new PrivateLogger(new HelpMessageBuilder());
+        SpecialRarityRoller specialRarityRoller = new SpecialRarityRoller();
 
-        init();
+        commands = new ArrayList<>();
+
+        commands.add(new BasicDigCommand(processManager, panLogger, itemRoller, basicRarityRoller));
+        commands.add(new ImportItemsCommand(processManager, itemImporter));
+        commands.add(new SpecialDigCommand(processManager, panLogger, itemRoller, specialRarityRoller));
+
+        commands.add(new HelpCommand(processManager, privateLogger, new ArrayList<>(commands)));
     }
 
     /**
-     * Get command factory.
-     *
-     * @return CommandFactoryInterface
+     * {@inheritDoc}
      */
-    public @NotNull CommandFactoryInterface getCommandFactory()
+    @Override
+    public @NotNull ArrayList<Command> getCommands()
     {
-        return commandFactory;
-    }
-
-    /**
-     * Initialize services.
-     */
-    private void init()
-    {
-        this.commandFactory = new CommandFactory(
-            processManager,
-            panLogger,
-            itemRoller,
-            basicRarityRoller,
-            specialRarityRoller
-        );
+        return new ArrayList<>(commands);
     }
 }

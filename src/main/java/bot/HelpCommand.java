@@ -7,26 +7,25 @@ import java.util.ArrayList;
 
 public class HelpCommand extends Command implements HelpCommandInterface
 {
-    private PrivateLogger               logger;
-    private ArrayList<CommandInterface> commands;
+    private ArrayList<Command> commands;
+    private PrivateLogger      logger;
 
     /**
-     * HelpCommand constructor.
+     * Constructor.
      *
      * @param processManager Process manager
      * @param commands       Help commands
      */
-    HelpCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull ArrayList<CommandInterface> commands
-    )
+    HelpCommand(@NotNull ProcessManager processManager, @NotNull ArrayList<Command> commands)
     {
         super(
             processManager,
             "help",
             new ArrayList<>(),
-            "Receive a description of the bot and list of help commands with specific content."
+            "Receive a description of the bot and list of help commands with specific content.",
+            false
         );
+
         this.commands = commands;
         this.logger = new PrivateLogger(new HelpDefaultMessageBuilder());
     }
@@ -37,6 +36,6 @@ public class HelpCommand extends Command implements HelpCommandInterface
     @Override
     public void handle(@NotNull MessageReceivedEvent event)
     {
-        logger.logMemberHelpPage(event.getAuthor(), commands);
+        logger.logHelpPage(event.getAuthor(), commands);
     }
 }

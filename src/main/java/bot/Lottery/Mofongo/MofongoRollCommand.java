@@ -33,8 +33,10 @@ class MofongoRollCommand extends Command
                     add(new CommandParameter("PetSpecies", false));
                 }
             },
-            "Roll mofongo. Include a pet species to roll for a pet."
+            "Roll mofongo. Include a pet species to roll for a pet.",
+            true
         );
+
         this.logger = logger;
     }
 

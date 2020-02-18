@@ -1,6 +1,5 @@
 package bot;
 
-import bot.Battle.AdditionalCommandInterface;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,8 +25,8 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
      * @return MessageInterface
      */
     final protected @NotNull MessageInterface getCommandsMessage(
-        String commandType,
-        ArrayList<CommandInterface> commands
+        @NotNull String commandType,
+        @NotNull ArrayList<Command> commands
     )
     {
         commands.sort(new CommandComparator());
@@ -37,7 +36,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         message.add(String.format("%s COMMANDS", commandType).toUpperCase());
         message.addLine();
 
-        for (CommandInterface command : commands) {
+        for (Command command : commands) {
             message.add(formatCommand(command));
         }
 
@@ -53,7 +52,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
      *
      * @return String
      */
-    private String formatCommand(CommandInterface command)
+    private String formatCommand(@NotNull Command command)
     {
         StringBuilder parameterBuilder = new StringBuilder();
         for (CommandParameter parameter : command.getParameters()) {
@@ -67,7 +66,7 @@ abstract public class HelpMessageBuilder implements HelpMessageBuilderInterface
         Message message = new Message();
         message.add(String.format(
             "%s%s %s",
-            command instanceof AdditionalCommandInterface ? "" : MyProperties.COMMAND_PREFIX,
+            command.isExternalCommand() ? "" : MyProperties.COMMAND_PREFIX,
             command.getCommandName(),
             parameterBuilder.toString().trim()
         ));

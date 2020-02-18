@@ -1,6 +1,5 @@
 package bot.Lottery.Pan;
 
-import bot.Item.Item;
 import bot.Registry.RegistryPaths;
 import org.jetbrains.annotations.NotNull;
 

@@ -47,7 +47,12 @@ public class MarkdownCodeFormatter implements CodeFormatterInterface
      */
     @NotNull String makeGrey(@NotNull String text)
     {
-        return String.format("> %s", text);
+        StringBuilder result = new StringBuilder();
+        for (String line : text.split(MessageInterface.NEWLINE)) {
+            result.append("> ").append(line).append(MessageInterface.NEWLINE);
+        }
+
+        return result.toString().trim();
     }
 
     /**

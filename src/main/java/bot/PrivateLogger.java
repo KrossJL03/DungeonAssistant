@@ -1,5 +1,7 @@
 package bot;
 
+import bot.Player.Player;
+import bot.Player.PlayerRepository;
 import net.dv8tion.jda.core.entities.User;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +12,7 @@ public class PrivateLogger
     private HelpMessageBuilderInterface helpMessageBuilder;
 
     /**
-     * PrivateLogger constructor.
+     * Constructor.
      *
      * @param helpMessageBuilder Help message builder
      */
@@ -20,37 +22,32 @@ public class PrivateLogger
     }
 
     /**
-     * Log help page for an admin
+     * Log help page
      *
-     * @param user           User to log help page to
-     * @param adminCommands  List of admin commands
-     * @param memberCommands List of member commands
+     * @param user     User to log help page to
+     * @param commands List of commands
      */
-    public void logAdminHelpPage(
-        User user,
-        ArrayList<CommandInterface> adminCommands,
-        ArrayList<CommandInterface> memberCommands
-    )
+    public void logHelpPage(@NotNull User user, @NotNull ArrayList<Command> commands)
     {
+        ArrayList<Command> memberCommands = new ArrayList<>();
+        ArrayList<Command> modCommands    = new ArrayList<>();
+        for (Command command : commands) {
+            if (command.isModCommand()) {
+                modCommands.add(command);
+            } else {
+                memberCommands.add(command);
+            }
+        }
+
+        Player player = PlayerRepository.getPlayer(user.getId());
+
         sendPrivateMessage(user, helpMessageBuilder.buildDescriptionMessage());
-        if (adminCommands.size() > 0) {
-            sendPrivateMessage(user, helpMessageBuilder.buildAdminCommandsMessage(adminCommands));
+        if (player.isMod() && modCommands.size() > 0) {
+            sendPrivateMessage(user, helpMessageBuilder.buildAdminCommandsMessage(modCommands));
         }
         if (memberCommands.size() > 0) {
             sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(memberCommands));
         }
-    }
-
-    /**
-     * Log help page for a member
-     *
-     * @param user     User to log help page to
-     * @param commands List of member commands
-     */
-    public void logMemberHelpPage(User user, ArrayList<CommandInterface> commands)
-    {
-        sendPrivateMessage(user, helpMessageBuilder.buildDescriptionMessage());
-        sendPrivateMessage(user, helpMessageBuilder.buildMemberCommandsMessage(commands));
     }
 
     /**
@@ -59,7 +56,7 @@ public class PrivateLogger
      * @param user    User to send message to
      * @param message Message to send
      */
-    private void sendPrivateMessage(User user, String message)
+    private void sendPrivateMessage(@NotNull User user, @NotNull String message)
     {
         user.openPrivateChannel().queue((channel) -> channel.sendMessage(message).queue());
     }

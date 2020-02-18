@@ -151,7 +151,7 @@ public class BattleLogger
     void logPhaseChange(BattlePhaseChangeResult result)
     {
         String message = phaseChangeMessageBuilder.buildPhaseChangeMessage(result);
-        if (MyProperties.BOOL_PING_EVERYONE && result.getNextPhase().isJoinPhase()) {
+        if (MyProperties.BOOL_PING_BATTLE_ROLE && result.getNextPhase().isJoinPhase()) {
             message = everyoneMention.getValue() + " " + message;
         }
 

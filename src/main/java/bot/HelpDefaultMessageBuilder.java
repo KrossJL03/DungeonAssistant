@@ -12,7 +12,7 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
     private TextFormatter     textFormatter;
 
     /**
-     * HelpDefaultMessageBuilder constructor.
+     * Constructor.
      */
     @NotNull HelpDefaultMessageBuilder()
     {
@@ -25,18 +25,9 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
      * {@inheritDoc}
      */
     @Override
-    public @NotNull String buildAdminCommandsMessage(@NotNull ArrayList<CommandInterface> commands)
+    public @NotNull String buildAdminCommandsMessage(@NotNull ArrayList<Command> commands)
     {
-        return getCommandsMessage("admin", commands).getAsString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull String buildMemberCommandsMessage(@NotNull ArrayList<CommandInterface> commands)
-    {
-        return getCommandsMessage("help", commands).getAsString();
+        return getCommandsMessage("mod", commands).getAsString();
     }
 
     /**
@@ -69,5 +60,14 @@ public class HelpDefaultMessageBuilder extends bot.HelpMessageBuilder
         message.add("Use the help commands below to find out more about one of Dungeon Assistant's features.");
 
         return message.getAsString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public @NotNull String buildMemberCommandsMessage(@NotNull ArrayList<Command> commands)
+    {
+        return getCommandsMessage("help", commands).getAsString();
     }
 }

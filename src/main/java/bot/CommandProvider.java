@@ -1,36 +1,40 @@
 package bot;
 
-import bot.Battle.EncounterServiceProvider;
-import bot.Item.ItemServiceProvider;
-import bot.Lottery.LotteryServiceProvider;
-import bot.Registry.RegistryServiceProvider;
+import bot.Battle.BattleServiceProvider;
+import bot.Lottery.Mofongo.MofongoServiceProvider;
+import bot.Lottery.Pan.PanServiceProvider;
+import bot.Registry.Record.RecordServiceProvider;
+import bot.Registry.Review.ReviewServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class CommandProvider
+public class CommandProvider implements CommandProviderInterface
 {
-    private ArrayList<CommandInterface> additionalCommands;
-    private ArrayList<CommandInterface> commands;
+    private ArrayList<Command> commands;
 
     /**
      * Constructor.
      */
     public CommandProvider()
     {
-        this.commands = new ArrayList<>();
-        this.additionalCommands = new ArrayList<>();
-        init();
-    }
+        ProcessManager processManager = new ProcessManager();
 
-    /**
-     * Get commands for interfacing with other bots
-     *
-     * @return ArrayList
-     */
-    public @NotNull ArrayList<CommandInterface> getAdditionalCommands()
-    {
-        return new ArrayList<>(additionalCommands);
+        BattleServiceProvider  battleServiceProvider  = new BattleServiceProvider(processManager);
+        MofongoServiceProvider mofongoServiceProvider = new MofongoServiceProvider(processManager);
+        PanServiceProvider     panServiceProvider     = new PanServiceProvider(processManager);
+        RecordServiceProvider  recordServiceProvider  = new RecordServiceProvider(processManager);
+        ReviewServiceProvider  reviewServiceProvider  = new ReviewServiceProvider(processManager);
+
+        commands = new ArrayList<>();
+
+        commands.addAll(battleServiceProvider.getCommands());
+        commands.addAll(recordServiceProvider.getCommands());
+        commands.addAll(reviewServiceProvider.getCommands());
+        commands.addAll(mofongoServiceProvider.getCommands());
+        commands.addAll(panServiceProvider.getCommands());
+
+        commands.add(new HelpCommand(processManager, getHelpCommands()));
     }
 
     /**
@@ -38,7 +42,7 @@ public class CommandProvider
      *
      * @return ArrayList
      */
-    public @NotNull ArrayList<CommandInterface> getCommands()
+    public @NotNull ArrayList<Command> getCommands()
     {
         return new ArrayList<>(commands);
     }
@@ -48,42 +52,15 @@ public class CommandProvider
      *
      * @return ArrayList
      */
-    private @NotNull ArrayList<CommandInterface> getHelpCommands()
+    private @NotNull ArrayList<Command> getHelpCommands()
     {
-        ArrayList<CommandInterface> helpCommands = new ArrayList<>();
-        for (CommandInterface command : commands) {
+        ArrayList<Command> helpCommands = new ArrayList<>();
+        for (Command command : commands) {
             if (command instanceof HelpCommandInterface) {
                 helpCommands.add(command);
             }
         }
 
         return helpCommands;
-    }
-
-    /**
-     * Initialize commands
-     */
-    private void init()
-    {
-        ProcessManager           processManager             = new ProcessManager();
-        EncounterServiceProvider encounterServiceProvider   = new EncounterServiceProvider(processManager);
-        RegistryServiceProvider  registryServiceProvider    = new RegistryServiceProvider(processManager);
-        LotteryServiceProvider   itemLotteryServiceProvider = new LotteryServiceProvider(processManager);
-        ItemServiceProvider      itemServiceProvider        = new ItemServiceProvider(processManager);
-
-        ArrayList<CommandFactoryInterface> commandFactories = new ArrayList<>();
-
-        commandFactories.add(encounterServiceProvider.getCommandFactory());
-        commandFactories.add(registryServiceProvider.getRecordCommandFactory());
-        commandFactories.add(registryServiceProvider.getReviewCommandFactory());
-        commandFactories.add(itemLotteryServiceProvider.getCommandFactory());
-        commandFactories.add(itemServiceProvider.getCommandFactory());
-
-        for (CommandFactoryInterface commandFactory : commandFactories) {
-            commands.addAll(commandFactory.createCommands());
-            additionalCommands.addAll(commandFactory.createAdditionalCommands());
-        }
-
-        commands.add(new HelpCommand(processManager, getHelpCommands()));
     }
 }

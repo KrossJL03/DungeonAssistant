@@ -37,13 +37,14 @@ abstract class DigCommand extends Command
             processManager,
             name,
             new ArrayList<>(),
-            description
+            description,
+            true
         );
+
         this.itemRoller = itemRoller;
         this.logger = logger;
         this.rarityRoller = rarityRoller;
     }
-
 
     /**
      * {@inheritDoc}

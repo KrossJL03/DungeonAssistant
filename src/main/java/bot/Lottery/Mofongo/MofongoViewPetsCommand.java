@@ -23,8 +23,10 @@ public class MofongoViewPetsCommand extends Command
             processManager,
             "view mofongo pets",
             new ArrayList<>(),
-            "View all pets configured for Mofongo."
+            "View all pets configured for Mofongo.",
+            false
         );
+
         this.logger = logger;
     }
 

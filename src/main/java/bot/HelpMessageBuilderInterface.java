@@ -13,7 +13,7 @@ public interface HelpMessageBuilderInterface
      *
      * @return String
      */
-    @NotNull String buildAdminCommandsMessage(@NotNull ArrayList<CommandInterface> commands);
+    @NotNull String buildAdminCommandsMessage(@NotNull ArrayList<Command> commands);
 
     /**
      * Build help message description
@@ -29,5 +29,5 @@ public interface HelpMessageBuilderInterface
      *
      * @return String
      */
-    @NotNull String buildMemberCommandsMessage(@NotNull ArrayList<CommandInterface> commands);
+    @NotNull String buildMemberCommandsMessage(@NotNull ArrayList<Command> commands);
 }

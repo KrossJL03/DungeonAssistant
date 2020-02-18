@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class HostileEncounter extends Battle
 {
-    private static String BATTLE_STYLE = "hostile";
+    private static String BATTLE_STYLE = "Hostile Encounter";
 
     private boolean                hasPhoenixDown;
     private HostileRosterInterface hostileRoster;
@@ -42,53 +42,6 @@ public class HostileEncounter extends Battle
 
         this.hasPhoenixDown = true;
         this.hostileRoster = new HostileRoster();
-    }
-
-    /**
-     * Add hostile
-     *
-     * @param hostile  Hostile
-     * @param nickname Nickname
-     */
-    public void addHostile(@NotNull Hostile hostile, @NotNull String nickname)
-    {
-        phaseManager.assertNotFinalPhase();
-
-        String             capitalNickname = Capitalizer.nameCaseIfLowerCase(nickname);
-        EncounteredHostile newHostile      = new EncounteredHostile(hostile, capitalNickname);
-
-        hostileRoster.addHostile(newHostile);
-        logger.logAddedHostile(newHostile);
-    }
-
-    /**
-     * Dodge action
-     *
-     * @param player Player
-     */
-    public void dodgeAction(@NotNull Player player)
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isDodgePhase()) {
-            throw EncounterException.createWrongPhase("dodge", EncounterPhase.DODGE_PHASE);
-        }
-
-        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
-        DodgeActionResult   result          = currentExplorer.dodge(hostileRoster.getActiveHostiles());
-
-        logger.logAction(result);
-        postDodgePhaseAction(currentExplorer);
-        handleEndOfAction();
-    }
-
-    /**
-     * Dodge pass request action
-     *
-     * @param player Player
-     */
-    public void dodgePassRequestAction(@NotNull Player player)
-    {
-        logger.pingDmDodgePass(player);
     }
 
     /**
@@ -115,144 +68,6 @@ public class HostileEncounter extends Battle
     }
 
     /**
-     * Dodge action
-     *
-     * @param player Player
-     */
-    public void guardAction(@NotNull Player player)
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isDodgePhase()) {
-            throw EncounterException.createWrongPhase("guard", EncounterPhase.DODGE_PHASE);
-        }
-
-        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
-        GuardActionResult   result          = currentExplorer.guard(hostileRoster.getActiveHostiles());
-
-        logger.logAction(result);
-        postDodgePhaseAction(currentExplorer);
-        handleEndOfAction();
-    }
-
-    /**
-     * Heal all active hostiles by a given amount
-     *
-     * @param hitpoints Hitpoints to heal
-     */
-    public void healAllHostiles(int hitpoints)
-    {
-        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            heal(hostile.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * Hurt all active hostiles by a given amount
-     *
-     * @param hitpoints Hitpoints to hurt
-     */
-    public void hurtAllHostiles(int hitpoints)
-    {
-        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            hurt(hostile.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * Loot action
-     *
-     * @param player Player
-     */
-    public void lootAction(@NotNull Player player)
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isLootPhase()) {
-            throw EncounterException.createWrongPhase("loot", EncounterPhase.LOOT_PHASE);
-        }
-
-        EncounteredExplorer explorer = getEncounteredExplorer(player);
-        LootActionResult    result   = explorer.getLoot();
-
-        logger.logAction(result);
-    }
-
-    /**
-     * Manual command to make the current explorer protect a target. Heals current explorer by given hitpoints.
-     *
-     * @param targetName Name of target to protect
-     * @param hitpoints  Hitpoints to heal
-     */
-    public void manualProtectAction(@NotNull String targetName, int hitpoints)
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isDodgePhase()) {
-            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
-        }
-
-        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer();
-
-        if (hitpoints > 0) {
-            heal(currentExplorer.getName(), hitpoints);
-        }
-        currentExplorer.giveProtectAction();
-
-        doProtect(currentExplorer, targetName);
-    }
-
-    /**
-     * Modify stat for all hostiles
-     *
-     * @param statName     Stat name
-     * @param statModifier Amount to modify stat
-     */
-    public void modifyStatForAllHostiles(@NotNull String statName, int statModifier)
-    {
-        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            modifyStat(hostile.getName(), statName, statModifier);
-        }
-    }
-
-    /**
-     * Pass action
-     */
-    public void passAction()
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isDodgePhase()) {
-            throw EncounterException.createWrongPhase("pass", EncounterPhase.DODGE_PHASE);
-        }
-
-        CombatExplorer explorer = getCurrentEncounteredExplorer();
-        explorer.useAllActions();
-
-        logger.logActionDodgePass(
-            explorer.getName(),
-            explorer.getCurrentHP(),
-            explorer.getMaxHP()
-        );
-
-        handleEndOfAction();
-    }
-
-    /**
-     * Protect action
-     *
-     * @param player     Owner of current explorer
-     * @param targetName Name of explorer to protect
-     */
-    public void protectAction(@NotNull Player player, @NotNull String targetName)
-    {
-        phaseManager.assertNotFinalPhase();
-        if (phaseManager.isDodgePhase()) {
-            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
-        }
-
-        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
-
-        doProtect(currentExplorer, targetName);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -263,19 +78,6 @@ public class HostileEncounter extends Battle
             removeExplorer((EncounteredExplorer) creature);
         } else {
             removeHostile((EncounteredHostile) creature);
-        }
-    }
-
-    /**
-     * Set stat for all hostiles
-     *
-     * @param statName  Stat name
-     * @param statValue Stat value
-     */
-    public void setStatForAllHostiles(@NotNull String statName, int statValue)
-    {
-        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            modifyStat(hostile.getName(), statName, statValue);
         }
     }
 
@@ -301,13 +103,211 @@ public class HostileEncounter extends Battle
     }
 
     /**
+     * Add hostile
+     *
+     * @param hostile  Hostile
+     * @param nickname Nickname
+     */
+    void addHostile(@NotNull Hostile hostile, @NotNull String nickname)
+    {
+        phaseManager.assertNotFinalPhase();
+
+        String             capitalNickname = Capitalizer.nameCaseIfLowerCase(nickname);
+        EncounteredHostile newHostile      = new EncounteredHostile(hostile, capitalNickname);
+
+        hostileRoster.addHostile(newHostile);
+        logger.logAddedHostile(newHostile);
+    }
+
+    /**
+     * Dodge action
+     *
+     * @param player Player
+     */
+    void dodgeAction(@NotNull Player player)
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("dodge", EncounterPhase.DODGE_PHASE);
+        }
+
+        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
+        DodgeActionResult   result          = currentExplorer.dodge(hostileRoster.getActiveHostiles());
+
+        logger.logAction(result);
+        postDodgePhaseAction(currentExplorer);
+        handleEndOfAction();
+    }
+
+    /**
+     * Dodge pass request action
+     *
+     * @param player Player
+     */
+    void dodgePassRequestAction(@NotNull Player player)
+    {
+        logger.pingDmDodgePass(player);
+    }
+
+    /**
+     * Dodge action
+     *
+     * @param player Player
+     */
+    void guardAction(@NotNull Player player)
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("guard", EncounterPhase.DODGE_PHASE);
+        }
+
+        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
+        GuardActionResult   result          = currentExplorer.guard(hostileRoster.getActiveHostiles());
+
+        logger.logAction(result);
+        postDodgePhaseAction(currentExplorer);
+        handleEndOfAction();
+    }
+
+    /**
+     * Heal all active hostiles by a given amount
+     *
+     * @param hitpoints Hitpoints to heal
+     */
+    void healAllHostiles(int hitpoints)
+    {
+        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
+            heal(hostile.getName(), hitpoints);
+        }
+    }
+
+    /**
+     * Hurt all active hostiles by a given amount
+     *
+     * @param hitpoints Hitpoints to hurt
+     */
+    void hurtAllHostiles(int hitpoints)
+    {
+        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
+            hurt(hostile.getName(), hitpoints);
+        }
+    }
+
+    /**
+     * Loot action
+     *
+     * @param player Player
+     */
+    void lootAction(@NotNull Player player)
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isLootPhase()) {
+            throw EncounterException.createWrongPhase("loot", EncounterPhase.LOOT_PHASE);
+        }
+
+        EncounteredExplorer explorer = getEncounteredExplorer(player);
+        LootActionResult    result   = explorer.getLoot();
+
+        logger.logAction(result);
+    }
+
+    /**
+     * Manual command to make the current explorer protect a target. Heals current explorer by given hitpoints.
+     *
+     * @param targetName Name of target to protect
+     * @param hitpoints  Hitpoints to heal
+     */
+    void manualProtectAction(@NotNull String targetName, int hitpoints)
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
+        }
+
+        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer();
+
+        if (hitpoints > 0) {
+            heal(currentExplorer.getName(), hitpoints);
+        }
+        currentExplorer.giveProtectAction();
+
+        doProtect(currentExplorer, targetName);
+    }
+
+    /**
+     * Modify stat for all hostiles
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    void modifyStatForAllHostiles(@NotNull String statName, int statModifier)
+    {
+        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statModifier);
+        }
+    }
+
+    /**
+     * Pass action
+     */
+    void passAction()
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("pass", EncounterPhase.DODGE_PHASE);
+        }
+
+        CombatExplorer explorer = getCurrentEncounteredExplorer();
+        explorer.useAllActions();
+
+        logger.logActionDodgePass(
+            explorer.getName(),
+            explorer.getCurrentHP(),
+            explorer.getMaxHP()
+        );
+
+        handleEndOfAction();
+    }
+
+    /**
+     * Protect action
+     *
+     * @param player     Owner of current explorer
+     * @param targetName Name of explorer to protect
+     */
+    void protectAction(@NotNull Player player, @NotNull String targetName)
+    {
+        phaseManager.assertNotFinalPhase();
+        if (phaseManager.isDodgePhase()) {
+            throw EncounterException.createWrongPhase("protect", EncounterPhase.DODGE_PHASE);
+        }
+
+        EncounteredExplorer currentExplorer = getCurrentEncounteredExplorer(player);
+
+        doProtect(currentExplorer, targetName);
+    }
+
+    /**
+     * Set stat for all hostiles
+     *
+     * @param statName  Stat name
+     * @param statValue Stat value
+     */
+    void setStatForAllHostiles(@NotNull String statName, int statValue)
+    {
+        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
+            modifyStat(hostile.getName(), statName, statValue);
+        }
+    }
+
+    /**
      * Start dodge phase
      *
      * @throws BattlePhaseException If the encounter is over
      *                              If the encounter has not started
      *                              If dodge phase is in progress
      */
-    public void startDodgePhase() throws BattlePhaseException
+    void startDodgePhase() throws BattlePhaseException
     {
         phaseManager.assertDodgePhaseMayStart();
         assertPlayersHaveJoined();

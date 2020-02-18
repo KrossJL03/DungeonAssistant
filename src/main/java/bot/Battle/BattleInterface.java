@@ -38,7 +38,7 @@ public interface BattleInterface extends ProcessInterface
     @NotNull ArrayList<CombatExplorer> getAllExplorers();
 
     /**
-     * Get string value representing the type of encounter
+     * Get string value representing the type of battle
      *
      * @return String
      */

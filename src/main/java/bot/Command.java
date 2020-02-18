@@ -9,10 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public abstract class Command implements CommandInterface
+public abstract class Command
 {
     private String                      commandName;
     private String                      description;
+    private boolean                     isModCommand;
     private ArrayList<CommandParameter> parameters;
     private ProcessManager              processManager;
 
@@ -20,63 +21,89 @@ public abstract class Command implements CommandInterface
      * Constructor.
      *
      * @param processManager Process manager
-     * @param commandName    HelpCommand name
+     * @param commandName    Command name
      * @param parameters     Parameters
      * @param description    HelpCommand description
+     * @param isModCommand   Is this command a mod command
      */
     protected Command(
         @NotNull ProcessManager processManager,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
-        @NotNull String description
+        @NotNull String description,
+        boolean isModCommand
     )
     {
         this.commandName = commandName;
         this.description = description;
+        this.isModCommand = isModCommand;
         this.parameters = parameters;
         this.processManager = processManager;
     }
 
     /**
-     * {@inheritDoc}
+     * Get parameter names
+     *
+     * @return ArrayList<String>
      */
-    @Override
-    public @NotNull String getCommandName()
-    {
-        return commandName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull String getDescription()
-    {
-        return description;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public @NotNull ArrayList<CommandParameter> getParameters()
+    final public @NotNull ArrayList<CommandParameter> getParameters()
     {
         return parameters;
     }
 
     /**
-     * {@inheritDoc}
+     * Handle the given event
+     *
+     * @param event Event
      */
-    @Override
-    public boolean isCommand(@NotNull String commandString)
+    abstract public void handle(@NotNull MessageReceivedEvent event);
+
+    /**
+     * Is this a command that originates outside of this bot
+     *
+     * @return boolean
+     */
+    public boolean isExternalCommand()
     {
-        String lowerCommandName   = commandName.toLowerCase();
+        return false;
+    }
+
+    /**
+     * Get command description
+     *
+     * @return String
+     */
+    final @NotNull String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * Does command match the given string
+     *
+     * @param commandString Command string
+     *
+     * @return boolean
+     */
+    final boolean isCommand(@NotNull String commandString)
+    {
+        String lowerCommandName   = MyProperties.COMMAND_PREFIX + commandName.toLowerCase();
         String lowerCommandString = commandString.toLowerCase().trim();
 
         boolean startsWithName = lowerCommandString.startsWith(lowerCommandName + " ");
         boolean equalsName     = lowerCommandString.equals(lowerCommandName);
 
         return startsWithName | equalsName;
+    }
+
+    /**
+     * Is this a mod command
+     *
+     * @return boolean
+     */
+    boolean isModCommand()
+    {
+        return isModCommand;
     }
 
     /**
@@ -87,6 +114,16 @@ public abstract class Command implements CommandInterface
     final protected void addProcessToManager(@NotNull ProcessInterface process)
     {
         processManager.addProcess(process);
+    }
+
+    /**
+     * Get command name
+     *
+     * @return String
+     */
+    final protected @NotNull String getCommandName()
+    {
+        return commandName;
     }
 
     /**
@@ -200,7 +237,12 @@ public abstract class Command implements CommandInterface
             parameterBuilder.append(" ");
         }
 
-        return String.format("`%s%s %s`", MyProperties.COMMAND_PREFIX, commandName, parameterBuilder.toString().trim());
+        return String.format(
+            "`%s%s %s`",
+            isDatabaseLocked() ? MyProperties.COMMAND_PREFIX : "",
+            commandName,
+            parameterBuilder.toString().trim()
+        );
     }
 
     /**

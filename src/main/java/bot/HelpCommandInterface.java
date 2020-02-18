@@ -1,5 +1,5 @@
 package bot;
 
-public interface HelpCommandInterface extends CommandInterface
+public interface HelpCommandInterface
 {
 }
