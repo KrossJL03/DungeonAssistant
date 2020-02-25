@@ -2,11 +2,10 @@ package bot.Battle.PlayerVsPlayer;
 
 import bot.Battle.AttackActionResult;
 import bot.Battle.Battle;
+import bot.Battle.BattlePhaseChange;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
-import bot.Battle.HealActionResult;
 import bot.Battle.HostileEncounter.EncounteredExplorer;
-import bot.Battle.HurtActionResult;
 import bot.Battle.Mention;
 import bot.CustomException;
 import bot.Explorer.Explorer;
@@ -18,6 +17,8 @@ import java.util.ArrayList;
 
 public class PlayerVsPlayer extends Battle
 {
+    private PvpPhaseManager phaseManager;
+
     /**
      * Constructor.
      */
@@ -42,6 +43,15 @@ public class PlayerVsPlayer extends Battle
     public @NotNull String getBattleStyle()
     {
         return "Player VS Player";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLockingDatabase()
+    {
+        return false;
     }
 
     /**
@@ -100,7 +110,7 @@ public class PlayerVsPlayer extends Battle
     {
         if (!phaseManager.isJoinPhase()) {
             if (!hasMultipleActiveExplorers()) {
-                startEndPhase();
+                startVictoryPhase();
             } else if (phaseManager.isInitiativePhase()) {
                 CombatExplorer currentExplorer = getCurrentExplorer();
                 if (currentExplorer.isActive() && currentExplorer.hasActions()) {
@@ -125,34 +135,7 @@ public class PlayerVsPlayer extends Battle
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result)
-    {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result)
-    {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected void postJoin(@NotNull CombatExplorer explorer)
-    {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
     {
         // do nothing
     }
@@ -177,5 +160,16 @@ public class PlayerVsPlayer extends Battle
     protected void preJoinPhase()
     {
         // do nothing
+    }
+
+    /**
+     * Start victory phase
+     */
+    private void startVictoryPhase()
+    {
+        BattlePhaseChange result = phaseManager.startVictoryPhase();
+
+        clearInitiative();
+        notifyListenerOfPhaseChange(result);
     }
 }

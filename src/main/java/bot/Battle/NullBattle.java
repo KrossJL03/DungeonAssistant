@@ -53,42 +53,6 @@ public class NullBattle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void heal(@NotNull String name, int hitpoints) throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void healAllExplorers(int hitpoints)
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hurt(@NotNull String name, int hitpoints) throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hurtAllExplorers(int hitpoints)
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isLockingDatabase()
     {
         return false;
@@ -152,16 +116,6 @@ public class NullBattle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void modifyStat(@NotNull String name, @NotNull String statName, int statModifier)
-        throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void rejoin(@NotNull Player player) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
@@ -180,25 +134,7 @@ public class NullBattle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void revive(@NotNull String name)
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMaxPlayerCount(int maxPlayerCount) throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws EncounterException
+    public void setPartySize(int amount) throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }

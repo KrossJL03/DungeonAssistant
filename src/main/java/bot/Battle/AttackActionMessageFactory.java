@@ -1,9 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.ActionResultInterface;
-import bot.Battle.AttackActionResult;
-import bot.Battle.CombatActionMessageFactory;
-import bot.Battle.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -55,6 +51,10 @@ public class AttackActionMessageFactory extends CombatActionMessageFactory
                 dmMention.getValue()
             ));
         } else {
+            if (attackActionResult.getDamageResisted() > 0) {
+                message.add(getDamageResistedLine(attackActionResult.getDamageResisted()));
+                message.addBreak();
+            }
             if (attackActionResult.getDamageDealt() > 0) {
                 message.add(getDamageDealtLine(attackActionResult, false));
             }

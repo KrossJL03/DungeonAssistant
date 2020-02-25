@@ -45,8 +45,8 @@ public class SetPartySizeCommand extends BattleCommand
     public void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters = getParametersFromEvent(event);
-        int      maxPlayers = Integer.parseInt(parameters[0]);
+        int      amount     = Integer.parseInt(parameters[0]);
 
-        getBattle().setMaxPlayerCount(maxPlayers);
+        getBattle().setPartySize(amount);
     }
 }

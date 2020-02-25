@@ -1,7 +1,5 @@
 package bot.Battle.PlayerVsPlayer;
 
-import bot.Battle.EndPhaseStartMessageFactory;
-import bot.Battle.JoinPhaseStartMessageFactory;
 import bot.Battle.PhaseChangeMessageBuilder;
 import bot.Battle.PhaseChangeMessageFactoryInterface;
 

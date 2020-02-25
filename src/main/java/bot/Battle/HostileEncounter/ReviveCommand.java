@@ -49,6 +49,6 @@ public class ReviveCommand extends EncounterCommand
         String[] parameters = getParametersFromEvent(event);
         String   targetName = parameters[0];
 
-        getBattle().revive(targetName);
+        getHostileEncounter().revive(targetName);
     }
 }

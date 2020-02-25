@@ -5,14 +5,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ExplorerRoster
+public class ExplorerRoster<Explorer extends CombatExplorer>
 {
     private static int DEFAULT_SIZE = 21;
 
-    private ArrayList<CombatExplorer> explorerRoster;
-    private ArrayList<Player>         kickedPlayers;
-    private int                       maxPartySize;
-    private Tier                      tier;
+    private ArrayList<Explorer> explorerRoster;
+    private ArrayList<Player>   kickedPlayers;
+    private int                 maxPartySize;
+    private Tier                tier;
 
     /**
      * Constructor.
@@ -28,11 +28,51 @@ public class ExplorerRoster
     /**
      * Get all explorers
      *
-     * @return ArrayList<CombatExplorer>
+     * @return ArrayList<Explorer>
      */
-    public @NotNull ArrayList<CombatExplorer> getAllExplorers()
+    public @NotNull ArrayList<Explorer> getAllExplorers()
     {
         return new ArrayList<>(explorerRoster);
+    }
+
+    /**
+     * Get explorer with given name
+     *
+     * @param name Explorer name
+     *
+     * @return Explorer
+     *
+     * @throws ExplorerRosterException Thrown when encountered explorer is not found
+     */
+    public @NotNull Explorer getExplorer(@NotNull String name) throws ExplorerRosterException
+    {
+        for (Explorer explorer : explorerRoster) {
+            if (explorer.isName(name)) {
+                return explorer;
+            }
+        }
+
+        throw ExplorerRosterException.createExplorerNotFound(name);
+    }
+
+    /**
+     * Get creature with given name
+     *
+     * @param player Player
+     *
+     * @return Explorer
+     *
+     * @throws ExplorerRosterException Thrown when encountered explorer is not found
+     */
+    public @NotNull Explorer getExplorer(@NotNull Player player) throws ExplorerRosterException
+    {
+        for (Explorer explorer : explorerRoster) {
+            if (explorer.isOwner(player)) {
+                return explorer;
+            }
+        }
+
+        throw ExplorerRosterException.createExplorerNotFound(player);
     }
 
     /**
@@ -62,7 +102,7 @@ public class ExplorerRoster
      *
      * @throws ExplorerRosterException If explorer is not found
      */
-    public void remove(@NotNull CombatExplorer explorer) throws ExplorerRosterException
+    public void remove(@NotNull Explorer explorer) throws ExplorerRosterException
     {
         if (!containsExplorer(explorer.getName())) {
             throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
@@ -82,6 +122,14 @@ public class ExplorerRoster
     }
 
     /**
+     * Sort roster
+     */
+    public void sort()
+    {
+        explorerRoster.sort(new ExplorerInitiativeComparator());
+    }
+
+    /**
      * Add explorer to the explorerRoster
      *
      * @param newExplorer Explorer to add
@@ -93,7 +141,7 @@ public class ExplorerRoster
      *                                 If explorer does not fit tier
      *                                 If the explorers nickname is currently in use
      */
-    void addExplorer(@NotNull CombatExplorer newExplorer) throws ExplorerRosterException
+    void addExplorer(@NotNull Explorer newExplorer) throws ExplorerRosterException
     {
         if (!isMaxPartySizeSet()) {
             throw ExplorerRosterException.createMaxPlayersNotSet();
@@ -122,12 +170,12 @@ public class ExplorerRoster
     /**
      * Get active explorers
      *
-     * @return ArrayList<CombatExplorer>
+     * @return ArrayList<Explorer>
      */
-    @NotNull ArrayList<CombatExplorer> getActiveExplorers()
+    @NotNull ArrayList<Explorer> getActiveExplorers()
     {
-        ArrayList<CombatExplorer> activeExplorers = new ArrayList<>();
-        for (CombatExplorer explorer : explorerRoster) {
+        ArrayList<Explorer> activeExplorers = new ArrayList<>();
+        for (Explorer explorer : explorerRoster) {
             if (explorer.isActive()) {
                 activeExplorers.add(explorer);
             }
@@ -144,46 +192,6 @@ public class ExplorerRoster
     int getCurrentPartySize()
     {
         return getPresentExplorers().size();
-    }
-
-    /**
-     * Get explorer with given name
-     *
-     * @param name Explorer name
-     *
-     * @return CombatExplorer
-     *
-     * @throws ExplorerRosterException Thrown when encountered explorer is not found
-     */
-    @NotNull CombatExplorer getExplorer(@NotNull String name) throws ExplorerRosterException
-    {
-        for (CombatExplorer explorer : explorerRoster) {
-            if (explorer.isName(name)) {
-                return explorer;
-            }
-        }
-
-        throw ExplorerRosterException.createExplorerNotFound(name);
-    }
-
-    /**
-     * Get creature with given name
-     *
-     * @param player Player
-     *
-     * @return CombatExplorer
-     *
-     * @throws ExplorerRosterException Thrown when encountered explorer is not found
-     */
-    @NotNull CombatExplorer getExplorer(@NotNull Player player) throws ExplorerRosterException
-    {
-        for (CombatExplorer explorer : explorerRoster) {
-            if (explorer.isOwner(player)) {
-                return explorer;
-            }
-        }
-
-        throw ExplorerRosterException.createExplorerNotFound(player);
     }
 
     /**
@@ -233,9 +241,9 @@ public class ExplorerRoster
      *
      * @throws ExplorerRosterException If explorer is not in the roster
      */
-    @NotNull CombatExplorer kick(@NotNull String name) throws ExplorerRosterException
+    @NotNull Explorer kick(@NotNull String name) throws ExplorerRosterException
     {
-        CombatExplorer explorer = getExplorer(name);
+        Explorer explorer = getExplorer(name);
 
         if (!explorerRoster.contains(explorer)) {
             throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
@@ -253,13 +261,13 @@ public class ExplorerRoster
      *
      * @param player Player
      *
-     * @return CombatExplorer
+     * @return Explorer
      *
      * @throws ExplorerRosterException If encountered explorer has already left
      */
-    @NotNull CombatExplorer markAsLeft(@NotNull Player player) throws ExplorerRosterException
+    @NotNull Explorer markAsLeft(@NotNull Player player) throws ExplorerRosterException
     {
-        CombatExplorer explorer = getExplorer(player);
+        Explorer explorer = getExplorer(player);
         explorer.markAsNotPresent();
 
         return explorer;
@@ -270,17 +278,17 @@ public class ExplorerRoster
      *
      * @param player Player
      *
-     * @return CombatExplorer
+     * @return Explorer
      *
      * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    @NotNull CombatExplorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
+    @NotNull Explorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
     {
         if (kickedPlayers.contains(player)) {
             throw ExplorerRosterException.createKickedPlayerReturns(player);
         }
 
-        CombatExplorer encounteredExplorer = getExplorer(player);
+        Explorer encounteredExplorer = getExplorer(player);
         if (!encounteredExplorer.isPresent() && isFull()) {
             throw ExplorerRosterException.createFullRoster(player);
         }
@@ -316,14 +324,6 @@ public class ExplorerRoster
     }
 
     /**
-     * Sort roster
-     */
-    void sort()
-    {
-        explorerRoster.sort(new ExplorerAgilityComparator());
-    }
-
-    /**
      * Is explorer with given name currently in the roster
      *
      * @param name Explorer name
@@ -332,7 +332,7 @@ public class ExplorerRoster
      */
     private boolean containsExplorer(@NotNull String name)
     {
-        for (CombatExplorer explorer : explorerRoster) {
+        for (Explorer explorer : explorerRoster) {
             if (explorer.isName(name)) {
                 return true;
             }
@@ -350,7 +350,7 @@ public class ExplorerRoster
      */
     private boolean containsPlayer(@NotNull Player player)
     {
-        for (CombatExplorer explorer : explorerRoster) {
+        for (Explorer explorer : explorerRoster) {
             if (explorer.isOwner(player)) {
                 return true;
             }
@@ -372,12 +372,12 @@ public class ExplorerRoster
     /**
      * Get present explorers
      *
-     * @return ArrayList<CombatExplorer>
+     * @return ArrayList<Explorer>
      */
-    private @NotNull ArrayList<CombatExplorer> getPresentExplorers()
+    private @NotNull ArrayList<Explorer> getPresentExplorers()
     {
-        ArrayList<CombatExplorer> presentExplorers = new ArrayList<>();
-        for (CombatExplorer explorer : explorerRoster) {
+        ArrayList<Explorer> presentExplorers = new ArrayList<>();
+        for (Explorer explorer : explorerRoster) {
             if (explorer.isPresent()) {
                 presentExplorers.add(explorer);
             }

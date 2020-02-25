@@ -7,9 +7,7 @@ import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
-public class PassCommand extends EncounterCommand
+public class RemoveCommand extends bot.Battle.RemoveCommand
 {
     /**
      * Constructor.
@@ -18,7 +16,7 @@ public class PassCommand extends EncounterCommand
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    PassCommand(
+    RemoveCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker
@@ -28,10 +26,8 @@ public class PassCommand extends EncounterCommand
             processManager,
             holder,
             dmChecker,
-            "pass",
-            new ArrayList<>(),
             buildDescription(),
-            true
+            "CreatureName"
         );
     }
 
@@ -41,7 +37,9 @@ public class PassCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event)
     {
-        getHostileEncounter().passAction();
+        String creatureName = getStringParameterFromEvent(event);
+
+        getBattle().remove(creatureName);
     }
 
     /**
@@ -53,8 +51,8 @@ public class PassCommand extends EncounterCommand
     {
         Message description = new Message();
 
-        description.add("The current explorer passes their turn successfully.");
-        description.add("Used to dodge all attacks.");
+        description.add("Remove a creature from the battle.");
+        description.add("If an explorer is removed the player may join again with any explorer.");
 
         return description.getAsString();
     }

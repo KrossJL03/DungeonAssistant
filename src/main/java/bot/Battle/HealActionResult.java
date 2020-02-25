@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.ActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class HealActionResult implements ActionResultInterface
@@ -12,7 +11,7 @@ public class HealActionResult implements ActionResultInterface
     private boolean wasTargetRevived;
 
     /**
-     * HealActionResult constructor
+     * Constructor.
      *
      * @param name             Name of healed creature
      * @param healedHp         Amount of hitpoints healed

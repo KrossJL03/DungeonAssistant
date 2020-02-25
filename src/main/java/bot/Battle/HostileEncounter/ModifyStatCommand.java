@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ModifyStatCommand extends EncounterCommand
+class ModifyStatCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -101,7 +101,7 @@ public class ModifyStatCommand extends EncounterCommand
     {
         Message description = new Message();
 
-        description.add("Temporarily set a target or group's stat to the amount for the duration of the encounter.");
+        description.add("Temporarily set a target or group's stat to the amount for the duration of the battle.");
         description.add("Add '+' or '-' to the amount to increase or decrease the stat by the given amount.");
         description.add("Group options: pcs, hostiles.");
 

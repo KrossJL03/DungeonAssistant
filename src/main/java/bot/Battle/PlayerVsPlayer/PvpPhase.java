@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PvpPhase extends BattlePhase
 {
-    private static String VICTORY_PHASE = "VICTORY";
+    static String VICTORY_PHASE = "VICTORY";
 
     /**
      * Constructor.

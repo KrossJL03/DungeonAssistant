@@ -160,7 +160,8 @@ abstract public class CombatCreature
      *
      * @return HealActionResult
      */
-    @NotNull HealActionResult healPoints(int hitpoints)
+    @NotNull
+    public HealActionResult healPoints(int hitpoints)
     {
         if (hitpoints < 0) {
             throw new CustomException("The amount of HP to heal must be a positive number.");
@@ -195,7 +196,7 @@ abstract public class CombatCreature
      * @throws CombatCreatureException If creature is slain
      */
     @NotNull
-    protected HurtActionResult hurt(int hitpoints) throws CombatCreatureException
+    public HurtActionResult hurt(int hitpoints) throws CombatCreatureException
     {
         if (isSlain()) {
             throw CombatCreatureException.createIsSlain(name, getSlayer().getName());

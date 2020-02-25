@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SkipCommand extends BattleCommand
+abstract public class SkipCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -14,11 +14,13 @@ public class SkipCommand extends BattleCommand
      * @param processManager Process manager
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
+     * @param description    Description
      */
-    public SkipCommand(
+    protected SkipCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
+        @NotNull DungeonMasterChecker dmChecker,
+        @NotNull String description
     )
     {
         super(
@@ -27,7 +29,7 @@ public class SkipCommand extends BattleCommand
             dmChecker,
             "skip",
             new ArrayList<>(),
-            "Skip the current player's turn. Automatically fail all dodge attempts.",
+            description,
             true
         );
     }

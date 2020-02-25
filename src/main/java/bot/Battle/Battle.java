@@ -12,10 +12,10 @@ import java.util.ArrayList;
 public abstract class Battle implements BattleInterface
 {
     protected BattleLogger                      logger;
-    protected BattlePhaseManager                phaseManager;
-    private   ExplorerRoster                    explorerRoster;
+    private   ExplorerRoster<CombatExplorer>    explorerRoster;
     private   InitiativeTrackerInterface        initiative;
     private   InitiativeTrackerFactoryInterface initiativeFactory;
+    private   BattlePhaseManager                phaseManager;
 
     /**
      * Constructor.
@@ -30,7 +30,7 @@ public abstract class Battle implements BattleInterface
         @NotNull BattlePhaseManager phaseManager
     )
     {
-        this.explorerRoster = new ExplorerRoster();
+        this.explorerRoster = new ExplorerRoster<>();
         this.initiativeFactory = initiativeFactory;
         this.logger = logger;
         this.phaseManager = phaseManager;
@@ -48,7 +48,7 @@ public abstract class Battle implements BattleInterface
         throws BattlePhaseException, NotYourTurnException
     {
         phaseManager.assertNotFinalPhase();
-        if (phaseManager.isAttackPhase()) {
+        if (!phaseManager.isAttackPhase()) {
             throw EncounterException.createWrongPhase("attack", EncounterPhase.ATTACK_PHASE);
         }
 
@@ -70,69 +70,6 @@ public abstract class Battle implements BattleInterface
     final public @NotNull ArrayList<CombatExplorer> getAllExplorers()
     {
         return explorerRoster.getAllExplorers();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void heal(@NotNull String name, int hitpoints) throws BattlePhaseException
-    {
-        phaseManager.assertNotFinalPhase();
-
-        CombatCreature   target = getCreature(name);
-        HealActionResult result = target.healPoints(hitpoints);
-
-        logger.logAction(result);
-        postHeal(target, result);
-        handleEndOfAction();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void healAllExplorers(int hitpoints)
-    {
-        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
-            heal(explorer.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException
-    {
-        phaseManager.assertNotFinalPhase();
-
-        CombatCreature   target = getCreature(name);
-        HurtActionResult result = target.hurt(hitpoints);
-
-        logger.logAction(result);
-        postHurt(target, result);
-        handleEndOfAction();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hurtAllExplorers(int hitpoints)
-    {
-        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
-            hurt(explorer.getName(), hitpoints);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isLockingDatabase()
-    {
-        return !phaseManager.isFinalPhase();
     }
 
     /**
@@ -215,37 +152,6 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void modifyStat(
-        @NotNull String name,
-        @NotNull String statName,
-        int statModifier
-    ) throws BattlePhaseException
-    {
-        phaseManager.assertNotFinalPhase();
-
-        CombatCreature         target = getCreature(name);
-        ModifyStatActionResult result = target.modifyStat(statName, statModifier);
-        explorerRoster.sort();
-        logger.logAction(result);
-    }
-
-    /**
-     * Modify stat for all explorers
-     *
-     * @param statName     Stat name
-     * @param statModifier Amount to modify stat
-     */
-    public void modifyStatForAllExplorers(@NotNull String statName, int statModifier)
-    {
-        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
-            modifyStat(explorer.getName(), statName, statModifier);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void rejoin(@NotNull Player player)
     {
         phaseManager.assertNotFinalPhase();
@@ -262,55 +168,12 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void revive(@NotNull String name) throws BattlePhaseException
+    public void setPartySize(int amount) throws BattlePhaseException
     {
         phaseManager.assertNotFinalPhase();
 
-        CombatCreature   target = getCreature(name);
-        HealActionResult result = target.healPercent((float) 0.5);
-
-        postRevive(target, result);
-        logger.logAction(result);
-        handleEndOfAction();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMaxPlayerCount(int maxPlayerCount) throws BattlePhaseException
-    {
-        phaseManager.assertNotFinalPhase();
-
-        explorerRoster.setMaxPartySize(maxPlayerCount);
-        logger.logSetMaxPlayers(maxPlayerCount);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setStat(@NotNull String name, @NotNull String statName, int statValue) throws BattlePhaseException
-    {
-        phaseManager.assertNotFinalPhase();
-
-        CombatCreature         target = getCreature(name);
-        ModifyStatActionResult result = target.setStat(statName, statValue);
-        explorerRoster.sort();
-        logger.logAction(result);
-    }
-
-    /**
-     * Set stat for all explorers
-     *
-     * @param statName  Stat name
-     * @param statValue Amount to modify stat
-     */
-    public void setStatForAllExplorers(@NotNull String statName, int statValue)
-    {
-        for (CombatExplorer explorer : explorerRoster.getActiveExplorers()) {
-            modifyStat(explorer.getName(), statName, statValue);
-        }
+        explorerRoster.setMaxPartySize(amount);
+        logger.logSetPartySize(amount);
     }
 
     /**
@@ -641,35 +504,11 @@ public abstract class Battle implements BattleInterface
     }
 
     /**
-     * Handle any additional post heal related processes
-     *
-     * @param target Target of healing
-     * @param result Result of healing
-     */
-    abstract protected void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result);
-
-    /**
-     * Handle any additional post hurt related processes
-     *
-     * @param target Target of hurting
-     * @param result Result of hurting
-     */
-    abstract protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result);
-
-    /**
      * Handle any additional post join related processes
      *
      * @param explorer Explorer that has just joined
      */
     abstract protected void postJoin(@NotNull CombatExplorer explorer);
-
-    /**
-     * Handle any additional post revive related processes
-     *
-     * @param target Target of reviving
-     * @param result Result of reviving
-     */
-    abstract protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result);
 
     /**
      * Handle any additional pre attack phase related processes

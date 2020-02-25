@@ -45,40 +45,6 @@ public interface BattleInterface extends ProcessInterface
     @NotNull String getBattleStyle();
 
     /**
-     * Heal encountered creature with given name by given amount of hitpoints
-     *
-     * @param name      Encountered creature name
-     * @param hitpoints Hitpoints
-     *
-     * @throws BattlePhaseException If encounter is over
-     */
-    void heal(@NotNull String name, int hitpoints) throws BattlePhaseException;
-
-    /**
-     * Heal all active explorers by a given amount
-     *
-     * @param hitpoints Hitpoints to heal
-     */
-    void healAllExplorers(int hitpoints);
-
-    /**
-     * Hurt encountered creature with given name by given amount of hitpoints
-     *
-     * @param name      Encountered creature name
-     * @param hitpoints Hitpoints
-     *
-     * @throws BattlePhaseException If encounter is over
-     */
-    void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException;
-
-    /**
-     * Hurt all active explorers by a given amount
-     *
-     * @param hitpoints Hitpoints to hurt
-     */
-    void hurtAllExplorers(int hitpoints);
-
-    /**
      * Is this a null encounter
      *
      * @return boolean
@@ -122,21 +88,6 @@ public interface BattleInterface extends ProcessInterface
     void logSummary();
 
     /**
-     * Modify stat
-     *
-     * @param name         Name of creature to modify stat for
-     * @param statName     Name of stat to modify
-     * @param statModifier Modifier to apply to stat
-     *
-     * @throws BattlePhaseException If the encounter is over
-     */
-    void modifyStat(
-        @NotNull String name,
-        @NotNull String statName,
-        int statModifier
-    ) throws BattlePhaseException;
-
-    /**
      * Player is rejoining
      *
      * @param player Player
@@ -153,37 +104,13 @@ public interface BattleInterface extends ProcessInterface
     void remove(@NotNull String name) throws BattlePhaseException;
 
     /**
-     * Revive an explorer and heal to half health
+     * Set party size
      *
-     * @param name Encountered explorer name
-     *
-     * @throws BattlePhaseException If encounter is over
-     */
-    void revive(@NotNull String name);
-
-    /**
-     * Set max player count
-     *
-     * @param maxPlayerCount Max amount of players allowed for this encounter
+     * @param amount Max amount of players allowed for this encounter
      *
      * @throws BattlePhaseException If encounter is over
      */
-    void setMaxPlayerCount(int maxPlayerCount) throws BattlePhaseException;
-
-    /**
-     * Set stat
-     *
-     * @param name      Name of creature to modify stat for
-     * @param statName  Name of stat to modify
-     * @param statValue New stat value
-     *
-     * @throws BattlePhaseException If the encounter is over
-     */
-    void setStat(
-        @NotNull String name,
-        @NotNull String statName,
-        int statValue
-    ) throws BattlePhaseException;
+    void setPartySize(int amount) throws BattlePhaseException;
 
     /**
      * Set tier

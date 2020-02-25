@@ -55,6 +55,16 @@ public class BattlePhaseManager
     }
 
     /**
+     * Is final phase
+     *
+     * @return boolean
+     */
+    public boolean isFinalPhase()
+    {
+        return phase.isFinalPhase();
+    }
+
+    /**
      * Is the current phase an initiative phase
      *
      * @return boolean
@@ -128,16 +138,6 @@ public class BattlePhaseManager
     boolean isCreatePhase()
     {
         return phase.isCreatePhase();
-    }
-
-    /**
-     * Is final phase
-     *
-     * @return boolean
-     */
-    boolean isFinalPhase()
-    {
-        return phase.isFinalPhase();
     }
 
     /**

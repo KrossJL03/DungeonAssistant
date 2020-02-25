@@ -8,10 +8,12 @@ import bot.Battle.Capitalizer;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
 import bot.Battle.EncounterException;
+import bot.Battle.ExplorerRoster;
 import bot.Battle.HealActionResult;
 import bot.Battle.HurtActionResult;
 import bot.Battle.InitiativeTrackerException;
 import bot.Battle.Mention;
+import bot.Battle.ModifyStatActionResult;
 import bot.Explorer.Explorer;
 import bot.Hostile.Hostile;
 import bot.Player.Player;
@@ -25,10 +27,11 @@ public class HostileEncounter extends Battle
 {
     private static String BATTLE_STYLE = "Hostile Encounter";
 
-    private boolean                hasPhoenixDown;
-    private HostileRosterInterface hostileRoster;
-    private EncounterLogger        logger;
-    private EncounterPhaseManager  phaseManager;
+    private ExplorerRoster<EncounteredExplorer> explorerRoster;
+    private boolean                             hasPhoenixDown;
+    private HostileRosterInterface              hostileRoster;
+    private EncounterLogger                     logger;
+    private EncounterPhaseManager               phaseManager;
 
     /**
      * Constructor.
@@ -48,8 +51,7 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
-    @NotNull
-    public ArrayList<CombatCreature> getAllCreatures()
+    public @NotNull ArrayList<CombatCreature> getAllCreatures()
     {
         ArrayList<CombatCreature> allCreatures = new ArrayList<>();
         allCreatures.addAll(getAllExplorers());
@@ -65,6 +67,15 @@ public class HostileEncounter extends Battle
     public @NotNull String getBattleStyle()
     {
         return BATTLE_STYLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLockingDatabase()
+    {
+        return !phaseManager.isFinalPhase();
     }
 
     /**
@@ -170,6 +181,38 @@ public class HostileEncounter extends Battle
     }
 
     /**
+     * Heal encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws BattlePhaseException If encounter is over
+     */
+    void heal(@NotNull String name, int hitpoints) throws BattlePhaseException
+    {
+        phaseManager.assertNotFinalPhase();
+
+        CombatCreature   target = getCreature(name);
+        HealActionResult result = target.healPoints(hitpoints);
+
+        logger.logAction(result);
+        postHeal(target, result);
+        handleEndOfAction();
+    }
+
+    /**
+     * Heal all active explorers by a given amount
+     *
+     * @param hitpoints Hitpoints to heal
+     */
+    void healAllExplorers(int hitpoints)
+    {
+        for (CombatExplorer explorer : getActiveExplorers()) {
+            heal(explorer.getName(), hitpoints);
+        }
+    }
+
+    /**
      * Heal all active hostiles by a given amount
      *
      * @param hitpoints Hitpoints to heal
@@ -178,6 +221,38 @@ public class HostileEncounter extends Battle
     {
         for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
             heal(hostile.getName(), hitpoints);
+        }
+    }
+
+    /**
+     * Hurt encountered creature with given name by given amount of hitpoints
+     *
+     * @param name      Encountered creature name
+     * @param hitpoints Hitpoints
+     *
+     * @throws BattlePhaseException If encounter is over
+     */
+    void hurt(@NotNull String name, int hitpoints) throws BattlePhaseException
+    {
+        phaseManager.assertNotFinalPhase();
+
+        CombatCreature   target = getCreature(name);
+        HurtActionResult result = target.hurt(hitpoints);
+
+        logger.logAction(result);
+        postHurt(target, result);
+        handleEndOfAction();
+    }
+
+    /**
+     * Hurt all active explorers by a given amount
+     *
+     * @param hitpoints Hitpoints to hurt
+     */
+    void hurtAllExplorers(int hitpoints)
+    {
+        for (CombatExplorer explorer : getActiveExplorers()) {
+            hurt(explorer.getName(), hitpoints);
         }
     }
 
@@ -205,7 +280,7 @@ public class HostileEncounter extends Battle
             throw EncounterException.createWrongPhase("loot", EncounterPhase.LOOT_PHASE);
         }
 
-        EncounteredExplorer explorer = getEncounteredExplorer(player);
+        EncounteredExplorer explorer = explorerRoster.getExplorer(player);
         LootActionResult    result   = explorer.getLoot();
 
         logger.logAction(result);
@@ -232,6 +307,42 @@ public class HostileEncounter extends Battle
         currentExplorer.giveProtectAction();
 
         doProtect(currentExplorer, targetName);
+    }
+
+    /**
+     * Modify stat
+     *
+     * @param name         Name of creature to modify stat for
+     * @param statName     Name of stat to modify
+     * @param statModifier Modifier to apply to stat
+     *
+     * @throws BattlePhaseException If the encounter is over
+     */
+    void modifyStat(
+        @NotNull String name,
+        @NotNull String statName,
+        int statModifier
+    ) throws BattlePhaseException
+    {
+        phaseManager.assertNotFinalPhase();
+
+        CombatCreature         target = getCreature(name);
+        ModifyStatActionResult result = target.modifyStat(statName, statModifier);
+        explorerRoster.sort();
+        logger.logAction(result);
+    }
+
+    /**
+     * Modify stat for all explorers
+     *
+     * @param statName     Stat name
+     * @param statModifier Amount to modify stat
+     */
+    void modifyStatForAllExplorers(@NotNull String statName, int statModifier)
+    {
+        for (CombatExplorer explorer : getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statModifier);
+        }
     }
 
     /**
@@ -288,6 +399,57 @@ public class HostileEncounter extends Battle
     }
 
     /**
+     * Revive an explorer and heal to half health
+     *
+     * @param name Encountered explorer name
+     *
+     * @throws BattlePhaseException If encounter is over
+     */
+    void revive(@NotNull String name) throws BattlePhaseException
+    {
+        phaseManager.assertNotFinalPhase();
+
+        CombatCreature   target = getCreature(name);
+        HealActionResult result = target.healPercent((float) 0.5);
+
+        postRevive(target, result);
+        logger.logAction(result);
+        handleEndOfAction();
+    }
+
+    /**
+     * Set stat
+     *
+     * @param name      Name of creature to modify stat for
+     * @param statName  Name of stat to modify
+     * @param statValue New stat value
+     *
+     * @throws BattlePhaseException If the encounter is over
+     */
+    void setStat(@NotNull String name, @NotNull String statName, int statValue) throws BattlePhaseException
+    {
+        phaseManager.assertNotFinalPhase();
+
+        CombatCreature         target = getCreature(name);
+        ModifyStatActionResult result = target.setStat(statName, statValue);
+        explorerRoster.sort();
+        logger.logAction(result);
+    }
+
+    /**
+     * Set stat for all explorers
+     *
+     * @param statName  Stat name
+     * @param statValue Amount to modify stat
+     */
+    void setStatForAllExplorers(@NotNull String statName, int statValue)
+    {
+        for (CombatExplorer explorer : getActiveExplorers()) {
+            modifyStat(explorer.getName(), statName, statValue);
+        }
+    }
+
+    /**
      * Set stat for all hostiles
      *
      * @param statName  Stat name
@@ -314,7 +476,7 @@ public class HostileEncounter extends Battle
 
         BattlePhaseChange result = phaseManager.startDodgePhase();
 
-        for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
+        for (EncounteredExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.resetActions(true);
         }
 
@@ -393,52 +555,11 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result)
-    {
-        if (target instanceof EncounteredHostile && result.wasTargetRevived() && !target.isBloodied()) {
-            addOpponentToActiveExplorers(target);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result)
-    {
-        if (target instanceof EncounteredHostile && !result.wasBloodied()) {
-            addOpponentToActiveExplorers(target);
-        }
-
-        if (target.isSlain()) {
-            if (target instanceof EncounteredHostile) {
-                finalizeKillForExplorers(target);
-            } else if (hasPhoenixDown && target instanceof EncounteredExplorer) {
-                usePhoenixDown((EncounteredExplorer) target);
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected void postJoin(@NotNull CombatExplorer explorer)
     {
         if (phaseManager.isInitiativePhase()) {
             addToInitiative(explorer);
             explorer.resetActions(phaseManager.isDodgePhase());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
-    {
-        if (target instanceof EncounteredHostile && result.wasTargetRevived() && !target.isBloodied()) {
-            addOpponentToActiveExplorers(target);
         }
     }
 
@@ -470,7 +591,7 @@ public class HostileEncounter extends Battle
     private void addOpponentToActiveExplorers(@NotNull CombatCreature opponent)
     {
         if (opponent instanceof EncounteredHostile) {
-            for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
+            for (EncounteredExplorer explorer : explorerRoster.getAllExplorers()) {
                 if (explorer.isActive()) {
                     explorer.addOpponent((EncounteredHostile) opponent);
                 }
@@ -486,7 +607,7 @@ public class HostileEncounter extends Battle
      */
     private void doProtect(@NotNull EncounteredExplorer protector, @NotNull String targetName)
     {
-        CombatExplorer      protectedExplorer = getEncounteredExplorer(targetName);
+        CombatExplorer      protectedExplorer = explorerRoster.getExplorer(targetName);
         ProtectActionResult result            = protector.protect(protectedExplorer, hostileRoster.getActiveHostiles());
 
         logger.logAction(result);
@@ -501,29 +622,9 @@ public class HostileEncounter extends Battle
      */
     private void finalizeKillForExplorers(@NotNull CombatCreature slainCreature)
     {
-        for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
+        for (EncounteredExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.finalizeKill((EncounteredHostile) slainCreature);
         }
-    }
-
-    /**
-     * Get encountered explorers
-     * todo REMOVE
-     *
-     * @return ArrayList
-     *
-     * @deprecated
-     */
-    private @NotNull ArrayList<EncounteredExplorer> getAllEncounteredExplorer()
-    {
-        ArrayList<EncounteredExplorer> encounteredExplorers = new ArrayList<>();
-        for (CombatExplorer explorer : getAllExplorers()) {
-            if (explorer instanceof EncounteredExplorer) {
-                encounteredExplorers.add((EncounteredExplorer) explorer);
-            }
-        }
-
-        return encounteredExplorers;
     }
 
     /**
@@ -555,36 +656,6 @@ public class HostileEncounter extends Battle
     }
 
     /**
-     * Get encountered explorer
-     * todo REMOVE
-     *
-     * @param player Player
-     *
-     * @return EncounteredExplorer
-     *
-     * @deprecated
-     */
-    private @NotNull EncounteredExplorer getEncounteredExplorer(@NotNull Player player)
-    {
-        return (EncounteredExplorer) getExplorer(player);
-    }
-
-    /**
-     * Get encountered explorer
-     * todo REMOVE
-     *
-     * @param name Name
-     *
-     * @return EncounteredExplorer
-     *
-     * @deprecated
-     */
-    private @NotNull EncounteredExplorer getEncounteredExplorer(@NotNull String name)
-    {
-        return (EncounteredExplorer) getExplorer(name);
-    }
-
-    /**
      * Handle any additional post dodge related processes
      *
      * @param explorer Explorer
@@ -597,13 +668,60 @@ public class HostileEncounter extends Battle
     }
 
     /**
+     * Handle any additional post heal related processes
+     *
+     * @param target Target of healing
+     * @param result Result of healing
+     */
+    private void postHeal(@NotNull CombatCreature target, @NotNull HealActionResult result)
+    {
+        if (target instanceof EncounteredHostile && result.wasTargetRevived() && !target.isBloodied()) {
+            addOpponentToActiveExplorers(target);
+        }
+    }
+
+    /**
+     * Handle any additional post hurt related processes
+     *
+     * @param target Target of hurting
+     * @param result Result of hurting
+     */
+    private void postHurt(@NotNull CombatCreature target, @NotNull HurtActionResult result)
+    {
+        if (target instanceof EncounteredHostile && !result.wasBloodied()) {
+            addOpponentToActiveExplorers(target);
+        }
+
+        if (target.isSlain()) {
+            if (target instanceof EncounteredHostile) {
+                finalizeKillForExplorers(target);
+            } else if (hasPhoenixDown && target instanceof EncounteredExplorer) {
+                usePhoenixDown((EncounteredExplorer) target);
+            }
+        }
+    }
+
+    /**
+     * Handle any additional post revive related processes
+     *
+     * @param target Target of reviving
+     * @param result Result of reviving
+     */
+    private void postRevive(@NotNull CombatCreature target, @NotNull HealActionResult result)
+    {
+        if (target instanceof EncounteredHostile && result.wasTargetRevived() && !target.isBloodied()) {
+            addOpponentToActiveExplorers(target);
+        }
+    }
+
+    /**
      * Handle any additional pre remove hostile related processes
      *
      * @param hostile Hostile to be removed
      */
     private void preRemoveHostile(@NotNull EncounteredHostile hostile)
     {
-        for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
+        for (EncounteredExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.removeOpponent(hostile);
         }
     }
@@ -635,7 +753,7 @@ public class HostileEncounter extends Battle
 
         clearInitiative();
 
-        for (EncounteredExplorer explorer : getAllEncounteredExplorer()) {
+        for (EncounteredExplorer explorer : explorerRoster.getAllExplorers()) {
             explorer.lootKills();
         }
 

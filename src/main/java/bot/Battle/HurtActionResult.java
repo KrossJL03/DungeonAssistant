@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.ActionResultInterface;
 import org.jetbrains.annotations.NotNull;
 
 public class HurtActionResult implements ActionResultInterface

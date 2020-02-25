@@ -8,14 +8,14 @@ import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class VictoryPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
     /**
      * Constructor.
      */
-    VictoryPhaseStartMessageFactory()
+    EndPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }
@@ -28,9 +28,9 @@ public class VictoryPhaseStartMessageFactory implements PhaseChangeMessageFactor
     {
         Message message = new Message();
 
-        message.add(textFormatter.makeBold("IT'S OVER!!!"));
+        message.add(textFormatter.makeBoldItalic("THE BATTLE IS OVER!!!"));
         message.addBreak();
-        message.add("Battle is over! Only one chiot stands, and that is...");
+        message.add("Looks like we're calling it here for now. Great fight everyone!");
 
         return message;
     }
@@ -44,6 +44,6 @@ public class VictoryPhaseStartMessageFactory implements PhaseChangeMessageFactor
         @NotNull BattlePhase nextPhase
     )
     {
-        return nextPhase instanceof PvpPhase && ((PvpPhase) nextPhase).isVictoryPhase();
+        return nextPhase.isEndPhase();
     }
 }

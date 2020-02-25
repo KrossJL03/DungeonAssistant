@@ -1,5 +1,8 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.BattlePhase;
+import bot.Battle.BattlePhaseChangeResult;
+import bot.Battle.PhaseChangeMessageFactoryInterface;
 import bot.Message;
 import bot.MessageInterface;
 import bot.TextFormatter;
@@ -12,7 +15,7 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
     /**
      * Constructor.
      */
-    public EndPhaseStartMessageFactory()
+    EndPhaseStartMessageFactory()
     {
         this.textFormatter = new TextFormatter();
     }

@@ -1,11 +1,15 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.ActionMessageFactory;
+import bot.Battle.ActionResultInterface;
+import bot.Battle.HurtActionResult;
+import bot.Battle.Mention;
 import bot.Constant;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class HurtActionMessageFactory extends ActionMessageFactory
+class HurtActionMessageFactory extends ActionMessageFactory
 {
     /**
      * {@inheritDoc}

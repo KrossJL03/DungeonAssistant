@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.ActionResultInterface;
 import bot.Constant;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,14 +11,13 @@ public class ModifyStatActionResult implements ActionResultInterface
     private int    statValue;
 
     /**
-     * ModifyStatActionResult constructor
+     * Constructor.
      *
      * @param creatureName Name of creature with modded stat
      * @param statName     Name of modded stat
      * @param statMod      Amount stat was modified
      * @param statValue    Value of stat after modification
      */
-    @NotNull
     public ModifyStatActionResult(
         @NotNull String creatureName,
         @NotNull String statName,

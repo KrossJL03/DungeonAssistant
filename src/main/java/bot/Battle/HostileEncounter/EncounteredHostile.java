@@ -56,16 +56,6 @@ public class EncounteredHostile extends CombatCreature
     }
 
     /**
-     * Get attack roll
-     *
-     * @return int
-     */
-    public int getAttackRoll()
-    {
-        return attackRoll;
-    }
-
-    /**
      * Get hostile
      *
      * @return Hostile
@@ -177,6 +167,16 @@ public class EncounteredHostile extends CombatCreature
         }
 
         return false;
+    }
+
+    /**
+     * Get attack roll
+     *
+     * @return int
+     */
+    int getAttackRoll()
+    {
+        return attackRoll;
     }
 
     /**

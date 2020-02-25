@@ -1,7 +1,5 @@
 package bot.Battle.HostileEncounter;
 
-import bot.Battle.EndPhaseStartMessageFactory;
-import bot.Battle.JoinPhaseStartMessageFactory;
 import bot.Battle.PhaseChangeMessageBuilder;
 import bot.Battle.PhaseChangeMessageFactoryInterface;
 

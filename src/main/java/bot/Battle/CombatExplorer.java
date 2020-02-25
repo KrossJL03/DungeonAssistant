@@ -85,16 +85,6 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
-     * Get agility
-     *
-     * @return int
-     */
-    public int getAgility()
-    {
-        return agility;
-    }
-
-    /**
      * Get defense
      *
      * @return int
@@ -105,16 +95,6 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
-     * Get defense
-     *
-     * @return int
-     */
-    public int getDefense()
-    {
-        return defense;
-    }
-
-    /**
      * Get dodge dice
      *
      * @return int
@@ -122,26 +102,6 @@ public class CombatExplorer extends CombatCreature
     public int getDodgeDice()
     {
         return ((int) Math.floor(agility / 2)) + 10;
-    }
-
-    /**
-     * Get max actions
-     *
-     * @return int
-     */
-    public int getMaxActions()
-    {
-        return (int) Math.floor(agility / 10) + 1;
-    }
-
-    /**
-     * Get min crit
-     *
-     * @return int
-     */
-    public int getMinCrit()
-    {
-        return 20 - ((int) Math.floor(wisdom / 4));
     }
 
     /**
@@ -174,37 +134,6 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
-     * Get stat points
-     *
-     * @return int
-     */
-    public int getStatPoints()
-    {
-        return strength + defense + agility + wisdom +
-               ((getMaxHP() - Constant.EXPLORER_MIN_HITPOINTS) / Constant.EXPLORER_HITPOINT_STAT_MULTIPLIER);
-    }
-
-    /**
-     * Get strength
-     *
-     * @return int
-     */
-    public int getStrength()
-    {
-        return strength;
-    }
-
-    /**
-     * Get wisdom
-     *
-     * @return int
-     */
-    public int getWisdom()
-    {
-        return wisdom;
-    }
-
-    /**
      * Has actions
      *
      * @return boolean
@@ -233,16 +162,6 @@ public class CombatExplorer extends CombatCreature
     public boolean isOwner(@NotNull Player player)
     {
         return owner.isSamePlayer(player);
-    }
-
-    /**
-     * Is present in encounter
-     *
-     * @return boolean
-     */
-    public boolean isPresent()
-    {
-        return isPresent;
     }
 
     /**
@@ -345,6 +264,16 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
+     * Get agility
+     *
+     * @return int
+     */
+    int getAgility()
+    {
+        return agility;
+    }
+
+    /**
      * Get the time the explorer joined the battle
      *
      * @return ZonedDateTime
@@ -352,6 +281,67 @@ public class CombatExplorer extends CombatCreature
     @NotNull ZonedDateTime getJoinedAt()
     {
         return joinedAt;
+    }
+
+    /**
+     * Get max actions
+     *
+     * @return int
+     */
+    int getMaxActions()
+    {
+        return (int) Math.floor(agility / 10) + 1;
+    }
+
+    /**
+     * Get min crit
+     *
+     * @return int
+     */
+    int getMinCrit()
+    {
+        return 20 - ((int) Math.floor(wisdom / 4));
+    }
+
+    /**
+     * Get stat points
+     *
+     * @return int
+     */
+    int getStatPoints()
+    {
+        return strength + defense + agility + wisdom +
+               ((getMaxHP() - Constant.EXPLORER_MIN_HITPOINTS) / Constant.EXPLORER_HITPOINT_STAT_MULTIPLIER);
+    }
+
+    /**
+     * Get strength
+     *
+     * @return int
+     */
+    int getStrength()
+    {
+        return strength;
+    }
+
+    /**
+     * Get wisdom
+     *
+     * @return int
+     */
+    int getWisdom()
+    {
+        return wisdom;
+    }
+
+    /**
+     * Is present in the battle
+     *
+     * @return boolean
+     */
+    boolean isPresent()
+    {
+        return isPresent;
     }
 
     /**
@@ -401,6 +391,16 @@ public class CombatExplorer extends CombatCreature
         if (!hasActions()) {
             throw CombatCreatureException.createHasNoActions(getName());
         }
+    }
+
+    /**
+     * Get defense
+     *
+     * @return int
+     */
+    protected int getDefense()
+    {
+        return defense;
     }
 
     /**
@@ -600,7 +600,7 @@ public class CombatExplorer extends CombatCreature
      */
     private DamageRoll rollDamage(@NotNull HitRoll hitRoll, @NotNull CombatCreature target)
     {
-        if (hitRoll.isHit()) {
+        if (!hitRoll.isHit()) {
             throw new CustomException("Can't roll damage if you miss.");
         }
 

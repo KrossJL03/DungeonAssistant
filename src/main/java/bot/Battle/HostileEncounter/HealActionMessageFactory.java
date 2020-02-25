@@ -1,16 +1,20 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.ActionMessageFactory;
+import bot.Battle.ActionResultInterface;
+import bot.Battle.HealActionResult;
+import bot.Battle.Mention;
 import bot.Constant;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class HealActionMessageFactory extends ActionMessageFactory
+class HealActionMessageFactory extends ActionMessageFactory
 {
     /**
      * Constructor.
      */
-    public HealActionMessageFactory()
+    HealActionMessageFactory()
     {
         super();
     }

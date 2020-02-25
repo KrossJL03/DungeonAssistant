@@ -71,9 +71,12 @@ public class BattleLogger
      */
     public void logActionsRemaining(@NotNull String name, int actionsRemaining)
     {
-        sendMessage(
-            String.format("%s has %d action%s remaining", name, actionsRemaining, actionsRemaining > 1 ? "s" : "")
-        );
+        sendMessage(String.format(
+            "%s has %d action%s remaining",
+            name,
+            actionsRemaining,
+            actionsRemaining > 1 ? "s" : ""
+        ));
     }
 
     /**
@@ -83,13 +86,11 @@ public class BattleLogger
      */
     public void pingPlayerTurn(@NotNull CombatExplorer explorer)
     {
-        sendMessage(
-            String.format(
-                "%s, it's %s's turn!",
-                (Mention.createForPlayer(explorer.getOwner().getUserId())).getValue(),
-                explorer.getName()
-            )
-        );
+        sendMessage(String.format(
+            "%s, it's %s's turn!",
+            (Mention.createForPlayer(explorer.getOwner().getUserId())).getValue(),
+            explorer.getName()
+        ));
     }
 
     /**
@@ -184,9 +185,9 @@ public class BattleLogger
      *
      * @param maxPlayerCount Max player count
      */
-    void logSetMaxPlayers(int maxPlayerCount)
+    void logSetPartySize(int maxPlayerCount)
     {
-        sendMessage(String.format("Max player count has been set to %d", maxPlayerCount));
+        sendMessage(String.format("The party size has been set to %d explorers", maxPlayerCount));
     }
 
     /**
@@ -223,13 +224,11 @@ public class BattleLogger
      */
     void pingDmItemUsed(@NotNull Player player)
     {
-        sendMessage(
-            String.format(
-                "%s, %s has used an item. Could you tell me what to do?",
-                dmMention.getValue(),
-                (Mention.createForPlayer(player.getUserId())).getValue()
-            )
-        );
+        sendMessage(String.format(
+            "%s, %s has used an item. Could you tell me what to do?",
+            dmMention.getValue(),
+            (Mention.createForPlayer(player.getUserId())).getValue()
+        ));
     }
 
     /**

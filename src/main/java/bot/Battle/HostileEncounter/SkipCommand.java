@@ -4,12 +4,9 @@ import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
 import bot.Message;
 import bot.ProcessManager;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
-public class PassCommand extends EncounterCommand
+class SkipCommand extends bot.Battle.SkipCommand
 {
     /**
      * Constructor.
@@ -18,7 +15,7 @@ public class PassCommand extends EncounterCommand
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    PassCommand(
+    SkipCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker
@@ -28,20 +25,8 @@ public class PassCommand extends EncounterCommand
             processManager,
             holder,
             dmChecker,
-            "pass",
-            new ArrayList<>(),
-            buildDescription(),
-            true
+            buildDescription()
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void execute(@NotNull MessageReceivedEvent event)
-    {
-        getHostileEncounter().passAction();
     }
 
     /**
@@ -53,8 +38,8 @@ public class PassCommand extends EncounterCommand
     {
         Message description = new Message();
 
-        description.add("The current explorer passes their turn successfully.");
-        description.add("Used to dodge all attacks.");
+        description.add("Skip the current player's turn.");
+        description.add("Automatically fail all dodge attempts.");
 
         return description.getAsString();
     }

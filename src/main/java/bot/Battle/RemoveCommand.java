@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class RemoveCommand extends BattleCommand
+abstract public class RemoveCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -16,11 +16,15 @@ public class RemoveCommand extends BattleCommand
      * @param processManager Process manager
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
+     * @param description    Description
+     * @param parameterName  Parameter name
      */
-    public RemoveCommand(
+    protected RemoveCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
+        @NotNull DungeonMasterChecker dmChecker,
+        @NotNull String description,
+        @NotNull String parameterName
     )
     {
         super(
@@ -31,10 +35,10 @@ public class RemoveCommand extends BattleCommand
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("TargetName", true));
+                    add(new CommandParameter(parameterName, true));
                 }
             },
-            buildDescription(),
+            description,
             true
         );
     }

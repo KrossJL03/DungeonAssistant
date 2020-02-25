@@ -351,7 +351,7 @@ class ExplorerRosterTest
         when(explorer1.getAgility()).thenReturn(5);
         when(explorer2.getAgility()).thenReturn(5);
         when(explorer3.getAgility()).thenReturn(15);
-        expectedList.sort(new ExplorerAgilityComparator());
+        expectedList.sort(new ExplorerInitiativeComparator());
 
         explorerRoster.sort();
         assertEquals(expectedList, explorerRoster.getAllExplorers());
