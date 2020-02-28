@@ -162,11 +162,10 @@ public class BattlePhaseManager
      * @return BattlePhaseChange
      *
      * @throws CustomException If the battle is in a final phase
-     *                         If the battle is still in the create phase
      */
     @NotNull BattlePhaseChange startEndPhase()
     {
-        assertInProgressPhase();
+        assertNotFinalPhase();
 
         return changePhase(factory.createEndPhase());
     }

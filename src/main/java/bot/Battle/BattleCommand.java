@@ -99,7 +99,7 @@ public abstract class BattleCommand extends Command
      */
     protected @NotNull BattleInterface getBattle()
     {
-        return holder.getEncounter();
+        return holder.getBattle();
     }
 
     /**

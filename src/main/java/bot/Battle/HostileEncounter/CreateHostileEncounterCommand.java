@@ -1,7 +1,9 @@
 package bot.Battle.HostileEncounter;
 
+import bot.Battle.BattleInterface;
 import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
+import bot.CustomException;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +45,16 @@ public class CreateHostileEncounterCommand extends EncounterCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event)
     {
-        removeProcessToManager(holder.getEncounter());
+        if (holder.hasActiveBattle()) {
+            BattleInterface battle = holder.getBattle();
+            throw new CustomException(String.format(
+                "Can't start a new battle right now, there's a %s battle in progress",
+                battle.getBattleStyle()
+            ));
+        }
+
+        removeProcessToManager(holder.getBattle());
         holder.createHostileEncounter(event.getChannel(), getDungeonMaster(event).getId());
-        addProcessToManager(holder.getEncounter());
+        addProcessToManager(holder.getBattle());
     }
 }

@@ -27,6 +27,15 @@ public class EncounterHolder
     {
         encounter = new HostileEncounter(channel, Mention.createForRole(dmId));
     }
+    /**
+     * Is there a battle currently in progress
+     *
+     * @return boolean
+     */
+    public boolean hasActiveBattle()
+    {
+        return !encounter.isNull() && !encounter.isOver();
+    }
 
     /**
      * Create pvp
@@ -44,7 +53,7 @@ public class EncounterHolder
      *
      * @return BattleInterface
      */
-    public @NotNull BattleInterface getEncounter()
+    public @NotNull BattleInterface getBattle()
     {
         return encounter;
     }
