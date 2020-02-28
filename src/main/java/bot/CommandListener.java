@@ -63,8 +63,6 @@ public class CommandListener extends ListenerAdapter
                         return;
                     }
                 }
-
-                channel.sendMessage("Sorry, did you say something? I don't know that command").queue();
             } else {
                 String[] splitArray  = input.split("\\s+");
                 String   commandName = splitArray[0].toLowerCase();
