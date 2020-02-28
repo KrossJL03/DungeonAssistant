@@ -54,10 +54,6 @@ public class CommandListener extends ListenerAdapter
                     return;
                 }
             }
-
-            if (input.startsWith(MyProperties.COMMAND_PREFIX)) {
-                channel.sendMessage("Sorry, did you say something? I don't know that command").queue();
-            }
         } catch (ArrayIndexOutOfBoundsException e) {
             channel.sendMessage(
                 String.format(
