@@ -226,7 +226,7 @@ class ExplorerRosterTest
         // player attempts to leave that was present //
         when(explorer.isPresent()).thenReturn(true);
         explorerRoster.markAsLeft(p);
-        verify(explorer, times(1)).markAsNotPresent();
+        verify(explorer, times(1)).leave();
         ///////////////////////////////////////////////
     }
 

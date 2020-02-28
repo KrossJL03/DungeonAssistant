@@ -31,6 +31,6 @@ public class InitiativeTrackerException extends CustomException
      */
     public static InitiativeTrackerException createNotSupported()
     {
-        return new InitiativeTrackerException("Help me idk");
+        return new InitiativeTrackerException("What are you doing! This command is not supported");
     }
 }

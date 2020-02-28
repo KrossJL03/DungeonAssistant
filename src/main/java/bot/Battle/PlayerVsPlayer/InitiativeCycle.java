@@ -64,6 +64,8 @@ class InitiativeCycle implements InitiativeTrackerInterface
     @Override
     public void remove(@NotNull CombatExplorer explorer)
     {
-        throw InitiativeTrackerException.createNotSupported();
+        if (explorer.isActive()) {
+            explorer.leave();
+        }
     }
 }

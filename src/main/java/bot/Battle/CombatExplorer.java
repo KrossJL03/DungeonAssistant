@@ -148,6 +148,20 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
+     * Leave the encounter
+     *
+     * @throws CombatCreatureException If explorer has already left
+     */
+    public void leave() throws CombatCreatureException
+    {
+        if (!isPresent()) {
+            throw CombatCreatureException.createHasAlreadyLeft(owner);
+        }
+
+        isPresent = false;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -325,20 +339,6 @@ public class CombatExplorer extends CombatCreature
     boolean isPresent()
     {
         return isPresent;
-    }
-
-    /**
-     * Leave the encounter
-     *
-     * @throws CombatCreatureException If explorer has already left
-     */
-    void markAsNotPresent() throws CombatCreatureException
-    {
-        if (!isPresent()) {
-            throw CombatCreatureException.createHasAlreadyLeft(owner);
-        }
-
-        isPresent = false;
     }
 
     /**

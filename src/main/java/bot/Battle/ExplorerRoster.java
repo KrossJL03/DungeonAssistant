@@ -249,7 +249,7 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
             throw ExplorerRosterException.createExplorerNotFound(explorer.getName());
         }
 
-        explorer.markAsNotPresent();
+        explorer.leave();
         explorerRoster.remove(explorer);
         kickedPlayers.add(explorer.getOwner());
 
@@ -268,7 +268,7 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
     @NotNull Explorer markAsLeft(@NotNull Player player) throws ExplorerRosterException
     {
         Explorer explorer = getExplorer(player);
-        explorer.markAsNotPresent();
+        explorer.leave();
 
         return explorer;
     }
