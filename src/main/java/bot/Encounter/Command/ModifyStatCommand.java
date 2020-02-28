@@ -73,18 +73,10 @@ public class ModifyStatCommand extends EncounterCommand
 
         switch (targetName) {
             case "pcs":
-                if (isModify) {
-                    getHostileEncounter().modifyStatForAllExplorers(statName, valueInt);
-                } else {
-                    getHostileEncounter().setStatForAllExplorers(statName, valueInt);
-                }
+                getHostileEncounter().modifyStatForAllExplorers(statName, valueInt);
                 break;
             case "hostiles":
-                if (isModify) {
-                    getHostileEncounter().modifyStatForAllHostiles(statName, valueInt);
-                } else {
-                    getHostileEncounter().setStatForAllHostiles(statName, valueInt);
-                }
+                getHostileEncounter().modifyStatForAllHostiles(statName, valueInt);
                 break;
             default:
                 if (isModify) {

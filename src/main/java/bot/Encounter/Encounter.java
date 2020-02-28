@@ -625,7 +625,7 @@ public class Encounter implements EncounterInterface
     public void setStatForAllExplorers(@NotNull String statName, int statValue)
     {
         for (EncounteredExplorerInterface explorer : explorerRoster.getActiveExplorers()) {
-            modifyStat(explorer.getName(), statName, statValue);
+            setStat(explorer.getName(), statName, statValue);
         }
     }
 
@@ -638,7 +638,7 @@ public class Encounter implements EncounterInterface
     public void setStatForAllHostiles(@NotNull String statName, int statValue)
     {
         for (EncounteredHostileInterface hostile : getActiveHostiles()) {
-            modifyStat(hostile.getName(), statName, statValue);
+            setStat(hostile.getName(), statName, statValue);
         }
     }
 
