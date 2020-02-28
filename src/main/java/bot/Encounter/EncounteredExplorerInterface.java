@@ -31,15 +31,6 @@ public interface EncounteredExplorerInterface extends EncounteredCreatureInterfa
         throws EncounteredExplorerException;
 
     /**
-     * Compare to
-     *
-     * @param encounteredExplorer Encountered explorer to compare
-     *
-     * @return int
-     */
-    int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer);
-
-    /**
      * Dodge encountered hostile attacks
      *
      * @param encounteredHostiles Encountered hostiles to dodge

@@ -122,20 +122,6 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
      * {@inheritDoc}
      */
     @Override
-    public int compareTo(@NotNull EncounteredExplorerInterface encounteredExplorer)
-    {
-        int difference = encounteredExplorer.getAgility() - agility;
-        if (difference == 0) {
-            difference = joinedAt.compareTo(encounteredExplorer.getJoinedAt());
-        }
-
-        return difference;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public @NotNull DodgeActionResult dodge(@NotNull ArrayList<EncounteredHostileInterface> encounteredHostiles)
     {
         if (!hasActions()) {

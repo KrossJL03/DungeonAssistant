@@ -12,6 +12,11 @@ public class ExplorerAgilityComparator implements Comparator<EncounteredExplorer
     @Override
     public int compare(@NotNull EncounteredExplorerInterface explorer1, @NotNull EncounteredExplorerInterface explorer2)
     {
-        return explorer2.getAgility() - explorer1.getAgility();
+        int difference = explorer2.getAgility() - explorer1.getAgility();
+        if (difference == 0) {
+            difference = explorer1.getJoinedAt().compareTo(explorer2.getJoinedAt());
+        }
+
+        return difference;
     }
 }
