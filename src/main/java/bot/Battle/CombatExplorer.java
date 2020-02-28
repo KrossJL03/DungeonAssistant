@@ -68,23 +68,6 @@ public class CombatExplorer extends CombatCreature
     }
 
     /**
-     * Compare to
-     *
-     * @param explorer Explorer to compare
-     *
-     * @return int
-     */
-    public int compareTo(@NotNull CombatExplorer explorer)
-    {
-        int difference = explorer.getAgility() - agility;
-        if (difference == 0) {
-            difference = joinedAt.compareTo(explorer.getJoinedAt());
-        }
-
-        return difference;
-    }
-
-    /**
      * Get defense
      *
      * @return int

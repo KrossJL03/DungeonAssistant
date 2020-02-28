@@ -14,7 +14,7 @@ public class ExplorerInitiativeComparator implements Comparator<CombatExplorer>
     {
         int difference = explorer2.getAgility() - explorer1.getAgility();
         if (difference == 0) {
-            difference = explorer2.getJoinedAt().compareTo(explorer1.getJoinedAt());
+            difference = explorer1.getJoinedAt().compareTo(explorer2.getJoinedAt());
         }
 
         return difference;

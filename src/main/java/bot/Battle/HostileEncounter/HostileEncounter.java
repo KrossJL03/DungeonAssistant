@@ -445,7 +445,7 @@ public class HostileEncounter extends Battle
     void setStatForAllExplorers(@NotNull String statName, int statValue)
     {
         for (CombatExplorer explorer : getActiveExplorers()) {
-            modifyStat(explorer.getName(), statName, statValue);
+            setStat(explorer.getName(), statName, statValue);
         }
     }
 
@@ -458,7 +458,7 @@ public class HostileEncounter extends Battle
     void setStatForAllHostiles(@NotNull String statName, int statValue)
     {
         for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            modifyStat(hostile.getName(), statName, statValue);
+            setStat(hostile.getName(), statName, statValue);
         }
     }
 
