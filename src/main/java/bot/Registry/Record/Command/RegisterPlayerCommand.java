@@ -1,7 +1,6 @@
 package bot.Registry.Record.Command;
 
-import bot.MyProperties;
-import bot.Player.PlayerManager;
+import bot.Player.Player;
 import bot.ProcessManager;
 import bot.Registry.RegistryLogger;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -35,15 +34,9 @@ public class RegisterPlayerCommand extends RecordCommand
     @Override
     public void handle(@NotNull MessageReceivedEvent event) throws RecordCommandException
     {
-        ensureRecordingNotLocked();
+        Player         player  = updatePlayer(event);
+        MessageChannel channel = event.getChannel();
 
-        MessageChannel channel  = event.getChannel();
-        String         nickname = event.getMember().getNickname();
-        if (nickname == null) {
-            nickname = event.getAuthor().getName();
-        }
-
-        PlayerManager.savePlayer(event.getAuthor().getId(), nickname);
-        channel.sendMessage(String.format("Hi %s! I've got all your information down now.", nickname)).queue();
+        channel.sendMessage(String.format("Hi %s! I've got all your information down now.", player.getName())).queue();
     }
 }
