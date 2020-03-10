@@ -357,13 +357,11 @@ public class EncounteredHostile implements EncounteredHostileInterface
     {
         int moddedStatValue = attack + statModifier;
         if (moddedStatValue < Constant.HOSTILE_MIN_ATTACK) {
-            throw EncounteredCreatureException.createStatLessThanMin(
-                name,
-                Constant.HOSTILE_STAT_ATTACK,
-                Constant.HOSTILE_MIN_ATTACK
-            );
+            statModifier = attack - Constant.HOSTILE_MIN_ATTACK;
+            attack = Constant.HOSTILE_MIN_ATTACK;
+        } else {
+            attack += statModifier;
         }
-        attack = moddedStatValue;
 
         return new ModifyStatActionResult(name, Constant.HOSTILE_STAT_ATTACK, statModifier, attack);
     }
@@ -379,18 +377,19 @@ public class EncounteredHostile implements EncounteredHostileInterface
     {
         int moddedStatValue = maxHp + statModifier;
         if (moddedStatValue < Constant.HOSTILE_MIN_HITPOINTS) {
-            throw EncounteredCreatureException.createStatLessThanMin(
-                name,
-                Constant.HOSTILE_STAT_HITPOINTS,
-                Constant.HOSTILE_MIN_HITPOINTS
-            );
+            statModifier = maxHp - Constant.HOSTILE_MIN_HITPOINTS;
+            maxHp = Constant.HOSTILE_MIN_HITPOINTS;
+        } else {
+            maxHp += statModifier;
         }
-        maxHp += statModifier;
+
         if (statModifier > 0) {
             currentHp += statModifier;
         }
         if (currentHp > maxHp) {
             currentHp = maxHp;
+        } else if (currentHp < 1) {
+            currentHp = 0;
         }
 
         return new ModifyStatActionResult(name, Constant.HOSTILE_STAT_HITPOINTS, statModifier, maxHp);

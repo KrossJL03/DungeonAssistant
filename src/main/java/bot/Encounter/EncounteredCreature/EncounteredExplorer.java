@@ -872,16 +872,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private @NotNull ModifyStatActionResultInterface modifyAgility(int statModifier)
     {
         int moddedStatValue = agility + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_AGILITY ||
-            moddedStatValue < Constant.EXPLORER_MIN_AGILITY) {
-            throw EncounteredCreatureException.createStatOutOfBounds(
-                name,
-                Constant.EXPLORER_STAT_AGILITY,
-                Constant.EXPLORER_MIN_AGILITY,
-                Constant.EXPLORER_MAX_AGILITY
-            );
+        if (moddedStatValue > Constant.EXPLORER_MAX_AGILITY) {
+            statModifier = Constant.EXPLORER_MAX_AGILITY - agility;
+            agility = Constant.EXPLORER_MAX_AGILITY;
+        } else if (moddedStatValue < Constant.EXPLORER_MIN_AGILITY) {
+            statModifier = agility - Constant.EXPLORER_MIN_AGILITY;
+            agility = Constant.EXPLORER_MIN_AGILITY;
+        } else {
+            agility += statModifier;
         }
-        agility += statModifier;
 
         return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_AGILITY, statModifier, agility);
     }
@@ -896,16 +895,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private @NotNull ModifyStatActionResultInterface modifyDefense(int statModifier)
     {
         int moddedStatValue = defense + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_DEFENSE ||
-            moddedStatValue < Constant.EXPLORER_MIN_DEFENSE) {
-            throw EncounteredCreatureException.createStatOutOfBounds(
-                name,
-                Constant.EXPLORER_STAT_DEFENSE,
-                Constant.EXPLORER_MIN_DEFENSE,
-                Constant.EXPLORER_MAX_DEFENSE
-            );
+        if (moddedStatValue > Constant.EXPLORER_MAX_DEFENSE) {
+            statModifier = Constant.EXPLORER_MAX_DEFENSE - defense;
+            defense = Constant.EXPLORER_MAX_DEFENSE;
+        } else if (moddedStatValue < Constant.EXPLORER_MIN_DEFENSE) {
+            statModifier = defense - Constant.EXPLORER_MIN_DEFENSE;
+            defense = Constant.EXPLORER_MIN_DEFENSE;
+        } else {
+            defense += statModifier;
         }
-        defense += statModifier;
 
         return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_DEFENSE, statModifier, defense);
     }
@@ -920,21 +918,23 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private @NotNull ModifyStatActionResultInterface modifyHitpoints(int statModifier)
     {
         int moddedStatValue = maxHp + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_HITPOINTS ||
-            moddedStatValue < Constant.EXPLORER_MIN_HITPOINTS) {
-            throw EncounteredCreatureException.createStatOutOfBounds(
-                name,
-                Constant.EXPLORER_STAT_HITPOINTS,
-                Constant.EXPLORER_MIN_HITPOINTS,
-                Constant.EXPLORER_MAX_HITPOINTS
-            );
+        if (moddedStatValue > Constant.EXPLORER_MAX_HITPOINTS) {
+            statModifier = Constant.EXPLORER_MAX_HITPOINTS - maxHp;
+            maxHp = Constant.EXPLORER_MAX_HITPOINTS;
+        } else if (moddedStatValue < Constant.EXPLORER_MIN_HITPOINTS) {
+            statModifier = maxHp - Constant.EXPLORER_MIN_HITPOINTS;
+            maxHp = Constant.EXPLORER_MIN_HITPOINTS;
+        } else {
+            maxHp += statModifier;
         }
-        maxHp += statModifier;
+
         if (statModifier > 0) {
             currentHp += statModifier;
         }
         if (currentHp > maxHp) {
             currentHp = maxHp;
+        } else if (currentHp < 1) {
+            currentHp = 0;
         }
 
         return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_HITPOINTS, statModifier, maxHp);
@@ -950,16 +950,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private @NotNull ModifyStatActionResultInterface modifyStrength(int statModifier)
     {
         int moddedStatValue = strength + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_STRENGTH ||
-            moddedStatValue < Constant.EXPLORER_MIN_STRENGTH) {
-            throw EncounteredCreatureException.createStatOutOfBounds(
-                name,
-                Constant.EXPLORER_STAT_STRENGTH,
-                Constant.EXPLORER_MIN_STRENGTH,
-                Constant.EXPLORER_MAX_STRENGTH
-            );
+        if (moddedStatValue > Constant.EXPLORER_MAX_STRENGTH) {
+            statModifier = Constant.EXPLORER_MAX_STRENGTH - strength;
+            strength = Constant.EXPLORER_MAX_STRENGTH;
+        } else if (moddedStatValue < Constant.EXPLORER_MIN_STRENGTH) {
+            statModifier = strength - Constant.EXPLORER_MIN_STRENGTH;
+            strength = Constant.EXPLORER_MIN_STRENGTH;
+        } else {
+            strength += statModifier;
         }
-        strength += statModifier;
 
         return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_STRENGTH, statModifier, strength);
     }
@@ -974,16 +973,15 @@ public class EncounteredExplorer implements EncounteredExplorerInterface
     private @NotNull ModifyStatActionResultInterface modifyWisdom(int statModifier)
     {
         int moddedStatValue = wisdom + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_WISDOM ||
-            moddedStatValue < Constant.EXPLORER_MIN_WISDOM) {
-            throw EncounteredCreatureException.createStatOutOfBounds(
-                name,
-                Constant.EXPLORER_STAT_WISDOM,
-                Constant.EXPLORER_MIN_WISDOM,
-                Constant.EXPLORER_MAX_WISDOM
-            );
+        if (moddedStatValue > Constant.EXPLORER_MAX_WISDOM) {
+            statModifier = Constant.EXPLORER_MAX_WISDOM - wisdom;
+            wisdom = Constant.EXPLORER_MAX_WISDOM;
+        } else if (moddedStatValue < Constant.EXPLORER_MIN_WISDOM) {
+            statModifier = wisdom - Constant.EXPLORER_MIN_WISDOM;
+            wisdom = Constant.EXPLORER_MIN_WISDOM;
+        } else {
+            wisdom += statModifier;
         }
-        wisdom += statModifier;
 
         return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_WISDOM, statModifier, wisdom);
     }
