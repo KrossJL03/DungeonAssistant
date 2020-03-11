@@ -1,6 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredHostile;
+import bot.Battle.Encounter.EncounteredHostile;
 import bot.Message;
 import org.jetbrains.annotations.NotNull;
 

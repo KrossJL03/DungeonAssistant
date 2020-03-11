@@ -5,7 +5,7 @@ import bot.Battle.Battle;
 import bot.Battle.BattlePhaseChange;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
-import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.Encounter.EncounteredExplorer;
 import bot.Battle.Mention;
 import bot.CustomException;
 import bot.Explorer.Explorer;

@@ -1,6 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorerException;
+import bot.Battle.Encounter.EncounteredExplorerException;
 import bot.Constant;
 import bot.CustomException;
 import bot.Explorer.Explorer;

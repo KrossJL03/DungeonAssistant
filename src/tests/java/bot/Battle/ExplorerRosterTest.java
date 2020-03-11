@@ -1,6 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.Encounter.EncounteredExplorer;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;

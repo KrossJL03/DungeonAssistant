@@ -1,6 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
+import bot.Battle.Encounter.EncounteredExplorer;
 import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,16 +42,6 @@ public class AttackActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Get attacker name
-     *
-     * @return String
-     */
-    public @NotNull String getAttackerName()
-    {
-        return attackerName;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -61,32 +51,12 @@ public class AttackActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Get damage die
-     *
-     * @return int
-     */
-    public int getDamageDie()
-    {
-        return hasDamageRoll() ? damageRoll.getDie() : -1;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public int getDamageResisted()
     {
         return hasDamageRoll() ? damageRoll.getDamageResisted() : -1;
-    }
-
-    /**
-     * Get damage roll
-     *
-     * @return int
-     */
-    public int getDamageRoll()
-    {
-        return hasDamageRoll() ? damageRoll.getRoll() : -1;
     }
 
     /**
@@ -114,36 +84,6 @@ public class AttackActionResult implements CombatActionResultInterface
     public int getDeathSaveRoll()
     {
         throw new CustomException("Death saves are not rolled on the attack turn");
-    }
-
-    /**
-     * Get hit die
-     *
-     * @return int
-     */
-    public int getHitDie()
-    {
-        return hitRoll.getDie();
-    }
-
-    /**
-     * Get hit roll
-     *
-     * @return int
-     */
-    public int getHitRoll()
-    {
-        return hitRoll.getRoll();
-    }
-
-    /**
-     * Get hit type as string
-     *
-     * @return String
-     */
-    public @NotNull String getHitTypeString()
-    {
-        return isHit() ? (isCrit() ? "crit" : "hit") : (isFail() ? "fail" : "miss");
     }
 
     /**
@@ -183,36 +123,6 @@ public class AttackActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Is hit roll crit
-     *
-     * @return int
-     */
-    public boolean isCrit()
-    {
-        return hitRoll.isCrit();
-    }
-
-    /**
-     * Is hit roll fail
-     *
-     * @return int
-     */
-    public boolean isFail()
-    {
-        return hitRoll.isFail();
-    }
-
-    /**
-     * Is hit roll hit
-     *
-     * @return int
-     */
-    public boolean isHit()
-    {
-        return hitRoll.isHit();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -246,6 +156,96 @@ public class AttackActionResult implements CombatActionResultInterface
     public boolean survivedDeathSave()
     {
         throw new CustomException("Death saves are not rolled on the attack turn");
+    }
+
+    /**
+     * Get attacker name
+     *
+     * @return String
+     */
+    @NotNull String getAttackerName()
+    {
+        return attackerName;
+    }
+
+    /**
+     * Get damage die
+     *
+     * @return int
+     */
+    int getDamageDie()
+    {
+        return hasDamageRoll() ? damageRoll.getDie() : -1;
+    }
+
+    /**
+     * Get damage roll
+     *
+     * @return int
+     */
+    int getDamageRoll()
+    {
+        return hasDamageRoll() ? damageRoll.getRoll() : -1;
+    }
+
+    /**
+     * Get hit die
+     *
+     * @return int
+     */
+    int getHitDie()
+    {
+        return hitRoll.getDie();
+    }
+
+    /**
+     * Get hit roll
+     *
+     * @return int
+     */
+    int getHitRoll()
+    {
+        return hitRoll.getRoll();
+    }
+
+    /**
+     * Get hit type as string
+     *
+     * @return String
+     */
+    @NotNull String getHitTypeString()
+    {
+        return isHit() ? (isCrit() ? "crit" : "hit") : (isFail() ? "fail" : "miss");
+    }
+
+    /**
+     * Is hit roll crit
+     *
+     * @return int
+     */
+    boolean isCrit()
+    {
+        return hitRoll.isCrit();
+    }
+
+    /**
+     * Is hit roll fail
+     *
+     * @return int
+     */
+    boolean isFail()
+    {
+        return hitRoll.isFail();
+    }
+
+    /**
+     * Is hit roll hit
+     *
+     * @return int
+     */
+    boolean isHit()
+    {
+        return hitRoll.isHit();
     }
 
     /**

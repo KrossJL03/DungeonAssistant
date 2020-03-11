@@ -1,6 +1,6 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounterPhase;
+import bot.Battle.Encounter.EncounterPhase;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;

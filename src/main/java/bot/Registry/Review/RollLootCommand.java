@@ -1,7 +1,7 @@
 package bot.Registry.Review;
 
-import bot.Battle.HostileEncounter.LootRoll;
-import bot.Battle.HostileEncounter.LootRollLineFactory;
+import bot.Battle.Encounter.LootRoll;
+import bot.Battle.Encounter.LootRollLineFactory;
 import bot.Command;
 import bot.CommandParameter;
 import bot.Hostile.Hostile;

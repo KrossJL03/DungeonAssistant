@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.HostileEncounter.EncounteredExplorer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
