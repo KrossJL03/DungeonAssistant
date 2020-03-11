@@ -3,8 +3,8 @@ package bot.Battle.Encounter;
 import bot.Battle.ActionMessageFactory;
 import bot.Battle.ActionResultInterface;
 import bot.Battle.HurtActionResult;
-import bot.Battle.Mention;
 import bot.Constant;
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ class HurtActionMessageFactory extends ActionMessageFactory
      *
      * @return HurtActionResult
      */
-    private HurtActionResult castResult(@NotNull ActionResultInterface result)
+    private @NotNull HurtActionResult castResult(@NotNull ActionResultInterface result)
     {
         assertHandles(result);
 

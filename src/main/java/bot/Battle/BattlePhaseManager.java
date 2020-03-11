@@ -2,6 +2,7 @@ package bot.Battle;
 
 import bot.CustomException;
 import bot.Explorer.Explorer;
+import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BattlePhaseManager
@@ -23,12 +24,14 @@ public class BattlePhaseManager
 
     /**
      * Assert that the current phase is an initiative phase
+     *
+     * @throws CustomException If current phase in not an initiative phase
      */
-    public void assertInitiativePhase()
+    public void assertInitiativePhase() throws CustomException
     {
         assertNotFinalPhase();
         if (!phase.isInitiativePhase()) {
-            throw BattlePhaseException.createNotInitiativePhase();
+            throw new CustomException("There is no initiative currently.");
         }
     }
 
@@ -40,7 +43,10 @@ public class BattlePhaseManager
     public void assertNotFinalPhase() throws CustomException
     {
         if (phase.isFinalPhase()) {
-            throw BattlePhaseException.createFinalPhase();
+            throw new CustomException(String.format(
+                "This encounter is over. If you'd like to start a new one use the `%screate encounter` command",
+                MyProperties.COMMAND_PREFIX
+            ));
         }
     }
 
@@ -126,7 +132,10 @@ public class BattlePhaseManager
     {
         assertInProgressPhase();
         if (!isAlwaysJoinable && !phase.isJoinPhase()) {
-            throw BattlePhaseException.createNotJoinPhase(Mention.createForPlayer(explorer.getOwner().getUserId()));
+            throw new CustomException(String.format(
+                "Sorry %s, looks like you missed your chance. It's too late to join this encounter.",
+                explorer.getOwner().mention()
+            ));
         }
     }
 
@@ -189,14 +198,13 @@ public class BattlePhaseManager
     /**
      * Assert that the current phase is not a first phase or a final phase
      *
-     * @throws CustomException If the battle is in a final phase
-     *                         If the battle is still in the create phase
+     * @throws CustomException If the battle is still in the create phase
      */
     protected void assertInProgressPhase() throws CustomException
     {
         assertNotFinalPhase();
         if (phase.isCreatePhase()) {
-            throw BattlePhaseException.createNotStarted();
+            throw new CustomException("Hold your Rudi! This encounter hasn't even started yet.");
         }
     }
 

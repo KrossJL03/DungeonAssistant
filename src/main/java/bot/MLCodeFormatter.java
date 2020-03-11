@@ -1,7 +1,5 @@
-package bot.Battle;
+package bot;
 
-import bot.Battle.Capitalizer;
-import bot.CodeFormatterInterface;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 

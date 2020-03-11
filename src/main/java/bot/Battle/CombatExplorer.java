@@ -1,6 +1,5 @@
 package bot.Battle;
 
-import bot.Battle.Encounter.EncounteredExplorerException;
 import bot.Constant;
 import bot.CustomException;
 import bot.Explorer.Explorer;
@@ -52,10 +51,8 @@ public class CombatExplorer extends CombatCreature
      * @param target Encountered creature that is being targeted by the attack
      *
      * @return AttackActionResult
-     *
-     * @throws EncounteredExplorerException If explorer has no actions
      */
-    public @NotNull AttackActionResult attack(@NotNull CombatCreature target) throws EncounteredExplorerException
+    public @NotNull AttackActionResult attack(@NotNull CombatCreature target)
     {
         assertHasActions();
 
@@ -84,7 +81,7 @@ public class CombatExplorer extends CombatCreature
      */
     public int getDodgeDice()
     {
-        return ((int) Math.floor(agility / 2)) + 10;
+        return ((int) Math.floor((float) agility / 2)) + 10;
     }
 
     /**
@@ -94,7 +91,7 @@ public class CombatExplorer extends CombatCreature
      */
     public @NotNull Player getOwner()
     {
-        return owner; // todo try to refactor to only return owner id
+        return owner;
     }
 
     /**
@@ -150,12 +147,12 @@ public class CombatExplorer extends CombatCreature
     /**
      * Leave the encounter
      *
-     * @throws CombatCreatureException If explorer has already left
+     * @throws CustomException If explorer has already left
      */
-    public void leave() throws CombatCreatureException
+    public void leave() throws CustomException
     {
         if (!isPresent()) {
-            throw CombatCreatureException.createHasAlreadyLeft(owner);
+            throw new CustomException(String.format("%s You have already left.", owner.mention()));
         }
 
         isPresent = false;
@@ -169,23 +166,18 @@ public class CombatExplorer extends CombatCreature
     {
         switch (statName.toLowerCase()) {
             case Constant.EXPLORER_STAT_AGILITY:
-                return modifyAgility(statModifier);
-            case Constant.EXPLORER_STAT_DEFENSE:
-                return modifyDefense(statModifier);
-            case Constant.CREATURE_STAT_HITPOINTS:
-                return modifyHitpoints(statModifier);
-            case Constant.EXPLORER_STAT_STRENGTH:
-                return modifyStrength(statModifier);
-            case Constant.EXPLORER_STAT_WISDOM:
-                return modifyWisdom(statModifier);
             case Constant.EXPLORER_STAT_AGILITY_SHORT:
                 return modifyAgility(statModifier);
+            case Constant.EXPLORER_STAT_DEFENSE:
             case Constant.EXPLORER_STAT_DEFENSE_SHORT:
                 return modifyDefense(statModifier);
+            case Constant.CREATURE_STAT_HITPOINTS:
             case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statModifier);
+            case Constant.EXPLORER_STAT_STRENGTH:
             case Constant.EXPLORER_STAT_STRENGTH_SHORT:
                 return modifyStrength(statModifier);
+            case Constant.EXPLORER_STAT_WISDOM:
             case Constant.EXPLORER_STAT_WISDOM_SHORT:
                 return modifyWisdom(statModifier);
             default:
@@ -211,23 +203,18 @@ public class CombatExplorer extends CombatCreature
     {
         switch (statName.toLowerCase()) {
             case Constant.EXPLORER_STAT_AGILITY:
-                return modifyAgility(statValue - agility);
-            case Constant.EXPLORER_STAT_DEFENSE:
-                return modifyDefense(statValue - defense);
-            case Constant.CREATURE_STAT_HITPOINTS:
-                return modifyHitpoints(statValue - getMaxHP());
-            case Constant.EXPLORER_STAT_STRENGTH:
-                return modifyStrength(statValue - strength);
-            case Constant.EXPLORER_STAT_WISDOM:
-                return modifyWisdom(statValue - wisdom);
             case Constant.EXPLORER_STAT_AGILITY_SHORT:
                 return modifyAgility(statValue - agility);
+            case Constant.EXPLORER_STAT_DEFENSE:
             case Constant.EXPLORER_STAT_DEFENSE_SHORT:
                 return modifyDefense(statValue - defense);
+            case Constant.CREATURE_STAT_HITPOINTS:
             case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statValue - getMaxHP());
+            case Constant.EXPLORER_STAT_STRENGTH:
             case Constant.EXPLORER_STAT_STRENGTH_SHORT:
                 return modifyStrength(statValue - strength);
+            case Constant.EXPLORER_STAT_WISDOM:
             case Constant.EXPLORER_STAT_WISDOM_SHORT:
                 return modifyWisdom(statValue - wisdom);
             default:
@@ -287,7 +274,7 @@ public class CombatExplorer extends CombatCreature
      */
     int getMaxActions()
     {
-        return (int) Math.floor(agility / 10) + 1;
+        return (int) Math.floor((float) agility / 10) + 1;
     }
 
     /**
@@ -297,7 +284,7 @@ public class CombatExplorer extends CombatCreature
      */
     int getMinCrit()
     {
-        return 20 - ((int) Math.floor(wisdom / 4));
+        return 20 - ((int) Math.floor((float) wisdom / 4));
     }
 
     /**
@@ -344,12 +331,12 @@ public class CombatExplorer extends CombatCreature
     /**
      * Rejoin encounter
      *
-     * @throws CombatCreatureException If explorer is already present
+     * @throws CustomException If explorer is already present
      */
-    void markAsPresent() throws CombatCreatureException
+    void markAsPresent() throws CustomException
     {
         if (isPresent()) {
-            throw CombatCreatureException.createCannotRejoinIfPresent(owner);
+            throw new CustomException(String.format("%s You are currently active in this encounter.", owner.mention()));
         }
 
         isPresent = true;
@@ -367,12 +354,12 @@ public class CombatExplorer extends CombatCreature
     /**
      * Assert that explorer has actions
      *
-     * @throws CombatCreatureException If explorer has no actions
+     * @throws CustomException If explorer has no actions
      */
-    final protected void assertHasActions() throws CombatCreatureException
+    final protected void assertHasActions() throws CustomException
     {
         if (!hasActions()) {
-            throw CombatCreatureException.createHasNoActions(getName());
+            throw new CustomException(String.format("Looks like %s doesn't have any actions left", getName()));
         }
     }
 
@@ -393,7 +380,7 @@ public class CombatExplorer extends CombatCreature
      */
     protected int getEndurance()
     {
-        return (int) Math.floor(defense / 2);
+        return (int) Math.floor((float) defense / 2);
     }
 
     /**

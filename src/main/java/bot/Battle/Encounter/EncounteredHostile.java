@@ -5,6 +5,7 @@ import bot.Battle.CombatCreatureException;
 import bot.Battle.ModifyStatActionResult;
 import bot.Battle.Slayer;
 import bot.Constant;
+import bot.CustomException;
 import bot.Hostile.Hostile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,30 +40,12 @@ public class EncounteredHostile extends CombatCreature
     }
 
     /**
-     * Attack
-     */
-    public void attack()
-    {
-        attackRoll = rollDamage();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public int getAttackDice()
     {
         return attack;
-    }
-
-    /**
-     * Get hostile
-     *
-     * @return Hostile
-     */
-    public @NotNull Hostile getHostile()
-    {
-        return hostile;
     }
 
     /**
@@ -75,43 +58,12 @@ public class EncounteredHostile extends CombatCreature
     }
 
     /**
-     * Get species
-     *
-     * @return String
-     */
-    public @NotNull String getSpecies()
-    {
-        return species;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public boolean isActive()
     {
         return !isSlain();
-    }
-
-    /**
-     * Roll loot
-     *
-     * @return ArrayList<LootRoll>
-     *
-     * @throws CombatCreatureException When attempting to loot and not slain
-     */
-    public @NotNull ArrayList<LootRoll> loot() throws CombatCreatureException
-    {
-        if (!isSlain()) {
-            throw CombatCreatureException.createLootWhenNotSlain(getName());
-        }
-
-        ArrayList<LootRoll> lootRolls = new ArrayList<>();
-        for (LootRoll lootRoll : hostile.rollLoot()) {
-            lootRolls.add(new LootRoll(getName(), lootRoll.getLoot(), lootRoll.getDie(), lootRoll.getRoll()));
-        }
-
-        return lootRolls;
     }
 
     /**
@@ -122,11 +74,9 @@ public class EncounteredHostile extends CombatCreature
     {
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
-                return modifyAttack(statModifier);
-            case Constant.CREATURE_STAT_HITPOINTS:
-                return modifyHitpoints(statModifier);
             case Constant.HOSTILE_STAT_ATTACK_SHORT:
                 return modifyAttack(statModifier);
+            case Constant.CREATURE_STAT_HITPOINTS:
             case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statModifier);
             default:
@@ -142,11 +92,9 @@ public class EncounteredHostile extends CombatCreature
     {
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
-                return modifyAttack(statValue - attack);
-            case Constant.CREATURE_STAT_HITPOINTS:
-                return modifyHitpoints(statValue - getMaxHP());
             case Constant.HOSTILE_STAT_ATTACK_SHORT:
                 return modifyAttack(statValue - attack);
+            case Constant.CREATURE_STAT_HITPOINTS:
             case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statValue - getMaxHP());
             default:
@@ -170,6 +118,14 @@ public class EncounteredHostile extends CombatCreature
     }
 
     /**
+     * Attack
+     */
+    void attack()
+    {
+        attackRoll = rollDamage();
+    }
+
+    /**
      * Get attack roll
      *
      * @return int
@@ -180,6 +136,16 @@ public class EncounteredHostile extends CombatCreature
     }
 
     /**
+     * Get species
+     *
+     * @return String
+     */
+    @NotNull String getSpecies()
+    {
+        return species;
+    }
+
+    /**
      * Does this hostile have a nickname
      *
      * @return boolean
@@ -187,6 +153,27 @@ public class EncounteredHostile extends CombatCreature
     boolean hasNickname()
     {
         return hasNickname;
+    }
+
+    /**
+     * Roll loot
+     *
+     * @return ArrayList<LootRoll>
+     *
+     * @throws CustomException When attempting to loot and not slain
+     */
+    @NotNull ArrayList<LootRoll> loot() throws CustomException
+    {
+        if (!isSlain()) {
+            throw new CustomException(String.format("%s has not been slain, they cannot be looted!", getName()));
+        }
+
+        ArrayList<LootRoll> lootRolls = new ArrayList<>();
+        for (LootRoll lootRoll : hostile.rollLoot()) {
+            lootRolls.add(new LootRoll(getName(), lootRoll.getLoot(), lootRoll.getDie(), lootRoll.getRoll()));
+        }
+
+        return lootRolls;
     }
 
     /**

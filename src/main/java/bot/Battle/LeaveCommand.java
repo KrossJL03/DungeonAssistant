@@ -38,7 +38,7 @@ abstract public class LeaveCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Player player = getPlayerFromEvent(event);
 

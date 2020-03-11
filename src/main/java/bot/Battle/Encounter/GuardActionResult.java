@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class GuardActionResult implements CombatActionResultInterface
+class GuardActionResult implements CombatActionResultInterface
 {
     private DeathSaveRoll          deathSaveRoll;
     private ArrayList<GuardResult> guardResults;
@@ -45,16 +45,6 @@ public class GuardActionResult implements CombatActionResultInterface
         this.targetMaxHp = targetMaxHp;
         this.targetName = targetName;
         this.targetSlayer = targetSlayer;
-    }
-
-    /**
-     * Get number of attacks
-     *
-     * @return int
-     */
-    int getAttackCount()
-    {
-        return guardResults.size();
     }
 
     /**
@@ -113,32 +103,12 @@ public class GuardActionResult implements CombatActionResultInterface
     }
 
     /**
-     * Get individual guard results
-     *
-     * @return ArrayList<GuardResult>
-     */
-    @NotNull ArrayList<GuardResult> getGuardResults()
-    {
-        return guardResults;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public int getTargetCurrentHp()
     {
         return targetCurrentHp;
-    }
-
-    /**
-     * Get defense stat of target
-     *
-     * @return int
-     */
-    int getTargetDefense()
-    {
-        return targetDefense;
     }
 
     /**
@@ -202,5 +172,35 @@ public class GuardActionResult implements CombatActionResultInterface
     public boolean survivedDeathSave()
     {
         return rolledDeathSave() && deathSaveRoll.survived();
+    }
+
+    /**
+     * Get number of attacks
+     *
+     * @return int
+     */
+    int getAttackCount()
+    {
+        return guardResults.size();
+    }
+
+    /**
+     * Get individual guard results
+     *
+     * @return ArrayList<GuardResult>
+     */
+    @NotNull ArrayList<GuardResult> getGuardResults()
+    {
+        return guardResults;
+    }
+
+    /**
+     * Get defense stat of target
+     *
+     * @return int
+     */
+    int getTargetDefense()
+    {
+        return targetDefense;
     }
 }

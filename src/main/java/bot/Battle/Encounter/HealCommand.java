@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class HealCommand extends EncounterCommand
+class HealCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -46,7 +46,7 @@ public class HealCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Encounter encounter  = getEncounter();
         String[]  parameters = getParametersFromEvent(event);

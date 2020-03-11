@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class StartDodgePhaseCommand extends EncounterCommand
+class StartDodgePhaseCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -38,7 +38,7 @@ public class StartDodgePhaseCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         getEncounter().startDodgePhase();
     }

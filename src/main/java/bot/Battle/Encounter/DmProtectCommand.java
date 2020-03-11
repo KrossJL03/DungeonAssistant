@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class DmProtectCommand extends EncounterCommand
+class DmProtectCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -46,7 +46,7 @@ public class DmProtectCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters      = getParametersFromEvent(event);
         String   explorerName    = parameters[0];

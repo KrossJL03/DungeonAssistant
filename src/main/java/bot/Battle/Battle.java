@@ -1,6 +1,7 @@
 package bot.Battle;
 
-import bot.Battle.Encounter.EncounterPhase;
+import bot.Capitalizer;
+import bot.CustomException;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -37,25 +38,21 @@ public abstract class Battle implements BattleInterface
 
         this.initiative = initiativeFactory.createNull();
 
-        logger.logCreateEncounter();
+        logger.logCreateBattle();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void attackAction(@NotNull Player player, @NotNull String targetName)
-        throws BattlePhaseException, NotYourTurnException
+    public void attackAction(@NotNull Player player, @NotNull String targetName) throws BattlePhaseException
     {
         phaseManager.assertNotFinalPhase();
         if (!phaseManager.isAttackPhase()) {
-            throw EncounterException.createWrongPhase("attack", EncounterPhase.ATTACK_PHASE);
+            throw EncounterException.createWrongPhase("attack", BattlePhase.ATTACK_PHASE);
         }
 
-        CombatExplorer currentExplorer = getCurrentExplorer();
-        if (!currentExplorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
-        }
+        CombatExplorer currentExplorer = getCurrentExplorer(player);
 
         AttackActionResult result = doAttack(currentExplorer, targetName);
 
@@ -105,14 +102,6 @@ public abstract class Battle implements BattleInterface
     }
 
     /**
-     * Is a player with the given player id in the battle
-     */
-    final protected boolean isPlayerInBattle(@NotNull Player player)
-    {
-        return explorerRoster.contains(player);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -158,7 +147,7 @@ public abstract class Battle implements BattleInterface
 
         CombatExplorer explorer = explorerRoster.markAsLeft(player);
         initiative.remove(explorer);
-        logger.logLeftEncounter(explorer.getName());
+        logger.logLeftBattle(explorer.getName());
         handleEndOfAction();
     }
 
@@ -183,7 +172,7 @@ public abstract class Battle implements BattleInterface
             addToInitiative(explorer);
         }
 
-        logger.logRejoinEncounter(explorer.getName());
+        logger.logRejoinBattle(explorer.getName());
     }
 
     /**
@@ -202,10 +191,10 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
-    public void setTier(@NotNull Tier tier) throws BattlePhaseException
+    public void setTier(@NotNull Tier tier) throws CustomException
     {
         if (!phaseManager.isCreatePhase()) {
-            throw EncounterException.createSetTierAfterCreatePhase();
+            throw new CustomException("Tier must be set before the encounter has started");
         }
 
         explorerRoster.setTier(tier);
@@ -307,12 +296,12 @@ public abstract class Battle implements BattleInterface
     /**
      * Assert that players have joined
      *
-     * @throws EncounterException If no players have joined
+     * @throws CustomException If no players have joined
      */
-    final protected void assertPlayersHaveJoined() throws BattlePhaseException, EncounterException
+    final protected void assertPlayersHaveJoined() throws CustomException
     {
         if (haveNoPlayersJoined()) {
-            throw EncounterException.createNoPlayersHaveJoined();
+            throw new CustomException("Wait, we can't start yet! No players have joined!");
         }
     }
 
@@ -364,10 +353,9 @@ public abstract class Battle implements BattleInterface
      *
      * @return EncounterCreatureInterface
      *
-     * @throws EncounteredCreatureNotFoundException If creature with name not found
+     * @throws CustomException If creature with name not found
      */
-    final protected @NotNull CombatCreature getCreature(@NotNull String name)
-        throws EncounteredCreatureNotFoundException
+    final protected @NotNull CombatCreature getCreature(@NotNull String name) throws CustomException
     {
         for (CombatCreature creature : getAllCreatures()) {
             if (creature.isName(name)) {
@@ -375,7 +363,10 @@ public abstract class Battle implements BattleInterface
             }
         }
 
-        throw EncounteredCreatureNotFoundException.createForCreature(name);
+        throw new CustomException(String.format(
+            "I couldn't find any creatures with the name '%s' in this battle...",
+            name
+        ));
     }
 
     /**
@@ -395,13 +386,13 @@ public abstract class Battle implements BattleInterface
      *
      * @return CombatExplorer
      *
-     * @throws NotYourTurnException If the given player is not the owner of the current explorer
+     * @throws CustomException If the given player is not the owner of the current explorer
      */
-    final protected @NotNull CombatExplorer getCurrentExplorer(@NotNull Player player) throws NotYourTurnException
+    final protected @NotNull CombatExplorer getCurrentExplorer(@NotNull Player player) throws CustomException
     {
         CombatExplorer explorer = initiative.getCurrentExplorer();
         if (!explorer.isOwner(player)) {
-            throw NotYourTurnException.createNotYourTurn();
+            throw new CustomException(String.format("%s it is not your turn, please be patient.", player.mention()));
         }
 
         return explorer;
@@ -470,6 +461,14 @@ public abstract class Battle implements BattleInterface
      * Can players join this encounter at any time
      */
     abstract protected boolean isAlwaysJoinable();
+
+    /**
+     * Is a player with the given player id in the battle
+     */
+    final protected boolean isPlayerInBattle(@NotNull Player player)
+    {
+        return explorerRoster.contains(player);
+    }
 
     /**
      * Log action

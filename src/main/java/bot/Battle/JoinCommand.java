@@ -46,7 +46,7 @@ public class JoinCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Player   player       = updatePlayer(event);
         String[] parameters   = getParametersFromEvent(event);

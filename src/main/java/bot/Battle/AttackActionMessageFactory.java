@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;

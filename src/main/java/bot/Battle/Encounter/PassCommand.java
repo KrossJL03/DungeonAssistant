@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class PassCommand extends EncounterCommand
+class PassCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public class PassCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         getEncounter().passAction();
     }

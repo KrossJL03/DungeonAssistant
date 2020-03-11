@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class AddHostileCommand extends EncounterCommand
+class AddHostileCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public class AddHostileCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters = getParametersFromEvent(event);
         Hostile  hostile    = HostileRepository.getHostile(parameters[0]);

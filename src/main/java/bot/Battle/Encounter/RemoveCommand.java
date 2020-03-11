@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class RemoveCommand extends EncounterCommand
+class RemoveCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -45,7 +45,7 @@ public class RemoveCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         String creatureName = getStringParameterFromEvent(event);
 

@@ -11,7 +11,7 @@ public class LootRoll
     private int    roll;
 
     /**
-     * LootRoll constructor
+     * Constructor.
      *
      * @param hostileName Hostile name
      * @param loot        Loot
@@ -31,29 +31,9 @@ public class LootRoll
      *
      * @return int
      */
-    public int getDie()
+    int getDie()
     {
         return die;
-    }
-
-    /**
-     * Get loot
-     *
-     * @return Loot
-     */
-    public @NotNull Loot getLoot()
-    {
-        return loot;
-    }
-
-    /**
-     * Get roll
-     *
-     * @return int
-     */
-    public int getRoll()
-    {
-        return roll;
     }
 
     /**
@@ -64,5 +44,25 @@ public class LootRoll
     @NotNull String getKillName()
     {
         return hostileName;
+    }
+
+    /**
+     * Get loot
+     *
+     * @return Loot
+     */
+    @NotNull Loot getLoot()
+    {
+        return loot;
+    }
+
+    /**
+     * Get roll
+     *
+     * @return int
+     */
+    int getRoll()
+    {
+        return roll;
     }
 }

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class InitiativeQueueFactory implements InitiativeTrackerFactoryInterface
+class InitiativeQueueFactory implements InitiativeTrackerFactoryInterface
 {
     /**
      * {@inheritDoc}

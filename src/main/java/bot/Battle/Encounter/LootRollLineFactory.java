@@ -1,7 +1,7 @@
 package bot.Battle.Encounter;
 
-import bot.Battle.MLCodeFormatter;
 import bot.Hostile.Loot;
+import bot.MLCodeFormatter;
 import bot.Message;
 import org.jetbrains.annotations.NotNull;
 

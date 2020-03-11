@@ -19,7 +19,7 @@ public class DungeonMasterChecker
      *
      * @throws CustomException If dungeon master role is not found
      */
-    @NotNull Role getDungeonMaster(MessageReceivedEvent event) throws CustomException
+    @NotNull Role getDungeonMaster(@NotNull MessageReceivedEvent event) throws CustomException
     {
         List<Role> roles = event.getGuild().getRolesByName("Dungeon Master", false);
         if (!roles.isEmpty()) {

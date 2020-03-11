@@ -1,5 +1,7 @@
 package bot.Battle;
 
+import bot.CustomException;
+import bot.MyProperties;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,9 +64,9 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      *
      * @return Explorer
      *
-     * @throws ExplorerRosterException Thrown when encountered explorer is not found
+     * @throws CustomException Thrown when encountered explorer is not found
      */
-    public @NotNull Explorer getExplorer(@NotNull Player player) throws ExplorerRosterException
+    public @NotNull Explorer getExplorer(@NotNull Player player) throws CustomException
     {
         for (Explorer explorer : explorerRoster) {
             if (explorer.isOwner(player)) {
@@ -72,7 +74,10 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
             }
         }
 
-        throw ExplorerRosterException.createExplorerNotFound(player);
+        throw new CustomException(String.format(
+            "%s I could not find your explorer in this encounter.",
+            player.mention()
+        ));
     }
 
     /**
@@ -136,32 +141,28 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      *
      * @throws ExplorerRosterException If no max player count has been set
      *                                 If player has been kicked
-     *                                 If player already has explorer in the encounter
-     *                                 If max player count has been reached
+     * @throws CustomException         If player already has explorer in the encounter
+     * @throws ExplorerRosterException If max player count has been reached
      *                                 If explorer does not fit tier
-     *                                 If the explorers nickname is currently in use
+     * @throws CustomException         If the explorers nickname is currently in use
      */
-    void addExplorer(@NotNull Explorer newExplorer) throws ExplorerRosterException
+    void addExplorer(@NotNull Explorer newExplorer) throws ExplorerRosterException, CustomException
     {
         if (!isMaxPartySizeSet()) {
-            throw ExplorerRosterException.createMaxPlayersNotSet();
+            throw new CustomException(String.format(
+                "Wait, I don't know how many players to have. DM could you tell me using `%smaxPlayers`?",
+                MyProperties.COMMAND_PREFIX
+            ));
         }
 
         Player player = newExplorer.getOwner();
 
         // exceptions ordered by precedence
-        if (kickedPlayers.contains(player)) {
-            throw ExplorerRosterException.createKickedPlayerReturns(player);
-        } else if (containsPlayer(player)) {
-            CombatExplorer explorer = getExplorer(player);
-            throw ExplorerRosterException.createMultipleExplorers(player, explorer.getName());
-        } else if (isFull()) {
-            throw ExplorerRosterException.createFullRoster(player);
-        } else if (!tier.fits(newExplorer)) {
-            throw ExplorerRosterException.createDoesNotFitTier(newExplorer, tier);
-        } else if (containsExplorer(newExplorer.getName())) {
-            throw ExplorerRosterException.createNameTaken(player, newExplorer.getName());
-        }
+        assertPlayerNotKicked(player);
+        assertDoesNotContainPlayer(player);
+        assertRosterNotFull(player);
+        assertFitsTier(newExplorer);
+        assertExplorerNameNotTaken(newExplorer);
 
         explorerRoster.add(newExplorer);
         sort();
@@ -302,13 +303,11 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      */
     @NotNull Explorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
     {
-        if (kickedPlayers.contains(player)) {
-            throw ExplorerRosterException.createKickedPlayerReturns(player);
-        }
+        assertPlayerNotKicked(player);
 
         Explorer encounteredExplorer = getExplorer(player);
-        if (!encounteredExplorer.isPresent() && isFull()) {
-            throw ExplorerRosterException.createFullRoster(player);
+        if (!encounteredExplorer.isPresent()) {
+            assertRosterNotFull(player);
         }
 
         encounteredExplorer.markAsPresent();
@@ -321,24 +320,117 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      *
      * @param maxPartySize Max player count
      *
-     * @throws ExplorerRosterException If new max player count is less than 1
-     *                                 If present player count exceeds new limit
+     * @throws CustomException If new max player count is less than 1
+     *                         If present player count exceeds new limit
      */
-    void setMaxPartySize(int maxPartySize) throws ExplorerRosterException
+    void setMaxPartySize(int maxPartySize) throws CustomException
     {
         if (maxPartySize < 1) {
-            throw ExplorerRosterException.createMaxPlayerCountLessThanOne();
+            throw new CustomException("You can't have less than 1 player... that just doesn't work");
         }
 
         int presentPlayerCount = getCurrentPartySize();
         if (maxPartySize < presentPlayerCount) {
-            throw ExplorerRosterException.createNewPlayerMaxLessThanCurrentPlayerCount(
-                maxPartySize,
-                presentPlayerCount
-            );
+            throw new CustomException(String.format(
+                "It looks like we already have %d present players." +
+                "If you want to lower the max player count to %d please remove some players first.",
+                presentPlayerCount,
+                maxPartySize
+            ));
         }
 
         this.maxPartySize = maxPartySize;
+    }
+
+    /**
+     * Assert the roster does not contain an explorer owned by this player
+     *
+     * @param player Player
+     *
+     * @throws CustomException If an explorer owned by this player is in the roster
+     */
+    private void assertDoesNotContainPlayer(Player player) throws CustomException
+    {
+        if (containsPlayer(player)) {
+            CombatExplorer explorer = getExplorer(player);
+            throw new CustomException(String.format(
+                "%s, you have already joined this encounter with %s. " +
+                "If you'd like to switch please talk to the DungeonMaster",
+                player.mention(),
+                explorer.getName()
+            ));
+        }
+    }
+
+    /**
+     * Assert explorer's name is not already being used by another explorer
+     *
+     * @param explorer Explorer
+     *
+     * @throws CustomException If explorer's name is already in use
+     */
+    private void assertExplorerNameNotTaken(@NotNull Explorer explorer) throws CustomException
+    {
+        if (containsExplorer(explorer.getName())) {
+            throw new CustomException(String.format(
+                "%s Someone named '%s' is already in the battle. Could you use a nickname?",
+                explorer.getOwner().mention(),
+                explorer.getName()
+            ));
+        }
+    }
+
+    /**
+     * Assert explorer fits tier
+     *
+     * @param explorer Explorer
+     *
+     * @throws CustomException If explorer does not fit tier
+     */
+    private void assertFitsTier(@NotNull Explorer explorer) throws CustomException
+    {
+        if (!tier.fits(explorer)) {
+            throw new CustomException(String.format(
+                "%s, %s does not fit the %s tier.",
+                explorer.getOwner().mention(),
+                explorer.getName(),
+                tier.getName()
+            ));
+        }
+    }
+
+    /**
+     * Assert player is not kicked
+     *
+     * @param player Player
+     *
+     * @throws CustomException If player is kicked
+     */
+    private void assertPlayerNotKicked(@NotNull Player player) throws CustomException
+    {
+        if (kickedPlayers.contains(player)) {
+            throw new CustomException(String.format(
+                "Sorry %s, you were kicked. Try again next time.",
+                player.mention()
+            ));
+        }
+    }
+
+    /**
+     * Assert roster is not full
+     *
+     * @param player Player
+     *
+     * @throws CustomException If roster is full
+     */
+    private void assertRosterNotFull(@NotNull Player player) throws CustomException
+    {
+        if (isFull()) {
+            throw new CustomException(String.format(
+                "Uh oh, looks like the dungeon is full. Sorry %s.",
+                player.mention()
+            ));
+        }
     }
 
     /**

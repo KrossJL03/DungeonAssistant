@@ -6,9 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class EncounterException extends CustomException
 {
-
     /**
-     * EncounterException constructor
+     * Constructor.
      *
      * @param message Message
      */
@@ -33,16 +32,6 @@ public class EncounterException extends CustomException
     }
 
     /**
-     * Factory method for "no players have joined"
-     *
-     * @return EncounterException
-     */
-    static @NotNull EncounterException createNoPlayersHaveJoined()
-    {
-        return new EncounterException("Wait, we can't start yet! No players have joined!");
-    }
-
-    /**
      * Factory method for "null encounter"
      *
      * @return EncounterException
@@ -50,15 +39,5 @@ public class EncounterException extends CustomException
     static @NotNull EncounterException createNullEncounter()
     {
         return new EncounterException("There is no encounter being created, use `?create encounter` to start one.");
-    }
-
-    /**
-     * Factory method for "set tier after create phase"
-     *
-     * @return EncounterException
-     */
-    static @NotNull EncounterException createSetTierAfterCreatePhase()
-    {
-        return new EncounterException("Tier must be set before the encounter has started");
     }
 }

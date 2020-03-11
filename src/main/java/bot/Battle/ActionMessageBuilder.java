@@ -1,6 +1,7 @@
 package bot.Battle;
 
 import bot.CustomException;
+import bot.Mention;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class ActionMessageBuilder
      *
      * @throws CustomException If action builder does not exist for action result
      */
-    String buildActionMessage(@NotNull ActionResultInterface result, @NotNull Mention dmMention)
+    @NotNull String buildActionMessage(@NotNull ActionResultInterface result, @NotNull Mention dmMention)
         throws CustomException
     {
         for (ActionMessageFactory factory : factories) {

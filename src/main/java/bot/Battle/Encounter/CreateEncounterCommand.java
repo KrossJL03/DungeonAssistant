@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class CreateEncounterCommand extends EncounterCommand
+class CreateEncounterCommand extends EncounterCommand
 {
     private EncounterHolder holder;
 
@@ -43,7 +43,7 @@ public class CreateEncounterCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         if (holder.hasActiveBattle()) {
             BattleInterface battle = holder.getBattle();

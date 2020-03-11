@@ -8,7 +8,7 @@ import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class DodgePhaseEndMessageFactory implements PhaseChangeMessageFactoryInterface
+class DodgePhaseEndMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
@@ -38,10 +38,7 @@ public class DodgePhaseEndMessageFactory implements PhaseChangeMessageFactoryInt
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull BattlePhase previousPhase,
-        @NotNull BattlePhase nextPhase
-    )
+    public boolean handles(@NotNull BattlePhase previousPhase, @NotNull BattlePhase nextPhase)
     {
         return ((EncounterPhase) previousPhase).isDodgePhase() && ((EncounterPhase) nextPhase).isRpPhase();
     }

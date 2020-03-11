@@ -54,10 +54,7 @@ abstract public class JoinPhaseStartMessageFactory implements PhaseChangeMessage
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull BattlePhase previousPhase,
-        @NotNull BattlePhase nextPhase
-    )
+    public boolean handles(@NotNull BattlePhase previousPhase, @NotNull BattlePhase nextPhase)
     {
         return nextPhase.isJoinPhase();
     }

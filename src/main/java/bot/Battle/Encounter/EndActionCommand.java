@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class EndActionCommand extends BattleCommand
+class EndActionCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public class EndActionCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         getBattle().useCurrentExplorerAction();
     }

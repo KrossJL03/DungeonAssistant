@@ -2,13 +2,13 @@ package bot.Battle.Encounter;
 
 import bot.Battle.ActionResultInterface;
 import bot.Battle.CombatCreature;
-import bot.Battle.Mention;
+import bot.Mention;
 import bot.Player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class LootActionResult implements ActionResultInterface
+class LootActionResult implements ActionResultInterface
 {
     private int                       finalBlowBonus;
     private ArrayList<CombatCreature> finalBlows;
@@ -64,26 +64,6 @@ public class LootActionResult implements ActionResultInterface
     }
 
     /**
-     * Get mention
-     *
-     * @return Mention
-     */
-    public @NotNull Mention getMention()
-    {
-        return Mention.createForPlayer(owner.getUserId());
-    }
-
-    /**
-     * Get name
-     *
-     * @return String
-     */
-    public @NotNull String getName()
-    {
-        return name;
-    }
-
-    /**
      * Get bonus for all final bows
      *
      * @return int
@@ -136,6 +116,26 @@ public class LootActionResult implements ActionResultInterface
     ArrayList<LootRoll> getLootRolls()
     {
         return lootRolls;
+    }
+
+    /**
+     * Get mention
+     *
+     * @return Mention
+     */
+    @NotNull Mention getMention()
+    {
+        return Mention.createForPlayer(owner.getUserId());
+    }
+
+    /**
+     * Get name
+     *
+     * @return String
+     */
+    @NotNull String getName()
+    {
+        return name;
     }
 
     /**

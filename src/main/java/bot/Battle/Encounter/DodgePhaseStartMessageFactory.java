@@ -3,15 +3,15 @@ package bot.Battle.Encounter;
 import bot.Battle.BattlePhase;
 import bot.Battle.BattlePhaseChangeResult;
 import bot.Battle.CombatCreature;
-import bot.Battle.MLCodeFormatter;
 import bot.Battle.PhaseChangeMessageFactoryInterface;
+import bot.MLCodeFormatter;
 import bot.Message;
 import bot.MessageInterface;
 import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private MLCodeFormatter codeFormatter;
     private TextFormatter   textFormatter;
@@ -77,10 +77,7 @@ public class DodgePhaseStartMessageFactory implements PhaseChangeMessageFactoryI
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull BattlePhase previousPhase,
-        @NotNull BattlePhase nextPhase
-    )
+    public boolean handles(@NotNull BattlePhase previousPhase, @NotNull BattlePhase nextPhase)
     {
         return ((EncounterPhase) nextPhase).isDodgePhase();
     }

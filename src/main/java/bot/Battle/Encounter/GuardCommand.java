@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class GuardCommand extends EncounterCommand
+class GuardCommand extends EncounterCommand
 {
     /**
      * Constructor.

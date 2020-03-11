@@ -1,5 +1,6 @@
 package bot.Battle.Encounter;
 
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -67,9 +68,9 @@ class HostileRoster
      *
      * @return EncounteredHostile
      *
-     * @throws HostileRosterException If hostile with name not found
+     * @throws CustomException If hostile with name not found
      */
-    @NotNull EncounteredHostile getHostile(@NotNull String name) throws HostileRosterException
+    @NotNull EncounteredHostile getHostile(@NotNull String name) throws CustomException
     {
         for (EncounteredHostile hostile : hostileRoster) {
             if (hostile.isName(name)) {
@@ -77,7 +78,7 @@ class HostileRoster
             }
         }
 
-        throw HostileRosterException.createHostileNotFound(name);
+        throw new CustomException(String.format("I don't see any hostiles named %s in this encounter", name));
     }
 
     /**
@@ -105,12 +106,15 @@ class HostileRoster
      *
      * @param hostile Hostile to remove
      *
-     * @throws HostileRosterException If hostile is not in roster
+     * @throws CustomException If hostile is not in roster
      */
-    void remove(@NotNull EncounteredHostile hostile) throws HostileRosterException
+    void remove(@NotNull EncounteredHostile hostile) throws CustomException
     {
         if (!containsHostile(hostile.getName())) {
-            throw HostileRosterException.createHostileNotFound(hostile.getName());
+            throw new CustomException(String.format(
+                "I don't see any hostiles named %s in this encounter",
+                hostile.getName()
+            ));
         }
 
         hostileRoster.remove(hostile);
@@ -126,7 +130,7 @@ class HostileRoster
         String nicknameToLower = nickname.toLowerCase();
         for (EncounteredHostile hostile : hostileRoster) {
             if (hostile.getName().toLowerCase().equals(nicknameToLower)) {
-                throw HostileRosterException.createNicknameInUse(nickname);
+                throw new CustomException(String.format("There's already a hostile named %s in this battle", nickname));
             }
         }
     }

@@ -1,4 +1,6 @@
-package bot.Battle;
+package bot;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Mention
 {
@@ -10,9 +12,17 @@ public class Mention
      *
      * @param value Mention as string
      */
-    private Mention(String value)
+    private Mention(@NotNull String value)
     {
         this.value = value;
+    }
+
+    /**
+     * Factory method for everyone
+     */
+    public static Mention createForEveryone()
+    {
+        return new Mention("@everyone");
     }
 
     /**
@@ -20,17 +30,9 @@ public class Mention
      *
      * @param userId Player user id
      */
-    public static Mention createForPlayer(String userId)
+    public static Mention createForPlayer(@NotNull String userId)
     {
         return new Mention(String.format("<@%s>", userId));
-    }
-
-    /**
-     * Factory method for everyone
-     */
-    static Mention createForEveryone()
-    {
-        return new Mention("@everyone");
     }
 
     /**
@@ -38,7 +40,7 @@ public class Mention
      *
      * @param id Role id
      */
-    static Mention createForRole(String id)
+    public static Mention createForRole(@NotNull String id)
     {
         return new Mention(String.format("<@&%s>", id));
     }

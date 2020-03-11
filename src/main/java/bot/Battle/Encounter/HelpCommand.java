@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class HelpCommand extends Command implements HelpCommandInterface
+class HelpCommand extends Command implements HelpCommandInterface
 {
     private ArrayList<Command> commands;
     private PrivateLogger      logger;

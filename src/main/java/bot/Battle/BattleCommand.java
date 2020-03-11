@@ -78,14 +78,6 @@ public abstract class BattleCommand extends Command
     }
 
     /**
-     * Is this command exclusive to dungeon masters
-     */
-    public boolean isDmExclusive()
-    {
-        return isDmExclusive;
-    }
-
-    /**
      * Execute command
      *
      * @param event Event
@@ -119,7 +111,7 @@ public abstract class BattleCommand extends Command
      *
      * @throws CustomException If not dungeon master
      */
-    private void ensureDungeonMaster(MessageReceivedEvent event)
+    private void ensureDungeonMaster(@NotNull MessageReceivedEvent event)
     {
         if (!isDungeonMaster(event)) {
             throw new CustomException(String.format(

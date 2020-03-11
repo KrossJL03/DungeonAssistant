@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.CustomException;
 import bot.Explorer.Explorer;
 import bot.Player.Player;
 import bot.ProcessInterface;
@@ -18,10 +19,8 @@ public interface BattleInterface extends ProcessInterface
      * @param hostileName Hostile name
      *
      * @throws BattlePhaseException If not attack phase
-     * @throws NotYourTurnException If it is not the player's turn
      */
-    void attackAction(@NotNull Player player, @NotNull String hostileName)
-        throws BattlePhaseException, NotYourTurnException;
+    void attackAction(@NotNull Player player, @NotNull String hostileName) throws BattlePhaseException;
 
     /**
      * End the battle
@@ -124,9 +123,9 @@ public interface BattleInterface extends ProcessInterface
      *
      * @param tier Tier
      *
-     * @throws BattlePhaseException If not create phase
+     * @throws CustomException If not create phase
      */
-    void setTier(@NotNull Tier tier) throws BattlePhaseException;
+    void setTier(@NotNull Tier tier) throws CustomException;
 
     /**
      * Skip current player turn

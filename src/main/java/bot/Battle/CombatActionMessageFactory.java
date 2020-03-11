@@ -64,6 +64,7 @@ abstract public class CombatActionMessageFactory extends ActionMessageFactory
         String targetName = result.isTargetExplorer()
                             ? codeFormatter.makeYellow(result.getTargetName())
                             : codeFormatter.makeRed(result.getTargetName());
+
         return String.format(
             "%s takes %d damage%s!",
             targetName,

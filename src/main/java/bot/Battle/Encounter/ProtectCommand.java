@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ProtectCommand extends EncounterCommand
+class ProtectCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -45,7 +45,7 @@ public class ProtectCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Player   player       = getPlayerFromEvent(event);
         String[] parameters   = getParametersFromEvent(event);

@@ -66,16 +66,6 @@ abstract public class BattlePhase
     abstract public boolean isInitiativePhase();
 
     /**
-     * Is join phase
-     *
-     * @return boolean
-     */
-    public boolean isJoinPhase()
-    {
-        return phaseName.equals(JOIN_PHASE);
-    }
-
-    /**
      * Is create phase
      *
      * @return boolean
@@ -83,5 +73,15 @@ abstract public class BattlePhase
     boolean isCreatePhase()
     {
         return phaseName.equals(CREATE_PHASE);
+    }
+
+    /**
+     * Is join phase
+     *
+     * @return boolean
+     */
+    boolean isJoinPhase()
+    {
+        return phaseName.equals(JOIN_PHASE);
     }
 }

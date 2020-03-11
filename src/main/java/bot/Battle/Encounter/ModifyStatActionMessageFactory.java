@@ -2,9 +2,9 @@ package bot.Battle.Encounter;
 
 import bot.Battle.ActionMessageFactory;
 import bot.Battle.ActionResultInterface;
-import bot.Battle.Mention;
 import bot.Battle.ModifyStatActionResult;
 import bot.Constant;
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +51,7 @@ class ModifyStatActionMessageFactory extends ActionMessageFactory
      *
      * @return ModifyStatActionResult
      */
-    private ModifyStatActionResult castResult(@NotNull ActionResultInterface result)
+    private @NotNull ModifyStatActionResult castResult(@NotNull ActionResultInterface result)
     {
         assertHandles(result);
 

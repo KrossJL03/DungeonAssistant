@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.CustomException;
 import org.jetbrains.annotations.NotNull;
 
 public class Tier
@@ -18,18 +19,30 @@ public class Tier
      * @param minStatPointTotal Min stat point total an explorer must have to fit this tier
      * @param maxStatPointTotal Max stat point total an explorer can have to fit this tier
      *
-     * @throws TierException If min stat point total is out of bounds
-     *                       If max stat point total is out of bounds
-     *                       If max stat point total is less than the min stat point total
+     * @throws CustomException If min stat point total is out of bounds
+     *                         If max stat point total is out of bounds
+     *                         If max stat point total is less than the min stat point total
      */
-    Tier(@NotNull String name, int minStatPointTotal, int maxStatPointTotal) throws TierException
+    Tier(@NotNull String name, int minStatPointTotal, int maxStatPointTotal) throws CustomException
     {
         if (minStatPointTotal < STAT_POINT_TOTAL_MINIMUM) {
-            throw TierException.createMinOutOfBounds(STAT_POINT_TOTAL_MINIMUM, minStatPointTotal);
+            throw new CustomException(String.format(
+                "The min stat point total must be greater than %d, and %d is less!",
+                STAT_POINT_TOTAL_MINIMUM,
+                minStatPointTotal
+            ));
         } else if (maxStatPointTotal > STAT_POINT_TOTAL_MAXIMUM) {
-            throw TierException.createMaxOutOfBounds(STAT_POINT_TOTAL_MAXIMUM, maxStatPointTotal);
+            throw new CustomException(String.format(
+                "The min stat point total must be less than %d, and %d is more!",
+                STAT_POINT_TOTAL_MAXIMUM,
+                maxStatPointTotal
+            ));
         } else if (maxStatPointTotal <= minStatPointTotal) {
-            throw TierException.createMaxLessThanMin(maxStatPointTotal, minStatPointTotal);
+            throw new CustomException(String.format(
+                "The max stat point must be greater than the min, and %d isn't greater than %d!",
+                maxStatPointTotal,
+                minStatPointTotal
+            ));
         }
 
         this.maxStatPointTotal = maxStatPointTotal;

@@ -2,7 +2,7 @@ package bot.Battle;
 
 import org.jetbrains.annotations.NotNull;
 
-public class JoinActionResult implements ActionResultInterface
+class JoinActionResult implements ActionResultInterface
 {
     private CombatExplorer explorer;
     private boolean        isRosterFull;
@@ -24,7 +24,7 @@ public class JoinActionResult implements ActionResultInterface
      *
      * @return EncounteredExplorer
      */
-    public @NotNull CombatExplorer getExplorer()
+    @NotNull CombatExplorer getExplorer()
     {
         return explorer;
     }
@@ -34,7 +34,7 @@ public class JoinActionResult implements ActionResultInterface
      *
      * @return boolean
      */
-    public boolean isRosterFull()
+    boolean isRosterFull()
     {
         return isRosterFull;
     }

@@ -1,8 +1,8 @@
 package bot.Battle.Encounter;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.Mention;
 import bot.Battle.SummaryMessageBuilder;
+import bot.Mention;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
@@ -23,32 +23,6 @@ class EncounterLogger extends BattleLogger
             new SummaryMessageBuilder(),
             channel,
             dmMention
-        );
-    }
-
-    /**
-     * Log removed hostile
-     *
-     * @param name Name of hostile removed
-     */
-    void logRemovedHostile(@NotNull String name)
-    {
-        sendMessage(String.format("Hostile %s has been removed", name));
-    }
-
-    /**
-     * Ping the DM to request a dodge pass
-     *
-     * @param player Player
-     */
-    void pingDmDodgePass(@NotNull Player player)
-    {
-        sendMessage(
-            String.format(
-                "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
-                dmMention.getValue(),
-                (Mention.createForPlayer(player.getUserId())).getValue()
-            )
         );
     }
 
@@ -99,6 +73,32 @@ class EncounterLogger extends BattleLogger
     }
 
     /**
+     * Log removed hostile
+     *
+     * @param name Name of hostile removed
+     */
+    void logRemovedHostile(@NotNull String name)
+    {
+        sendMessage(String.format("Hostile %s has been removed", name));
+    }
+
+    /**
+     * Ping the DM to request a dodge pass
+     *
+     * @param player Player
+     */
+    void pingDmDodgePass(@NotNull Player player)
+    {
+        sendMessage(
+            String.format(
+                "%s, %s wants to successfully pass their dodge turn. Is this ok? If so please use the command DM.",
+                dmMention.getValue(),
+                (Mention.createForPlayer(player.getUserId())).getValue()
+            )
+        );
+    }
+
+    /**
      * Get hostile printout
      *
      * @param hostile Hostile
@@ -107,7 +107,7 @@ class EncounterLogger extends BattleLogger
      */
     private @NotNull String getHostilePrintout(@NotNull EncounteredHostile hostile)
     {
-        int    nameBuffer = (int) Math.floor(15 + hostile.getName().length() / 2);
+        int    nameBuffer = (int) Math.floor(15 + ((float) hostile.getName().length() / 2));
         String output     = "";
         output += "```prolog";
         output += BattleLogger.NEWLINE;

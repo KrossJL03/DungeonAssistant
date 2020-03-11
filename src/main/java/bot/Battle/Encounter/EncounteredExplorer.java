@@ -5,7 +5,9 @@ import bot.Battle.CombatExplorer;
 import bot.Battle.DeathSaveRoll;
 import bot.Battle.Slayer;
 import bot.Constant;
+import bot.CustomException;
 import bot.Explorer.Explorer;
+import bot.MyProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +45,6 @@ public class EncounteredExplorer extends CombatExplorer
      * @param hostiles Encountered hostiles to dodge
      *
      * @return DodgeActionResult
-     *
-     * @throws EncounteredExplorerException If explorer has no actions
      */
     public @NotNull DodgeActionResult dodge(@NotNull ArrayList<EncounteredHostile> hostiles)
     {
@@ -97,12 +97,16 @@ public class EncounteredExplorer extends CombatExplorer
      *
      * @param opponent Opponent that was fought against
      *
-     * @throws EncounteredExplorerException If explorer is not active
+     * @throws CustomException If explorer is not active
      */
-    void addOpponent(@NotNull EncounteredHostile opponent) throws EncounteredExplorerException
+    void addOpponent(@NotNull EncounteredHostile opponent) throws CustomException
     {
         if (!isActive()) {
-            throw EncounteredExplorerException.createNotPresentForOpponent(getName(), opponent.getName());
+            throw new CustomException(String.format(
+                "%s is not present to fight %s right now.",
+                getName(),
+                opponent.getName()
+            ));
         } else if (!kills.contains(opponent) && !opponents.contains(opponent)) {
             opponents.add(opponent);
         }
@@ -114,8 +118,6 @@ public class EncounteredExplorer extends CombatExplorer
      * @param hostiles Encountered hostiles to dodge
      *
      * @return DodgeActionResult
-     *
-     * @throws EncounteredExplorerException If explorer has no actions
      */
     @NotNull DodgeActionResult failToDodge(@NotNull ArrayList<EncounteredHostile> hostiles)
     {
@@ -156,12 +158,16 @@ public class EncounteredExplorer extends CombatExplorer
      *
      * @param opponent Opponent to add to kills
      *
-     * @throws EncounteredExplorerException If opponent is not slain
+     * @throws CustomException If opponent is not slain
      */
-    void finalizeKill(@NotNull EncounteredHostile opponent) throws EncounteredExplorerException
+    void finalizeKill(@NotNull EncounteredHostile opponent) throws CustomException
     {
         if (!opponent.isSlain()) {
-            throw EncounteredExplorerException.createKillIsNotSlain(opponent.getName(), getName());
+            throw new CustomException(String.format(
+                "%s is not slain and cannot be added to %s's kills.",
+                opponent.getName(),
+                getName()
+            ));
         }
 
         if (isActive() && opponents.contains(opponent)) {
@@ -184,11 +190,8 @@ public class EncounteredExplorer extends CombatExplorer
      * @param hostiles Encountered hostiles to guard against
      *
      * @return GuardActionResult
-     *
-     * @throws EncounteredExplorerException If explorer has no actions
      */
     @NotNull GuardActionResult guard(@NotNull ArrayList<EncounteredHostile> hostiles)
-        throws EncounteredExplorerException
     {
         assertHasActions();
 
@@ -256,28 +259,15 @@ public class EncounteredExplorer extends CombatExplorer
      * @param hostiles  Encountered hostiles to protect against
      *
      * @return ProtectActionResult
-     *
-     * @throws EncounteredExplorerException If explorer has no actions
-     *                                      If explorer does not have a protect action available
-     *                                      If explorer attempts to protect themselves
-     *                                      If recipient is slain
-     *                                      If recipient has no actions
      */
     @NotNull ProtectActionResult protect(
         @NotNull CombatExplorer recipient,
         @NotNull ArrayList<EncounteredHostile> hostiles
-    ) throws EncounteredExplorerException
+    )
     {
         assertHasActions();
-        if (!hasProtectActions()) {
-            throw EncounteredExplorerException.createProtectAlreadyUsed();
-        } else if (equals(recipient)) {
-            throw EncounteredExplorerException.createProtectYourself();
-        } else if (recipient.isSlain()) {
-            throw EncounteredExplorerException.createProtectSlainExplorer(recipient.getName());
-        } else if (!recipient.hasActions()) {
-            throw EncounteredExplorerException.createProtectActionlessExplorer(recipient.getName());
-        }
+        assertHasProtectActions();
+        assertTargetIsProtectable(recipient);
 
         int damageDealt    = 0;
         int damageResisted = 0;
@@ -314,7 +304,7 @@ public class EncounteredExplorer extends CombatExplorer
      *
      * @param opponent Opponent that was fought against
      */
-    void removeOpponent(@NotNull EncounteredHostile opponent) throws EncounteredExplorerException
+    void removeOpponent(@NotNull EncounteredHostile opponent)
     {
         opponents.remove(opponent);
     }
@@ -335,6 +325,45 @@ public class EncounteredExplorer extends CombatExplorer
     protected int getMinHitpointStatValue()
     {
         return Constant.EXPLORER_MIN_HITPOINTS;
+    }
+
+    /**
+     * Assert that explorer has protect actions
+     *
+     * @throws CustomException If explorer has no protect actions
+     */
+    private void assertHasProtectActions() throws CustomException
+    {
+        if (!hasProtectActions()) {
+            throw new CustomException(String.format(
+                "You've already used your `%sprotect` for this encounter",
+                MyProperties.COMMAND_PREFIX
+            ));
+        }
+    }
+
+    /**
+     * Assert that explorer is protectable
+     *
+     * @throws CustomException If explorer attempts to protect themselves
+     *                         If recipient is slain
+     *                         If recipient has no actions
+     */
+    private void assertTargetIsProtectable(@NotNull CombatExplorer target)
+    {
+        if (equals(target)) {
+            throw new CustomException("You can't protect yourself.");
+        } else if (target.isSlain()) {
+            throw new CustomException(String.format(
+                "%s has already been slain. They can not be protected.",
+                target.getName()
+            ));
+        } else if (!target.hasActions()) {
+            throw new CustomException(String.format(
+                "%s's turn has already passed. They can not be protected.",
+                target.getName()
+            ));
+        }
     }
 
     /**
@@ -391,9 +420,7 @@ public class EncounteredExplorer extends CombatExplorer
      */
     private void useProtectAction()
     {
-        if (!hasProtectActions()) {
-            throw EncounteredExplorerException.createProtectAlreadyUsed();
-        }
+        assertHasProtectActions();
 
         protectActions--;
     }

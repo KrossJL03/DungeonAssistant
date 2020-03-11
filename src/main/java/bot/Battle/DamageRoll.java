@@ -1,6 +1,6 @@
 package bot.Battle;
 
-public class DamageRoll
+class DamageRoll
 {
     private int damageDealt;
     private int damageResisted;
@@ -28,7 +28,7 @@ public class DamageRoll
      *
      * @return int
      */
-    public int getDamageDealt()
+    int getDamageDealt()
     {
         return damageDealt;
     }
@@ -38,7 +38,7 @@ public class DamageRoll
      *
      * @return int
      */
-    public int getDamageResisted()
+    int getDamageResisted()
     {
         return damageResisted;
     }
@@ -48,7 +48,7 @@ public class DamageRoll
      *
      * @return int
      */
-    public int getDie()
+    int getDie()
     {
         return die;
     }
@@ -58,7 +58,7 @@ public class DamageRoll
      *
      * @return int
      */
-    public int getRoll()
+    int getRoll()
     {
         return roll;
     }

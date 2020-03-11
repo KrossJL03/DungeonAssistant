@@ -3,12 +3,10 @@ package bot.Battle.Encounter;
 import bot.Battle.BattlePhaseFactoryInterface;
 import org.jetbrains.annotations.NotNull;
 
-public class EncounterPhaseFactory implements BattlePhaseFactoryInterface
+class EncounterPhaseFactory implements BattlePhaseFactoryInterface
 {
     /**
-     * Phase constructor (ATTACK_PHASE)
-     *
-     * @return EncounterPhase
+     * {@inheritDoc}
      */
     public @NotNull EncounterPhase createAttackPhase()
     {
@@ -16,9 +14,7 @@ public class EncounterPhaseFactory implements BattlePhaseFactoryInterface
     }
 
     /**
-     * Phase constructor (CREATE_PHASE)
-     *
-     * @return EncounterPhase
+     * {@inheritDoc}
      */
     public @NotNull EncounterPhase createCreatePhase()
     {
@@ -26,9 +22,7 @@ public class EncounterPhaseFactory implements BattlePhaseFactoryInterface
     }
 
     /**
-     * Phase constructor (END_PHASE)
-     *
-     * @return EncounterPhase
+     * {@inheritDoc}
      */
     public @NotNull EncounterPhase createEndPhase()
     {
@@ -36,9 +30,7 @@ public class EncounterPhaseFactory implements BattlePhaseFactoryInterface
     }
 
     /**
-     * Phase constructor (JOIN_PHASE)
-     *
-     * @return EncounterPhase
+     * {@inheritDoc}
      */
     public @NotNull EncounterPhase createJoinPhase()
     {

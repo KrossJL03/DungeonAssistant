@@ -39,7 +39,7 @@ abstract public class EndBattleCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
         getBattle().endBattle(player);

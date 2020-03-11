@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
-public class ExplorerInitiativeComparator implements Comparator<CombatExplorer>
+class ExplorerInitiativeComparator implements Comparator<CombatExplorer>
 {
     /**
      * {@inheritDoc}

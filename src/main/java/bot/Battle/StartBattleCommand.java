@@ -36,7 +36,7 @@ public class StartBattleCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         getBattle().startJoinPhase(event.getChannel());
     }

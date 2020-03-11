@@ -2,7 +2,7 @@ package bot.Battle.Encounter;
 
 import org.jetbrains.annotations.NotNull;
 
-public class DodgeResult
+class DodgeResult
 {
     private int       attackerDamageRoll;
     private String    attackerName;
@@ -31,26 +31,6 @@ public class DodgeResult
     }
 
     /**
-     * Get damage dealt to target
-     *
-     * @return int
-     */
-    public int getDamageDealt()
-    {
-        return isSuccess() ? 0 : attackerDamageRoll - damageResisted;
-    }
-
-    /**
-     * Get damage resisted by the target
-     *
-     * @return int
-     */
-    public int getDamageResisted()
-    {
-        return damageResisted;
-    }
-
-    /**
      * Get damage roll
      *
      * @return int
@@ -68,6 +48,26 @@ public class DodgeResult
     @NotNull String getAttackerName()
     {
         return attackerName;
+    }
+
+    /**
+     * Get damage dealt to target
+     *
+     * @return int
+     */
+    int getDamageDealt()
+    {
+        return isSuccess() ? 0 : attackerDamageRoll - damageResisted;
+    }
+
+    /**
+     * Get damage resisted by the target
+     *
+     * @return int
+     */
+    int getDamageResisted()
+    {
+        return damageResisted;
     }
 
     /**

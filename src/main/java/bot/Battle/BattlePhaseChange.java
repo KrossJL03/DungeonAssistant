@@ -24,7 +24,7 @@ public class BattlePhaseChange
      *
      * @return BattlePhase
      */
-    BattlePhase getNewPhase()
+    @NotNull BattlePhase getNewPhase()
     {
         return newPhase;
     }
@@ -34,7 +34,7 @@ public class BattlePhaseChange
      *
      * @return BattlePhase
      */
-    BattlePhase getOldPhase()
+    @NotNull BattlePhase getOldPhase()
     {
         return oldPhase;
     }

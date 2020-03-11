@@ -12,7 +12,7 @@ public class Slayer
      * @param name Slayer name
      */
     @NotNull
-    public Slayer(String name)
+    public Slayer(@NotNull String name)
     {
         this.name = name;
     }
@@ -53,7 +53,7 @@ public class Slayer
      *
      * @return boolean
      */
-    public boolean isSlayer(Slayer slayer)
+    public boolean isSlayer(@NotNull Slayer slayer)
     {
         return name.equals(slayer.getName());
     }
@@ -65,7 +65,7 @@ public class Slayer
      *
      * @return boolean
      */
-    public boolean isSlayer(CombatCreature slayer)
+    public boolean isSlayer(@NotNull CombatCreature slayer)
     {
         return name.equals(slayer.getName());
     }

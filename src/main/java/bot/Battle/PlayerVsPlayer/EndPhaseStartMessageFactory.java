@@ -8,7 +8,7 @@ import bot.MessageInterface;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
@@ -39,10 +39,7 @@ public class EndPhaseStartMessageFactory implements PhaseChangeMessageFactoryInt
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull BattlePhase previousPhase,
-        @NotNull BattlePhase nextPhase
-    )
+    public boolean handles(@NotNull BattlePhase previousPhase, @NotNull BattlePhase nextPhase)
     {
         return nextPhase.isEndPhase();
     }

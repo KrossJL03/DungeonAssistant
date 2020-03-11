@@ -25,13 +25,13 @@ class ExplorerRosterTest
     @DisplayName("Add Explorer")
     void addExplorerTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer1      = mockCombatExplorer();
-        CombatExplorer            explorer2      = mockCombatExplorer();
-        CombatExplorer            explorer3      = mockCombatExplorer();
-        CombatExplorer            explorer4      = mockCombatExplorer();
-        CombatExplorer            explorer5      = this.mockCombatExplorer(explorer1.getOwner());
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        CombatExplorer                 explorer3      = mockCombatExplorer();
+        CombatExplorer                 explorer4      = mockCombatExplorer();
+        CombatExplorer                 explorer5      = this.mockCombatExplorer(explorer1.getOwner());
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         // max count is not set /////////////////////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.addExplorer(explorer1));
@@ -89,11 +89,11 @@ class ExplorerRosterTest
     @DisplayName("Get Active Explorers")
     void getActiveExplorersTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer1      = mockCombatExplorer();
-        CombatExplorer            explorer2      = mockCombatExplorer();
-        CombatExplorer            explorer3      = mockCombatExplorer();
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        CombatExplorer                 explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPartySize(3);
         explorerRoster.addExplorer(explorer1);
@@ -133,11 +133,11 @@ class ExplorerRosterTest
     @DisplayName("Get All Explorers")
     void getAllExplorersTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer1      = mockCombatExplorer();
-        CombatExplorer            explorer2      = mockCombatExplorer();
-        CombatExplorer            explorer3      = mockCombatExplorer();
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        CombatExplorer                 explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPartySize(3);
 
@@ -158,10 +158,10 @@ class ExplorerRosterTest
     @DisplayName("Get Explorer")
     void getExplorerTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer1      = mockCombatExplorer();
-        CombatExplorer            explorer2      = mockCombatExplorer();
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         // get an explorer from an empty roster ////////////////
         assertThrows(ExplorerRosterException.class, () -> explorerRoster.getExplorer(explorer1.getName()));
@@ -191,7 +191,7 @@ class ExplorerRosterTest
     @DisplayName("Get Max Player Count")
     void getMaxPlayerCountTest()
     {
-        ExplorerRoster explorerRoster = new ExplorerRoster();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
 
         explorerRoster.setMaxPartySize(3);
         assertEquals(3, explorerRoster.getMaxPartySize());
@@ -207,9 +207,9 @@ class ExplorerRosterTest
     @DisplayName("Player Has Left")
     void playerHasLeftTest()
     {
-        ExplorerRoster explorerRoster = new ExplorerRoster();
-        CombatExplorer explorer       = mockCombatExplorer();
-        Player         p              = explorer.getOwner();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer       = mockCombatExplorer();
+        Player                         p              = explorer.getOwner();
 
         explorerRoster.setMaxPartySize(3);
 
@@ -234,21 +234,21 @@ class ExplorerRosterTest
     @DisplayName("Player Has Rejoined")
     void playerHasRejoinedTest()
     {
-        ExplorerRoster explorerRoster = new ExplorerRoster();
-        CombatExplorer explorer1      = mockCombatExplorer();
-        CombatExplorer explorer2      = mockCombatExplorer();
-        Player         p              = explorer1.getOwner();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        Player                         p              = explorer1.getOwner();
 
         explorerRoster.setMaxPartySize(1);
 
         // player attempts to rejoin that was not in the roster //
-//        assertThrows(EncounteredCreatureNotFoundException.class, () -> explorerRoster.rejoin(p));
+//        assertThrows(CustomException.class, () -> explorerRoster.rejoin(p));
         //////////////////////////////////////////////////////////
 
         // player attempts to rejoin that was present //
         explorerRoster.addExplorer(explorer1);
         when(explorer1.isPresent()).thenReturn(true);
-//        assertThrows(ExplorerRosterException.class, () -> explorerRoster.rejoin(p));
+//        assertThrows(CustomException.class, () -> explorerRoster.rejoin(p));
         ////////////////////////////////////////////////
 
         // player attempts to rejoin when roster is full //
@@ -269,9 +269,9 @@ class ExplorerRosterTest
     @DisplayName("Remove Explorer")
     void removeExplorerTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer       = mockCombatExplorer();
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer       = mockCombatExplorer();
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPartySize(2);
 
@@ -301,10 +301,10 @@ class ExplorerRosterTest
     @DisplayName("Set Max Player Count")
     void setMaxPlayerCountTest()
     {
-        ExplorerRoster explorerRoster = new ExplorerRoster();
-        CombatExplorer explorer1      = mockCombatExplorer();
-        CombatExplorer explorer2      = mockCombatExplorer();
-        CombatExplorer explorer3      = mockCombatExplorer();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        CombatExplorer                 explorer3      = mockCombatExplorer();
 
         // set max player count ///////////////////////////////
         explorerRoster.setMaxPartySize(3);
@@ -332,11 +332,11 @@ class ExplorerRosterTest
     @DisplayName("Sort")
     void sortTest()
     {
-        ExplorerRoster            explorerRoster = new ExplorerRoster();
-        CombatExplorer            explorer1      = mockCombatExplorer();
-        CombatExplorer            explorer2      = mockCombatExplorer();
-        CombatExplorer            explorer3      = mockCombatExplorer();
-        ArrayList<CombatExplorer> expectedList   = new ArrayList<>();
+        ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
+        CombatExplorer                 explorer1      = mockCombatExplorer();
+        CombatExplorer                 explorer2      = mockCombatExplorer();
+        CombatExplorer                 explorer3      = mockCombatExplorer();
+        ArrayList<CombatExplorer>      expectedList   = new ArrayList<>();
 
         explorerRoster.setMaxPartySize(5);
 

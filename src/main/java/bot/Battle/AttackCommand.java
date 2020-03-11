@@ -47,7 +47,7 @@ abstract public class AttackCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Player   player     = getPlayerFromEvent(event);
         String[] parameters = getParametersFromEvent(event);

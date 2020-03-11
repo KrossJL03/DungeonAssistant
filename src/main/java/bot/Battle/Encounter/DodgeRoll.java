@@ -7,7 +7,7 @@ class DodgeRoll
     private int roll;
 
     /**
-     * DodgeRoll constructor
+     * Constructor.
      *
      * @param roll Roll
      */

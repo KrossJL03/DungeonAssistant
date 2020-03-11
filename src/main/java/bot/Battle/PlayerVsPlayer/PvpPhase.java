@@ -3,7 +3,7 @@ package bot.Battle.PlayerVsPlayer;
 import bot.Battle.BattlePhase;
 import org.jetbrains.annotations.NotNull;
 
-public class PvpPhase extends BattlePhase
+class PvpPhase extends BattlePhase
 {
     static String VICTORY_PHASE = "VICTORY";
 

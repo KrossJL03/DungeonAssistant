@@ -2,12 +2,12 @@ package bot.Battle.Encounter;
 
 import bot.Battle.CombatActionResultInterface;
 import bot.Battle.DeathSaveRoll;
-import bot.Battle.Mention;
 import bot.Battle.Slayer;
+import bot.Mention;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ProtectActionResult implements CombatActionResultInterface
+class ProtectActionResult implements CombatActionResultInterface
 {
     private int           damageDealt;
     private int           damageResisted;

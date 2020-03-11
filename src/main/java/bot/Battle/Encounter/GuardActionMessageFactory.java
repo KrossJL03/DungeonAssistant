@@ -2,7 +2,7 @@ package bot.Battle.Encounter;
 
 import bot.Battle.ActionResultInterface;
 import bot.Battle.CombatActionMessageFactory;
-import bot.Battle.Mention;
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;

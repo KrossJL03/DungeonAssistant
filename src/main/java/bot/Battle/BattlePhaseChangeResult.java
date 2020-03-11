@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class BattlePhaseChangeResult implements EncounterRosterDataInterface
+public class BattlePhaseChangeResult
 {
     private BattleContext             battleContext;
     private ArrayList<CombatCreature> creatures;
@@ -33,38 +33,23 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get creatures
+     *
+     * @return ArrayList<CombatCreature>
      */
-    @Override
     public @NotNull ArrayList<CombatCreature> getCreatures()
     {
         return new ArrayList<>(creatures);
     }
 
     /**
-     * {@inheritDoc}
+     * Get current player count
+     *
+     * @return int
      */
-    @Override
     public int getCurrentPartySize()
     {
         return battleContext.getCurrentPartySize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxPartySize()
-    {
-        return battleContext.getMaxPartySize();
-    }
-
-    /**
-     * Get tier
-     */
-    public @NotNull Tier getTier()
-    {
-        return tier;
     }
 
     /**
@@ -73,6 +58,16 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     @NotNull String getBattleType()
     {
         return battleContext.getType();
+    }
+
+    /**
+     * Get max player count
+     *
+     * @return int
+     */
+    int getMaxPartySize()
+    {
+        return battleContext.getMaxPartySize();
     }
 
     /**
@@ -92,7 +87,15 @@ public class BattlePhaseChangeResult implements EncounterRosterDataInterface
     }
 
     /**
-     * Is batle always joinable
+     * Get tier
+     */
+    @NotNull Tier getTier()
+    {
+        return tier;
+    }
+
+    /**
+     * Is battle always joinable
      */
     boolean isAlwaysJoinable()
     {

@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.CustomException;
 import bot.Registry.RegistryPaths;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,9 +20,9 @@ public class TierRegistry
      *
      * @return Tier
      *
-     * @throws TierException If tier not found
+     * @throws CustomException If tier not found
      */
-    public static @NotNull Tier getTier(@NotNull String name) throws TierException
+    public static @NotNull Tier getTier(@NotNull String name) throws CustomException
     {
         String sql = String.format(
             "SELECT t.*" +
@@ -58,7 +59,7 @@ public class TierRegistry
                 System.out.println("Failed to close");
             }
         }
-        throw TierException.createNotFound(name);
+        throw new CustomException(String.format("I'm not familiar with the %s tier...", name));
     }
 
     /**

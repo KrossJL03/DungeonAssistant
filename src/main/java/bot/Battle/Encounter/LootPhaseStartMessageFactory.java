@@ -9,7 +9,7 @@ import bot.MyProperties;
 import bot.TextFormatter;
 import org.jetbrains.annotations.NotNull;
 
-public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
+class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryInterface
 {
     private TextFormatter textFormatter;
 
@@ -47,10 +47,7 @@ public class LootPhaseStartMessageFactory implements PhaseChangeMessageFactoryIn
      * {@inheritDoc}
      */
     @Override
-    public boolean handles(
-        @NotNull BattlePhase previousPhase,
-        @NotNull BattlePhase nextPhase
-    )
+    public boolean handles(@NotNull BattlePhase previousPhase, @NotNull BattlePhase nextPhase)
     {
         return ((EncounterPhase) nextPhase).isLootPhase();
     }

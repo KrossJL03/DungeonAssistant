@@ -1,6 +1,6 @@
 package bot.Player;
 
-import bot.Battle.Mention;
+import bot.Mention;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

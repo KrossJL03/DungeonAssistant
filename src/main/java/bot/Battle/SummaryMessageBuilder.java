@@ -1,6 +1,7 @@
 package bot.Battle;
 
 import bot.Battle.Encounter.EncounteredHostile;
+import bot.DiffCodeFormatter;
 import bot.Message;
 import org.jetbrains.annotations.NotNull;
 
@@ -138,12 +139,12 @@ public class SummaryMessageBuilder
         }
 
         output.append(String.format("[%3s/%3s] ", currentHP > 999 ? "???" : currentHP, maxHP > 999 ? "???" : maxHP));
-        int healthBlocks      = (int) Math.ceil(maxHP / 10) + 1;
+        int healthBlocks      = (int) Math.ceil((float) maxHP / 10) + 1;
         int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP) / 10);
         int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
-        output.append(this.repeatString(SummaryMessage.FULL_HEALTH_ICON, fullHealthBlocks));
+        output.append(this.repeatString(Message.FULL_HEALTH_ICON, fullHealthBlocks));
         if (emptyHealthBlocks > 0) {
-            output.append(this.repeatString(SummaryMessage.EMPTY_HEALTH_ICON, emptyHealthBlocks));
+            output.append(this.repeatString(Message.EMPTY_HEALTH_ICON, emptyHealthBlocks));
         }
 
         return creature.isBloodied()

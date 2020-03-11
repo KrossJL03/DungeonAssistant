@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-abstract public class EncounterCommand extends BattleCommand
+abstract class EncounterCommand extends BattleCommand
 {
     /**
      * Constructor.

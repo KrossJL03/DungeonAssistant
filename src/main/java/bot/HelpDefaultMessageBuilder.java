@@ -1,6 +1,5 @@
 package bot;
 
-import bot.Battle.DiffCodeFormatter;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 

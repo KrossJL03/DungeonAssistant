@@ -2,14 +2,14 @@ package bot.Battle.Encounter;
 
 import org.jetbrains.annotations.NotNull;
 
-public class GuardResult
+class GuardResult
 {
     private int    attackerDamageRoll;
     private String attackerName;
     private int    damageResisted;
 
     /**
-     * GuardResult constructor
+     * Constructor.
      *
      * @param attackerName       Attacker name
      * @param attackerDamageRoll Attack damage roll
@@ -24,26 +24,6 @@ public class GuardResult
         this.attackerDamageRoll = attackerDamageRoll;
         this.attackerName = attackerName;
         this.damageResisted = damageResisted;
-    }
-
-    /**
-     * Get damage dealt to target
-     *
-     * @return int
-     */
-    public int getDamageDealt()
-    {
-        return attackerDamageRoll - damageResisted;
-    }
-
-    /**
-     * Get damage resisted by the target
-     *
-     * @return int
-     */
-    public int getDamageResisted()
-    {
-        return damageResisted;
     }
 
     /**
@@ -64,5 +44,25 @@ public class GuardResult
     @NotNull String getAttackerName()
     {
         return attackerName;
+    }
+
+    /**
+     * Get damage dealt to target
+     *
+     * @return int
+     */
+    int getDamageDealt()
+    {
+        return attackerDamageRoll - damageResisted;
+    }
+
+    /**
+     * Get damage resisted by the target
+     *
+     * @return int
+     */
+    int getDamageResisted()
+    {
+        return damageResisted;
     }
 }

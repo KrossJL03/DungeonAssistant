@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ReviveCommand extends EncounterCommand
+class ReviveCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -44,7 +44,7 @@ public class ReviveCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters = getParametersFromEvent(event);
         String   targetName = parameters[0];

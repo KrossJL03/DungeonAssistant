@@ -3,6 +3,7 @@ package bot.Battle.PlayerVsPlayer;
 import bot.Battle.CombatExplorer;
 import bot.Battle.InitiativeTrackerException;
 import bot.Battle.InitiativeTrackerInterface;
+import bot.CustomException;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,9 +30,9 @@ class InitiativeCycle implements InitiativeTrackerInterface
      * {@inheritDoc}
      */
     @Override
-    public void add(@NotNull CombatExplorer explorer)
+    public void add(@NotNull CombatExplorer explorer) throws CustomException
     {
-        throw InitiativeTrackerException.createNotSupported();
+        throw new CustomException("Explorers cannot be added once initiative has started.");
     }
 
     /**

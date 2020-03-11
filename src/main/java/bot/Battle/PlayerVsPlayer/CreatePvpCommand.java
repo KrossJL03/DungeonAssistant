@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class CreatePvpCommand extends BattleCommand
+class CreatePvpCommand extends BattleCommand
 {
     private EncounterHolder holder;
 
@@ -55,7 +55,7 @@ public class CreatePvpCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         if (holder.hasActiveBattle()) {
             BattleInterface battle = holder.getBattle();

@@ -119,14 +119,13 @@ abstract public class CombatCreature
      *
      * @return HurtActionResult
      *
-     * @throws CombatCreatureException If creature is slain
+     * @throws CustomException If hitpoints to hurt is less than 0
      */
     @NotNull
-    public HurtActionResult hurt(int hitpoints) throws CombatCreatureException
+    public HurtActionResult hurt(int hitpoints) throws CustomException
     {
-        if (isSlain()) {
-            throw CombatCreatureException.createIsSlain(name, getSlayer().getName());
-        } else if (hitpoints < 0) {
+        assertNotSlain();
+        if (hitpoints < 0) {
             throw new CustomException("The amount of HP to hurt must be a positive number.");
         }
 
@@ -289,14 +288,10 @@ abstract public class CombatCreature
      * Take damage
      *
      * @return damage taken
-     *
-     * @throws CombatCreatureException If creature is slain
      */
-    protected int takeDamage(@NotNull CombatCreature attacker, int damage) throws CombatCreatureException
+    protected int takeDamage(@NotNull CombatCreature attacker, int damage)
     {
-        if (isSlain()) {
-            throw CombatCreatureException.createIsSlain(name, getSlayer().getName());
-        }
+        assertNotSlain();
 
         damage = damage - getEndurance();
         damage = Math.max(1, damage);
@@ -330,5 +325,17 @@ abstract public class CombatCreature
         }
 
         return modifier;
+    }
+
+    /**
+     * Assert this creature is not slain
+     *
+     * @throws CustomException If creature is slain
+     */
+    private void assertNotSlain() throws CustomException
+    {
+        if (isSlain()) {
+            throw new CustomException(String.format("%s was slain by %s", name, getSlayer().getName()));
+        }
     }
 }

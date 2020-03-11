@@ -3,7 +3,7 @@ package bot.Battle.Encounter;
 import bot.Battle.BattlePhase;
 import org.jetbrains.annotations.NotNull;
 
-public class EncounterPhase extends BattlePhase
+class EncounterPhase extends BattlePhase
 {
     final static String DODGE_PHASE = "DODGE";
     final static String LOOT_PHASE  = "LOOT";

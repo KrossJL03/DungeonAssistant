@@ -2,8 +2,8 @@ package bot.Battle.Encounter;
 
 import bot.Battle.ActionMessageFactory;
 import bot.Battle.ActionResultInterface;
-import bot.Battle.Mention;
 import bot.CustomException;
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +93,7 @@ class LootActionMessageFactory extends ActionMessageFactory
      *
      * @return LootActionResult
      */
-    private LootActionResult castResult(@NotNull ActionResultInterface result)
+    private @NotNull LootActionResult castResult(@NotNull ActionResultInterface result)
     {
         assertHandles(result);
 

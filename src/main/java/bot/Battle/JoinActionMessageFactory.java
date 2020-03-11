@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Mention;
 import bot.Message;
 import bot.MessageInterface;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +63,7 @@ public class JoinActionMessageFactory extends ActionMessageFactory
     private @NotNull String getExplorerPrintout(@NotNull CombatExplorer explorer)
     {
         // todo cleanup using Message
-        int    nameBuffer = (int) Math.floor(15 + explorer.getName().length() / 2);
+        int    nameBuffer = (int) Math.floor(15 + ((float) explorer.getName().length() / 2));
         String output     = "";
         output += "```md";
         output += Message.NEWLINE;

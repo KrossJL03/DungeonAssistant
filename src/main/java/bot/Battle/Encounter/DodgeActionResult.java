@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class DodgeActionResult implements CombatActionResultInterface
+class DodgeActionResult implements CombatActionResultInterface
 {
     private DeathSaveRoll          deathSaveRoll;
     private ArrayList<DodgeResult> dodgeResults;

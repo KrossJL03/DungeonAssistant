@@ -47,7 +47,7 @@ class ModifyStatCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         Encounter encounter   = getEncounter();
         String[]  parameters  = getParametersFromEvent(event);

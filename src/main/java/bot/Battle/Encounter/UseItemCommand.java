@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class UseItemCommand extends EncounterCommand
+class UseItemCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -48,7 +48,16 @@ public class UseItemCommand extends EncounterCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    public boolean isExternalCommand()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         BattleInterface battle = getBattle();
 
@@ -56,15 +65,6 @@ public class UseItemCommand extends EncounterCommand
             Player player = getPlayerFromEvent(event);
             battle.useItemAction(player);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isExternalCommand()
-    {
-        return true;
     }
 
     /**

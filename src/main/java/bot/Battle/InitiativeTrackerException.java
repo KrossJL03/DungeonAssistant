@@ -23,14 +23,4 @@ public class InitiativeTrackerException extends CustomException
     {
         return new InitiativeTrackerException("It looks like we're not in initiative, I'm not sure what to do...");
     }
-
-    /**
-     * Factory method for "not supported"
-     *
-     * @return InitiativeQueueException
-     */
-    public static InitiativeTrackerException createNotSupported()
-    {
-        return new InitiativeTrackerException("What are you doing! This command is not supported");
-    }
 }

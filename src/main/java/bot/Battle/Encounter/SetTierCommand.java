@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SetTierCommand extends BattleCommand
+class SetTierCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public class SetTierCommand extends BattleCommand
      * {@inheritDoc}
      */
     @Override
-    public void execute(@NotNull MessageReceivedEvent event)
+    protected void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters = getParametersFromEvent(event);
         String   tierName   = parameters[0];

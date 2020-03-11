@@ -1,5 +1,6 @@
 package bot.Battle;
 
+import bot.Mention;
 import bot.MyProperties;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -114,9 +115,9 @@ public class BattleLogger
     }
 
     /**
-     * Log create encounter
+     * Log create battle
      */
-    void logCreateEncounter()
+    void logCreateBattle()
     {
         sendMessage("Battle creation has started!");
     }
@@ -135,13 +136,13 @@ public class BattleLogger
     }
 
     /**
-     * Log left encounter
+     * Log left battle
      *
      * @param name Name of explorer that left
      */
-    void logLeftEncounter(@NotNull String name)
+    void logLeftBattle(@NotNull String name)
     {
-        sendMessage(String.format("%s has left the encounter", name));
+        sendMessage(String.format("%s has left the battle.", name));
     }
 
     /**
@@ -161,13 +162,13 @@ public class BattleLogger
     }
 
     /**
-     * Log rejoined encounter
+     * Log rejoined battle
      *
      * @param name Name of explorer that rejoined
      */
-    void logRejoinEncounter(@NotNull String name)
+    void logRejoinBattle(@NotNull String name)
     {
-        sendMessage(String.format("%s has rejoined the encounter!", name));
+        sendMessage(String.format("%s has rejoined the battle!", name));
     }
 
     /**
@@ -206,7 +207,7 @@ public class BattleLogger
     }
 
     /**
-     * Log encounter summary
+     * Log battle summary
      *
      * @param creatures Creatures
      */
