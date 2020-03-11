@@ -80,6 +80,71 @@ abstract public class CombatCreature
     }
 
     /**
+     * Heal by points
+     *
+     * @param hitpoints Hitpoints to heal
+     *
+     * @return HealActionResult
+     */
+    @NotNull
+    public HealActionResult healPoints(int hitpoints)
+    {
+        if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to heal must be a positive number.");
+        }
+
+        boolean wasRevived = false;
+        if (isSlain()) {
+            wasRevived = true;
+        }
+
+        int healedHp;
+        if (currentHp + hitpoints > maxHp) {
+            healedHp = maxHp - currentHp;
+            currentHp = maxHp;
+        } else {
+            healedHp = hitpoints;
+            currentHp += hitpoints;
+        }
+
+        postHeal();
+
+        return new HealActionResult(name, healedHp, currentHp, maxHp, wasRevived);
+    }
+
+    /**
+     * Hurt
+     *
+     * @param hitpoints Hitpoints to hurt
+     *
+     * @return HurtActionResult
+     *
+     * @throws CombatCreatureException If creature is slain
+     */
+    @NotNull
+    public HurtActionResult hurt(int hitpoints) throws CombatCreatureException
+    {
+        if (isSlain()) {
+            throw CombatCreatureException.createIsSlain(name, getSlayer().getName());
+        } else if (hitpoints < 0) {
+            throw new CustomException("The amount of HP to hurt must be a positive number.");
+        }
+
+        boolean wasBloodied = isBloodied();
+        int     hurtHp;
+
+        if (currentHp - hitpoints < 0) {
+            hurtHp = currentHp;
+            currentHp = 0;
+        } else {
+            hurtHp = hitpoints;
+            currentHp -= hitpoints;
+        }
+
+        return new HurtActionResult(name, hurtHp, currentHp, maxHp, wasBloodied);
+    }
+
+    /**
      * Is active
      *
      * @return boolean
@@ -154,68 +219,70 @@ abstract public class CombatCreature
     abstract public boolean wasSlainBy(@NotNull CombatCreature creature);
 
     /**
-     * Heal by points
+     * Add slayer
      *
-     * @param hitpoints Hitpoints to heal
-     *
-     * @return HealActionResult
+     * @param slayer Slayer
      */
-    @NotNull
-    public HealActionResult healPoints(int hitpoints)
+    abstract protected void addSlayer(@NotNull Slayer slayer);
+
+    /**
+     * Get endurance
+     */
+    abstract protected int getEndurance();
+
+    /**
+     * Get maximum hitpoint value
+     *
+     * @return int
+     */
+    abstract protected int getMaxHitpointStatValue();
+
+    /**
+     * Get minimum hitpoint value
+     *
+     * @return int
+     */
+    abstract protected int getMinHitpointStatValue();
+
+    /**
+     * Modify hitpoints
+     *
+     * @param statModifier Hitpoints modifier
+     *
+     * @return ModifyStatActionResult
+     */
+    final protected @NotNull ModifyStatActionResult modifyHitpoints(int statModifier)
     {
-        if (hitpoints < 0) {
-            throw new CustomException("The amount of HP to heal must be a positive number.");
+        statModifier = validateStatMod(
+            statModifier,
+            maxHp,
+            getMinHitpointStatValue(),
+            getMaxHitpointStatValue()
+        );
+
+        maxHp += statModifier;
+        if (statModifier > 0) {
+            healPoints(statModifier);
         }
 
-        boolean wasRevived = false;
-        if (isSlain()) {
-            wasRevived = true;
-        }
-
-        int healedHp;
-        if (currentHp + hitpoints > maxHp) {
-            healedHp = maxHp - currentHp;
-            currentHp = maxHp;
-        } else {
-            healedHp = hitpoints;
-            currentHp += hitpoints;
-        }
-
-        postHeal();
-
-        return new HealActionResult(name, healedHp, currentHp, maxHp, wasRevived);
+        return new ModifyStatActionResult(name, Constant.CREATURE_STAT_HITPOINTS, statModifier, maxHp);
     }
 
     /**
-     * Hurt
-     *
-     * @param hitpoints Hitpoints to hurt
-     *
-     * @return HurtActionResult
-     *
-     * @throws CombatCreatureException If creature is slain
+     * Handle any additional post heal processes
      */
-    @NotNull
-    public HurtActionResult hurt(int hitpoints) throws CombatCreatureException
+    abstract protected void postHeal();
+
+    /**
+     * Roll a die of the given size
+     *
+     * @param die Die to roll
+     *
+     * @return int
+     */
+    final protected int roll(int die)
     {
-        if (isSlain()) {
-            throw CombatCreatureException.createIsSlain(name, getSlayer().getName());
-        } else if (hitpoints < 0) {
-            throw new CustomException("The amount of HP to hurt must be a positive number.");
-        }
-
-        boolean wasBloodied = isBloodied();
-        int     hurtHp;
-
-        if (currentHp - hitpoints < 0) {
-            hurtHp = currentHp;
-            currentHp = 0;
-        } else {
-            hurtHp = hitpoints;
-            currentHp -= hitpoints;
-        }
-
-        return new HurtActionResult(name, hurtHp, currentHp, maxHp, wasBloodied);
+        return (int) Math.floor(Math.random() * die) + 1;
     }
 
     /**
@@ -244,57 +311,24 @@ abstract public class CombatCreature
     }
 
     /**
-     * Add slayer
+     * Validate stat modifier
      *
-     * @param slayer Slayer
-     */
-    abstract protected void addSlayer(@NotNull Slayer slayer);
-
-    /**
-     * Get endurance
-     */
-    abstract protected int getEndurance();
-
-    /**
-     * Modify hitpoints
+     * @param modifier     Stat modifier
+     * @param currentValue Current value of the stat the modifier will be applied to
+     * @param minValue     Minimum value of the stat the modifier will be applied to
+     * @param maxValue     Maximum value of the stat the modifier will be applied to
      *
-     * @param statModifier Hitpoints modifier
-     *
-     * @return ModifyStatActionResult
+     * @return int Modifier adjusted to if min and max criteria
      */
-    final protected @NotNull ModifyStatActionResult modifyHitpoints(int statModifier)
+    final protected int validateStatMod(int modifier, int currentValue, int minValue, int maxValue)
     {
-        preModifyHitpoints(statModifier);
-
-        maxHp += statModifier;
-        if (statModifier > 0) {
-            healPoints(statModifier);
+        int modifiedValue = currentValue + modifier;
+        if (modifiedValue > maxValue) {
+            modifier = maxValue - currentValue;
+        } else if (modifiedValue < minValue) {
+            modifier = currentValue - minValue;
         }
 
-        return new ModifyStatActionResult(name, Constant.EXPLORER_STAT_HITPOINTS, statModifier, maxHp);
-    }
-
-    /**
-     * Handle any additional post heal processes
-     */
-    abstract protected void postHeal();
-
-    /**
-     * Handle any additional pre modify hitpoints processes
-     *
-     * @param statModifier Stat modifier
-     */
-    abstract protected void preModifyHitpoints(int statModifier);
-
-    /**
-     * Roll a die of the given size
-     *
-     * @param die Die to roll
-     *
-     * @return int
-     */
-    final protected int roll(int die)
-    {
-        return (int) Math.floor(Math.random() * die) + 1;
+        return modifier;
     }
 }

@@ -123,11 +123,11 @@ public class EncounteredHostile extends CombatCreature
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
                 return modifyAttack(statModifier);
-            case Constant.HOSTILE_STAT_HITPOINTS:
+            case Constant.CREATURE_STAT_HITPOINTS:
                 return modifyHitpoints(statModifier);
             case Constant.HOSTILE_STAT_ATTACK_SHORT:
                 return modifyAttack(statModifier);
-            case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
+            case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statModifier);
             default:
                 throw CombatCreatureException.createInvalidStatName(statName, "hostile");
@@ -143,11 +143,11 @@ public class EncounteredHostile extends CombatCreature
         switch (statName.toLowerCase()) {
             case Constant.HOSTILE_STAT_ATTACK:
                 return modifyAttack(statValue - attack);
-            case Constant.HOSTILE_STAT_HITPOINTS:
+            case Constant.CREATURE_STAT_HITPOINTS:
                 return modifyHitpoints(statValue - getMaxHP());
             case Constant.HOSTILE_STAT_ATTACK_SHORT:
                 return modifyAttack(statValue - attack);
-            case Constant.HOSTILE_STAT_HITPOINTS_SHORT:
+            case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statValue - getMaxHP());
             default:
                 throw CombatCreatureException.createInvalidStatName(statName, "hostile");
@@ -218,24 +218,27 @@ public class EncounteredHostile extends CombatCreature
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal()
+    protected int getMaxHitpointStatValue()
     {
-        // do nothing
+        return Constant.HOSTILE_MAX_HITPOINTS;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected void preModifyHitpoints(int statModifier)
+    @Override
+    protected int getMinHitpointStatValue()
     {
-        int moddedStatValue = getMaxHP() + statModifier;
-        if (moddedStatValue < Constant.HOSTILE_MIN_HITPOINTS) {
-            throw CombatCreatureException.createStatLessThanMin(
-                getName(),
-                Constant.HOSTILE_STAT_HITPOINTS,
-                Constant.HOSTILE_MIN_HITPOINTS
-            );
-        }
+        return Constant.HOSTILE_MIN_HITPOINTS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void postHeal()
+    {
+        // do nothing
     }
 
     /**
@@ -247,15 +250,9 @@ public class EncounteredHostile extends CombatCreature
      */
     private @NotNull ModifyStatActionResult modifyAttack(int statModifier)
     {
-        int moddedStatValue = attack + statModifier;
-        if (moddedStatValue < Constant.HOSTILE_MIN_ATTACK) {
-            throw CombatCreatureException.createStatLessThanMin(
-                getName(),
-                Constant.HOSTILE_STAT_ATTACK,
-                Constant.HOSTILE_MIN_ATTACK
-            );
-        }
-        attack = moddedStatValue;
+        statModifier = validateStatMod(statModifier, attack, Constant.HOSTILE_MIN_ATTACK, Constant.HOSTILE_MAX_ATTACK);
+
+        attack += statModifier;
 
         return new ModifyStatActionResult(getName(), Constant.HOSTILE_STAT_ATTACK, statModifier, attack);
     }

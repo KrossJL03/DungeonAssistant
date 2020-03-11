@@ -78,7 +78,7 @@ public class ModifyStatActionResult implements ActionResultInterface
      */
     public boolean isHitpointStat()
     {
-        return statName.equals(Constant.HOSTILE_STAT_HITPOINTS) ||
-               statName.equals(Constant.EXPLORER_STAT_HITPOINTS_SHORT);
+        return statName.equals(Constant.CREATURE_STAT_HITPOINTS) ||
+               statName.equals(Constant.CREATURE_STAT_HITPOINTS_SHORT);
     }
 }

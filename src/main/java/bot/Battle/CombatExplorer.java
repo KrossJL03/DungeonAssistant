@@ -172,7 +172,7 @@ public class CombatExplorer extends CombatCreature
                 return modifyAgility(statModifier);
             case Constant.EXPLORER_STAT_DEFENSE:
                 return modifyDefense(statModifier);
-            case Constant.EXPLORER_STAT_HITPOINTS:
+            case Constant.CREATURE_STAT_HITPOINTS:
                 return modifyHitpoints(statModifier);
             case Constant.EXPLORER_STAT_STRENGTH:
                 return modifyStrength(statModifier);
@@ -182,7 +182,7 @@ public class CombatExplorer extends CombatCreature
                 return modifyAgility(statModifier);
             case Constant.EXPLORER_STAT_DEFENSE_SHORT:
                 return modifyDefense(statModifier);
-            case Constant.EXPLORER_STAT_HITPOINTS_SHORT:
+            case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statModifier);
             case Constant.EXPLORER_STAT_STRENGTH_SHORT:
                 return modifyStrength(statModifier);
@@ -214,7 +214,7 @@ public class CombatExplorer extends CombatCreature
                 return modifyAgility(statValue - agility);
             case Constant.EXPLORER_STAT_DEFENSE:
                 return modifyDefense(statValue - defense);
-            case Constant.EXPLORER_STAT_HITPOINTS:
+            case Constant.CREATURE_STAT_HITPOINTS:
                 return modifyHitpoints(statValue - getMaxHP());
             case Constant.EXPLORER_STAT_STRENGTH:
                 return modifyStrength(statValue - strength);
@@ -224,7 +224,7 @@ public class CombatExplorer extends CombatCreature
                 return modifyAgility(statValue - agility);
             case Constant.EXPLORER_STAT_DEFENSE_SHORT:
                 return modifyDefense(statValue - defense);
-            case Constant.EXPLORER_STAT_HITPOINTS_SHORT:
+            case Constant.CREATURE_STAT_HITPOINTS_SHORT:
                 return modifyHitpoints(statValue - getMaxHP());
             case Constant.EXPLORER_STAT_STRENGTH_SHORT:
                 return modifyStrength(statValue - strength);
@@ -400,27 +400,28 @@ public class CombatExplorer extends CombatCreature
      * {@inheritDoc}
      */
     @Override
-    protected void postHeal()
+    protected int getMaxHitpointStatValue()
     {
-        if (slayer.exists() && !isSlain()) {
-            slayer = new Slayer();
-        }
+        return Constant.EXPLORER_MAX_HITPOINTS;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected void preModifyHitpoints(int statModifier)
+    @Override
+    protected int getMinHitpointStatValue()
     {
-        int moddedStatValue = getMaxHP() + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_HITPOINTS ||
-            moddedStatValue < Constant.EXPLORER_MIN_HITPOINTS) {
-            throw CombatCreatureException.createStatOutOfBounds(
-                getName(),
-                Constant.EXPLORER_STAT_HITPOINTS,
-                Constant.EXPLORER_MIN_HITPOINTS,
-                Constant.EXPLORER_MAX_HITPOINTS
-            );
+        return Constant.EXPLORER_MIN_HITPOINTS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void postHeal()
+    {
+        if (slayer.exists() && !isSlain()) {
+            slayer = new Slayer();
         }
     }
 
@@ -479,16 +480,13 @@ public class CombatExplorer extends CombatCreature
      */
     private @NotNull ModifyStatActionResult modifyAgility(int statModifier)
     {
-        int moddedStatValue = agility + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_AGILITY ||
-            moddedStatValue < Constant.EXPLORER_MIN_AGILITY) {
-            throw CombatCreatureException.createStatOutOfBounds(
-                getName(),
-                Constant.EXPLORER_STAT_AGILITY,
-                Constant.EXPLORER_MIN_AGILITY,
-                Constant.EXPLORER_MAX_AGILITY
-            );
-        }
+        statModifier = validateStatMod(
+            statModifier,
+            agility,
+            Constant.EXPLORER_MIN_AGILITY,
+            Constant.EXPLORER_MAX_AGILITY
+        );
+
         agility += statModifier;
 
         return new ModifyStatActionResult(getName(), Constant.EXPLORER_STAT_AGILITY, statModifier, agility);
@@ -503,16 +501,13 @@ public class CombatExplorer extends CombatCreature
      */
     private @NotNull ModifyStatActionResult modifyDefense(int statModifier)
     {
-        int moddedStatValue = defense + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_DEFENSE ||
-            moddedStatValue < Constant.EXPLORER_MIN_DEFENSE) {
-            throw CombatCreatureException.createStatOutOfBounds(
-                getName(),
-                Constant.EXPLORER_STAT_DEFENSE,
-                Constant.EXPLORER_MIN_DEFENSE,
-                Constant.EXPLORER_MAX_DEFENSE
-            );
-        }
+        statModifier = validateStatMod(
+            statModifier,
+            defense,
+            Constant.EXPLORER_MIN_DEFENSE,
+            Constant.EXPLORER_MAX_DEFENSE
+        );
+
         defense += statModifier;
 
         return new ModifyStatActionResult(getName(), Constant.EXPLORER_STAT_DEFENSE, statModifier, defense);
@@ -527,16 +522,13 @@ public class CombatExplorer extends CombatCreature
      */
     private @NotNull ModifyStatActionResult modifyStrength(int statModifier)
     {
-        int moddedStatValue = strength + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_STRENGTH ||
-            moddedStatValue < Constant.EXPLORER_MIN_STRENGTH) {
-            throw CombatCreatureException.createStatOutOfBounds(
-                getName(),
-                Constant.EXPLORER_STAT_STRENGTH,
-                Constant.EXPLORER_MIN_STRENGTH,
-                Constant.EXPLORER_MAX_STRENGTH
-            );
-        }
+        statModifier = validateStatMod(
+            statModifier,
+            strength,
+            Constant.EXPLORER_MIN_STRENGTH,
+            Constant.EXPLORER_MAX_STRENGTH
+        );
+
         strength += statModifier;
 
         return new ModifyStatActionResult(getName(), Constant.EXPLORER_STAT_STRENGTH, statModifier, strength);
@@ -551,16 +543,13 @@ public class CombatExplorer extends CombatCreature
      */
     private @NotNull ModifyStatActionResult modifyWisdom(int statModifier)
     {
-        int moddedStatValue = wisdom + statModifier;
-        if (moddedStatValue > Constant.EXPLORER_MAX_WISDOM ||
-            moddedStatValue < Constant.EXPLORER_MIN_WISDOM) {
-            throw CombatCreatureException.createStatOutOfBounds(
-                getName(),
-                Constant.EXPLORER_STAT_WISDOM,
-                Constant.EXPLORER_MIN_WISDOM,
-                Constant.EXPLORER_MAX_WISDOM
-            );
-        }
+        statModifier = validateStatMod(
+            statModifier,
+            wisdom,
+            Constant.EXPLORER_MIN_WISDOM,
+            Constant.EXPLORER_MAX_WISDOM
+        );
+
         wisdom += statModifier;
 
         return new ModifyStatActionResult(getName(), Constant.EXPLORER_STAT_WISDOM, statModifier, wisdom);

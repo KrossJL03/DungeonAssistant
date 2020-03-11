@@ -4,6 +4,7 @@ import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
 import bot.Battle.DeathSaveRoll;
 import bot.Battle.Slayer;
+import bot.Constant;
 import bot.Explorer.Explorer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -316,6 +317,24 @@ public class EncounteredExplorer extends CombatExplorer
     void removeOpponent(@NotNull EncounteredHostile opponent) throws EncounteredExplorerException
     {
         opponents.remove(opponent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int getMaxHitpointStatValue()
+    {
+        return Constant.EXPLORER_MAX_HITPOINTS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int getMinHitpointStatValue()
+    {
+        return Constant.EXPLORER_MIN_HITPOINTS;
     }
 
     /**
