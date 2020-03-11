@@ -2,12 +2,15 @@ package bot.Battle.HostileEncounter;
 
 import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
+import bot.CommandParameter;
 import bot.Message;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class RemoveCommand extends bot.Battle.RemoveCommand
+import java.util.ArrayList;
+
+public class RemoveCommand extends EncounterCommand
 {
     /**
      * Constructor.
@@ -26,8 +29,15 @@ public class RemoveCommand extends bot.Battle.RemoveCommand
             processManager,
             holder,
             dmChecker,
+            "remove",
+            new ArrayList<CommandParameter>()
+            {
+                {
+                    add(new CommandParameter("CreatureName", true));
+                }
+            },
             buildDescription(),
-            "CreatureName"
+            true
         );
     }
 
@@ -39,7 +49,7 @@ public class RemoveCommand extends bot.Battle.RemoveCommand
     {
         String creatureName = getStringParameterFromEvent(event);
 
-        getBattle().remove(creatureName);
+        getHostileEncounter().remove(creatureName);
     }
 
     /**

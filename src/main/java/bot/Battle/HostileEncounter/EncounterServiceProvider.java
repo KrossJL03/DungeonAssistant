@@ -2,13 +2,8 @@ package bot.Battle.HostileEncounter;
 
 import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
-import bot.Battle.EndActionCommand;
-import bot.Battle.EndBattleCommand;
-import bot.Battle.EndTurnCommand;
 import bot.Battle.JoinCommand;
 import bot.Battle.KickCommand;
-import bot.Battle.SetPartySizeCommand;
-import bot.Battle.SetTierCommand;
 import bot.Battle.StartAttackPhaseCommand;
 import bot.Battle.StartBattleCommand;
 import bot.Battle.ViewSummaryCommand;
@@ -62,13 +57,13 @@ public class EncounterServiceProvider implements CommandProviderInterface
         commands.add(new KickCommand(processManager, encounterHolder, dmChecker));
         commands.add(new LeaveCommand(processManager, encounterHolder, dmChecker));
         commands.add(new LootCommand(processManager, encounterHolder, dmChecker));
+        commands.add(new ModifyStatCommand(processManager, encounterHolder, dmChecker));
         commands.add(new ProtectCommand(processManager, encounterHolder, dmChecker));
 //        commands.add(new RejoinCommand(processManager, encounterHolder, dmChecker));
         commands.add(new RemoveCommand(processManager, encounterHolder, dmChecker));
         commands.add(new SetPartySizeCommand(processManager, encounterHolder, dmChecker));
         commands.add(new SetTierCommand(processManager, encounterHolder, dmChecker));
         commands.add(new SkipCommand(processManager, encounterHolder, dmChecker));
-        commands.add(new ModifyStatCommand(processManager, encounterHolder, dmChecker));
         commands.add(new ViewSummaryCommand(processManager, encounterHolder, dmChecker));
         commands.add(new ReviveCommand(processManager, encounterHolder, dmChecker));
         commands.add(new UseItemCommand(processManager, encounterHolder, dmChecker));

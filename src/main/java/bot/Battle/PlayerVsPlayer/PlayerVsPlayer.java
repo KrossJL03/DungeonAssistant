@@ -9,6 +9,7 @@ import bot.Battle.HostileEncounter.EncounteredExplorer;
 import bot.Battle.Mention;
 import bot.CustomException;
 import bot.Explorer.Explorer;
+import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -150,6 +151,20 @@ public class PlayerVsPlayer extends Battle
             throw new CustomException(
                 "You can't have a Player VS Player fight with just one player. That's not how this works."
             );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void preEndPhase(@NotNull Player player) throws CustomException
+    {
+        if (!isPlayerInBattle(player)) {
+            throw new CustomException(String.format(
+                "%s you can't end a battle you're not a part of.",
+                player.mention()
+            ));
         }
     }
 

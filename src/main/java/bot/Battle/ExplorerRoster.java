@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ExplorerRoster<Explorer extends CombatExplorer>
 {
-    private static int DEFAULT_SIZE = 21;
+    final public static int DEFAULT_SIZE = 21;
 
     private ArrayList<Explorer> explorerRoster;
     private ArrayList<Player>   kickedPlayers;
@@ -165,6 +165,24 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
 
         explorerRoster.add(newExplorer);
         sort();
+    }
+
+    /**
+     * Does this roster contain an explorer owned by this player
+     *
+     * @param player Player
+     *
+     * @return boolean
+     */
+    boolean contains(@NotNull Player player)
+    {
+        for (Explorer explorer : explorerRoster) {
+            if (explorer.isOwner(player)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -1,12 +1,14 @@
 package bot.Battle;
 
+import bot.Player.Player;
+import bot.Player.PlayerRepository;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class EndBattleCommand extends BattleCommand
+abstract public class EndBattleCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -15,10 +17,11 @@ public class EndBattleCommand extends BattleCommand
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    public EndBattleCommand(
+    protected EndBattleCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
+        @NotNull DungeonMasterChecker dmChecker,
+        boolean isDmExclusive
     )
     {
         super(
@@ -28,7 +31,7 @@ public class EndBattleCommand extends BattleCommand
             "endBattle",
             new ArrayList<>(),
             "End the battle.",
-            true
+            isDmExclusive
         );
     }
 
@@ -38,6 +41,7 @@ public class EndBattleCommand extends BattleCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event)
     {
-        getBattle().startEndPhaseForced();
+        Player player = PlayerRepository.getPlayer(event.getAuthor().getId());
+        getBattle().endBattle(player);
     }
 }

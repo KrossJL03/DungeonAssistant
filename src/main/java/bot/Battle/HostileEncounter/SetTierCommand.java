@@ -1,5 +1,10 @@
-package bot.Battle;
+package bot.Battle.HostileEncounter;
 
+import bot.Battle.BattleCommand;
+import bot.Battle.DungeonMasterChecker;
+import bot.Battle.EncounterHolder;
+import bot.Battle.Tier;
+import bot.Battle.TierRegistry;
 import bot.CommandParameter;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -7,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SetPartySizeCommand extends BattleCommand
+public class SetTierCommand extends BattleCommand
 {
     /**
      * Constructor.
@@ -16,7 +21,7 @@ public class SetPartySizeCommand extends BattleCommand
      * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    public SetPartySizeCommand(
+    SetTierCommand(
         @NotNull ProcessManager processManager,
         @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker
@@ -26,14 +31,14 @@ public class SetPartySizeCommand extends BattleCommand
             processManager,
             holder,
             dmChecker,
-            "maxPlayers",
+            "tier",
             new ArrayList<CommandParameter>()
             {
                 {
-                    add(new CommandParameter("Amount", true));
+                    add(new CommandParameter("TierName", true));
                 }
             },
-            "Set number of players permitted for this battle.",
+            "Set tier. Current Tiers: Rookie, Novice",
             true
         );
     }
@@ -45,8 +50,9 @@ public class SetPartySizeCommand extends BattleCommand
     public void execute(@NotNull MessageReceivedEvent event)
     {
         String[] parameters = getParametersFromEvent(event);
-        int      amount     = Integer.parseInt(parameters[0]);
+        String   tierName   = parameters[0];
+        Tier     tier       = TierRegistry.getTier(tierName);
 
-        getBattle().setPartySize(amount);
+        getBattle().setTier(tier);
     }
 }

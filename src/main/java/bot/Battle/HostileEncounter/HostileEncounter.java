@@ -576,6 +576,15 @@ public class HostileEncounter extends Battle
      * {@inheritDoc}
      */
     @Override
+    protected void preEndPhase(@NotNull Player player)
+    {
+        // do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void preJoinPhase() throws HostileEncounterException
     {
         if (!hostileRoster.isNull() && hostileRoster.hasActiveHostiles()) {

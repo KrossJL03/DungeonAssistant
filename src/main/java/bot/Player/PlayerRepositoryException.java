@@ -30,15 +30,4 @@ class PlayerRepositoryException extends CustomException
             )
         );
     }
-
-    /**
-     * Factory method for "not found by name"
-     *
-     * @return PlayerRepositoryException
-     */
-    static @NotNull PlayerRepositoryException createNotFoundByName(String playerName)
-    {
-        return new PlayerRepositoryException(String.format("Um... I'm sorry, I don't think I know %s", playerName));
-    }
-
 }

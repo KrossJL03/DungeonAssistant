@@ -4,6 +4,8 @@ import bot.Battle.BattleCommand;
 import bot.Battle.BattleInterface;
 import bot.Battle.DungeonMasterChecker;
 import bot.Battle.EncounterHolder;
+import bot.Battle.ExplorerRoster;
+import bot.CommandParameter;
 import bot.CustomException;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -33,9 +35,17 @@ public class CreatePvpCommand extends BattleCommand
             holder,
             dmChecker,
             "create pvp",
-            new ArrayList<>(),
-            "Begin creating a new pvp style battle.",
-            true
+            new ArrayList<CommandParameter>()
+            {
+                {
+                    add(new CommandParameter("PartySize", false));
+                }
+            },
+            String.format(
+                "Start a new pvp style battle. Default party size is %s.",
+                ExplorerRoster.DEFAULT_SIZE
+            ),
+            false
         );
 
         this.holder = holder;

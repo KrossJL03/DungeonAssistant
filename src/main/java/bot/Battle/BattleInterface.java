@@ -24,6 +24,13 @@ public interface BattleInterface extends ProcessInterface
         throws BattlePhaseException, NotYourTurnException;
 
     /**
+     * End the battle
+     *
+     * @param player Player attempting to forcibly end the battle
+     */
+    void endBattle(@NotNull Player player);
+
+    /**
      * Get all creatures
      *
      * @return ArrayList
@@ -138,11 +145,6 @@ public interface BattleInterface extends ProcessInterface
      *                              If attack phase is in progress
      */
     void startAttackPhase() throws BattlePhaseException;
-
-    /**
-     * Start end phase on command
-     */
-    void startEndPhaseForced();
 
     /**
      * Start join phase

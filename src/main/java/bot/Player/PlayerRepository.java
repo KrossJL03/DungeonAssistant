@@ -1,5 +1,6 @@
 package bot.Player;
 
+import bot.CustomException;
 import bot.Registry.RegistryException;
 import bot.Registry.RegistryPaths;
 import org.jetbrains.annotations.NotNull;
@@ -127,7 +128,7 @@ public class PlayerRepository
         }
 
         if (playerId == null) {
-            throw PlayerRepositoryException.createNotFoundByName(playerName);
+            throw new CustomException(String.format("Um... I'm sorry, I don't think I know %s", playerName));
         }
         return playerId;
     }

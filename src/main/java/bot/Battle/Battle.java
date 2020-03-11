@@ -67,6 +67,20 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
+    public void endBattle(@NotNull Player player)
+    {
+        preEndPhase(player);
+
+        BattlePhaseChange result = phaseManager.startEndPhase();
+
+        clearInitiative();
+        notifyListenerOfPhaseChange(result);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     final public @NotNull ArrayList<CombatExplorer> getAllExplorers()
     {
         return explorerRoster.getAllExplorers();
@@ -88,6 +102,14 @@ public abstract class Battle implements BattleInterface
     public boolean isOver()
     {
         return phaseManager.isFinalPhase();
+    }
+
+    /**
+     * Is a player with the given player id in the battle
+     */
+    final protected boolean isPlayerInBattle(@NotNull Player player)
+    {
+        return explorerRoster.contains(player);
     }
 
     /**
@@ -207,18 +229,6 @@ public abstract class Battle implements BattleInterface
         }
 
         restartInitiative();
-        notifyListenerOfPhaseChange(result);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startEndPhaseForced()
-    {
-        BattlePhaseChange result = phaseManager.startEndPhase();
-
-        clearInitiative();
         notifyListenerOfPhaseChange(result);
     }
 
@@ -514,6 +524,11 @@ public abstract class Battle implements BattleInterface
      * Handle any additional pre attack phase related processes
      */
     abstract protected void preAttackPhase();
+
+    /**
+     * Handle any additional pre end phase forced related processes
+     */
+    abstract protected void preEndPhase(@NotNull Player player);
 
     /**
      * Handle any additional pre join phase related processes

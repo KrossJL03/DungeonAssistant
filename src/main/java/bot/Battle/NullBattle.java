@@ -26,6 +26,15 @@ public class NullBattle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
+    public void endBattle(@NotNull Player player) throws EncounterException
+    {
+        throw EncounterException.createNullEncounter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public @NotNull ArrayList<CombatCreature> getAllCreatures()
     {
         throw EncounterException.createNullEncounter();
@@ -162,15 +171,6 @@ public class NullBattle implements BattleInterface
      */
     @Override
     public void startAttackPhase() throws EncounterException
-    {
-        throw EncounterException.createNullEncounter();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startEndPhaseForced() throws EncounterException
     {
         throw EncounterException.createNullEncounter();
     }

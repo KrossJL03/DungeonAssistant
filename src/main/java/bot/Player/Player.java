@@ -1,5 +1,6 @@
 package bot.Player;
 
+import bot.Battle.Mention;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,5 +79,14 @@ public class Player
     public boolean isSamePlayer(@NotNull Player player)
     {
         return userId.equals(player.getUserId());
+    }
+
+    /**
+     * Mention this player
+     *
+     * @return String
+     */
+    public @NotNull String mention() {
+        return Mention.createForPlayer(userId).getValue();
     }
 }
