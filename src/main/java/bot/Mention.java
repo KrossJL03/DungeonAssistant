@@ -12,7 +12,7 @@ public class Mention
      *
      * @param value Mention as string
      */
-    private Mention(@NotNull String value)
+    public Mention(@NotNull String value)
     {
         this.value = value;
     }

@@ -13,14 +13,12 @@ import java.util.ArrayList;
 public abstract class BattleCommand extends Command
 {
     private DungeonMasterChecker dmChecker;
-    private EncounterHolder      holder;
     private boolean              isDmExclusive;
 
     /**
      * Constructor.
      *
      * @param processManager Processed manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      * @param commandName    HelpCommand name
      * @param parameters     Parameters
@@ -29,7 +27,6 @@ public abstract class BattleCommand extends Command
      */
     protected BattleCommand(
         @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker,
         @NotNull String commandName,
         @NotNull ArrayList<CommandParameter> parameters,
@@ -40,7 +37,6 @@ public abstract class BattleCommand extends Command
         super(processManager, commandName, parameters, description, isDmExclusive);
 
         this.dmChecker = dmChecker;
-        this.holder = holder;
         this.isDmExclusive = isDmExclusive;
     }
 
@@ -91,7 +87,7 @@ public abstract class BattleCommand extends Command
      */
     protected @NotNull BattleInterface getBattle()
     {
-        return holder.getBattle();
+        return (BattleInterface) getProcessFromManager(Battle.PROCESS_NAME);
     }
 
     /**
@@ -102,6 +98,16 @@ public abstract class BattleCommand extends Command
     final protected @NotNull Role getDungeonMaster(MessageReceivedEvent event)
     {
         return dmChecker.getDungeonMaster(event);
+    }
+
+    /**
+     * Has battle
+     *
+     * @return BattleInterface
+     */
+    final protected boolean hasBattle()
+    {
+        return hasProcessInManager(Battle.PROCESS_NAME);
     }
 
     /**

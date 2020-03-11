@@ -12,20 +12,17 @@ abstract public class SkipCommand extends BattleCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      * @param description    Description
      */
     protected SkipCommand(
         @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker,
         @NotNull String description
     )
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "skip",
             new ArrayList<>(),

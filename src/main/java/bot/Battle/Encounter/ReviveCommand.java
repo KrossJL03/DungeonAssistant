@@ -1,7 +1,6 @@
 package bot.Battle.Encounter;
 
 import bot.Battle.DungeonMasterChecker;
-import bot.Battle.EncounterHolder;
 import bot.CommandParameter;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -15,18 +14,12 @@ class ReviveCommand extends EncounterCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    ReviveCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    ReviveCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "revive",
             new ArrayList<CommandParameter>()

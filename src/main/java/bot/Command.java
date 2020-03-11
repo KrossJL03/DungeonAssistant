@@ -158,6 +158,30 @@ public abstract class Command
     }
 
     /**
+     * Get process from manager
+     *
+     * @param processName Process name
+     *
+     * @return ProcessInterface
+     */
+    final protected @NotNull ProcessInterface getProcessFromManager(@NotNull String processName)
+    {
+        return processManager.getProcess(processName);
+    }
+
+    /**
+     * Get process from manager
+     *
+     * @param processName Process name
+     *
+     * @return boolean
+     */
+    final protected boolean hasProcessInManager(@NotNull String processName)
+    {
+        return processManager.hasProcess(processName);
+    }
+
+    /**
      * Get parameters from event
      *
      * @param event Event
@@ -186,16 +210,6 @@ public abstract class Command
     }
 
     /**
-     * Remove process to manager
-     *
-     * @param process Process
-     */
-    final protected void removeProcessToManager(@NotNull ProcessInterface process)
-    {
-        processManager.removeProcess(process);
-    }
-
-    /**
      * Update player
      *
      * @param event Event
@@ -205,7 +219,7 @@ public abstract class Command
     final protected @NotNull Player updatePlayer(@NotNull MessageReceivedEvent event)
     {
         String nickname = event.getMember().getNickname();
-        String userId = event.getAuthor().getId();
+        String userId   = event.getAuthor().getId();
         if (nickname == null) {
             nickname = event.getAuthor().getName();
         }

@@ -12,16 +12,13 @@ abstract public class AttackCommand extends BattleCommand
 {
     /**
      * Constructor.
-     *
-     * @param processManager Process manager
-     * @param holder         Battle holder
+     *  @param processManager Process manager
      * @param dmChecker      Dungeon master checker
      * @param description    Description
      * @param parameterName  Name of the parameter
      */
     protected AttackCommand(
         @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker,
         @NotNull String description,
         @NotNull String parameterName
@@ -29,7 +26,6 @@ abstract public class AttackCommand extends BattleCommand
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "attack",
             new ArrayList<CommandParameter>()

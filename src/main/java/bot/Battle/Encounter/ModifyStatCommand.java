@@ -1,7 +1,6 @@
 package bot.Battle.Encounter;
 
 import bot.Battle.DungeonMasterChecker;
-import bot.Battle.EncounterHolder;
 import bot.CommandParameter;
 import bot.Message;
 import bot.ProcessManager;
@@ -16,18 +15,12 @@ class ModifyStatCommand extends EncounterCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    ModifyStatCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    ModifyStatCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "modify",
             new ArrayList<CommandParameter>()

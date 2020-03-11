@@ -14,19 +14,16 @@ abstract public class EndBattleCommand extends BattleCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
     protected EndBattleCommand(
         @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
         @NotNull DungeonMasterChecker dmChecker,
         boolean isDmExclusive
     )
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "endBattle",
             new ArrayList<>(),

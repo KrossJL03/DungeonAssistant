@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class Encounter extends Battle
+class Encounter extends Battle
 {
     private static String BATTLE_STYLE = "Hostile Encounter";
 
@@ -41,7 +41,7 @@ public class Encounter extends Battle
      * @param channel   Channel
      * @param dmMention DM mention
      */
-    public Encounter(@NotNull MessageChannel channel, @NotNull Mention dmMention)
+    Encounter(@NotNull MessageChannel channel, @NotNull Mention dmMention)
     {
         super(new EncounterLogger(channel, dmMention), new InitiativeQueueFactory(), new EncounterPhaseManager());
 

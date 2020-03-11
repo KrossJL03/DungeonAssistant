@@ -16,14 +16,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class PlayerVsPlayer extends Battle
+class PlayerVsPlayer extends Battle
 {
+    private static final String BATTLE_STYLE = "Player VS Player";
+
     private PvpPhaseManager phaseManager;
 
     /**
      * Constructor.
+     *
+     * @param channel   Message channel
+     * @param dmMention Dungeon master mention
      */
-    public PlayerVsPlayer(@NotNull MessageChannel channel, @NotNull Mention dmMention)
+    PlayerVsPlayer(@NotNull MessageChannel channel, @NotNull Mention dmMention)
     {
         super(new PvpLogger(channel, dmMention), new InitiativeCycleFactory(), new PvpPhaseManager());
     }
@@ -43,7 +48,7 @@ public class PlayerVsPlayer extends Battle
     @Override
     public @NotNull String getBattleStyle()
     {
-        return "Player VS Player";
+        return BATTLE_STYLE;
     }
 
     /**

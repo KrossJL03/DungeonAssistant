@@ -2,7 +2,6 @@ package bot.Battle.Encounter;
 
 import bot.Battle.BattleCommand;
 import bot.Battle.DungeonMasterChecker;
-import bot.Battle.EncounterHolder;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -15,18 +14,12 @@ class EndTurnCommand extends BattleCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    EndTurnCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    EndTurnCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "endTurn",
             new ArrayList<>(),

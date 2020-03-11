@@ -14,18 +14,12 @@ public class KickCommand extends BattleCommand
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    public KickCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    public KickCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "kick",
             new ArrayList<CommandParameter>()

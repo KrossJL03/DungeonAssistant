@@ -1,7 +1,6 @@
 package bot.Battle.Encounter;
 
 import bot.Battle.DungeonMasterChecker;
-import bot.Battle.EncounterHolder;
 import bot.CommandParameter;
 import bot.Hostile.Hostile;
 import bot.Hostile.HostileRepository;
@@ -17,18 +16,12 @@ class AddHostileCommand extends EncounterCommand
      * Constructor.
      *
      * @param processManager Processed manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    AddHostileCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    AddHostileCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "addHostile",
             new ArrayList<CommandParameter>()

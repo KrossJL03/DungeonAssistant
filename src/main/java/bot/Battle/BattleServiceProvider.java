@@ -22,20 +22,17 @@ public class BattleServiceProvider implements CommandProviderInterface
      */
     public BattleServiceProvider(@NotNull ProcessManager processManager)
     {
-        DungeonMasterChecker dmChecker       = new DungeonMasterChecker();
-        EncounterHolder      encounterHolder = new EncounterHolder();
-        PrivateLogger        privateLogger   = new PrivateLogger(new HelpMessageBuilder());
+        DungeonMasterChecker dmChecker     = new DungeonMasterChecker();
+        PrivateLogger        privateLogger = new PrivateLogger(new HelpMessageBuilder());
 
         this.encounterServiceProvider = new EncounterServiceProvider(
             processManager,
-            encounterHolder,
             privateLogger,
             dmChecker
         );
 
         this.pvpServiceProvider = new PvpServiceProvider(
             processManager,
-            encounterHolder,
             privateLogger,
             dmChecker
         );

@@ -23,7 +23,52 @@ public class ProcessManager
      */
     void addProcess(@NotNull ProcessInterface process)
     {
+        if (process.isExclusiveProcess()) {
+            String           processName    = process.getProcessName();
+            ProcessInterface currentProcess = getProcess(processName);
+            if (currentProcess.isRemovable()) {
+                throw new CustomException(String.format("Another %s is currently in progress.", processName));
+            }
+            processes.remove(process);
+        }
+
         processes.add(process);
+    }
+
+    /**
+     * Get process by name
+     *
+     * @param processName Process name
+     *
+     * @return ProcessInterface
+     */
+    @NotNull ProcessInterface getProcess(@NotNull String processName)
+    {
+        for (ProcessInterface process : processes) {
+            if (process.isProcess(processName)) {
+                return process;
+            }
+        }
+
+        throw new CustomException(String.format("There is no active %s currently", processName));
+    }
+
+    /**
+     * Does a process of this type currently exist
+     *
+     * @param processName Process name
+     *
+     * @return boolean
+     */
+    boolean hasProcess(@NotNull String processName)
+    {
+        for (ProcessInterface process : processes) {
+            if (process.isProcess(processName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -38,16 +83,7 @@ public class ProcessManager
                 return true;
             }
         }
-        return false;
-    }
 
-    /**
-     * Remove process
-     *
-     * @param process Process to add
-     */
-    void removeProcess(@NotNull ProcessInterface process)
-    {
-        processes.remove(process);
+        return false;
     }
 }

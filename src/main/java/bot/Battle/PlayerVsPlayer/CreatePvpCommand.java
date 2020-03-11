@@ -1,12 +1,13 @@
 package bot.Battle.PlayerVsPlayer;
 
+import bot.Battle.Battle;
 import bot.Battle.BattleCommand;
 import bot.Battle.BattleInterface;
 import bot.Battle.DungeonMasterChecker;
-import bot.Battle.EncounterHolder;
 import bot.Battle.ExplorerRoster;
 import bot.CommandParameter;
 import bot.CustomException;
+import bot.Mention;
 import bot.ProcessManager;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -15,24 +16,16 @@ import java.util.ArrayList;
 
 class CreatePvpCommand extends BattleCommand
 {
-    private EncounterHolder holder;
-
     /**
      * Constructor.
      *
      * @param processManager Process manager
-     * @param holder         Battle holder
      * @param dmChecker      Dungeon master checker
      */
-    CreatePvpCommand(
-        @NotNull ProcessManager processManager,
-        @NotNull EncounterHolder holder,
-        @NotNull DungeonMasterChecker dmChecker
-    )
+    CreatePvpCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
         super(
             processManager,
-            holder,
             dmChecker,
             "create pvp",
             new ArrayList<CommandParameter>()
@@ -47,8 +40,6 @@ class CreatePvpCommand extends BattleCommand
             ),
             false
         );
-
-        this.holder = holder;
     }
 
     /**
@@ -57,16 +48,15 @@ class CreatePvpCommand extends BattleCommand
     @Override
     protected void execute(@NotNull MessageReceivedEvent event)
     {
-        if (holder.hasActiveBattle()) {
-            BattleInterface battle = holder.getBattle();
+        if (hasBattle()) {
+            BattleInterface battle = getBattle();
             throw new CustomException(String.format(
                 "Can't start a new battle right now, there's a %s battle in progress",
                 battle.getBattleStyle()
             ));
         }
 
-        removeProcessToManager(holder.getBattle());
-        holder.createPvp(event.getChannel(), getDungeonMaster(event).getId());
-        addProcessToManager(holder.getBattle());
+        Battle battle = new PlayerVsPlayer(event.getChannel(), new Mention(getDungeonMaster(event).getId()));
+        addProcessToManager(battle);
     }
 }

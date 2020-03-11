@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public abstract class Battle implements BattleInterface
 {
+    final static String PROCESS_NAME = "battle";
+
     protected BattleLogger                      logger;
     private   ExplorerRoster<CombatExplorer>    explorerRoster;
     private   InitiativeTrackerInterface        initiative;
@@ -87,6 +89,15 @@ public abstract class Battle implements BattleInterface
      * {@inheritDoc}
      */
     @Override
+    final public @NotNull String getProcessName()
+    {
+        return PROCESS_NAME;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isNull()
     {
         return false;
@@ -99,6 +110,33 @@ public abstract class Battle implements BattleInterface
     public boolean isOver()
     {
         return phaseManager.isFinalPhase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    final public boolean isProcess(@NotNull String processName)
+    {
+        return processName.equals(PROCESS_NAME);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    final public boolean isExclusiveProcess()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    final public boolean isRemovable()
+    {
+        return isOver();
     }
 
     /**
