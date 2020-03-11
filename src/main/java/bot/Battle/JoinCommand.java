@@ -48,9 +48,7 @@ public class JoinCommand extends BattleCommand
     @Override
     public void execute(@NotNull MessageReceivedEvent event)
     {
-        updatePlayer(event);
-
-        Player   player       = getPlayerFromEvent(event);
+        Player   player       = updatePlayer(event);
         String[] parameters   = getParametersFromEvent(event);
         String   explorerName = parameters[0];
         String   nickname     = parameters.length > 1 ? parameters[1] : null;

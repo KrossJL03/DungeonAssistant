@@ -250,8 +250,8 @@ public class PlayerRepository
             "UPDATE %s SET %s = '%s' WHERE userId = '%s'",
             TABLE_NAME,
             COLUMN_NAME,
-            userId,
-            name
+            name,
+            userId
         );
         PlayerRepository.executeUpdate(sql);
     }

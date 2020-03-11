@@ -199,15 +199,20 @@ public abstract class Command
      * Update player
      *
      * @param event Event
+     *
+     * @return Player
      */
-    final protected void updatePlayer(@NotNull MessageReceivedEvent event)
+    final protected @NotNull Player updatePlayer(@NotNull MessageReceivedEvent event)
     {
         String nickname = event.getMember().getNickname();
+        String userId = event.getAuthor().getId();
         if (nickname == null) {
             nickname = event.getAuthor().getName();
         }
 
-        PlayerManager.savePlayer(event.getAuthor().getId(), nickname);
+        PlayerManager.savePlayer(userId, nickname);
+
+        return PlayerRepository.getPlayer(userId);
     }
 
     /**
