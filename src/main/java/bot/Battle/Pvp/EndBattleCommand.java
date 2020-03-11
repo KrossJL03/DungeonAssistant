@@ -1,10 +1,10 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.DungeonMasterChecker;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
 
-class LeaveCommand extends bot.Battle.LeaveCommand
+class EndBattleCommand extends bot.Battle.EndBattleCommand
 {
     /**
      * Constructor.
@@ -12,8 +12,8 @@ class LeaveCommand extends bot.Battle.LeaveCommand
      * @param processManager Process manager
      * @param dmChecker      Dungeon master checker
      */
-    LeaveCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
+    EndBattleCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
-        super(processManager, dmChecker, "Leave the battle.");
+        super(processManager, dmChecker, false);
     }
 }

@@ -1,4 +1,4 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.Battle;
 import bot.Battle.BattleCommand;
@@ -56,7 +56,7 @@ class CreatePvpCommand extends BattleCommand
             ));
         }
 
-        Battle battle = new PlayerVsPlayer(event.getChannel(), new Mention(getDungeonMaster(event).getId()));
+        Battle battle = new Pvp(event.getChannel(), new Mention(getDungeonMaster(event).getId()));
         addProcessToManager(battle);
     }
 }

@@ -1,4 +1,4 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.BattlePhaseFactoryInterface;
 import org.jetbrains.annotations.NotNull;

@@ -1,10 +1,10 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.DungeonMasterChecker;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
 
-class EndBattleCommand extends bot.Battle.EndBattleCommand
+class SkipCommand extends bot.Battle.SkipCommand
 {
     /**
      * Constructor.
@@ -12,8 +12,8 @@ class EndBattleCommand extends bot.Battle.EndBattleCommand
      * @param processManager Process manager
      * @param dmChecker      Dungeon master checker
      */
-    EndBattleCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
+    SkipCommand(@NotNull ProcessManager processManager, @NotNull DungeonMasterChecker dmChecker)
     {
-        super(processManager, dmChecker, false);
+        super(processManager, dmChecker, "Skip the current player's turn.");
     }
 }

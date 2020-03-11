@@ -1,7 +1,7 @@
 package bot.Battle;
 
 import bot.Battle.Encounter.EncounterServiceProvider;
-import bot.Battle.PlayerVsPlayer.PvpServiceProvider;
+import bot.Battle.Pvp.PvpServiceProvider;
 import bot.Command;
 import bot.CommandProviderInterface;
 import bot.PrivateLogger;

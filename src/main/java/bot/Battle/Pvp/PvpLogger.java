@@ -1,4 +1,4 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.BattleLogger;
 import bot.Battle.SummaryMessageBuilder;

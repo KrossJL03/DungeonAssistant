@@ -1,4 +1,4 @@
-package bot.Battle.PlayerVsPlayer;
+package bot.Battle.Pvp;
 
 import bot.Battle.AttackActionResult;
 import bot.Battle.Battle;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-class PlayerVsPlayer extends Battle
+class Pvp extends Battle
 {
     private static final String BATTLE_STYLE = "Player VS Player";
 
@@ -28,7 +28,7 @@ class PlayerVsPlayer extends Battle
      * @param channel   Message channel
      * @param dmMention Dungeon master mention
      */
-    PlayerVsPlayer(@NotNull MessageChannel channel, @NotNull Mention dmMention)
+    Pvp(@NotNull MessageChannel channel, @NotNull Mention dmMention)
     {
         super(new PvpLogger(channel, dmMention), new InitiativeCycleFactory(), new PvpPhaseManager());
     }
