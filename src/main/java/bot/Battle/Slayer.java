@@ -1,29 +1,34 @@
 package bot.Battle;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.time.ZonedDateTime;
 
 public class Slayer
 {
-    private String name;
+    private String        name;
+    private ZonedDateTime slainAt;
 
     /**
      * Slayer constructor
      *
      * @param name Slayer name
      */
-    @NotNull
     public Slayer(@NotNull String name)
     {
         this.name = name;
+        this.slainAt = ZonedDateTime.now();
     }
 
     /**
      * Slayer constructor (empty)
      */
-    @NotNull
+
     public Slayer()
     {
         this.name = "";
+        this.slainAt = null;
     }
 
     /**
@@ -47,13 +52,24 @@ public class Slayer
     }
 
     /**
+     * Get slain at
+     *
+     * @return ZonedDateTime
+     */
+    @Nullable
+    public ZonedDateTime getSlainAt()
+    {
+        return slainAt;
+    }
+
+    /**
      * Does the supplied potential slayer match this slayer
      *
      * @param slayer Potential slayer
      *
      * @return boolean
      */
-    public boolean isSlayer(@NotNull Slayer slayer)
+    public boolean isSlayer(@NotNull CombatCreature slayer)
     {
         return name.equals(slayer.getName());
     }
@@ -65,7 +81,7 @@ public class Slayer
      *
      * @return boolean
      */
-    public boolean isSlayer(@NotNull CombatCreature slayer)
+    public boolean isSlayer(@NotNull Slayer slayer)
     {
         return name.equals(slayer.getName());
     }

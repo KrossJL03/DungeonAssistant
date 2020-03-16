@@ -2,47 +2,73 @@ package bot.Battle;
 
 import org.jetbrains.annotations.NotNull;
 
-class BattleContext
+import java.util.ArrayList;
+
+abstract public class BattleContext
 {
-    private int     currentPartySize;
-    private boolean isAlwaysJoinable;
-    private int     maxPartySize;
-    private String  type;
+    private ExplorerRosterContext explorerRosterContext;
+    private boolean               isAlwaysJoinable;
+    private String                type;
 
     /**
      * Constructor.
      *
-     * @param type             Type of battle
-     * @param isAlwaysJoinable Can players join the battle at any time
-     * @param maxPartySize     Max amount of players that can participate
-     * @param currentPartySize Current amount of players participating
+     * @param type                  Type of battle
+     * @param isAlwaysJoinable      Can players join the battle at any time
+     * @param explorerRosterContext Explorer roster context
      */
-    BattleContext(@NotNull String type, boolean isAlwaysJoinable, int maxPartySize, int currentPartySize)
+    protected BattleContext(
+        @NotNull String type,
+        boolean isAlwaysJoinable,
+        @NotNull ExplorerRosterContext explorerRosterContext
+    )
     {
-        this.currentPartySize = currentPartySize;
         this.isAlwaysJoinable = isAlwaysJoinable;
-        this.maxPartySize = maxPartySize;
+        this.explorerRosterContext = explorerRosterContext;
         this.type = type;
     }
 
     /**
-     * Get max amount of players that can participate
+     * Get creatures
+     *
+     * @return ArrayList
+     */
+    abstract public @NotNull ArrayList<CombatCreature> getCreatures();
+
+    /**
+     * Get current party size
+     *
+     * @return int
      */
     int getCurrentPartySize()
     {
-        return currentPartySize;
+        return explorerRosterContext.getCurrentPartySize();
     }
 
     /**
-     * Get current amount of players participating
+     * Get max party size
+     *
+     * @return int
      */
     int getMaxPartySize()
     {
-        return maxPartySize;
+        return explorerRosterContext.getMaxPartySize();
+    }
+
+    /**
+     * Get tier
+     *
+     * @return Tier
+     */
+    @NotNull Tier getTier()
+    {
+        return explorerRosterContext.getTier();
     }
 
     /**
      * Get battle type
+     *
+     * @return String
      */
     @NotNull String getType()
     {
@@ -51,9 +77,21 @@ class BattleContext
 
     /**
      * Can players join at any time
+     *
+     * @return boolean
      */
     boolean isAlwaysJoinable()
     {
         return isAlwaysJoinable;
+    }
+
+    /**
+     * Get explorers
+     *
+     * @return ArrayList
+     */
+    final protected @NotNull ArrayList<CombatExplorer> getExplorers()
+    {
+        return explorerRosterContext.getExplorers();
     }
 }

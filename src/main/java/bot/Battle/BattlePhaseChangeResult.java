@@ -6,30 +6,19 @@ import java.util.ArrayList;
 
 public class BattlePhaseChangeResult
 {
-    private BattleContext             battleContext;
-    private ArrayList<CombatCreature> creatures;
-    private BattlePhaseChange         phaseChange;
-    private Tier                      tier;
+    private BattleContext     battleContext;
+    private BattlePhaseChange phaseChange;
 
     /**
      * Constructor.
      *
      * @param phaseChange   Phase change
      * @param battleContext Battle context
-     * @param creatures     Creatures in the encounter
-     * @param tier          Tier
      */
-    BattlePhaseChangeResult(
-        @NotNull BattlePhaseChange phaseChange,
-        @NotNull BattleContext battleContext,
-        @NotNull ArrayList<CombatCreature> creatures,
-        @NotNull Tier tier
-    )
+    BattlePhaseChangeResult(@NotNull BattlePhaseChange phaseChange, @NotNull BattleContext battleContext)
     {
         this.battleContext = battleContext;
-        this.creatures = creatures;
         this.phaseChange = phaseChange;
-        this.tier = tier;
     }
 
     /**
@@ -39,7 +28,7 @@ public class BattlePhaseChangeResult
      */
     public @NotNull ArrayList<CombatCreature> getCreatures()
     {
-        return new ArrayList<>(creatures);
+        return new ArrayList<>(battleContext.getCreatures());
     }
 
     /**
@@ -50,6 +39,16 @@ public class BattlePhaseChangeResult
     public int getCurrentPartySize()
     {
         return battleContext.getCurrentPartySize();
+    }
+
+    /**
+     * Get battle context
+     *
+     * @return BattleContext
+     */
+    @NotNull BattleContext getBattleContext()
+    {
+        return battleContext;
     }
 
     /**
@@ -91,7 +90,7 @@ public class BattlePhaseChangeResult
      */
     @NotNull Tier getTier()
     {
-        return tier;
+        return battleContext.getTier();
     }
 
     /**

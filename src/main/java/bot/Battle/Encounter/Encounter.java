@@ -439,32 +439,6 @@ class Encounter extends Battle
     }
 
     /**
-     * Set stat for all explorers
-     *
-     * @param statName  Stat name
-     * @param statValue Amount to modify stat
-     */
-    void setStatForAllExplorers(@NotNull String statName, int statValue)
-    {
-        for (CombatExplorer explorer : getActiveExplorers()) {
-            setStat(explorer.getName(), statName, statValue);
-        }
-    }
-
-    /**
-     * Set stat for all hostiles
-     *
-     * @param statName  Stat name
-     * @param statValue Stat value
-     */
-    void setStatForAllHostiles(@NotNull String statName, int statValue)
-    {
-        for (EncounteredHostile hostile : hostileRoster.getActiveHostiles()) {
-            setStat(hostile.getName(), statName, statValue);
-        }
-    }
-
-    /**
      * Start dodge phase
      *
      * @throws BattlePhaseException If the encounter is over
@@ -487,7 +461,7 @@ class Encounter extends Battle
         }
 
         restartInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**
@@ -516,6 +490,20 @@ class Encounter extends Battle
         }
 
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected @NotNull EncounterContext getBattleContext()
+    {
+        return new EncounterContext(
+            getBattleStyle(),
+            isAlwaysJoinable(),
+            explorerRoster.getContext(),
+            hostileRoster.getContext()
+        );
     }
 
     /**
@@ -771,7 +759,7 @@ class Encounter extends Battle
             explorer.lootKills();
         }
 
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**
@@ -783,7 +771,7 @@ class Encounter extends Battle
 
         clearInitiative();
 
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**

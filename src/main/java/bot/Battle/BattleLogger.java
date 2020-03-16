@@ -6,8 +6,6 @@ import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 public class BattleLogger
 {
     final protected static String NEWLINE = System.getProperty("line.separator");
@@ -158,7 +156,7 @@ public class BattleLogger
         }
 
         sendMessage(message);
-        logSummary(result.getCreatures());
+        logSummary(result.getBattleContext());
     }
 
     /**
@@ -209,11 +207,11 @@ public class BattleLogger
     /**
      * Log battle summary
      *
-     * @param creatures Creatures
+     * @param battleContext Battle context
      */
-    void logSummary(@NotNull ArrayList<CombatCreature> creatures)
+    void logSummary(@NotNull BattleContext battleContext)
     {
-        for (String message : summaryMessageBuilder.buildSummary(creatures)) {
+        for (String message : summaryMessageBuilder.buildSummary(battleContext)) {
             sendMessage(message);
         }
     }

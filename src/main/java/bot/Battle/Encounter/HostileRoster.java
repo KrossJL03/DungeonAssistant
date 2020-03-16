@@ -35,6 +35,16 @@ class HostileRoster
     }
 
     /**
+     * Get context
+     *
+     * @return HostileRosterContext
+     */
+    @NotNull HostileRosterContext getContext()
+    {
+        return new HostileRosterContext(new ArrayList<>(hostileRoster));
+    }
+
+    /**
      * Get active hostiles
      *
      * @return ArrayList<EncounteredHostile>

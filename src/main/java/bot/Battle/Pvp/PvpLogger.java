@@ -1,7 +1,6 @@
 package bot.Battle.Pvp;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.SummaryMessageBuilder;
 import bot.Mention;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.NotNull;

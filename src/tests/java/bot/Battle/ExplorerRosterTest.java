@@ -194,13 +194,13 @@ class ExplorerRosterTest
         ExplorerRoster<CombatExplorer> explorerRoster = new ExplorerRoster<>();
 
         explorerRoster.setMaxPartySize(3);
-        assertEquals(3, explorerRoster.getMaxPartySize());
+        assertEquals(3, explorerRoster.getContext().getMaxPartySize());
 
         explorerRoster.setMaxPartySize(10);
-        assertEquals(10, explorerRoster.getMaxPartySize());
+        assertEquals(10, explorerRoster.getContext().getMaxPartySize());
 
         explorerRoster.setMaxPartySize(2);
-        assertEquals(2, explorerRoster.getMaxPartySize());
+        assertEquals(2, explorerRoster.getContext().getMaxPartySize());
     }
 
     @Test
@@ -255,12 +255,12 @@ class ExplorerRosterTest
         when(explorer1.isPresent()).thenReturn(false);
         explorerRoster.addExplorer(explorer2);
         when(explorer2.isPresent()).thenReturn(true);
-//        assertThrows(ExplorerRosterException.class, () -> explorerRoster.rejoin(p));
+        assertThrows(ExplorerRosterException.class, () -> explorerRoster.rejoin(p));
         ///////////////////////////////////////////////////
 
         // player attempts to rejoin //
         when(explorer2.isPresent()).thenReturn(false);
-//        explorerRoster.rejoin(p);
+        explorerRoster.rejoin(p);
         verify(explorer1, times(1)).markAsPresent();
         ///////////////////////////////////////////////
     }
@@ -308,7 +308,7 @@ class ExplorerRosterTest
 
         // set max player count ///////////////////////////////
         explorerRoster.setMaxPartySize(3);
-        assertEquals(3, explorerRoster.getMaxPartySize());
+        assertEquals(3, explorerRoster.getContext().getMaxPartySize());
         ///////////////////////////////////////////////////////
 
         // set max player count to less than 1 ////////////////
@@ -320,7 +320,7 @@ class ExplorerRosterTest
         explorerRoster.addExplorer(explorer2);
         explorerRoster.addExplorer(explorer3);
         explorerRoster.setMaxPartySize(5);
-        assertEquals(5, explorerRoster.getMaxPartySize());
+        assertEquals(5, explorerRoster.getContext().getMaxPartySize());
         //////////////////////////////////////////////////////////////
 
         // set max player count to less than current active players //

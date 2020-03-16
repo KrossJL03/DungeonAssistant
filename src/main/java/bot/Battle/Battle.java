@@ -14,8 +14,8 @@ public abstract class Battle implements BattleInterface
 {
     final static String PROCESS_NAME = "battle";
 
+    protected ExplorerRoster<CombatExplorer>    explorerRoster;
     protected BattleLogger                      logger;
-    private   ExplorerRoster<CombatExplorer>    explorerRoster;
     private   InitiativeTrackerInterface        initiative;
     private   InitiativeTrackerFactoryInterface initiativeFactory;
     private   BattlePhaseManager                phaseManager;
@@ -73,7 +73,7 @@ public abstract class Battle implements BattleInterface
         BattlePhaseChange result = phaseManager.startEndPhase();
 
         clearInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**
@@ -92,6 +92,15 @@ public abstract class Battle implements BattleInterface
     final public @NotNull String getProcessName()
     {
         return PROCESS_NAME;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    final public boolean isExclusiveProcess()
+    {
+        return true;
     }
 
     /**
@@ -119,15 +128,6 @@ public abstract class Battle implements BattleInterface
     final public boolean isProcess(@NotNull String processName)
     {
         return processName.equals(PROCESS_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    final public boolean isExclusiveProcess()
-    {
-        return true;
     }
 
     /**
@@ -194,7 +194,7 @@ public abstract class Battle implements BattleInterface
      */
     public void logSummary()
     {
-        logger.logSummary(getAllCreatures());
+        logger.logSummary(getBattleContext());
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class Battle implements BattleInterface
     {
         phaseManager.assertNotFinalPhase();
 
-        CombatExplorer explorer = explorerRoster.markAsReturned(player);
+        CombatExplorer explorer = explorerRoster.rejoin(player);
         if (phaseManager.isInitiativePhase()) {
             addToInitiative(explorer);
         }
@@ -256,7 +256,7 @@ public abstract class Battle implements BattleInterface
         }
 
         restartInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**
@@ -275,7 +275,7 @@ public abstract class Battle implements BattleInterface
 
         logger.setChannel(channel);
         clearInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**
@@ -385,6 +385,13 @@ public abstract class Battle implements BattleInterface
     }
 
     /**
+     * Get battle context
+     *
+     * @return BattleContext
+     */
+    abstract protected @NotNull BattleContext getBattleContext();
+
+    /**
      * Get creature
      *
      * @param name Name of creature to find
@@ -449,18 +456,6 @@ public abstract class Battle implements BattleInterface
     }
 
     /**
-     * Get encountered explorer by player
-     *
-     * @param player Owner of explorer
-     *
-     * @return CombatExplorer
-     */
-    final protected @NotNull CombatExplorer getExplorer(@NotNull Player player)
-    {
-        return explorerRoster.getExplorer(player);
-    }
-
-    /**
      * Get next explorer
      *
      * @return CombatExplorer
@@ -519,27 +514,20 @@ public abstract class Battle implements BattleInterface
     }
 
     /**
-     * Notify listener of phase change
+     * Handle any additional post join related processes
      *
-     * @param phaseChange Phase change result
+     * @param explorer Explorer that has just joined
      */
-    final protected void notifyListenerOfPhaseChange(BattlePhaseChange phaseChange)
+    abstract protected void postJoin(@NotNull CombatExplorer explorer);
+
+    /**
+     * Handle any additional post phase change related processes
+     *
+     * @param phaseChange Phase change
+     */
+    final protected void postPhaseChange(@NotNull BattlePhaseChange phaseChange)
     {
-        BattleContext context = new BattleContext(
-            getBattleStyle(),
-            isAlwaysJoinable(),
-            explorerRoster.getMaxPartySize(),
-            explorerRoster.getCurrentPartySize()
-        );
-
-        BattlePhaseChangeResult result = new BattlePhaseChangeResult(
-            phaseChange,
-            context,
-            getAllCreatures(),
-            explorerRoster.getTier()
-        );
-
-        logger.logPhaseChange(result);
+        logger.logPhaseChange(new BattlePhaseChangeResult(phaseChange, getBattleContext()));
 
         if (phaseManager.isInitiativePhase()) {
             CombatExplorer explorer = getCurrentExplorer();
@@ -549,13 +537,6 @@ public abstract class Battle implements BattleInterface
             logger.pingPlayerTurn(explorer);
         }
     }
-
-    /**
-     * Handle any additional post join related processes
-     *
-     * @param explorer Explorer that has just joined
-     */
-    abstract protected void postJoin(@NotNull CombatExplorer explorer);
 
     /**
      * Handle any additional pre attack phase related processes
@@ -606,7 +587,7 @@ public abstract class Battle implements BattleInterface
         BattlePhaseChange result = phaseManager.startEndPhase();
 
         clearInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 
     /**

@@ -1,7 +1,6 @@
 package bot.Battle.Encounter;
 
 import bot.Battle.BattleLogger;
-import bot.Battle.SummaryMessageBuilder;
 import bot.Mention;
 import bot.Player.Player;
 import net.dv8tion.jda.core.entities.MessageChannel;

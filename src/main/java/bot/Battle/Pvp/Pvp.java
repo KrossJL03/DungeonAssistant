@@ -2,6 +2,7 @@ package bot.Battle.Pvp;
 
 import bot.Battle.AttackActionResult;
 import bot.Battle.Battle;
+import bot.Battle.BattleContext;
 import bot.Battle.BattlePhaseChange;
 import bot.Battle.CombatCreature;
 import bot.Battle.CombatExplorer;
@@ -112,6 +113,15 @@ class Pvp extends Battle
      * {@inheritDoc}
      */
     @Override
+    protected @NotNull BattleContext getBattleContext()
+    {
+        return new PvpContext(getBattleStyle(), isAlwaysJoinable(), explorerRoster.getContext());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void handleEndOfAction()
     {
         if (!phaseManager.isJoinPhase()) {
@@ -190,6 +200,6 @@ class Pvp extends Battle
         BattlePhaseChange result = phaseManager.startVictoryPhase();
 
         clearInitiative();
-        notifyListenerOfPhaseChange(result);
+        postPhaseChange(result);
     }
 }

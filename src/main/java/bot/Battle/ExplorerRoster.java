@@ -81,16 +81,6 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
     }
 
     /**
-     * Get amount of slots still available for new players
-     *
-     * @return int
-     */
-    public int getOpenSlotCount()
-    {
-        return maxPartySize - getCurrentPartySize();
-    }
-
-    /**
      * Get tier
      *
      * @return Tier
@@ -139,14 +129,9 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      *
      * @param newExplorer Explorer to add
      *
-     * @throws ExplorerRosterException If no max player count has been set
-     *                                 If player has been kicked
-     * @throws CustomException         If player already has explorer in the encounter
-     * @throws ExplorerRosterException If max player count has been reached
-     *                                 If explorer does not fit tier
-     * @throws CustomException         If the explorers nickname is currently in use
+     * @throws CustomException If no max player count has been set
      */
-    void addExplorer(@NotNull Explorer newExplorer) throws ExplorerRosterException, CustomException
+    void addExplorer(@NotNull Explorer newExplorer) throws CustomException
     {
         if (!isMaxPartySizeSet()) {
             throw new CustomException(String.format(
@@ -204,23 +189,14 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
     }
 
     /**
-     * Get current party size
+     * Get context
      *
-     * @return int
+     * @return ExplorerRosterContext
      */
-    int getCurrentPartySize()
+    @NotNull
+    public ExplorerRosterContext getContext()
     {
-        return getPresentExplorers().size();
-    }
-
-    /**
-     * Get max player count
-     *
-     * @return int
-     */
-    int getMaxPartySize()
-    {
-        return maxPartySize;
+        return new ExplorerRosterContext(maxPartySize, getCurrentPartySize(), tier, new ArrayList<>(explorerRoster));
     }
 
     /**
@@ -293,7 +269,7 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
     }
 
     /**
-     * Mark explorer belonging to player as present
+     * Player rejoins the battle
      *
      * @param player Player
      *
@@ -301,7 +277,7 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
      *
      * @throws ExplorerRosterException If encountered explorer is present or roster is full
      */
-    @NotNull Explorer markAsReturned(@NotNull Player player) throws ExplorerRosterException
+    @NotNull Explorer rejoin(@NotNull Player player) throws ExplorerRosterException
     {
         assertPlayerNotKicked(player);
 
@@ -477,6 +453,16 @@ public class ExplorerRoster<Explorer extends CombatExplorer>
     private int getActivePlayerCount()
     {
         return getActiveExplorers().size();
+    }
+
+    /**
+     * Get current party size
+     *
+     * @return int
+     */
+    private int getCurrentPartySize()
+    {
+        return getPresentExplorers().size();
     }
 
     /**

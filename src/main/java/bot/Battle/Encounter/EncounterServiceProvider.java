@@ -8,6 +8,7 @@ import bot.Battle.StartBattleCommand;
 import bot.Battle.ViewSummaryCommand;
 import bot.Command;
 import bot.CommandProviderInterface;
+import bot.MyProperties;
 import bot.PrivateLogger;
 import bot.ProcessManager;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,6 @@ public class EncounterServiceProvider implements CommandProviderInterface
         commands.add(new LootCommand(processManager, dmChecker));
         commands.add(new ModifyStatCommand(processManager, dmChecker));
         commands.add(new ProtectCommand(processManager, dmChecker));
-//        commands.add(new RejoinCommand(processManager, battleHolder, dmChecker));
         commands.add(new RemoveCommand(processManager, dmChecker));
         commands.add(new SetPartySizeCommand(processManager, dmChecker));
         commands.add(new SetTierCommand(processManager, dmChecker));
@@ -64,6 +64,10 @@ public class EncounterServiceProvider implements CommandProviderInterface
         commands.add(new ViewSummaryCommand(processManager, dmChecker));
         commands.add(new ReviveCommand(processManager, dmChecker));
         commands.add(new UseItemCommand(processManager, dmChecker));
+
+        if (MyProperties.ENABLE_COMMAND_REJOIN) {
+            commands.add(new RejoinCommand(processManager, dmChecker));
+        }
 
         commands.add(new HelpCommand(processManager, privateLogger, new ArrayList<>(commands)));
     }

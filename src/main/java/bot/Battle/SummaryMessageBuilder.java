@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SummaryMessageBuilder
+abstract public class SummaryMessageBuilder
 {
-    private DiffCodeFormatter codeFormatter;
+    protected DiffCodeFormatter codeFormatter;
 
     /**
-     * SummaryMessageBuilder constructor
+     * Constructor.
      */
     public @NotNull SummaryMessageBuilder()
     {
@@ -22,59 +22,22 @@ public class SummaryMessageBuilder
     /**
      * Build summary message
      *
-     * @param creatures Creatures
+     * @param battleContext Battle context
      *
      * @return ArrayList
      */
-    @NotNull ArrayList<String> buildSummary(@NotNull ArrayList<CombatCreature> creatures)
-    {
-        ArrayList<String>             messages  = new ArrayList<>();
-        ArrayList<CombatExplorer>     explorers = new ArrayList<>();
-        ArrayList<EncounteredHostile> hostiles  = new ArrayList<>();
-
-        for (CombatCreature creature : creatures) {
-            if (creature instanceof CombatExplorer) {
-                explorers.add((CombatExplorer) creature);
-            }
-            if (creature instanceof EncounteredHostile) {
-                hostiles.add((EncounteredHostile) creature);
-            }
-        }
-
-        if (!explorers.isEmpty()) {
-            messages.add(buildExplorerSummary(explorers));
-        }
-        if (!hostiles.isEmpty()) {
-            messages.add(buildHostileSummary(hostiles));
-        }
-        if (messages.isEmpty()) {
-            messages.add(buildEmptySummary());
-        }
-
-        return messages;
-    }
-
-    /**
-     * Build empty summary
-     */
-    private @NotNull String buildEmptySummary()
-    {
-        Message message = new Message();
-        message.startCodeBlock(codeFormatter.getStyle());
-        message.add("This battle is empty!");
-        message.endCodeBlock();
-
-        return message.getAsString();
-    }
+    abstract public @NotNull ArrayList<String> buildSummary(@NotNull BattleContext battleContext);
 
     /**
      * Build explorer summary
      *
      * @param explorers Explorers
      */
-    private @NotNull String buildExplorerSummary(@NotNull ArrayList<CombatExplorer> explorers)
+    final protected @NotNull String buildExplorerSummary(@NotNull ArrayList<CombatExplorer> explorers)
     {
         Message message = new Message();
+
+        explorers.sort(new ExplorerInitiativeComparator());
 
         message.startCodeBlock(codeFormatter.getStyle());
         message.addLine();
@@ -95,40 +58,13 @@ public class SummaryMessageBuilder
     }
 
     /**
-     * Build hostile summary
-     *
-     * @param hostiles Hostiles
-     */
-    private @NotNull String buildHostileSummary(@NotNull ArrayList<EncounteredHostile> hostiles)
-    {
-        Message message = new Message();
-
-        message.startCodeBlock(codeFormatter.getStyle());
-        message.addLine();
-        message.add("Hostiles");
-        message.addLine();
-
-        for (EncounteredHostile hostile : hostiles) {
-            message.add(getNameLine(hostile));
-            String healthBar = getHealthBarLine(hostile);
-            if (!healthBar.isEmpty()) {
-                message.add(healthBar);
-            }
-        }
-
-        message.endCodeBlock();
-
-        return message.getAsString();
-    }
-
-    /**
      * Get health bar line
      *
      * @param creature Creature
      *
      * @return String
      */
-    private @NotNull String getHealthBarLine(CombatCreature creature)
+    final protected @NotNull String getHealthBarLine(CombatCreature creature)
     {
         StringBuilder output    = new StringBuilder();
         int           currentHP = creature.getCurrentHP();
@@ -142,9 +78,9 @@ public class SummaryMessageBuilder
         int healthBlocks      = (int) Math.ceil((float) maxHP / 10) + 1;
         int emptyHealthBlocks = (int) Math.ceil((double) (maxHP - currentHP) / 10);
         int fullHealthBlocks  = healthBlocks - emptyHealthBlocks;
-        output.append(this.repeatString(Message.FULL_HEALTH_ICON, fullHealthBlocks));
+        output.append(repeatString(Message.FULL_HEALTH_ICON, fullHealthBlocks));
         if (emptyHealthBlocks > 0) {
-            output.append(this.repeatString(Message.EMPTY_HEALTH_ICON, emptyHealthBlocks));
+            output.append(repeatString(Message.EMPTY_HEALTH_ICON, emptyHealthBlocks));
         }
 
         return creature.isBloodied()
@@ -159,7 +95,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getNameLine(@NotNull EncounteredHostile hostile)
+    final protected @NotNull String getNameLine(@NotNull EncounteredHostile hostile)
     {
         if (hostile.isSlain()) {
             Slayer slayer = hostile.getSlayer();
@@ -180,7 +116,7 @@ public class SummaryMessageBuilder
      *
      * @return String
      */
-    private @NotNull String getNameLine(@NotNull CombatExplorer explorer)
+    final protected @NotNull String getNameLine(@NotNull CombatExplorer explorer)
     {
         if (!explorer.isPresent()) {
             return codeFormatter.makeGrey(String.format("%s has left", explorer.getName()));
